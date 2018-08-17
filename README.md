@@ -67,7 +67,7 @@ For more information refer to "How to make this Mod Loader work with your mod" s
 
 ## How to make this Mod Loader work with your mod
 
-Changed something in a .CBS file? Name the folder with no extension.
+Changed something in a .CSB file? Name the folder with no extension.
 Changed something in an .AMB file? Name the folder as the file.
 
 Note: recursive AMB patching is not available right now.
@@ -115,7 +115,7 @@ That's all.
 
 ## Third party works
 
-CbsEditor (from SonicAudioTools) by Skyth under MIT License.
+CsbEditor (from SonicAudioTools) by Skyth under MIT License.
 https://github.com/blueskythlikesclouds/SonicAudioTools
 
 Read LICENSE-SonicAudioTools for license (should be included in distributable versions).
