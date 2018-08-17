@@ -40,12 +40,12 @@ But if you have already installed it:
 
 1.
 ~~~~~ Episode 1
-Check if "Sonic_vis.orig.exe" and "SonicLauncher.orig.exe" are present. If they are, delete "Sonic_vis.exe" and "SonicLauncher.exe" and remove ".orig" part in the names of thar files.
+Check if "Sonic_vis.orig.exe" and "SonicLauncher.orig.exe" are present. If they are, delete "Sonic_vis.exe" and "SonicLauncher.exe" and remove ".orig" part in the names of that files.
 
 ~~~~~ Episode 2
 The same as for Episode 1, but "Sonic.orig.exe" and "Launcher.orig.exe"
 
-2. Delete "mod_manager.cfg", "/mods/mods.ini" and "/mods/mods_prev", if exists.
+2. Delete "mod_manager.cfg", "/mods/mods.ini" and "/mods/mods_prev", if exist.
 
 3. Delete all the files listed above.
 

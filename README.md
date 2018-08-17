@@ -15,7 +15,7 @@ For information about third party programs refer to the "Third party works" sect
 
 1. Move all the files to root folder of Sonic 4 Episode (I or II).
 
-2. Launch "Sonic4ModManager.exe". Mod Manager will offer to be configured automatically, press "Yes" button (if you press "No" button, refer to the "How to install mods manually" section).
+2. Launch `Sonic4ModManager.exe`. Mod Manager will offer to be configured automatically, press "Yes" button (if you press "No" button, refer to the "How to install mods manually" section).
 
 
 ## How to uninstall the Mod Loader
@@ -35,22 +35,24 @@ If you haven't installed the Mod Loader yet, remove all the files that were adde
 But if you have already installed it:
 
 1.
-~ Episode 1
-Check if "Sonic_vis.orig.exe" and "SonicLauncher.orig.exe" are present. If they are, delete "Sonic_vis.exe" and "SonicLauncher.exe" and remove ".orig" part in the names of thar files.
+* Episode 1
 
-~ Episode 2
-The same as for Episode 1, but "Sonic.orig.exe" and "Launcher.orig.exe"
+Check if `Sonic_vis.orig.exe` and `SonicLauncher.orig.exe` are present. If they are, delete `Sonic_vis.exe` and `SonicLauncher.exe` and remove `.orig` part in the names of that files.
 
-2. Delete "mod_manager.cfg", "/mods/mods.ini" and "/mods/mods_prev", if exists.
+* Episode 2
+
+The same as for Episode 1, but `Sonic.orig.exe` and `Launcher.orig.exe`
+
+2. Delete `mod_manager.cfg`, `/mods/mods.ini` and `/mods/mods_prev`, if exist.
 
 3. Delete all the files listed above.
 
 
 ## How to install mods
 
-1. Create a "mods" folder in the root directory of the game (or press "Save" button in the Mod Loader)
+1. Create a `mods` folder in the root directory of the game (or press "Save" button in the Mod Loader)
 
-2. Place your mod folder in that "mods" folder.
+2. Place your mod folder in that `mods` folder.
 For more information refer to "How to make this Mod Loader work with your mod" section.
 
 3. Enable the mod in the Mod Loader.
@@ -60,7 +62,7 @@ For more information refer to "How to make this Mod Loader work with your mod" s
 
 0. Follow the steps from "How to install mods" section.
 
-1. Every time you change something in mods (files, mods priority, etc.), run "AMBPatcher.exe"
+1. Every time you change something in mods (files, mods priority, etc.), run `AMBPatcher.exe`
 
 
 ## How to make this Mod Loader work with your mod
@@ -69,7 +71,7 @@ Changed something in a .CBS file? Name the folder with no extension.
 Changed something in an .AMB file? Name the folder as the file.
 
 Note: recursive AMB patching is not available right now.
-For example, if you changed something in CPIT_MAIN.AMB/G_FIX.AMB file, you need to patch G_FIX.AMB manually.
+For example, if you changed something in `CPIT_MAIN.AMB/G_FIX.AMB` file, you need to patch `G_FIX.AMB` manually.
 
 Here's an example of mod structure:
 ```
@@ -81,9 +83,9 @@ Here's an example of mod structure:
 
 ## mod.ini structure
 
-"mod.ini" file is not necessary, but recommended if you want to share your mod.
+`mod.ini` file is not necessary, but recommended if you want to share your mod.
 
-Place "mod.ini" in the root directory of your mod.
+Place `mod.ini` in the root directory of your mod.
 `/mods/My Cool Mod/mod.ini`
 
 Here's an example of mod.ini structure:
