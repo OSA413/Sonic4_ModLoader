@@ -1,0 +1,76 @@
+﻿namespace ManagerLauncher
+{
+    partial class Form1
+    {
+        /// <summary>
+        /// Обязательная переменная конструктора.
+        /// </summary>
+        private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        /// Освободить все используемые ресурсы.
+        /// </summary>
+        /// <param name="disposing">истинно, если управляемый ресурс должен быть удален; иначе ложно.</param>
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing && (components != null))
+            {
+                components.Dispose();
+            }
+            base.Dispose(disposing);
+        }
+
+        #region Код, автоматически созданный конструктором форм Windows
+
+        /// <summary>
+        /// Требуемый метод для поддержки конструктора — не изменяйте 
+        /// содержимое этого метода с помощью редактора кода.
+        /// </summary>
+        private void InitializeComponent()
+        {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            this.bManager = new System.Windows.Forms.Button();
+            this.bConf = new System.Windows.Forms.Button();
+            this.SuspendLayout();
+            // 
+            // bManager
+            // 
+            this.bManager.Location = new System.Drawing.Point(12, 82);
+            this.bManager.Name = "bManager";
+            this.bManager.Size = new System.Drawing.Size(216, 64);
+            this.bManager.TabIndex = 1;
+            this.bManager.Text = "Launch Mod Manager";
+            this.bManager.UseVisualStyleBackColor = true;
+            this.bManager.Click += new System.EventHandler(this.bManager_Click);
+            // 
+            // bConf
+            // 
+            this.bConf.Location = new System.Drawing.Point(12, 12);
+            this.bConf.Name = "bConf";
+            this.bConf.Size = new System.Drawing.Size(216, 64);
+            this.bConf.TabIndex = 2;
+            this.bConf.Text = "Launch Configuration Tool";
+            this.bConf.UseVisualStyleBackColor = true;
+            this.bConf.Click += new System.EventHandler(this.bConf_Click);
+            // 
+            // Form1
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.ClientSize = new System.Drawing.Size(240, 158);
+            this.Controls.Add(this.bConf);
+            this.Controls.Add(this.bManager);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Name = "Form1";
+            this.Text = "Manager Launcher";
+            this.ResumeLayout(false);
+
+        }
+
+        #endregion
+        private System.Windows.Forms.Button bManager;
+        private System.Windows.Forms.Button bConf;
+    }
+}
+
