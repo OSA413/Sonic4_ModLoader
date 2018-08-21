@@ -16,12 +16,11 @@ namespace OneClickModInstaller
          * https://msdn.microsoft.com/en-us/ie/aa767914(v=vs.94)
          */
         [STAThread]
-        static void Main()
+        static void Main(string[] args)
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Form f1 = new Form1();
-            Application.Run(f1);
+            Application.Run(new Form1(args));
         }
     }
 }

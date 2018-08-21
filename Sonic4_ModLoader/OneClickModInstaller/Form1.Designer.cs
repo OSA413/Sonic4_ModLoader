@@ -35,6 +35,10 @@
             this.lModID = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.lURL = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.lType = new System.Windows.Forms.Label();
             this.statusBar.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -74,7 +78,7 @@
             // lModID
             // 
             this.lModID.AutoSize = true;
-            this.lModID.Location = new System.Drawing.Point(28, 74);
+            this.lModID.Location = new System.Drawing.Point(26, 110);
             this.lModID.Name = "lModID";
             this.lModID.Size = new System.Drawing.Size(31, 13);
             this.lModID.TabIndex = 3;
@@ -83,7 +87,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 61);
+            this.label2.Location = new System.Drawing.Point(12, 97);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(45, 13);
             this.label2.TabIndex = 4;
@@ -98,11 +102,51 @@
             this.label3.TabIndex = 5;
             this.label3.Text = "You are trying to download a mod from GameBanana.\r\nAren\'t you?";
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(9, 45);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(77, 13);
+            this.label1.TabIndex = 6;
+            this.label1.Text = "Download link:";
+            // 
+            // lURL
+            // 
+            this.lURL.AutoSize = true;
+            this.lURL.Location = new System.Drawing.Point(26, 58);
+            this.lURL.Name = "lURL";
+            this.lURL.Size = new System.Drawing.Size(53, 13);
+            this.lURL.TabIndex = 7;
+            this.lURL.Text = "Unknown";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(12, 71);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(54, 13);
+            this.label4.TabIndex = 8;
+            this.label4.Text = "Mod type:";
+            // 
+            // lType
+            // 
+            this.lType.AutoSize = true;
+            this.lType.Location = new System.Drawing.Point(26, 84);
+            this.lType.Name = "lType";
+            this.lType.Size = new System.Drawing.Size(31, 13);
+            this.lType.TabIndex = 9;
+            this.lType.Text = "Type";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(304, 201);
+            this.Controls.Add(this.lType);
+            this.Controls.Add(this.label4);
+            this.Controls.Add(this.lURL);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.lModID);
@@ -128,6 +172,10 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label3;
         internal System.Windows.Forms.Label lModID;
+        private System.Windows.Forms.Label label1;
+        public System.Windows.Forms.Label lURL;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label lType;
     }
 }
 

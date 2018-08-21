@@ -15,10 +15,47 @@ namespace OneClickModInstaller
 {
     public partial class Form1 : Form
     {
-        public Form1()
+        public static bool local { set; get; }
+
+        public Form1(string[] args)
         {
-            InitializeComponent();
-            toolStripStatusLabel1.Text = "A wild download button appeared!";
+            bool install = false;
+
+            if (args.Length == 1)
+            {
+                if (args[0] == "--install")
+                {
+                    install = true;
+                }
+            }
+
+            if (args.Length == 0 || install)
+            {
+                //Make install/uninstall windows appear
+            }
+            else
+            {
+                InitializeComponent();
+                toolStripStatusLabel1.Text = "A wild download button appeared!";
+
+                local = false;
+
+                if (args.Length == 1)
+                {
+                    string[] gb_parameters = args[0].Split(',');
+                    if (gb_parameters.Length > 0) { lURL.Text = gb_parameters[0]; }
+                    if (gb_parameters.Length > 1) { lType.Text = gb_parameters[1]; }
+                    if (gb_parameters.Length > 2) { lModID.Text = gb_parameters[2]; }
+                }
+                else if (args.Length == 2)
+                {
+                    if (args[0] == "--local")
+                    {
+                        local = true;
+                        lURL.Text = args[1];
+                    }
+                }
+            }
         }
         
         //From https://docs.microsoft.com/en-us/dotnet/api/system.io.directoryinfo
@@ -145,19 +182,37 @@ namespace OneClickModInstaller
 
         private void bDownload_Click(object sender, EventArgs e)
         {
-            using (WebClient wc = new WebClient())
+            if (File.Exists(lModID.Text + ".zip"))
             {
-                toolStripStatusLabel1.Text = "Downloading...";
-                bDownload.Enabled = false;
-                wc.DownloadFileCompleted += new AsyncCompletedEventHandler(DoTheRest);
-                wc.DownloadProgressChanged += wc_DownloadProgressChanged;
-                //Download link goes here
-                Uri url = new Uri(/* removed */);
-                wc.DownloadFileAsync(url, lModID.Text + ".zip");
+                File.Delete(lModID.Text + ".zip");
+            }
+            if (local)
+            {
+                toolStripStatusLabel1.Text = "Copying local archive...";
+                File.Copy(lURL.Text, lModID.Text + ".zip");
+                DoTheRest();
+            }
+            else
+            {
+                using (WebClient wc = new WebClient())
+                {
+                    toolStripStatusLabel1.Text = "Downloading...";
+                    bDownload.Enabled = false;
+                    wc.DownloadFileCompleted += new AsyncCompletedEventHandler(fake_DoTheRest);
+                    wc.DownloadProgressChanged += wc_DownloadProgressChanged;
+                    //Download link goes here
+                    Uri url = new Uri(lURL.Text);
+                    wc.DownloadFileAsync(url, lModID.Text + ".zip");
+                }
             }
         }
 
-        private void DoTheRest(object sender, AsyncCompletedEventArgs e)
+        private void fake_DoTheRest(object sender, AsyncCompletedEventArgs e)
+        {
+            DoTheRest();
+        }
+
+        private void DoTheRest()
         {
             toolStripStatusLabel1.Text = "Extracting downloaded archive...";
 
@@ -173,7 +228,7 @@ namespace OneClickModInstaller
             toolStripStatusLabel1.Text = "Checking extracted files...";
             int cont = CheckFiles(mod_dir);
 
-            if (cont == -1) {Application.Exit();}
+            if (cont == -1) { Application.Exit(); }
 
             toolStripStatusLabel1.Text = "Trying to find mod root directory...";
             string mod_root = FindRootDirectory(mod_dir);
@@ -202,7 +257,7 @@ namespace OneClickModInstaller
                 Application.Exit();
             }
         }
-
+        
         void wc_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
             progressBar.Value = e.ProgressPercentage;

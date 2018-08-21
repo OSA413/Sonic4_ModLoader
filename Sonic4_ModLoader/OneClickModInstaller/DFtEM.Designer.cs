@@ -38,9 +38,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(60, 57);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(191, 26);
+            this.label1.Size = new System.Drawing.Size(200, 26);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Downloaded mod has been installed.\r\nDon\'t forget to enable it in Mod Loader.";
+            this.label1.Text = "Downloaded mod has been installed.\r\nDon\'t forget to enable it in Mod Manager.";
             this.label1.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // bOpen
@@ -49,7 +49,7 @@
             this.bOpen.Name = "bOpen";
             this.bOpen.Size = new System.Drawing.Size(128, 52);
             this.bOpen.TabIndex = 3;
-            this.bOpen.Text = "Open Mod Loader and Exit";
+            this.bOpen.Text = "Open Mod Manager and Exit";
             this.bOpen.UseVisualStyleBackColor = true;
             this.bOpen.Click += new System.EventHandler(this.bOpen_Click);
             // 
