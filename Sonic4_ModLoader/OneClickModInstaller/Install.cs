@@ -11,9 +11,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
-//
-
 using System.Runtime.InteropServices;
 
 namespace OneClickModInstaller
@@ -27,6 +24,8 @@ namespace OneClickModInstaller
                 if (args.Length == 0)
                 {
                     InitializeComponent();
+                    SetButtonShield(bInstall, true);
+                    SetButtonShield(bUninstall, true);
                 }
                 else
                 {
@@ -132,6 +131,15 @@ namespace OneClickModInstaller
         static void RegistryInstall()
         {
 
+        }
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        public static extern IntPtr SendMessage(HandleRef hWnd, UInt32 Msg, IntPtr wParam, IntPtr lParam);
+
+        public static void SetButtonShield(Button btn, bool showShield)
+        {
+            btn.FlatStyle = FlatStyle.System;
+            SendMessage(new HandleRef(btn, btn.Handle), 0x160C, IntPtr.Zero, showShield ? new IntPtr(1) : IntPtr.Zero);
         }
 
         private void bInstall_Click(object sender, EventArgs e)

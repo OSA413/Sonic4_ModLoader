@@ -60,7 +60,7 @@ namespace OneClickModInstaller
             }
         }
         
-        //From https://docs.microsoft.com/en-us/dotnet/api/system.io.directoryinfo
+        //<from = https://docs.microsoft.com/en-us/dotnet/api/system.io.directoryinfo >
         public static void CopyAll(DirectoryInfo source, DirectoryInfo target)
         {
             if (source.FullName.ToLower() == target.FullName.ToLower())
@@ -88,6 +88,7 @@ namespace OneClickModInstaller
                 CopyAll(diSourceSubDir, nextTargetSubDir);
             }
         }
+        //</from>
 
         static void ExtractArchive(string file_name)
         {
