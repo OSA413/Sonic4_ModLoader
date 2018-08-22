@@ -103,6 +103,7 @@
             this.Controls.Add(this.bCancelAndExit);
             this.Controls.Add(this.bContinue);
             this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "Form2";
             this.Text = "Suspicious Dialog";
             this.ResumeLayout(false);

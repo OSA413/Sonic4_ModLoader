@@ -70,6 +70,7 @@
             this.Controls.Add(this.bExit);
             this.Controls.Add(this.bOpen);
             this.Controls.Add(this.label1);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "WrongModStructureForm";
             this.Text = "Wrong Mod Structure";
             this.ResumeLayout(false);

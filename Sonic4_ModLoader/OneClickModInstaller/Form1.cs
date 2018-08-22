@@ -31,7 +31,9 @@ namespace OneClickModInstaller
 
             if (args.Length == 0 || install)
             {
-                //Make install/uninstall windows appear
+                Install install_form = new Install(args);
+                install_form.ShowDialog();
+                Application.Exit();
             }
             else
             {
