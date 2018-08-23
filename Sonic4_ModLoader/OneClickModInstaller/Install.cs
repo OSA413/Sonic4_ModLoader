@@ -24,6 +24,8 @@ namespace OneClickModInstaller
             {
                 InitializeComponent();
 
+                lGameName.Text = "Sonic 4: " + WhereAmI();
+
                 if (IsRunAsAdmin())
                 {
                     label3.Text = "";
@@ -177,9 +179,7 @@ namespace OneClickModInstaller
                 if (game != "dunno")
                 {
                     string root_key = "sonic4mm" + game;
-
-                    Console.WriteLine(Registry.ClassesRoot.OpenSubKey(root_key));
-
+                    
                     if (Registry.ClassesRoot.OpenSubKey(root_key) != null)
                     { Registry.ClassesRoot.DeleteSubKeyTree(root_key); }
                 }
