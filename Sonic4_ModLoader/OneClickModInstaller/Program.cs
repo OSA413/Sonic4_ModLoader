@@ -16,17 +16,21 @@ namespace OneClickModInstaller
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            if (args.Length == 0)
+            if (args.Length > 0)
             {
-                Application.Run(new Install(args));
-            }
-            else if (args.Length == 1 && (args[0] == "--install" || args[0] == "--uninstall"))
-            {
-                Application.Run(new Install(args));
+                if ((args.Length == 1 && (args[0].StartsWith("sonic4mmep1:") || args[0].StartsWith("sonic4mmep2:")))
+                    || (args.Length == 2 && args[0] == "--local"))
+                {
+                    Application.Run(new Form1(args));
+                }
+                else
+                {
+                    Application.Run(new Install(args));
+                }
             }
             else
             {
-                Application.Run(new Form1(args));
+                Application.Run(new Install(args));
             }
         }
     }

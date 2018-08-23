@@ -33,6 +33,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.bInstall = new System.Windows.Forms.Button();
             this.bUninstall = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
@@ -58,9 +59,9 @@
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(12, 9);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(102, 13);
+            this.label2.Size = new System.Drawing.Size(159, 13);
             this.label2.TabIndex = 2;
-            this.label2.Text = "1-Click Mod Installer";
+            this.label2.Text = "1-Click Mod Installer by OSA413";
             // 
             // bInstall
             // 
@@ -82,11 +83,21 @@
             this.bUninstall.UseVisualStyleBackColor = true;
             this.bUninstall.Click += new System.EventHandler(this.bUninstall_Click);
             // 
+            // label3
+            // 
+            this.label3.Location = new System.Drawing.Point(12, 73);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(256, 23);
+            this.label3.TabIndex = 5;
+            this.label3.Text = "Installation requires administrator privileges.";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            // 
             // Install
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(280, 181);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.bUninstall);
             this.Controls.Add(this.bInstall);
             this.Controls.Add(this.label2);
@@ -94,7 +105,7 @@
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Name = "Install";
-            this.Text = "Install";
+            this.Text = "Installation Dialog";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -107,5 +118,6 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Button bInstall;
         private System.Windows.Forms.Button bUninstall;
+        private System.Windows.Forms.Label label3;
     }
 }

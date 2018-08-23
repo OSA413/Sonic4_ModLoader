@@ -1,6 +1,4 @@
-﻿//TODO: write everything once
-
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,6 +10,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
+using System.Security.Permissions;
+using System.Diagnostics;
+using System.Security.Principal;
 
 namespace OneClickModInstaller
 {
@@ -21,16 +22,35 @@ namespace OneClickModInstaller
         {
             if (WhereAmI() != "dunno")
             {
-                if (args.Length == 0)
+                InitializeComponent();
+
+                if (IsRunAsAdmin())
                 {
-                    InitializeComponent();
-                    SetButtonShield(bInstall, true);
-                    SetButtonShield(bUninstall, true);
+                    label3.Text = "";
                 }
                 else
                 {
-
+                    SetButtonShield(bInstall, true);
+                    SetButtonShield(bUninstall, true);
                 }
+
+                if (args.Length == 1)
+                {
+                    if (args[0] == "--install")
+                    {
+                        RegistryInstall();
+                    }
+                    else if (args[0] == "--uninstall")
+                    {
+                        RegistryUninstall();
+                    }
+                    else if (args[0] == "--fix")
+                    {
+                        RegistryFixPath();
+                    }
+                }
+
+                UpdateWindow();
             }
             else
             {
@@ -57,24 +77,8 @@ namespace OneClickModInstaller
             return where;
         }
 
-        static int GetInstallationStatus()
+        static string GetGame()
         {
-            /* status description
-             * 0    = Not installed
-             * 1    = Properly installed
-             * -1   = Improperly installed (something is not installed)
-             * 2    = Another installation present (different path in registry)
-             */
-
-
-            int status = 0;
-
-            /*
-             * https://stackoverflow.com/questions/4467458/reading-a-registry-key-in-c-sharp
-            * https://msdn.microsoft.com/en-us/ie/aa767914(v=vs.94)
-            * https://stackoverflow.com/questions/2021831/admin-rights-for-a-single-method
-            */
-
             string game = WhereAmI();
 
             switch (WhereAmI())
@@ -87,14 +91,31 @@ namespace OneClickModInstaller
                     break;
             }
 
+            return game;
+        }
+
+        static int GetInstallationStatus()
+        {
+            /* status description
+             * 0    = Not installed
+             * 1    = Properly installed
+             * -1   = Improperly installed (something is not installed)
+             * 2    = Another installation present (different path in registry)
+             */
+
+
+            int status = 0;
+            
+            string game = GetGame();
+
             if (game != "dunno")
             {
                 string root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
                 
-                if (Registry.GetValue(root_key, "", null) != null)
-                { if (Registry.GetValue(root_key, "URL Protocol", null) == "")
-                    { if (Registry.GetValue(root_key + "\\DefaultIcon","",null) == "OneClickModInstaller.exe")
-                        { if (Registry.GetValue(root_key + "\\Shell\\Open\\Command","",null) == "\"" + System.Reflection.Assembly.GetEntryAssembly().Location + "\" \"%1\"")
+                if ((string) Registry.GetValue(root_key, "", null) == "URL:Sonic 4 Mod Loader's 1-Click Installer protocol")
+                { if ((string) Registry.GetValue(root_key, "URL Protocol", null) == "")
+                    { if ((string) Registry.GetValue(root_key + "\\DefaultIcon","",null) == "OneClickModInstaller.exe")
+                        { if ((string) Registry.GetValue(root_key + "\\Shell\\Open\\Command","",null) == "\"" + System.Reflection.Assembly.GetEntryAssembly().Location + "\" \"%1\"")
                             {
                                 status = 1;
                             } else { status = 2; }
@@ -108,29 +129,72 @@ namespace OneClickModInstaller
 
         static void RegistryFixPath()
         {
-            string game = WhereAmI();
-
-            switch (WhereAmI())
+            if (IsRunAsAdmin())
             {
-                case "Episode 1":
-                    game = "ep1";
-                    break;
-                case "Episode 2":
-                    game = "ep2";
-                    break;
+                string game = GetGame();
+
+                if (game != "dunno")
+                {
+                    string root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
+
+                    Registry.SetValue(root_key + "\\Shell\\Open\\Command", "", "\"" + System.Reflection.Assembly.GetEntryAssembly().Location + "\" \"%1\"");
+                }
             }
-
-            if (game != "dunno")
+            else
             {
-                string root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
+                RestartAsAdmin("--fix");
+            }
+        }
+        
+        static void RegistryInstall()
+        {
+            if (IsRunAsAdmin())
+            {
+                string game = GetGame();
 
-                Registry.SetValue(root_key + "\\Shell\\Open\\Command", "", "\"" + System.Reflection.Assembly.GetEntryAssembly().Location + "\" \"%1\"");
+                if (game != "dunno")
+                {
+                    string root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
+
+                    Registry.SetValue(root_key, "", "URL:Sonic 4 Mod Loader's 1-Click Installer protocol");
+                    Registry.SetValue(root_key, "URL Protocol", "");
+                    Registry.SetValue(root_key + "\\DefaultIcon", "", "OneClickModInstaller.exe");
+                    Registry.SetValue(root_key + "\\Shell\\Open\\Command", "", "\"" + System.Reflection.Assembly.GetEntryAssembly().Location + "\" \"%1\"");
+                }
+            }
+            else
+            {
+                RestartAsAdmin("--install");
             }
         }
 
-        static void RegistryInstall()
+        static void RegistryUninstall()
         {
+            if (IsRunAsAdmin())
+            {
+                string game = GetGame();
 
+                if (game != "dunno")
+                {
+                    string root_key = "sonic4mm" + game;
+
+                    Console.WriteLine(Registry.ClassesRoot.OpenSubKey(root_key));
+
+                    if (Registry.ClassesRoot.OpenSubKey(root_key) != null)
+                    { Registry.ClassesRoot.DeleteSubKeyTree(root_key); }
+                }
+            }
+            else
+            {
+                RestartAsAdmin("--uninstall");
+            }
+        }
+
+        public static bool IsRunAsAdmin()
+        {
+            WindowsIdentity id = WindowsIdentity.GetCurrent();
+            WindowsPrincipal principal = new WindowsPrincipal(id);
+            return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
 
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
@@ -142,14 +206,70 @@ namespace OneClickModInstaller
             SendMessage(new HandleRef(btn, btn.Handle), 0x160C, IntPtr.Zero, showShield ? new IntPtr(1) : IntPtr.Zero);
         }
 
+        private void UpdateWindow()
+        {
+            int status = GetInstallationStatus();
+            
+            if (status == 0)
+            {
+                lInstallationStatus.Text = "Not installed";
+                bInstall.Enabled = true;
+                bInstall.Text = "Install";
+                bUninstall.Enabled = false;
+            }
+            else if (status == 1)
+            {
+                lInstallationStatus.Text = "Installed";
+                bInstall.Enabled = false;
+                bInstall.Text = "Install";
+                bUninstall.Enabled = true;
+            }
+            else if (status == 2)
+            {
+                lInstallationStatus.Text = "Another installation present";
+                bInstall.Enabled = true;
+                bInstall.Text = "Fix registry path";
+                bUninstall.Enabled = true;
+            }
+            else if (status == -1)
+            {
+                lInstallationStatus.Text = "Requires reinstallation";
+                bInstall.Enabled = true;
+                bInstall.Text = "Install";
+                bUninstall.Enabled = true;
+            }
+        }
+
+        static void RestartAsAdmin(string args)
+        {
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                FileName = AppDomain.CurrentDomain.FriendlyName,
+                Arguments = args,
+                Verb = "runas"
+            };
+            
+            Process.Start(startInfo);
+            Application.Exit();
+        }
+
         private void bInstall_Click(object sender, EventArgs e)
         {
-
+            if (GetInstallationStatus() == 2)
+            {
+                RegistryFixPath();
+            }
+            else
+            {
+                RegistryInstall();
+            }
+            UpdateWindow();
         }
 
         private void bUninstall_Click(object sender, EventArgs e)
         {
-
+            RegistryUninstall();
+            UpdateWindow();
         }
     }
 }

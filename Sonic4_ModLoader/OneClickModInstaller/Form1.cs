@@ -278,7 +278,6 @@ namespace OneClickModInstaller
             toolStripStatusLabel1.Text = "Downloading... (" + e.BytesReceived/divider + unit + " / " + e.TotalBytesToReceive/divider + unit + ")";
             Console.WriteLine(e.BytesReceived);
             Console.WriteLine(e.TotalBytesToReceive);
-            //DoTheRest(lModID.Text + ".zip");
         }
     }
 }
