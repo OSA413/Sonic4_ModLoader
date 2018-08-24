@@ -105,13 +105,19 @@ namespace AMBPatcher
 
             int index = -1;
 
+            string[] mod_file_parts = mod_file.Split(Path.DirectorySeparatorChar);
+
             for (int i = 0; i < files.Count; i++)
             {
-                string[] last_name = mod_file.Split(Path.DirectorySeparatorChar);
-                if (files[i].Item1 == last_name[last_name.Length - 1])
+                if (files[i].Item1 == mod_file_parts[mod_file_parts.Length - 1])
                 {
                     index = i;
                     break; //TODO: find a better way of finding a variable in list of tuples.
+                }
+                else if (files[i].Item1 == String.Join("\\",mod_file_parts.Skip(mod_file_parts.Length - 2)))
+                {
+                    index = i;
+                    break; //TODO stays the same
                 }
             }
 
@@ -119,7 +125,7 @@ namespace AMBPatcher
             {
                 byte[] raw_mod_file = File.ReadAllBytes(mod_file);
 
-                if (raw_mod_file.Length <= files[index].Item3) //TODO: make pointers and lengths shifting
+                if (raw_mod_file.Length <= files[index].Item3) //TODO: make pointers and lengths shifting aka bigger files
                 {
                     for (int i = 0; i < files[index].Item3; i++)
                     {
@@ -146,7 +152,7 @@ namespace AMBPatcher
                 {
                     for (int i = 0; i < mod_files.Count; i++)
                     {
-                        AMB_Patch(file_name, "mods" + Path.DirectorySeparatorChar + mod_paths[i] + Path.DirectorySeparatorChar + mod_files[i]);
+                        AMB_Patch(file_name, String.Join(Path.DirectorySeparatorChar.ToString(), new string[] { "mods", mod_paths[i], mod_files[i]}));
                     }
                 }
                 else if (file_name.ToUpper().EndsWith(".CSB"))
@@ -325,11 +331,11 @@ namespace AMBPatcher
 
             else if (args.Length == 1)
             {
-                if (!Directory.Exists(args[1] + "_extracted"))
+                if (!Directory.Exists(args[0] + "_extracted"))
                 {
                     Directory.CreateDirectory(args[1] + "_extracted");
                 }
-                AMB_Extract(args[1], args[1] + "_extracted");
+                AMB_Extract(args[0], args[0] + "_extracted");
             }
 
             else if (args.Length == 2)
@@ -356,9 +362,6 @@ namespace AMBPatcher
                 }
                 else if (args[0] == "patch")
                 {
-                    Console.WriteLine(args[0]);
-                    Console.WriteLine(args[1]);
-                    Console.WriteLine(args[2]);
                     AMB_Patch(args[1], args[2]);
                 }
             }
