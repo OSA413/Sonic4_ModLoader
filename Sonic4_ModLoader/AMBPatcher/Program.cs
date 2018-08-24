@@ -46,9 +46,20 @@ namespace AMBPatcher
                 
                 string files_names_str = Encoding.ASCII.GetString(files_names_bytes);
                 files_names = new List<string>(files_names_str.Split('\x00'));
+
+                //removing empty space
                 while (files_names.Count != files_counter)
                 {
                     files_names.Remove("");
+                }
+
+                //removing ".\" in the names (Windows can't create "." folders)
+                for (int i = 0; i < files_names.Count; i++)
+                {
+                    if (files_names[i].StartsWith(".\\"))
+                    {
+                        files_names[i] = files_names[i].Substring(2);
+                    }
                 }
             }
             var result = new List<Tuple<string, int, int>>();
@@ -77,7 +88,11 @@ namespace AMBPatcher
 
                 Byte[] file_bytes = new Byte[files[i].Item3];
                 Array.Copy(raw_file, files[i].Item2, file_bytes, 0, files[i].Item3);
-
+                
+                if (!Directory.Exists(Path.GetDirectoryName(file_name)))
+                {
+                    Directory.CreateDirectory(Path.GetDirectoryName(file_name));
+                }
                 File.WriteAllBytes(file_name, file_bytes);
             }
         }
