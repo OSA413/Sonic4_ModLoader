@@ -275,6 +275,19 @@ namespace AMBPatcher
             return result;
         }
 
+        static void ShowHelpMessage()
+        {
+            Console.WriteLine("AMB Patcher by OSA413");
+            Console.WriteLine("Usage:");
+            Console.WriteLine("\tAMBPatcher.exe - Patch all files used by enabled mods.");
+            Console.WriteLine("\tAMBPatcher.exe [AMB file] and");
+            Console.WriteLine("\tAMBPatcher.exe extract [AMB file] - Extract all files from [AMB file] to \"[AMB file]_extracted\" directory.");
+            Console.WriteLine("\tAMBPatcher.exe extract [AMB file] [dest dir] - Extract all files from [AMB file] to [dest dir] directory.");
+            Console.WriteLine("\tAMBPatcher.exe patch [AMB file] [another file] - Patch [AMB file] with/by [another file] if [another file] is in [AMB file].");
+            Console.WriteLine("\tAMBPatcher.exe -h and");
+            Console.WriteLine("\tAMBPatcher.exe --help - Show this message.");
+        }
+
         static void Main(string[] args)
         {
 
@@ -331,52 +344,66 @@ namespace AMBPatcher
 
             else if (args.Length == 1)
             {
-                if (!Directory.Exists(args[0] + "_extracted"))
+                if (args[0] == "-h" || args[0] == "--help")
                 {
-                    Directory.CreateDirectory(args[1] + "_extracted");
+                    ShowHelpMessage();
                 }
-                AMB_Extract(args[0], args[0] + "_extracted");
+                else
+                {
+                    if (File.Exists(args[0]))
+                    {
+                        if (!Directory.Exists(args[0] + "_extracted"))
+                        {
+                            Directory.CreateDirectory(args[1] + "_extracted");
+                        }
+                        AMB_Extract(args[0], args[0] + "_extracted");
+                    }
+                    else { ShowHelpMessage(); }
+                }
             }
 
             else if (args.Length == 2)
             {
                 if (args[0] == "extract")
                 {
-                    if (!Directory.Exists(args[1] + "_extracted"))
+                    if (File.Exists(args[1]))
                     {
-                        Directory.CreateDirectory(args[1] + "_extracted");
+                        if (!Directory.Exists(args[1] + "_extracted"))
+                        {
+                            Directory.CreateDirectory(args[1] + "_extracted");
+                        }
+                        AMB_Extract(args[1], args[1] + "_extracted");
                     }
-                    AMB_Extract(args[1], args[1] + "_extracted");
+                    else { ShowHelpMessage(); }
                 }
+                else { ShowHelpMessage(); }
             }
 
             else if (args.Length == 3)
             {
                 if (args[0] == "extract")
                 {
-                    if (!Directory.Exists(args[2]))
+                    if (File.Exists(args[1]))
                     {
-                        Directory.CreateDirectory(args[2]);
+                        if (!Directory.Exists(args[2]))
+                        {
+                            Directory.CreateDirectory(args[2]);
+                        }
+                        AMB_Extract(args[1], args[2]);
                     }
-                    AMB_Extract(args[1], args[2]);
+                    else { ShowHelpMessage(); }
                 }
                 else if (args[0] == "patch")
                 {
-                    AMB_Patch(args[1], args[2]);
+                    if (File.Exists(args[1]) && File.Exists(args[2]))
+                    {
+                        AMB_Patch(args[1], args[2]);
+                    }
+                    else { ShowHelpMessage(); }
                 }
+                else { ShowHelpMessage(); }
             }
-
-            else
-            {
-                Console.WriteLine("AMB Patcher by OSA413");
-                Console.WriteLine("Usage:");
-                Console.WriteLine("\tAMBPatcher.exe - Patch all files used by enabled mods.");
-                Console.WriteLine("\tAMBPatcher.exe [AMB file] and");
-                Console.WriteLine("\tAMBPatcher.exe extract [AMB file] - Extract all files from [AMB file] to \"[AMB file]_extracted\" directory.");
-                Console.WriteLine("\tAMBPatcher.exe extract [AMB file] [dest dir] - Extract all files from [AMB file] to [dest dir] directory.");
-                Console.WriteLine("\tAMBPatcher.exe patch [AMB file] [another file] - Patch [AMB file] with/by [another file] if [another file] is in [AMB file].");
-                Console.WriteLine("\tAMBPatcher.exe -h - Show this message.");
-            }
+            else { ShowHelpMessage(); }
         }
     }
 }
