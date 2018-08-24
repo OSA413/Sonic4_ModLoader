@@ -198,7 +198,7 @@ namespace AMBPatcher
 
                 List<string> orig_files = new List<string>();
                 List<List<string>> mod_files = new List<List<string>>();
-                List<List<string>> mod_paths = new List<List<string>>();
+                List<List<string>> mod_dirs = new List<List<string>>();
 
                 for (int i = 0; i < ini_mods.Length; i++)
                 {
@@ -209,57 +209,52 @@ namespace AMBPatcher
                         for (int j = 0; j < filenames.Length; j++)
                         {
                             string[] filename_parts = filenames[j].Split(Path.DirectorySeparatorChar);
-
-                            string[] original_file = new string[filename_parts.Length - 3];
-                            Array.Copy(filename_parts, 2, original_file, 0, filename_parts.Length - 3);
-                            string original_file_s = String.Join(Path.DirectorySeparatorChar.ToString(), original_file);
-
-                            if (filename_parts.Length < 4) { continue; }
-
-                            if (!File.Exists(original_file_s))
+                            string original_file = "";
+                            
+                            for (int k = 0; k < filename_parts.Length - 2; k++)
                             {
-                                string[] tmp_orig_f = new string[2];
-
-                                Array.Copy(filename_parts, 2, tmp_orig_f, 0, 2);
-                                original_file_s = String.Join(Path.DirectorySeparatorChar.ToString(), tmp_orig_f) + ".CSB";
-
-                                if (!File.Exists(original_file_s))
+                                string possible_orig_file = String.Join(Path.DirectorySeparatorChar.ToString(), filename_parts.Skip(2).Take(k+1));
+                                
+                                if (File.Exists(possible_orig_file))
                                 {
-                                    continue;
+                                    original_file = possible_orig_file;
+                                    break;
+                                }
+                                else if (File.Exists(possible_orig_file + ".CSB"))
+                                {
+                                    original_file = possible_orig_file + ".CSB";
+                                    break;
                                 }
                             }
 
-                            string[] mod_file = new string[filename_parts.Length - 2];
-                            Array.Copy(filename_parts, 2, mod_file, 0, filename_parts.Length - 2);
-                            string mod_file_s = String.Join(Path.DirectorySeparatorChar.ToString(), mod_file);
+                            if (original_file == "") { continue; }
+                            
+                            string mod_file = String.Join(Path.DirectorySeparatorChar.ToString(), filename_parts.Skip(2));
                             
                             string mod_path = filename_parts[1];
-                            
-                            if (original_file_s == "") { continue; }
-
-                            //orig_file
-                            if (orig_files.IndexOf(original_file_s) == -1)
+                           
+                            if (!orig_files.Contains(original_file))
                             {
-                                orig_files.Add(original_file_s);
+                                orig_files.Add(original_file);
                             }
 
-                            //mod_file
                             if (mod_files.Count != j + 1)
                             {
                                 mod_files.Add(new List<string> { });
-                                mod_paths.Add(new List<string> { });
+                                mod_dirs.Add(new List<string> { });
                             }
-
-                            int ind = orig_files.IndexOf(original_file_s);
                             
-                            if (mod_files[ind].IndexOf(filenames[j]) == -1)
+                            int ind = orig_files.IndexOf(original_file);
+                            
+
+                            if (!mod_files[ind].Contains(mod_file))
                             {
-                                mod_files[ind].Add(mod_file_s);
-                                mod_paths[ind].Add(mod_path);
+                                mod_files[ind].Add(mod_file);
+                                mod_dirs[ind].Add(mod_path);
                             }
                             else
                             {
-                                mod_paths[ind][mod_files[ind].IndexOf(filenames[j])] = mod_path;
+                                mod_dirs[ind][mod_files[ind].IndexOf(mod_file)] = mod_path;
                             }
                         }
                     }
@@ -268,7 +263,7 @@ namespace AMBPatcher
                 //Into a Tuple into a List
                 for (int i = 0; i < orig_files.Count; i++)
                 {
-                    result.Add(Tuple.Create(orig_files[i], mod_files[i], mod_paths[i]));
+                    result.Add(Tuple.Create(orig_files[i], mod_files[i], mod_dirs[i]));
                 }
             }
             return result;
@@ -289,7 +284,7 @@ namespace AMBPatcher
                     Console.WriteLine(test[i].Item1);
                     for (int j = 0; j < test[i].Item2.Count; j++)
                     {
-                        Console.Write("\t\t"+test[i].Item2[j]);
+                        Console.Write("\t"+test[i].Item2[j]);
                         Console.WriteLine("\t"+test[i].Item3[j]);
                     }
                 }
