@@ -354,7 +354,7 @@ namespace AMBPatcher
                     {
                         if (!Directory.Exists(args[0] + "_extracted"))
                         {
-                            Directory.CreateDirectory(args[1] + "_extracted");
+                            Directory.CreateDirectory(args[0] + "_extracted");
                         }
                         AMB_Extract(args[0], args[0] + "_extracted");
                     }
