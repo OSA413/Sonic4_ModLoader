@@ -38,15 +38,12 @@ namespace AMBPatcher
                     files_lens.Add(raw_file[point + 4] + (raw_file[point + 5] * 0x100) + (raw_file[point + 6] * 0x10000));
                 }
 
-                int offset = raw_file.Length - files_pointers[files_pointers.Count - 1] - files_lens[files_lens.Count - 1];
-                Byte[] files_names_bytes = new Byte[offset];
-                Array.Copy(raw_file,
-                            raw_file[0x1C] + raw_file[0x1D] * 0x100 + raw_file[0x1E] * 0x10000,
-                            files_names_bytes,
-                            0,
-                            offset);
+                int filenames_index = raw_file[0x1C] + raw_file[0x1D] * 0x100 + raw_file[0x1E] * 0x10000;
 
-
+                int filenames_offset = raw_file.Length - filenames_index;
+                Byte[] files_names_bytes = new Byte[filenames_offset];
+                Array.Copy(raw_file, filenames_index, files_names_bytes, 0, filenames_offset);
+                
                 string files_names_str = Encoding.ASCII.GetString(files_names_bytes);
                 files_names = new List<string>(files_names_str.Split('\x00'));
                 while (files_names.Count != files_counter)
