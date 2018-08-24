@@ -123,7 +123,7 @@
             // 
             // bRefresh
             // 
-            this.bRefresh.Location = new System.Drawing.Point(233, 218);
+            this.bRefresh.Location = new System.Drawing.Point(237, 218);
             this.bRefresh.Name = "bRefresh";
             this.bRefresh.Size = new System.Drawing.Size(100, 40);
             this.bRefresh.TabIndex = 7;

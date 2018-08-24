@@ -88,15 +88,15 @@ namespace Sonic4ModManager
                         {
                             if (ini_file[j].StartsWith("Name="))
                             {
-                                mod_name = ini_file[j].Split('=')[1];
+                                mod_name = String.Join("=", ini_file[j].Split('=').Skip(1));
                             }
                             else if (ini_file[j].StartsWith("Authors="))
                             {
-                                mod_authors = ini_file[j].Split('=')[1];
+                                mod_authors = String.Join("=", ini_file[j].Split('=').Skip(1));
                             }
                             else if (ini_file[j].StartsWith("Version="))
                             {
-                                mod_version = ini_file[j].Split('=')[1];
+                                mod_version = String.Join("=", ini_file[j].Split('=').Skip(1));
                             }
                         }
                     }
