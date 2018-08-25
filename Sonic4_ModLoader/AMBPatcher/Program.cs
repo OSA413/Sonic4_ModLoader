@@ -27,18 +27,22 @@ namespace AMBPatcher
 
                 if (files_counter > 0)
                 {
-                    int empty_space = 0;
-                    if (raw_file[0x28] == 0)
-                    {
-                        empty_space = 1;
-                    }
-
                     for (int i = 0; i < files_counter; i++)
                     {
-                        int point = 0x20 + (empty_space + i) * 0x10;
-                        files_pointers.Add(raw_file[point] + (raw_file[point + 1] * 0x100) + (raw_file[point + 2] * 0x10000));
-                        files_lens.Add(raw_file[point + 4] + (raw_file[point + 5] * 0x100) + (raw_file[point + 6] * 0x10000));
+                        int point = 0x20 + i * 0x10;
+                        if (raw_file[point + 0xb] == 0xff)
+                        {
+                            files_pointers.Add(raw_file[point] + (raw_file[point + 1] * 0x100) + (raw_file[point + 2] * 0x10000));
+                            files_lens.Add(raw_file[point + 4] + (raw_file[point + 5] * 0x100) + (raw_file[point + 6] * 0x10000));
+                        }
+                        else
+                        {
+                            //continue; //is actually useless here
+                        }
                     }
+
+                    //Actual number of files inside may differ from the number given in the header
+                    files_counter = files_pointers.Count;
 
                     int filenames_index = raw_file[0x1C] + raw_file[0x1D] * 0x100 + raw_file[0x1E] * 0x10000 + raw_file[0x1F] * 0x1000000;
 
