@@ -103,7 +103,7 @@ namespace OneClickModInstaller
         
         private int CheckFiles(string dir_name)
         {
-            string[] good_formats = "AMA,AMB,ADX,DDS,INI,TXT,TXB".Split(',');
+            string[] good_formats = "TXT,INI,DDS,TXB,AMA,AME,ZNO,TXB,ZNM,ZNV,DC,EV,RG,MD,MP,AT,DF,DI,PSH,VSH".Split(',');
 
             string[] all_files = Directory.GetFiles(dir_name, "*", SearchOption.AllDirectories);
             List<string> suspicious_files = new List<string>();
@@ -111,13 +111,19 @@ namespace OneClickModInstaller
             for (int i = 0; i < all_files.Length; i++)
             {
                 bool does_it_end = false;
+
+                if (int.TryParse(Path.GetFileName(all_files[i]), out int n) && all_files[i].Contains("DEMO\\WORLDMAP\\WORLDMAP.AMB"))
+                {
+                    does_it_end = true;
+                }
+
                 for (int j = 0; j < good_formats.Length; j++)
                 {
                     if (all_files[i].ToUpper().EndsWith("." + good_formats[j]))
                     {
                         does_it_end = true;
-                        break;
                     }
+                    if (does_it_end) { break; }
                 }
 
                 if (!does_it_end)
