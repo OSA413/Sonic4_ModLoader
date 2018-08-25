@@ -25,67 +25,70 @@ namespace AMBPatcher
             {
                 files_counter = raw_file[0x10] + raw_file[0x11] * 0x100;
 
-                int empty_space = 0;
-                if (raw_file[0x28] == 0)
+                if (files_counter > 0)
                 {
-                    empty_space = 1;
-                }
-
-                for (int i = 0; i < files_counter; i++)
-                {
-                    int point = 0x20 + (empty_space + i) * 0x10;
-                    files_pointers.Add(raw_file[point] + (raw_file[point + 1] * 0x100) + (raw_file[point + 2] * 0x10000));
-                    files_lens.Add(raw_file[point + 4] + (raw_file[point + 5] * 0x100) + (raw_file[point + 6] * 0x10000));
-                }
-
-                int filenames_index = raw_file[0x1C] + raw_file[0x1D] * 0x100 + raw_file[0x1E] * 0x10000 + raw_file[0x1F] * 0x1000000;
-
-                int filenames_offset = raw_file.Length - filenames_index;
-                Byte[] files_names_bytes = new Byte[filenames_offset];
-                Array.Copy(raw_file, filenames_index, files_names_bytes, 0, filenames_offset);
-                
-                string files_names_str = Encoding.ASCII.GetString(files_names_bytes);
-                string[] files_names_raw = files_names_str.Split('\x00');
-
-                //Some AMB files have no names of their files
-                if (filenames_index != 0)
-                {
-                    //Adding only names that aren't empty
-                    for (int i = 0; i < files_names_raw.Length; i++)
+                    int empty_space = 0;
+                    if (raw_file[0x28] == 0)
                     {
-                        if (files_names_raw[i] != "")
-                        {
-                            files_names.Add(files_names_raw[i]);
-                        }
+                        empty_space = 1;
                     }
-                }
-                else
-                {
+
                     for (int i = 0; i < files_counter; i++)
                     {
-                        files_names.Add(i.ToString());
+                        int point = 0x20 + (empty_space + i) * 0x10;
+                        files_pointers.Add(raw_file[point] + (raw_file[point + 1] * 0x100) + (raw_file[point + 2] * 0x10000));
+                        files_lens.Add(raw_file[point + 4] + (raw_file[point + 5] * 0x100) + (raw_file[point + 6] * 0x10000));
                     }
-                }
 
-                //removing ".\" in the names (Windows can't create "." folders)
-                //sometimes they can have several ".\" in the names
-                bool starts_with_dot;
-                do
-                {
-                    starts_with_dot = false;
-                    for (int i = 0; i < files_names.Count; i++)
+                    int filenames_index = raw_file[0x1C] + raw_file[0x1D] * 0x100 + raw_file[0x1E] * 0x10000 + raw_file[0x1F] * 0x1000000;
+
+                    int filenames_offset = raw_file.Length - filenames_index;
+                    Byte[] files_names_bytes = new Byte[filenames_offset];
+                    Array.Copy(raw_file, filenames_index, files_names_bytes, 0, filenames_offset);
+
+                    string files_names_str = Encoding.ASCII.GetString(files_names_bytes);
+                    string[] files_names_raw = files_names_str.Split('\x00');
+
+                    //Some AMB files have no names of their files
+                    if (filenames_index != 0)
                     {
-                        if (files_names[i].StartsWith(".\\"))
+                        //Adding only names that aren't empty
+                        for (int i = 0; i < files_names_raw.Length; i++)
                         {
-                            files_names[i] = files_names[i].Substring(2);
-                            if (files_names[i].StartsWith(".\\"))
+                            if (files_names_raw[i] != "")
                             {
-                                starts_with_dot = true;
+                                files_names.Add(files_names_raw[i]);
                             }
                         }
                     }
+                    else
+                    {
+                        for (int i = 0; i < files_counter; i++)
+                        {
+                            files_names.Add(i.ToString());
+                        }
+                    }
+
+                    //removing ".\" in the names (Windows can't create "." folders)
+                    //sometimes they can have several ".\" in the names
+                    bool starts_with_dot;
+                    do
+                    {
+                        starts_with_dot = false;
+                        for (int i = 0; i < files_names.Count; i++)
+                        {
+                            if (files_names[i].StartsWith(".\\"))
+                            {
+                                files_names[i] = files_names[i].Substring(2);
+                                if (files_names[i].StartsWith(".\\"))
+                                {
+                                    starts_with_dot = true;
+                                }
+                            }
+                        }
+                    }
+                    while (starts_with_dot);
                 }
-                while (starts_with_dot);
             }
             var result = new List<Tuple<string, int, int>>();
             for (int i = 0; i < files_counter; i++)
