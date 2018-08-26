@@ -184,7 +184,14 @@ namespace AMBPatcher
                 {
                     for (int i = 0; i < mod_files.Count; i++)
                     {
-                        AMB_Patch(file_name, String.Join(Path.DirectorySeparatorChar.ToString(), new string[] { "mods", mod_paths[i], mod_files[i]}));
+                        if (file_name == mod_files[i])
+                        {
+                            File.Copy(String.Join(Path.DirectorySeparatorChar.ToString(), new string[] { "mods", mod_paths[i], mod_files[i] }), file_name, true);
+                        }
+                        else
+                        {
+                            AMB_Patch(file_name, String.Join(Path.DirectorySeparatorChar.ToString(), new string[] { "mods", mod_paths[i], mod_files[i] }));
+                        }
                     }
                 }
                 else if (file_name.ToUpper().EndsWith(".CSB"))
@@ -322,9 +329,6 @@ namespace AMBPatcher
 
         static void Main(string[] args)
         {
-
-            //Directory.SetCurrentDirectory(@"D:\Steam\steamapps\common\Sonic the Hedgehog 4 EP 1");
-            
             if (args.Length == 0)
             {
                 var test = GetModFiles();
