@@ -9,14 +9,14 @@ namespace AMBPatcher
 {
     class Program
     {
-        static List<Tuple<string, int, int>> AMB_Read(string filename)
+        //File as bytes (raw file)
+        static List<Tuple<string, int, int>> AMB_Read(byte[] raw_file)
         {
             List<int> files_pointers = new List<int>();
             List<int> files_lens = new List<int>();
             List<string> files_names = new List<string>();
             int files_counter = 0;
 
-            byte[] raw_file = File.ReadAllBytes(filename);
             //Identifing that the file is an AMB file
             if (raw_file[0] == 0x23 &&  //#
                 raw_file[1] == 0x41 &&  //A
@@ -102,11 +102,17 @@ namespace AMBPatcher
             return result;
         }
 
-        static void AMB_Extract(string filename, string output)
+        //File as string (path to it)
+        static List<Tuple<string, int, int>> AMB_Read(string filename)
         {
-            var files = AMB_Read(filename);
+            return AMB_Read(File.ReadAllBytes(filename));
+        }
 
-            byte[] raw_file = File.ReadAllBytes(filename);
+        static void AMB_Extract(string file_name, string output)
+        {
+            var files = AMB_Read(file_name);
+
+            byte[] raw_file = File.ReadAllBytes(file_name);
 
             //Creating folder if it doesn't exist
             if (!Directory.Exists(output))
@@ -116,24 +122,23 @@ namespace AMBPatcher
 
             for (int i = 0; i < files.Count; i++)
             {
-                string file_name = output + Path.DirectorySeparatorChar + files[i].Item1;
+                string output_file = output + Path.DirectorySeparatorChar + files[i].Item1;
 
                 Byte[] file_bytes = new Byte[files[i].Item3];
                 Array.Copy(raw_file, files[i].Item2, file_bytes, 0, files[i].Item3);
                 
-                if (!Directory.Exists(Path.GetDirectoryName(file_name)))
+                if (!Directory.Exists(Path.GetDirectoryName(output_file)))
                 {
-                    Directory.CreateDirectory(Path.GetDirectoryName(file_name));
+                    Directory.CreateDirectory(Path.GetDirectoryName(output_file));
                 }
-                File.WriteAllBytes(file_name, file_bytes);
+                File.WriteAllBytes(output_file, file_bytes);
             }
         }
         
-        static void AMB_Patch(string file_name, string mod_file)
+        //File as bytes (raw file)
+        static byte[] AMB_Patch(byte[] raw_file, string mod_file)
         {
-            var files = AMB_Read(file_name);
-
-            byte[] raw_file = File.ReadAllBytes(file_name);
+            var files = AMB_Read(raw_file);
 
             int index = -1;
 
@@ -146,7 +151,7 @@ namespace AMBPatcher
                     index = i;
                     break; //TODO: find a better way of finding a variable in list of tuples.
                 }
-                else if (files[i].Item1 == String.Join("\\",mod_file_parts.Skip(mod_file_parts.Length - 2)))
+                else if (files[i].Item1 == String.Join("\\", mod_file_parts.Skip(mod_file_parts.Length - 2)))
                 {
                     index = i;
                     break; //TODO stays the same
@@ -171,8 +176,15 @@ namespace AMBPatcher
                         }
                     }
                 }
-                File.WriteAllBytes(file_name, raw_file);
             }
+            return raw_file;
+        }
+
+        //File as string (path to it)
+        static void AMB_Patch(string file_name, string mod_file)
+        {
+            byte[] raw_file = AMB_Patch(File.ReadAllBytes(file_name), mod_file);
+            File.WriteAllBytes(file_name, raw_file);
         }
 
         static void PatchAll(string file_name, List<string> mod_files, List<string> mod_paths)
