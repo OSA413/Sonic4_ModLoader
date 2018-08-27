@@ -47,7 +47,7 @@ namespace AMBPatcher
                     int filenames_index = raw_file[0x1C] + raw_file[0x1D] * 0x100 + raw_file[0x1E] * 0x10000 + raw_file[0x1F] * 0x1000000;
 
                     int filenames_offset = raw_file.Length - filenames_index;
-                    Byte[] files_names_bytes = new Byte[filenames_offset];
+                    byte[] files_names_bytes = new byte[filenames_offset];
                     Array.Copy(raw_file, filenames_index, files_names_bytes, 0, filenames_offset);
 
                     string files_names_str = Encoding.ASCII.GetString(files_names_bytes);
@@ -103,9 +103,9 @@ namespace AMBPatcher
         }
 
         //File as string (path to it)
-        static List<Tuple<string, int, int>> AMB_Read(string filename)
+        static List<Tuple<string, int, int>> AMB_Read(string file_name)
         {
-            return AMB_Read(File.ReadAllBytes(filename));
+            return AMB_Read(File.ReadAllBytes(file_name));
         }
 
         static void AMB_Extract(string file_name, string output)
@@ -124,7 +124,7 @@ namespace AMBPatcher
             {
                 string output_file = output + Path.DirectorySeparatorChar + files[i].Item1;
 
-                Byte[] file_bytes = new Byte[files[i].Item3];
+                byte[] file_bytes = new byte[files[i].Item3];
                 Array.Copy(raw_file, files[i].Item2, file_bytes, 0, files[i].Item3);
                 
                 if (!Directory.Exists(Path.GetDirectoryName(output_file)))
@@ -187,6 +187,43 @@ namespace AMBPatcher
             File.WriteAllBytes(file_name, raw_file);
         }
 
+        //File as bytes (raw file)
+        static byte[] AMB_GetFile(byte[] raw_file, string file_name)
+        {
+            var files = AMB_Read(raw_file);
+
+            string[] mod_file_parts = file_name.Split(Path.DirectorySeparatorChar);
+
+            int index = -1;
+            for (int i = 0; i < files.Count; i++)
+            {
+                if (files[i].Item1 == mod_file_parts[mod_file_parts.Length - 1])
+                {
+                    index = i;
+                    break; //TODO: find a better way of finding a variable in list of tuples.
+                }
+                else if (files[i].Item1 == String.Join("\\", mod_file_parts.Skip(mod_file_parts.Length - 2)))
+                {
+                    index = i;
+                    break; //TODO stays the same
+                }
+            }
+
+            if (index != -1)
+            {
+                byte[] file_bytes = new byte[files[index].Item3];
+                Array.Copy(raw_file, files[index].Item2, file_bytes, 0, files[index].Item3);
+
+                return file_bytes;
+            }
+            return new byte[0];
+        }
+
+        static byte[] AMB_GetFile(string orig_file, string file_name)
+        {
+            return AMB_GetFile(File.ReadAllBytes(orig_file), file_name);
+        }
+        
         static void PatchAll(string file_name, List<string> mod_files, List<string> mod_paths)
         {
             if (File.Exists(file_name))
@@ -335,6 +372,7 @@ namespace AMBPatcher
             Console.WriteLine("\tAMBPatcher.exe - Patch all files used by enabled mods.");
             Console.WriteLine("\tAMBPatcher.exe [AMB file] and");
             Console.WriteLine("\tAMBPatcher.exe extract [AMB file] - Extract all files from [AMB file] to \"[AMB file]_extracted\" directory.");
+            Console.WriteLine("\tAMBPatcher.exe read [AMB file] - Prints content of [AMB file]");
             Console.WriteLine("\tAMBPatcher.exe extract [AMB file] [dest dir] - Extract all files from [AMB file] to [dest dir] directory.");
             Console.WriteLine("\tAMBPatcher.exe patch [AMB file] [another file] - Patch [AMB file] by [another file] if [another file] is in [AMB file].");
             Console.WriteLine("\tAMBPatcher.exe -h and");
