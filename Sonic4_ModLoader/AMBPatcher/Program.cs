@@ -184,13 +184,15 @@ namespace AMBPatcher
                 {
                     for (int i = 0; i < mod_files.Count; i++)
                     {
+                        string mod_file_full = String.Join(Path.DirectorySeparatorChar.ToString(), new string[] { "mods", mod_paths[i], mod_files[i] });
+
                         if (file_name == mod_files[i])
                         {
-                            File.Copy(String.Join(Path.DirectorySeparatorChar.ToString(), new string[] { "mods", mod_paths[i], mod_files[i] }), file_name, true);
+                            File.Copy(mod_file_full, file_name, true);
                         }
                         else
                         {
-                            AMB_Patch(file_name, String.Join(Path.DirectorySeparatorChar.ToString(), new string[] { "mods", mod_paths[i], mod_files[i] }));
+                            AMB_Patch(file_name, mod_file_full);
                         }
                     }
                 }
@@ -322,7 +324,7 @@ namespace AMBPatcher
             Console.WriteLine("\tAMBPatcher.exe [AMB file] and");
             Console.WriteLine("\tAMBPatcher.exe extract [AMB file] - Extract all files from [AMB file] to \"[AMB file]_extracted\" directory.");
             Console.WriteLine("\tAMBPatcher.exe extract [AMB file] [dest dir] - Extract all files from [AMB file] to [dest dir] directory.");
-            Console.WriteLine("\tAMBPatcher.exe patch [AMB file] [another file] - Patch [AMB file] with/by [another file] if [another file] is in [AMB file].");
+            Console.WriteLine("\tAMBPatcher.exe patch [AMB file] [another file] - Patch [AMB file] by [another file] if [another file] is in [AMB file].");
             Console.WriteLine("\tAMBPatcher.exe -h and");
             Console.WriteLine("\tAMBPatcher.exe --help - Show this message.");
         }
@@ -409,6 +411,21 @@ namespace AMBPatcher
                             Directory.CreateDirectory(args[1] + "_extracted");
                         }
                         AMB_Extract(args[1], args[1] + "_extracted");
+                    }
+                    else { ShowHelpMessage(); }
+                }
+                else if (args[0] == "read")
+                {
+                    if (File.Exists(args[1]))
+                    {
+                        var data = AMB_Read(args[1]);
+
+                        for (int i = 0; i < data.Count; i++)
+                        {
+                            Console.WriteLine("\nFile name:    " + data[i].Item1);
+                            Console.WriteLine("File pointer: " + data[i].Item2 + " (0x" + data[i].Item2.ToString("X") + ")");
+                            Console.WriteLine("File length:  " + data[i].Item3 + " (0x" + data[i].Item3.ToString("X") + ")");
+                        }
                     }
                     else { ShowHelpMessage(); }
                 }
