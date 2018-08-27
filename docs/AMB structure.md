@@ -6,7 +6,7 @@
 0x10 | [FN] | [FN] | [FN] | [FN] | [LP] | [LP] | [LP] | [LP] | [DP] | [DP] | [DP] | [DP] | [NP] | [NP] | [NP] | [NP]
 [LP] | [FP] | [FP] | [FP] | [FP] | [FL] | [FL] | [FL] | [FL] | 0xFF | 0xFF | 0xFF | 0xFF | 0x00 | 0x00 | 0x00 | 0x00
 
-//TODO: Add more information and try to understand different AMB structure (e.g. \EP 1\G_COM\PLY\SON_MTN.AMB)
+If file structure after 0x10 is different, try to open the file with a different HEX editor.
 
 ## Header
 
@@ -17,8 +17,6 @@
 [DP] (Data Pointer) - Pointer to where enumeration of the files data starts [backwards]
 
 [NP] (Name Pointer) - Pointer to where enumeration of the files names starts [backwards]
-
-## Data
 
 [FP] (File Pointer) - Pointer to where file data starts [backwards]
 
