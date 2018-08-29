@@ -160,23 +160,25 @@ namespace AMBPatcher
                 }
             }
 
-            if (orig_mod_part_ind != -1)
+            if (orig_mod_part_ind == -1)
             {
-                for (int i = 0; i < files.Count; i++)
+                orig_mod_part_ind = mod_file_parts_len - 1;
+            }
+
+            for (int i = 0; i < files.Count; i++)
+            {
+                //TODO: find a better way of getting only one element from enumeration
+                if (files[i].Item1 == String.Join("\\", mod_file_parts.Skip(orig_mod_part_ind).Take(1)))
                 {
-                    //TODO: find a better way of getting only one element from enumeration
-                    if (files[i].Item1 == String.Join("\\", mod_file_parts.Skip(orig_mod_part_ind).Take(1)))
-                    {
-                        index = i;
-                        mod_file_in_orig = String.Join("\\", mod_file_parts.Skip(orig_mod_part_ind).Take(1));
-                        break; //TODO: find a better way of finding a variable in list of tuples.
-                    }
-                    else if (files[i].Item1 == String.Join("\\", mod_file_parts.Skip(orig_mod_part_ind).Take(2)))
-                    {
-                        index = i;
-                        mod_file_in_orig = String.Join("\\", mod_file_parts.Skip(orig_mod_part_ind).Take(2));
-                        break; //TODO stays the same
-                    }
+                    index = i;
+                    mod_file_in_orig = String.Join("\\", mod_file_parts.Skip(orig_mod_part_ind).Take(1));
+                    break; //TODO: find a better way of finding a variable in list of tuples.
+                }
+                else if (files[i].Item1 == String.Join("\\", mod_file_parts.Skip(orig_mod_part_ind).Take(2)))
+                {
+                    index = i;
+                    mod_file_in_orig = String.Join("\\", mod_file_parts.Skip(orig_mod_part_ind).Take(2));
+                    break; //TODO stays the same
                 }
             }
             
@@ -194,7 +196,7 @@ namespace AMBPatcher
                     raw_mod_file = AMB_Patch(tmp_orig, orig_file + "\\" + mod_file_in_orig, mod_file);
                 }
 
-                if (raw_mod_file.Length <= files[index].Item3) //TODO: make pointers and lengths shifting aka bigger files
+                if (raw_mod_file.Length <= files[index].Item3)
                 {
                     for (int i = 0; i < files[index].Item3; i++)
                     {
@@ -207,6 +209,80 @@ namespace AMBPatcher
                             raw_file[files[index].Item2 + i] = 0;
                         }
                     }
+                }
+                else
+                {
+                    byte[] part_one = new byte[files[index].Item2];
+                    Array.Copy(raw_file, 0, part_one, 0, files[index].Item2);
+                    byte[] part_thr;
+
+                    int name_pointer = part_one[0x1C] +
+                                       part_one[0x1D] * 0x100 +
+                                       part_one[0x1E] * 0x10000 +
+                                       part_one[0x1F] * 0x1000000;
+
+                    int len_dif;
+                    //If this is the last file, start copying from names
+                    if (index + 1 == files.Count)
+                    {
+                        len_dif = name_pointer - files[index].Item2;
+                        int tmp_len = raw_file.Length - name_pointer;
+                        part_thr = new byte[tmp_len];
+                        Array.Copy(raw_file, name_pointer, part_thr, 0, tmp_len);
+                    }
+                    else
+                    {
+                        len_dif = files[index + 1].Item2 - files[index].Item2;
+                        int tmp_len = raw_file.Length - files[index + 1].Item2;
+                        part_thr = new byte[tmp_len];
+                        Array.Copy(raw_file, files[index + 1].Item2, part_thr, 0, tmp_len);
+                    }
+
+                    int part_two_len;
+                    if (raw_mod_file.Length % 16 == 0)
+                    {
+                        part_two_len = raw_mod_file.Length - raw_mod_file.Length % 16;
+                    }
+                    else
+                    {
+                        part_two_len = raw_mod_file.Length - raw_mod_file.Length % 16 + 16;
+                    }
+
+                    byte[] part_two = new byte[part_two_len];
+                    Array.Copy(raw_mod_file, 0, part_two, 0, raw_mod_file.Length);
+
+                    len_dif = part_two_len - len_dif;
+
+                    name_pointer += len_dif;
+                    //Changing Name Pointer
+                    part_one[0x1C] = (byte) (name_pointer % 0x100);
+                    part_one[0x1D] = (byte) ((name_pointer - name_pointer % 0x100) % 0x10000 / 0x100);
+                    part_one[0x1E] = (byte) ((name_pointer - name_pointer % 0x10000) % 0x1000000 / 0x10000);
+                    part_one[0x1F] = (byte) ((name_pointer - name_pointer % 0x1000000) % 0x100000000 / 0x1000000);
+
+                    //Changing File Length
+                    part_one[0x24 + index * 0x10] = (byte) (raw_mod_file.Length % 0x100);
+                    part_one[0x25 + index * 0x10] = (byte) ((raw_mod_file.Length - raw_mod_file.Length % 0x100) % 0x10000 / 0x100);
+                    part_one[0x26 + index * 0x10] = (byte) ((raw_mod_file.Length - raw_mod_file.Length % 0x10000) % 0x1000000 / 0x10000);
+                    part_one[0x27 + index * 0x10] = (byte) ((raw_mod_file.Length - raw_mod_file.Length % 0x1000000) % 0x100000000 / 0x1000000);
+                    
+                    //Changing Files Pointers
+                    for (int i = index + 1; i < files.Count; i++)
+                    {
+                        int tmp_pointer = part_one[0x20 + i * 0x10] +
+                                          part_one[0x21 + i * 0x10] * 0x100 +
+                                          part_one[0x22 + i * 0x10] * 0x10000 +
+                                          part_one[0x23 + i * 0x10] * 0x1000000;
+
+                        tmp_pointer += len_dif;
+
+                        part_one[0x20 + i * 0x10] = (byte) (tmp_pointer % 0x100);
+                        part_one[0x21 + i * 0x10] = (byte) ((tmp_pointer - tmp_pointer % 0x100) % 0x10000 / 0x100);
+                        part_one[0x22 + i * 0x10] = (byte) ((tmp_pointer - tmp_pointer % 0x10000) % 0x1000000 / 0x10000);
+                        part_one[0x23 + i * 0x10] = (byte) ((tmp_pointer - tmp_pointer % 0x1000000) % 0x100000000 / 0x1000000);
+                    }
+                    
+                    raw_file = part_one.Concat(part_two.Concat(part_thr)).ToArray();
                 }
             }
             return raw_file;
