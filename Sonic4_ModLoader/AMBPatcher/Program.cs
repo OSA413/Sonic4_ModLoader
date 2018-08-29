@@ -136,31 +136,63 @@ namespace AMBPatcher
         }
         
         //File as bytes (raw file)
-        static byte[] AMB_Patch(byte[] raw_file, string mod_file)
+        static byte[] AMB_Patch(byte[] raw_file, string orig_file, string mod_file)
         {
+            //Why do I need the original file name? To patch files that are inside of an AMB file that is inside of an AMB file that is inside of ...
             var files = AMB_Read(raw_file);
 
             int index = -1;
 
             string[] mod_file_parts = mod_file.Split(Path.DirectorySeparatorChar);
+            int mod_file_parts_len = mod_file_parts.Length;
 
-            for (int i = 0; i < files.Count; i++)
+            int orig_mod_part_ind = -1;
+            string[] orig_file_parts = orig_file.Split(Path.DirectorySeparatorChar);
+            string orig_file_last = orig_file_parts[orig_file_parts.Length - 1];
+            string mod_file_in_orig = "";
+
+            for (int i = 0; i < mod_file_parts.Length; i++)
             {
-                if (files[i].Item1 == mod_file_parts[mod_file_parts.Length - 1])
+                if (mod_file_parts[mod_file_parts_len - 1 - i] == orig_file_last)
                 {
-                    index = i;
-                    break; //TODO: find a better way of finding a variable in list of tuples.
-                }
-                else if (files[i].Item1 == String.Join("\\", mod_file_parts.Skip(mod_file_parts.Length - 2)))
-                {
-                    index = i;
-                    break; //TODO stays the same
+                    orig_mod_part_ind = mod_file_parts_len - i;
+                    break;
                 }
             }
 
+            if (orig_mod_part_ind != -1)
+            {
+                for (int i = 0; i < files.Count; i++)
+                {
+                    //TODO: find a better way of getting only one element from enumeration
+                    if (files[i].Item1 == String.Join("\\", mod_file_parts.Skip(orig_mod_part_ind).Take(1)))
+                    {
+                        index = i;
+                        mod_file_in_orig = String.Join("\\", mod_file_parts.Skip(orig_mod_part_ind).Take(1));
+                        break; //TODO: find a better way of finding a variable in list of tuples.
+                    }
+                    else if (files[i].Item1 == String.Join("\\", mod_file_parts.Skip(orig_mod_part_ind).Take(2)))
+                    {
+                        index = i;
+                        mod_file_in_orig = String.Join("\\", mod_file_parts.Skip(orig_mod_part_ind).Take(2));
+                        break; //TODO stays the same
+                    }
+                }
+            }
+            
             if (index != -1)
             {
-                byte[] raw_mod_file = File.ReadAllBytes(mod_file);
+                byte[] raw_mod_file;
+                if (mod_file.EndsWith(mod_file_in_orig))
+                {
+                    raw_mod_file = File.ReadAllBytes(mod_file);
+                }
+                else
+                {
+                    byte[] tmp_orig = new byte[files[index].Item3];
+                    Array.Copy(raw_file, files[index].Item2, tmp_orig, 0, files[index].Item3);
+                    raw_mod_file = AMB_Patch(tmp_orig, orig_file + "\\" + mod_file_in_orig, mod_file);
+                }
 
                 if (raw_mod_file.Length <= files[index].Item3) //TODO: make pointers and lengths shifting aka bigger files
                 {
@@ -183,7 +215,7 @@ namespace AMBPatcher
         //File as string (path to it)
         static void AMB_Patch(string file_name, string mod_file)
         {
-            byte[] raw_file = AMB_Patch(File.ReadAllBytes(file_name), mod_file);
+            byte[] raw_file = AMB_Patch(File.ReadAllBytes(file_name), file_name, mod_file);
             File.WriteAllBytes(file_name, raw_file);
         }
 
