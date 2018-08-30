@@ -39,10 +39,10 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(12, 9);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(309, 52);
+            this.label1.Size = new System.Drawing.Size(303, 52);
             this.label1.TabIndex = 0;
-            this.label1.Text = "Mod Manager and AMB Pather by OSA413 under MIT License.\r\n\r\n\r\nCSB Editor (from Son" +
-    "icAudioTools) by Skyth under MIT License.";
+            this.label1.Text = "Mod Manager and AMBPather by OSA413 under MIT License.\r\n\r\n\r\nCsbEditor (from Sonic" +
+    "AudioTools) by Skyth under MIT License.";
             // 
             // linkSAT
             // 
@@ -61,7 +61,7 @@
             this.linkMain.Location = new System.Drawing.Point(28, 22);
             this.linkMain.Name = "linkMain";
             this.linkMain.Size = new System.Drawing.Size(238, 13);
-            this.linkMain.TabIndex = 3;
+            this.linkMain.TabIndex = 1;
             this.linkMain.TabStop = true;
             this.linkMain.Text = "https://github.com/OSA413/Sonic4_ModLoader";
             this.linkMain.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkMain_LinkClicked);

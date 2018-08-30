@@ -40,6 +40,8 @@
             this.bSaveAndPlay = new System.Windows.Forms.Button();
             this.bRefresh = new System.Windows.Forms.Button();
             this.bAbout = new System.Windows.Forms.Button();
+            this.bPriorityFirst = new System.Windows.Forms.Button();
+            this.bPriorityLast = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // listMods
@@ -76,16 +78,16 @@
             this.bSave.Location = new System.Drawing.Point(12, 218);
             this.bSave.Name = "bSave";
             this.bSave.Size = new System.Drawing.Size(100, 40);
-            this.bSave.TabIndex = 2;
+            this.bSave.TabIndex = 6;
             this.bSave.Text = "Save";
             this.bSave.UseVisualStyleBackColor = true;
             this.bSave.Click += new System.EventHandler(this.bSave_Click);
             // 
             // bPriorityUp
             // 
-            this.bPriorityUp.Location = new System.Drawing.Point(530, 12);
+            this.bPriorityUp.Location = new System.Drawing.Point(530, 54);
             this.bPriorityUp.Name = "bPriorityUp";
-            this.bPriorityUp.Size = new System.Drawing.Size(32, 100);
+            this.bPriorityUp.Size = new System.Drawing.Size(32, 58);
             this.bPriorityUp.TabIndex = 3;
             this.bPriorityUp.Text = "/\\";
             this.bPriorityUp.UseVisualStyleBackColor = true;
@@ -95,7 +97,7 @@
             // 
             this.bPriorityDown.Location = new System.Drawing.Point(530, 112);
             this.bPriorityDown.Name = "bPriorityDown";
-            this.bPriorityDown.Size = new System.Drawing.Size(32, 100);
+            this.bPriorityDown.Size = new System.Drawing.Size(32, 58);
             this.bPriorityDown.TabIndex = 4;
             this.bPriorityDown.Text = "\\/";
             this.bPriorityDown.UseVisualStyleBackColor = true;
@@ -106,7 +108,7 @@
             this.bExit.Location = new System.Drawing.Point(462, 264);
             this.bExit.Name = "bExit";
             this.bExit.Size = new System.Drawing.Size(100, 40);
-            this.bExit.TabIndex = 5;
+            this.bExit.TabIndex = 10;
             this.bExit.Text = "Exit";
             this.bExit.UseVisualStyleBackColor = true;
             this.bExit.Click += new System.EventHandler(this.bExit_Click);
@@ -116,7 +118,7 @@
             this.bSaveAndPlay.Location = new System.Drawing.Point(12, 264);
             this.bSaveAndPlay.Name = "bSaveAndPlay";
             this.bSaveAndPlay.Size = new System.Drawing.Size(100, 40);
-            this.bSaveAndPlay.TabIndex = 6;
+            this.bSaveAndPlay.TabIndex = 7;
             this.bSaveAndPlay.Text = "Save and Play";
             this.bSaveAndPlay.UseVisualStyleBackColor = true;
             this.bSaveAndPlay.Click += new System.EventHandler(this.bSaveAndPlay_Click);
@@ -126,7 +128,7 @@
             this.bRefresh.Location = new System.Drawing.Point(237, 218);
             this.bRefresh.Name = "bRefresh";
             this.bRefresh.Size = new System.Drawing.Size(100, 40);
-            this.bRefresh.TabIndex = 7;
+            this.bRefresh.TabIndex = 8;
             this.bRefresh.Text = "Refresh";
             this.bRefresh.UseVisualStyleBackColor = true;
             this.bRefresh.Click += new System.EventHandler(this.bRefresh_Click);
@@ -136,16 +138,38 @@
             this.bAbout.Location = new System.Drawing.Point(462, 218);
             this.bAbout.Name = "bAbout";
             this.bAbout.Size = new System.Drawing.Size(100, 40);
-            this.bAbout.TabIndex = 8;
+            this.bAbout.TabIndex = 9;
             this.bAbout.Text = "About";
             this.bAbout.UseVisualStyleBackColor = true;
             this.bAbout.Click += new System.EventHandler(this.bAbout_Click);
+            // 
+            // bPriorityFirst
+            // 
+            this.bPriorityFirst.Location = new System.Drawing.Point(530, 12);
+            this.bPriorityFirst.Name = "bPriorityFirst";
+            this.bPriorityFirst.Size = new System.Drawing.Size(32, 36);
+            this.bPriorityFirst.TabIndex = 2;
+            this.bPriorityFirst.Text = "/\\\r\n/\\";
+            this.bPriorityFirst.UseVisualStyleBackColor = true;
+            this.bPriorityFirst.Click += new System.EventHandler(this.bPriorityFirst_Click);
+            // 
+            // bPriorityLast
+            // 
+            this.bPriorityLast.Location = new System.Drawing.Point(530, 176);
+            this.bPriorityLast.Name = "bPriorityLast";
+            this.bPriorityLast.Size = new System.Drawing.Size(32, 36);
+            this.bPriorityLast.TabIndex = 5;
+            this.bPriorityLast.Text = "\\/\r\n\\/";
+            this.bPriorityLast.UseVisualStyleBackColor = true;
+            this.bPriorityLast.Click += new System.EventHandler(this.bPriorityLast_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(574, 316);
+            this.Controls.Add(this.bPriorityLast);
+            this.Controls.Add(this.bPriorityFirst);
             this.Controls.Add(this.bAbout);
             this.Controls.Add(this.bRefresh);
             this.Controls.Add(this.bSaveAndPlay);
@@ -175,6 +199,8 @@
         private System.Windows.Forms.Button bSaveAndPlay;
         private System.Windows.Forms.Button bRefresh;
         private System.Windows.Forms.Button bAbout;
+        private System.Windows.Forms.Button bPriorityFirst;
+        private System.Windows.Forms.Button bPriorityLast;
     }
 }
 

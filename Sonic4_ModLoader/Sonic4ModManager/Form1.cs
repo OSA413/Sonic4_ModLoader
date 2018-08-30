@@ -166,6 +166,18 @@ namespace Sonic4ModManager
                         listMods.Items.Insert(ind + 1, tmp_item);
                     }
                 }
+                else if (direction == "f")
+                {
+                    var tmp_item = listMods.Items[ind];
+                    listMods.Items.RemoveAt(ind);
+                    listMods.Items.Insert(0, tmp_item);
+                }
+                else if (direction == "l")
+                {
+                    var tmp_item = listMods.Items[ind];
+                    listMods.Items.RemoveAt(ind);
+                    listMods.Items.Add(tmp_item);
+                }
                 listMods.Select();
             }
         }
@@ -219,6 +231,16 @@ namespace Sonic4ModManager
         {
             Form3 f = new Form3();
             f.ShowDialog();
+        }
+
+        private void bPriorityFirst_Click(object sender, EventArgs e)
+        {
+            ChangePriority("f");
+        }
+
+        private void bPriorityLast_Click(object sender, EventArgs e)
+        {
+            ChangePriority("l");
         }
     }
 }

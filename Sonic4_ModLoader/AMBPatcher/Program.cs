@@ -50,10 +50,6 @@ namespace AMBPatcher
                                            raw_file[point + 6] * 0x10000 +
                                            raw_file[point + 7] * 0x1000000);
                         }
-                        else
-                        {
-                            //continue; //is actually useless here
-                        }
                     }
 
                     //Actual number of files inside may differ from the number given in the header
