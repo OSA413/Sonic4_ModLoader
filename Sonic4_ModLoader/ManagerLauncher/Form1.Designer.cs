@@ -31,33 +31,45 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.bManager = new System.Windows.Forms.Button();
             this.bConf = new System.Windows.Forms.Button();
+            this.bPlay = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // bManager
             // 
-            this.bManager.Location = new System.Drawing.Point(12, 82);
+            this.bManager.Location = new System.Drawing.Point(12, 152);
             this.bManager.Name = "bManager";
             this.bManager.Size = new System.Drawing.Size(216, 64);
-            this.bManager.TabIndex = 1;
+            this.bManager.TabIndex = 2;
             this.bManager.Text = "Launch Mod Manager";
             this.bManager.UseVisualStyleBackColor = true;
             this.bManager.Click += new System.EventHandler(this.bManager_Click);
             // 
             // bConf
             // 
-            this.bConf.Location = new System.Drawing.Point(12, 12);
+            this.bConf.Location = new System.Drawing.Point(12, 82);
             this.bConf.Name = "bConf";
             this.bConf.Size = new System.Drawing.Size(216, 64);
-            this.bConf.TabIndex = 2;
+            this.bConf.TabIndex = 1;
             this.bConf.Text = "Launch Configuration Tool";
             this.bConf.UseVisualStyleBackColor = true;
             this.bConf.Click += new System.EventHandler(this.bConf_Click);
+            // 
+            // bPlay
+            // 
+            this.bPlay.Location = new System.Drawing.Point(12, 12);
+            this.bPlay.Name = "bPlay";
+            this.bPlay.Size = new System.Drawing.Size(216, 64);
+            this.bPlay.TabIndex = 3;
+            this.bPlay.Text = "Play";
+            this.bPlay.UseVisualStyleBackColor = true;
+            this.bPlay.Click += new System.EventHandler(this.bPlay_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(240, 158);
+            this.ClientSize = new System.Drawing.Size(240, 228);
+            this.Controls.Add(this.bPlay);
             this.Controls.Add(this.bConf);
             this.Controls.Add(this.bManager);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -71,6 +83,7 @@
         #endregion
         private System.Windows.Forms.Button bManager;
         private System.Windows.Forms.Button bConf;
+        private System.Windows.Forms.Button bPlay;
     }
 }
 

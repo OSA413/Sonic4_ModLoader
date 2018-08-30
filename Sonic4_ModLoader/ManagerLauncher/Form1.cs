@@ -20,6 +20,21 @@ namespace ManagerLauncher
             bConf.Select();
         }
 
+        private void bPlay_Click(object sender, EventArgs e)
+        {
+            //Episode 1
+            if (File.Exists("Sonic_vis.exe"))
+            {
+                Process.Start("Sonic_vis.exe");
+            }
+            //Episode 2
+            else if (File.Exists("Sonic.exe"))
+            {
+                Process.Start("Sonic.exe");
+            }
+            Application.Exit();
+        }
+
         private void bConf_Click(object sender, EventArgs e)
         {
             //Episode 1
