@@ -23,17 +23,32 @@ namespace AMBPatcher
                 raw_file[2] == 0x4D &&  //M
                 raw_file[3] == 0x42)    //B
             {
-                files_counter = raw_file[0x10] + raw_file[0x11] * 0x100;
+                files_counter = raw_file[0x10] +
+                                raw_file[0x11] * 0x100 +
+                                raw_file[0x12] * 0x10000 +
+                                raw_file[0x13] * 0x1000000;
+
+                int list_pointer = raw_file[0x14] +
+                                   raw_file[0x15] * 0x100 +
+                                   raw_file[0x16] * 0x10000 +
+                                   raw_file[0x17] * 0x1000000;
 
                 if (files_counter > 0)
                 {
                     for (int i = 0; i < files_counter; i++)
                     {
-                        int point = 0x20 + i * 0x10;
+                        int point = list_pointer + i * 0x10;
                         if (raw_file[point + 0xb] == 0xff)
                         {
-                            files_pointers.Add(raw_file[point] + (raw_file[point + 1] * 0x100) + (raw_file[point + 2] * 0x10000));
-                            files_lens.Add(raw_file[point + 4] + (raw_file[point + 5] * 0x100) + (raw_file[point + 6] * 0x10000));
+                            files_pointers.Add(raw_file[point] +
+                                               raw_file[point + 1] * 0x100 +
+                                               raw_file[point + 2] * 0x10000 +
+                                               raw_file[point + 3] * 0x1000000);
+
+                            files_lens.Add(raw_file[point + 4] +
+                                           raw_file[point + 5] * 0x100 +
+                                           raw_file[point + 6] * 0x10000 +
+                                           raw_file[point + 7] * 0x1000000);
                         }
                         else
                         {
@@ -44,17 +59,20 @@ namespace AMBPatcher
                     //Actual number of files inside may differ from the number given in the header
                     files_counter = files_pointers.Count;
 
-                    int filenames_index = raw_file[0x1C] + raw_file[0x1D] * 0x100 + raw_file[0x1E] * 0x10000 + raw_file[0x1F] * 0x1000000;
+                    int name_pointer = raw_file[0x1C] +
+                                          raw_file[0x1D] * 0x100 +
+                                          raw_file[0x1E] * 0x10000 +
+                                          raw_file[0x1F] * 0x1000000;
 
-                    int filenames_offset = raw_file.Length - filenames_index;
+                    int filenames_offset = raw_file.Length - name_pointer;
                     byte[] files_names_bytes = new byte[filenames_offset];
-                    Array.Copy(raw_file, filenames_index, files_names_bytes, 0, filenames_offset);
+                    Array.Copy(raw_file, name_pointer, files_names_bytes, 0, filenames_offset);
 
                     string files_names_str = Encoding.ASCII.GetString(files_names_bytes);
                     string[] files_names_raw = files_names_str.Split('\x00');
 
                     //Some AMB files have no names of their files
-                    if (filenames_index != 0)
+                    if (name_pointer != 0)
                     {
                         //Adding only names that aren't empty
                         for (int i = 0; i < files_names_raw.Length; i++)
