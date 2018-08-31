@@ -1,13 +1,13 @@
-Last updated: 08.17.2018
+Last updated: 08.30.2018
 
 ===================
 What is this?
 ===================
 
 This program is a mod loader for Sonic 4 (both episodes).
-It contains a Mod Manager to manage your mods (enabling/disabling and mods priority), AMB Patcher to edit .AMB files, and CsbEditor to edit .CSB files.
+It contains a Mod Manager to manage your mods (enabling/disabling and changing mod priority), AMBPatcher to edit .AMB files, and CsbEditor to edit .CSB files.
 
-Mod Manager and AMB Patcher by OSA413 under MIT License.
+Mod Manager and AMBPatcher by OSA413 under MIT License.
 For information about third party programs refer to the "Third party works" section.
 
 
@@ -15,7 +15,7 @@ For information about third party programs refer to the "Third party works" sect
 How to install the Mod Loader
 ===================
 
-1. Move all the files to root folder of Sonic 4 Episode (I or II).
+1. Move all the files to the root directory of Sonic 4 Episode (I or II).
 
 2. Launch "Sonic4ModManager.exe". Mod Manager will offer to be configured automatically, press "Yes" button (if you press "No" button, refer to the "How to install mods manually" section).
 
@@ -28,11 +28,11 @@ If you haven't installed the Mod Loader yet, remove all the files that were adde
 
 * AMBPatcher.exe
 * CsbEditor.exe
-* LICENSE
+* LICENSE-Sonic4_ModLoader
 * LICENSE-SonicAudioTools
 * ManagerLauncher.exe
 * PatchLauncher.exe
-* README (.txt, .rtf, .md)
+* README (.txt, .rtf, .md, -tldr.txt)
 * Sonic4ModManager.exe
 * SonicAudioLib.dll
 
@@ -78,15 +78,23 @@ How to make this Mod Loader work with your mod
 Changed something in a .CSB file? Name the folder with no extension.
 Changed something in an .AMB file? Name the folder as the file.
 
-Note: recursive AMB patching is not available right now.
-For example, if you changed something in CPIT_MAIN.AMB/G_FIX.AMB file, you need to patch G_FIX.AMB manually.
+Note: AMBPatcher can do recursive patching, so there's no need to manually patch sub-archives.
 
 Here's an example of mod structure:
 ~~~~~~~~
 /mods/My Cool Mod/mod.ini
-/mods/My Cool Mod/G_COM/CPIT/CPIT_MAIN.AMB/G_FIX.AMB
+/mods/My Cool Mod/G_COM/CPIT/CPIT_MAIN.AMB/G_FIX.AMB/USER_FONT00.DDS
 /mods/My Cool Mod/SOUND/SONICDL_SNG01/Synth/materials/SNG_EMERALD_AIF.aax/Intro.adx
 ~~~~~~~~
+
+
+===================
+"Before Mod Loader" mods compatibility
+===================
+
+At this moment Mod Loader can simply copy files that have already been modified, replacing the old files (even if they were changed during patching). This in designed only for that mods and should not be used in new mods. If you are a mod creator, refer to "How to make this Mod Loader work with your mod" section.
+
+P.S. - AMB files only!
 
 
 ===================
