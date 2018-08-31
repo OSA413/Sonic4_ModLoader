@@ -12,16 +12,26 @@ Result: no errors should appear, every AMB file should be extracted.
 """
 import finder, os
 
-a = finder.find("",".AMB",recursive = 1, case_sensitive = 0)
+a = finder.find("","",recursive = 1, case_sensitive = 0)
+
+other_formats = "DDS,TXB,AMA,AME,ZNO,TXB,ZNM,ZNV,DC,EV,RG,MD,MP,AT,DF,DI,PSH,VSH,LTS,XNM,MFS,SSS,GPB,MSG,AYK".split(",")
+
+for i in other_formats:
+    a = [x for x in a if not x.endswith("."+i)]
+
+a = [x for x in a if os.path.isfile(x)]
+a = [x for x in a if not os.path.exists(x+"_extracted")]
 
 b = ""
 c = 0
 
 for i in a:
-    if ((i.upper().endswith(".AMB") and os.path.isfile(i)) or i.split("\\")[-1].isdigit()):
-        if not os.path.exists(i+"_extracted"):
-            b += "AMBPatcher extract \""+i+"\"\n"
-            c += 1
+    if i.upper().endswith(".AMB") or i.split("\\")[-1].isdigit():
+        b += "AMBPatcher extract \""+i+"\"\n"
+        c += 1
+
+    else:
+        print(i)
 
 with open("extract_everything.bat","w") as f:
     f.write(b)
