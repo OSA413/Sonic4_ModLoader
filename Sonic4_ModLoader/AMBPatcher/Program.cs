@@ -9,6 +9,9 @@ namespace AMBPatcher
 {
     class Program
     {
+        public static List<string> log { set; get; }
+        public static bool write_log { set; get; }
+        
         //File as bytes (raw file)
         static List<Tuple<string, int, int>> AMB_Read(byte[] raw_file)
         {
@@ -212,6 +215,7 @@ namespace AMBPatcher
 
                 if (raw_mod_file.Length <= files[index].Item3)
                 {
+                    if (write_log) { log.Add("AMB_Patch: " + mod_file + " 's length is OK, replacing..."); }
                     for (int i = 0; i < files[index].Item3; i++)
                     {
                         if (raw_mod_file.Length - 1 >= i)
@@ -226,6 +230,7 @@ namespace AMBPatcher
                 }
                 else
                 {
+                    if (write_log) { log.Add("AMB_Patch: " + mod_file + " 's length is bigger than the original length, expanding..."); }
                     byte[] part_one = new byte[files[index].Item2];
                     Array.Copy(raw_file, 0, part_one, 0, files[index].Item2);
                     byte[] part_thr;
@@ -299,6 +304,10 @@ namespace AMBPatcher
                     raw_file = part_one.Concat(part_two.Concat(part_thr)).ToArray();
                 }
             }
+            else
+            {
+                if (write_log) { log.Add("AMB_Patch: " + mod_file + " is not in " + orig_file); }
+            }
             return raw_file;
         }
 
@@ -359,6 +368,7 @@ namespace AMBPatcher
 
                         if (file_name == mod_files[i])
                         {
+                            if (write_log) { log.Add("PatchAll: replacing " + file_name + " with " + mod_file_full); }
                             File.Copy(mod_file_full, file_name, true);
                         }
                         else
@@ -373,20 +383,30 @@ namespace AMBPatcher
                     {
                         Backup(file_name.Substring(0, file_name.Length - 4) + ".CPK");
                     }
+
+                    if (write_log) { log.Add("PatchAll: asking CsbEditor to unpack " + file_name); }
+
                     //Needs CSB Editor (from SonicAudioTools) to work
                     ProcessStartInfo startInfo = new ProcessStartInfo();
                     startInfo.FileName = "CsbEditor.exe";
                     startInfo.Arguments = file_name;
                     Process.Start(startInfo).WaitForExit();
-
+                    
                     for (int i = 0; i < mod_files.Count; i++)
                     {
-                        File.Copy("mods" + Path.DirectorySeparatorChar + mod_paths[i] + Path.DirectorySeparatorChar + mod_files[i], mod_files[i], true);
+                        string mod_file = String.Join(Path.DirectorySeparatorChar.ToString(), new string[] { "mods", mod_paths[i], mod_files[i] });
+                        if (write_log) { log.Add("PatchAll: copying " + mod_file + " to " + mod_files[i]); }
+                        File.Copy(mod_file , mod_files[i], true);
                     }
-                    
+
+                    if (write_log) { log.Add("PatchAll: asking CsbEditor to pack " + file_name + " back"); }
                     startInfo.Arguments = file_name.Substring(0, file_name.Length - 4);
                     Process.Start(startInfo).WaitForExit();
                 }
+            }
+            else
+            {
+                if (write_log) { log.Add("PatchAll: " + file_name + " file not found"); }
             }
         }
 
@@ -484,6 +504,13 @@ namespace AMBPatcher
                     result.Add(Tuple.Create(orig_files[i], mod_files[i], mod_dirs[i]));
                 }
             }
+            else
+            {
+                if (write_log)
+                {
+                    log.Add("GetModFiles: \"mods/mods.ini\" file not found");
+                }
+            }
             return result;
         }
 
@@ -503,23 +530,28 @@ namespace AMBPatcher
 
         static void Main(string[] args)
         {
+            write_log = false;
+            log = new List<string>();
+
             if (args.Length == 0)
             {
+                write_log = true;
+
+                log.Add("Getting list of enabled mods...");
                 var test = GetModFiles();
 
-                /*
+                log.Add("====================");
+                log.Add("File list:");
                 for (int i = 0; i < test.Count; i++)
                 {
-                    Console.WriteLine(test[i].Item1);
+                    log.Add("\n" + test[i].Item1);
                     for (int j = 0; j < test[i].Item2.Count; j++)
                     {
-                        Console.Write("\t"+test[i].Item2[j]);
-                        Console.WriteLine("\t"+test[i].Item3[j]);
+                        log.Add("\t"+test[i].Item2[j] + "\t"+test[i].Item3[j]);
                     }
                 }
-                Console.Read();
-                */
-                
+                log.Add("====================");
+
                 List<string> mods_prev = new List<string> { };
                 List<string> modified_files = new List<string> { };
 
@@ -528,6 +560,7 @@ namespace AMBPatcher
                     mods_prev = File.ReadAllLines(@"mods\mods_prev").ToList<string>();
                 }
 
+                log.Add("Patching original files...");
                 for (int i = 0; i < test.Count; i++)
                 {
                     modified_files.Add(test[i].Item1);
@@ -540,16 +573,25 @@ namespace AMBPatcher
                     mods_prev.Remove(test[i].Item1);
                 }
 
+                log.Add("\nRestoring unchanged files...");
                 for (int i = 0; i < mods_prev.Count; i++)
                 {
+                    log.Add("Restoring " + mods_prev[i]);
                     Restore(mods_prev[i]);
                     if (File.Exists(mods_prev[i].Substring(0, mods_prev[i].Length - 4) + ".CPK"))
                     {
                         Restore(mods_prev[i].Substring(0, mods_prev[i].Length - 4) + ".CPK");
                     }
                 }
+                log.Add("Restored");
 
+                log.Add("\nSaving list of modified files...");
                 File.WriteAllText(@"mods\mods_prev", string.Join("\n", modified_files.ToArray()));
+                log.Add("Saved");
+
+                log.Add("\nFinished.");
+
+                File.WriteAllLines("AMBPatcher.log",log.ToArray());
             }
 
             else if (args.Length == 1)
