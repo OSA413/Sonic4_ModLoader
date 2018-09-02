@@ -485,15 +485,24 @@ namespace AMBPatcher
                             int ind = orig_files.IndexOf(original_file);
                             
 
-                            if (!mod_files[ind].Contains(mod_file))
+                            if (mod_files[ind].Contains(mod_file))
                             {
-                                mod_files[ind].Add(mod_file);
-                                mod_dirs[ind].Add(mod_path);
+                                /* Updating queue of the files that will be modified
+                                 * to correspond to the given mod priority.
+                                 * This is needed because the old single-depth no replacing
+                                 * method doesn't work correctly (theoretically) after some new features.
+                                 * Before it was not a queue at all.
+                                 * Thank you for your attention.
+                                 * 
+                                 * ~OSA413
+                                 */
+                                int mod_index = mod_files[ind].IndexOf(mod_file);
+                                mod_files[ind].RemoveAt(mod_index);
+                                mod_dirs[ind].RemoveAt(mod_index);
                             }
-                            else
-                            {
-                                mod_dirs[ind][mod_files[ind].IndexOf(mod_file)] = mod_path;
-                            }
+
+                            mod_files[ind].Add(mod_file);
+                            mod_dirs[ind].Add(mod_path);
                         }
                     }
                 }
