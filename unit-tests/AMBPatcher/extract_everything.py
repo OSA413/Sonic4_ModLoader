@@ -2,10 +2,10 @@
 What it does: creates a .bat file that extracts all AMB files.
 
 How to use this:
-1. Place this file, AMBPatcher.exe, and finder.py in the root directory of the game
+1. Place this file, "AMBPatcher.exe", and "finder.py" in the root directory of the game
 2. Run this file. Wait for a while. When the program has finished its work, a number
     of .AMB files that are not extracted will be printed in the terminal. Press Enter.
-3. Run extract_everything.bat .
+3. Run "extract_everything.bat".
 4. Repeat 1-3 steps several times until you see "0" at the end of the step 2.
 
 Result: no errors should appear, every AMB file should be extracted.

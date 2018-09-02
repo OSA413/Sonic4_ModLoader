@@ -1,2 +1,2 @@
 extract_everything.py
-	github.com/OSA413/Garbage/python/finder.py
+	https://github.com/OSA413/Garbage/blob/master/python/finder.py
