@@ -201,6 +201,17 @@ namespace Sonic4ModManager
                 listMods.Items[i].Checked = rnd.Next(2) == 1;
                 Thread.Sleep(1);
             }
+
+            //Final sort
+            for (int i = 0; i < listMods.Items.Count; i++)
+            {
+                if (listMods.Items[i].Checked)
+                {
+                    var tmp_item = listMods.Items[i];
+                    listMods.Items.RemoveAt(i);
+                    listMods.Items.Insert(0, tmp_item);
+                }
+            }
         }
 
         public Form1()
