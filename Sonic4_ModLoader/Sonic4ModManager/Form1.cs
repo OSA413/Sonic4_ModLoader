@@ -7,6 +7,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -182,6 +183,26 @@ namespace Sonic4ModManager
             }
         }
 
+        public void RandomMods()
+        {
+            Random rnd = new Random();
+            for (int i = 0; i < listMods.Items.Count; i++)
+            {
+                var tmp = listMods.Items[rnd.Next(listMods.Items.Count)];
+                Thread.Sleep(1); //I know that using it is not the best solution
+                listMods.Items.Remove(tmp);
+                listMods.Items.Insert(rnd.Next(listMods.Items.Count), tmp);
+                Thread.Sleep(1);
+            }
+
+            for (int i = 0; i < listMods.Items.Count; i++)
+            {
+                //I would use Convert.ToBoolean(rnd.Next(2)), but I think it'll be slower
+                listMods.Items[i].Checked = rnd.Next(2) == 1;
+                Thread.Sleep(1);
+            }
+        }
+
         public Form1()
         {
             if (!File.Exists("mod_manager.cfg"))
@@ -241,6 +262,11 @@ namespace Sonic4ModManager
         private void bPriorityLast_Click(object sender, EventArgs e)
         {
             ChangePriority("l");
+        }
+
+        private void bRandom_Click(object sender, EventArgs e)
+        {
+            RandomMods();
         }
     }
 }

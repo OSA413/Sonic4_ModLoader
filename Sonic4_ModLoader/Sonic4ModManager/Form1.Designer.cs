@@ -42,6 +42,7 @@
             this.bAbout = new System.Windows.Forms.Button();
             this.bPriorityFirst = new System.Windows.Forms.Button();
             this.bPriorityLast = new System.Windows.Forms.Button();
+            this.bRandom = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // listMods
@@ -163,11 +164,22 @@
             this.bPriorityLast.UseVisualStyleBackColor = true;
             this.bPriorityLast.Click += new System.EventHandler(this.bPriorityLast_Click);
             // 
+            // bRandom
+            // 
+            this.bRandom.Location = new System.Drawing.Point(237, 264);
+            this.bRandom.Name = "bRandom";
+            this.bRandom.Size = new System.Drawing.Size(100, 40);
+            this.bRandom.TabIndex = 11;
+            this.bRandom.Text = "Random";
+            this.bRandom.UseVisualStyleBackColor = true;
+            this.bRandom.Click += new System.EventHandler(this.bRandom_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(574, 316);
+            this.Controls.Add(this.bRandom);
             this.Controls.Add(this.bPriorityLast);
             this.Controls.Add(this.bPriorityFirst);
             this.Controls.Add(this.bAbout);
@@ -201,6 +213,7 @@
         private System.Windows.Forms.Button bAbout;
         private System.Windows.Forms.Button bPriorityFirst;
         private System.Windows.Forms.Button bPriorityLast;
+        private System.Windows.Forms.Button bRandom;
     }
 }
 
