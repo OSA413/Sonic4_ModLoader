@@ -2,6 +2,19 @@
 
 Last updated: 08.30.2018
 
+**Table of content:**
+* [What is this?](#what-is-this)
+* [How to install the Mod Loader](#how-to-install-the-mod-loader)
+* [How to uninstall the Mod Loader](#how-to-uninstall-the-mod-loader)
+* [How to install mods](#how-to-install-mods)
+* [How to install mods manually](#how-to-install-mods-manually)
+* [How to make this Mod Loader work with your mod](#how-to-make-this-mod-loader-work-with-your-mod)
+* ["Before Mod Loader" mods compatibility](#before-mod-loader-mods-compatibility)
+* [mod.ini structure](#modini-structure)
+* [How to compile this program](#how-to-compile-this-program)
+* [Third party works](#third-party-works)
+* [Managed to break the program? Found an error? Have suggestions?](#managed-to-break-the-program-found-an-error-have-suggestions)
+
 ## What is this?
 
 This program is a mod loader for Sonic 4 (both episodes).

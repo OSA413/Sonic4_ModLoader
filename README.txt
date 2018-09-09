@@ -1,4 +1,27 @@
+  ____              _        _  _     __  __           _   _                    _           
+ / ___|  ___  _ __ (_) ___  | || |   |  \/  | ___   __| | | |    ___   __ _  __| | ___ _ __ 
+ \___ \ / _ \| '_ \| |/ __| | || |_  | |\/| |/ _ \ / _` | | |   / _ \ / _` |/ _` |/ _ \ '__|
+  ___) | (_) | | | | | (__  |__   _| | |  | | (_) | (_| | | |__| (_) | (_| | (_| |  __/ |   
+ |____/ \___/|_| |_|_|\___|    |_|   |_|  |_|\___/ \__,_| |_____\___/ \__,_|\__,_|\___|_|   
+                                                                                            
+
 Last updated: 08.30.2018
+
+===================
+Table of content:
+* What is this?
+* How to install the Mod Loader
+* How to uninstall the Mod Loader
+* How to install mods
+* How to install mods manually
+* How to make this Mod Loader work with your mod
+* "Before Mod Loader" mods compatibility
+* mod.ini structure
+* How to compile this program
+* Third party works
+* Managed to break the program? Found an error? Have suggestions?
+===================
+
 
 ===================
 What is this?
