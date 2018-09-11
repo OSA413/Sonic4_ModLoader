@@ -8,9 +8,9 @@ using System.Security.Principal;
 
 namespace OneClickModInstaller
 {
-    public partial class Install : Form
+    public partial class InstallationForm : Form
     {
-        public Install(string[] args)
+        public InstallationForm(string[] args)
         {
             if (WhereAmI() != "dunno")
             {

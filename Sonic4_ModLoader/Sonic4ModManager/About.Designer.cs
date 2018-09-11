@@ -1,6 +1,6 @@
 ﻿namespace Sonic4ModManager
 {
-    partial class Form3
+    partial class About
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form3));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(About));
             this.label1 = new System.Windows.Forms.Label();
             this.linkSAT = new System.Windows.Forms.LinkLabel();
             this.linkMain = new System.Windows.Forms.LinkLabel();

@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace Sonic4ModManager
 {
-    public partial class Form1 : Form
+    public partial class MainForm : Form
     {
         public void RefreshMods()
         {
@@ -29,6 +29,14 @@ namespace Sonic4ModManager
 
         public void SetModPriority()
         {
+            if (Directory.Exists("mods"))
+            {
+                bOpenExplorer.Enabled = true;
+            }
+            else
+            {
+                bOpenExplorer.Enabled = false;
+            }
             if (File.Exists(@"mods\mods.ini"))
             {
                 string[] ini_preority = File.ReadAllLines(@"mods\mods.ini");
@@ -209,11 +217,11 @@ namespace Sonic4ModManager
             }
         }
 
-        public Form1()
+        public MainForm()
         {
             if (!File.Exists("mod_manager.cfg"))
             {
-                Form2 f = new Form2();
+                FirstLaunch f = new FirstLaunch();
                 f.ShowDialog();
             }
             InitializeComponent();
@@ -256,7 +264,7 @@ namespace Sonic4ModManager
 
         private void bAbout_Click(object sender, EventArgs e)
         {
-            Form3 f = new Form3();
+            About f = new About();
             f.ShowDialog();
         }
 
@@ -273,6 +281,23 @@ namespace Sonic4ModManager
         private void bRandom_Click(object sender, EventArgs e)
         {
             RandomMods();
+        }
+
+        private void bOpenExplorer_Click(object sender, EventArgs e)
+        {
+            if (Directory.Exists("mods"))
+            {
+                ProcessStartInfo startInfo = new ProcessStartInfo
+                {
+                    FileName = "explorer",
+                    Arguments = "mods"
+                };
+                Process.Start(startInfo);
+            }
+            else
+            {
+                bOpenExplorer.Enabled = false;
+            }
         }
     }
 }

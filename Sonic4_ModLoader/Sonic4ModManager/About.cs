@@ -3,9 +3,9 @@ using System.Windows.Forms;
 
 namespace Sonic4ModManager
 {
-    public partial class Form3 : Form
+    public partial class About : Form
     {
-        public Form3()
+        public About()
         {
             InitializeComponent();
         }

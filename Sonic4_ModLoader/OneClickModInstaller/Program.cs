@@ -21,16 +21,16 @@ namespace OneClickModInstaller
                 if ((args.Length == 1 && (args[0].StartsWith("sonic4mmep1:") || args[0].StartsWith("sonic4mmep2:")))
                     || (args.Length == 2 && args[0] == "--local"))
                 {
-                    Application.Run(new Form1(args));
+                    Application.Run(new DownloadForm(args));
                 }
                 else
                 {
-                    Application.Run(new Install(args));
+                    Application.Run(new InstallationForm(args));
                 }
             }
             else
             {
-                Application.Run(new Install(args));
+                Application.Run(new InstallationForm(args));
             }
         }
     }

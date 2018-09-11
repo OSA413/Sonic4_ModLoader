@@ -1,6 +1,6 @@
 ﻿namespace OneClickModInstaller
 {
-    partial class Form1
+    partial class DownloadForm
     {
         /// <summary>
         /// Обязательная переменная конструктора.

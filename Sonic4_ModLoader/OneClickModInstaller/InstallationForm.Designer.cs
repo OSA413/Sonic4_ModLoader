@@ -1,6 +1,6 @@
 ﻿namespace OneClickModInstaller
 {
-    partial class Install
+    partial class InstallationForm
     {
         /// <summary>
         /// Required designer variable.

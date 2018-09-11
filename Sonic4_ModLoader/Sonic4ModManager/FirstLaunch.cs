@@ -4,9 +4,9 @@ using System.Windows.Forms;
 
 namespace Sonic4ModManager
 {
-    public partial class Form2 : Form
+    public partial class FirstLaunch : Form
     {
-        public Form2()
+        public FirstLaunch()
         {
             InitializeComponent();
             bIDUNNO.Select();

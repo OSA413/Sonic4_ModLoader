@@ -8,11 +8,11 @@ using System.IO;
 
 namespace OneClickModInstaller
 {
-    public partial class Form1 : Form
+    public partial class DownloadForm : Form
     {
         public static bool local { set; get; }
 
-        public Form1(string[] args)
+        public DownloadForm(string[] args)
         {
             bool install = false;
 
@@ -26,7 +26,7 @@ namespace OneClickModInstaller
 
             if (args.Length == 0 || install)
             {
-                Install install_form = new Install(args);
+                InstallationForm install_form = new InstallationForm(args);
                 install_form.ShowDialog();
                 Application.Exit();
             }
@@ -130,7 +130,7 @@ namespace OneClickModInstaller
             int cont = 0;
             if (suspicious_files.Count > 0)
             {
-                Form2 SuspiciousDialog = new Form2();
+                Suspicious SuspiciousDialog = new Suspicious();
 
                 foreach (string file in suspicious_files)
                 {

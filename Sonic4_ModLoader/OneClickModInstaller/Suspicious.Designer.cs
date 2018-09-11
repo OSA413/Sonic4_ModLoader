@@ -1,6 +1,6 @@
 ﻿namespace OneClickModInstaller
 {
-    partial class Form2
+    partial class Suspicious
     {
         /// <summary>
         /// Required designer variable.

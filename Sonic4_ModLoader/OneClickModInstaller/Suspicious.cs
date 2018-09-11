@@ -3,9 +3,9 @@ using System.Windows.Forms;
 
 namespace OneClickModInstaller
 {
-    public partial class Form2 : Form
+    public partial class Suspicious : Form
     {
-        public Form2()
+        public Suspicious()
         {
             InitializeComponent();
         }

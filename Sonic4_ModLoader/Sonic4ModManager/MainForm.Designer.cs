@@ -1,6 +1,6 @@
 ﻿namespace Sonic4ModManager
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         /// Обязательная переменная конструктора.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.listMods = new System.Windows.Forms.ListView();
             this.clName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.clAuthors = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -43,6 +43,7 @@
             this.bPriorityFirst = new System.Windows.Forms.Button();
             this.bPriorityLast = new System.Windows.Forms.Button();
             this.bRandom = new System.Windows.Forms.Button();
+            this.bOpenExplorer = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // listMods
@@ -174,11 +175,22 @@
             this.bRandom.UseVisualStyleBackColor = true;
             this.bRandom.Click += new System.EventHandler(this.bRandom_Click);
             // 
+            // bOpenExplorer
+            // 
+            this.bOpenExplorer.Location = new System.Drawing.Point(124, 218);
+            this.bOpenExplorer.Name = "bOpenExplorer";
+            this.bOpenExplorer.Size = new System.Drawing.Size(100, 40);
+            this.bOpenExplorer.TabIndex = 12;
+            this.bOpenExplorer.Text = "Open in Explorer";
+            this.bOpenExplorer.UseVisualStyleBackColor = true;
+            this.bOpenExplorer.Click += new System.EventHandler(this.bOpenExplorer_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(574, 316);
+            this.Controls.Add(this.bOpenExplorer);
             this.Controls.Add(this.bRandom);
             this.Controls.Add(this.bPriorityLast);
             this.Controls.Add(this.bPriorityFirst);
@@ -214,6 +226,7 @@
         private System.Windows.Forms.Button bPriorityFirst;
         private System.Windows.Forms.Button bPriorityLast;
         private System.Windows.Forms.Button bRandom;
+        private System.Windows.Forms.Button bOpenExplorer;
     }
 }
 
