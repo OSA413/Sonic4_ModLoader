@@ -16,14 +16,16 @@ namespace AMBPatcher
         public static List<string> log { set; get; }
         public static bool write_log { set; get; }
 
-        static void ConsoleProgressBar(int i, int max_i, string file, int bar_len)
+        static void ConsoleProgressBar(int i, int max_i, string title, int bar_len)
         {
             Console.CursorTop -= 2;
+
             //What it is doing
             Console.Write(String.Concat(Enumerable.Repeat(" ", 100)));
             Console.CursorLeft = 0;
             if (i == max_i) {Console.WriteLine("Done!");}
-            else            {Console.WriteLine("Modifying \"" + file + "\"...");}
+            else            {Console.WriteLine(title);}
+            
             //Percentage
             Console.Write(String.Concat(Enumerable.Repeat(" ", 100)));
             Console.CursorLeft = 0;
@@ -390,6 +392,8 @@ namespace AMBPatcher
                     {
                         string mod_file_full = String.Join(Path.DirectorySeparatorChar.ToString(), new string[] { "mods", mod_paths[i], mod_files[i] });
 
+                        ConsoleProgressBar(i, mod_files.Count, mod_file_full, 32);
+
                         if (file_name == mod_files[i])
                         {
                             if (write_log) { log.Add("PatchAll: replacing " + file_name + " with " + mod_file_full); }
@@ -410,6 +414,7 @@ namespace AMBPatcher
                     }
 
                     if (write_log) { log.Add("PatchAll: asking CsbEditor to unpack " + file_name); }
+                    ConsoleProgressBar(0, 100, "Asking CsbEditor to unpack " + file_name, 32);
 
                     //Needs CSB Editor (from SonicAudioTools) to work
                     ProcessStartInfo startInfo = new ProcessStartInfo();
@@ -420,11 +425,15 @@ namespace AMBPatcher
                     for (int i = 0; i < mod_files.Count; i++)
                     {
                         string mod_file = String.Join(Path.DirectorySeparatorChar.ToString(), new string[] { "mods", mod_paths[i], mod_files[i] });
+
+                        ConsoleProgressBar(i, mod_files.Count, mod_file, 32);
                         if (write_log) { log.Add("PatchAll: copying " + mod_file + " to " + mod_files[i]); }
+
                         File.Copy(mod_file , mod_files[i], true);
                     }
 
                     if (write_log) { log.Add("PatchAll: asking CsbEditor to repack " + file_name); }
+                    ConsoleProgressBar(99, 100, "Asking CsbEditor to repack " + file_name, 32);
                     startInfo.Arguments = file_name.Substring(0, file_name.Length - 4);
                     Process.Start(startInfo).WaitForExit();
                 }
@@ -609,6 +618,9 @@ namespace AMBPatcher
                 log.Add("Patching original files...");
                 Console.WriteLine("Doing absolutely nothing!");
                 Console.WriteLine("Progress bar goes here");
+                Console.WriteLine("Sub-task!");
+                Console.WriteLine("sub%");
+                Console.CursorTop -= 2;
                 for (int i = 0; i < test.Count; i++)
                 {
                     modified_files.Add(test[i].Item1);
@@ -617,12 +629,19 @@ namespace AMBPatcher
                     {
                         Restore(test[i].Item1.Substring(0, test[i].Item1.Length - 4) + ".CPK");
                     }
-                    ConsoleProgressBar(i, test.Count, test[i].Item1, 32);
+                    
+                    ConsoleProgressBar(i, test.Count, "Modifying \"" + test[i].Item1 + "\"...", 32);
+                    Console.CursorTop += 2;
                     PatchAll(test[i].Item1, test[i].Item2, test[i].Item3);
                     mods_prev.Remove(test[i].Item1);
+                    
+                    Console.CursorTop -= 2;
                 }
+                
                 ConsoleProgressBar(1, 1, "", 32);
-
+                Console.CursorTop += 2;
+                ConsoleProgressBar(1, 1, "", 32);
+                
                 log.Add("\nRestoring unchanged files...");
                 for (int i = 0; i < mods_prev.Count; i++)
                 {

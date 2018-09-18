@@ -117,7 +117,7 @@ Here's an example of mod structure:
 
 At this moment Mod Loader can simply copy files that have already been modified, replacing the old files (even if they were changed during patching). This in designed only for that mods and should not be used in new mods. If you are a mod creator, refer to "How to make this Mod Loader work with your mod" section.
 
-P.S. - AMB files only!
+P.S. - This applies only to AMB files!
 
 
 ===================
