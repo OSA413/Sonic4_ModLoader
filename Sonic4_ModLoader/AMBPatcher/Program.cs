@@ -15,6 +15,25 @@ namespace AMBPatcher
          */
         public static List<string> log { set; get; }
         public static bool write_log { set; get; }
+
+        static void ConsoleProgressBar(int i, int max_i, string file, int bar_len)
+        {
+            Console.CursorTop -= 2;
+            //What it is doing
+            Console.Write(String.Concat(Enumerable.Repeat(" ", 100)));
+            Console.CursorLeft = 0;
+            if (i == max_i) {Console.WriteLine("Done!");}
+            else            {Console.WriteLine("Modifying \"" + file + "\"...");}
+            //Percentage
+            Console.Write(String.Concat(Enumerable.Repeat(" ", 100)));
+            Console.CursorLeft = 0;
+            Console.WriteLine("[" + String.Concat(Enumerable.Repeat("#", bar_len * i / max_i)) +
+                                String.Concat(Enumerable.Repeat(" ", bar_len - bar_len * i / max_i)) + "] (" + (i * 100 / max_i).ToString() + "%)");
+        }
+
+        //////////////////
+        //Main functions//
+        //////////////////
         
         //File as bytes (raw file)
         static List<Tuple<string, int, int>> AMB_Read(byte[] raw_file)
@@ -588,6 +607,8 @@ namespace AMBPatcher
                 }
 
                 log.Add("Patching original files...");
+                Console.WriteLine("Doing absolutely nothing!");
+                Console.WriteLine("Progress bar goes here");
                 for (int i = 0; i < test.Count; i++)
                 {
                     modified_files.Add(test[i].Item1);
@@ -596,9 +617,11 @@ namespace AMBPatcher
                     {
                         Restore(test[i].Item1.Substring(0, test[i].Item1.Length - 4) + ".CPK");
                     }
+                    ConsoleProgressBar(i, test.Count, test[i].Item1, 32);
                     PatchAll(test[i].Item1, test[i].Item2, test[i].Item3);
                     mods_prev.Remove(test[i].Item1);
                 }
+                ConsoleProgressBar(1, 1, "", 32);
 
                 log.Add("\nRestoring unchanged files...");
                 for (int i = 0; i < mods_prev.Count; i++)
