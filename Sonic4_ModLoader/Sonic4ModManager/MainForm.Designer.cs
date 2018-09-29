@@ -44,6 +44,9 @@
             this.bPriorityLast = new System.Windows.Forms.Button();
             this.bRandom = new System.Windows.Forms.Button();
             this.bOpenExplorer = new System.Windows.Forms.Button();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.rtb_mod_description = new System.Windows.Forms.RichTextBox();
+            this.groupBox1.SuspendLayout();
             this.SuspendLayout();
             // 
             // listMods
@@ -59,6 +62,7 @@
             this.listMods.TabIndex = 1;
             this.listMods.UseCompatibleStateImageBehavior = false;
             this.listMods.View = System.Windows.Forms.View.Details;
+            this.listMods.SelectedIndexChanged += new System.EventHandler(this.listMods_SelectedIndexChanged);
             // 
             // clName
             // 
@@ -77,7 +81,7 @@
             // 
             // bSave
             // 
-            this.bSave.Location = new System.Drawing.Point(12, 218);
+            this.bSave.Location = new System.Drawing.Point(12, 318);
             this.bSave.Name = "bSave";
             this.bSave.Size = new System.Drawing.Size(100, 40);
             this.bSave.TabIndex = 6;
@@ -107,7 +111,7 @@
             // 
             // bExit
             // 
-            this.bExit.Location = new System.Drawing.Point(462, 264);
+            this.bExit.Location = new System.Drawing.Point(462, 364);
             this.bExit.Name = "bExit";
             this.bExit.Size = new System.Drawing.Size(100, 40);
             this.bExit.TabIndex = 10;
@@ -117,7 +121,7 @@
             // 
             // bSaveAndPlay
             // 
-            this.bSaveAndPlay.Location = new System.Drawing.Point(12, 264);
+            this.bSaveAndPlay.Location = new System.Drawing.Point(12, 364);
             this.bSaveAndPlay.Name = "bSaveAndPlay";
             this.bSaveAndPlay.Size = new System.Drawing.Size(100, 40);
             this.bSaveAndPlay.TabIndex = 7;
@@ -127,7 +131,7 @@
             // 
             // bRefresh
             // 
-            this.bRefresh.Location = new System.Drawing.Point(237, 218);
+            this.bRefresh.Location = new System.Drawing.Point(237, 318);
             this.bRefresh.Name = "bRefresh";
             this.bRefresh.Size = new System.Drawing.Size(100, 40);
             this.bRefresh.TabIndex = 8;
@@ -137,7 +141,7 @@
             // 
             // bAbout
             // 
-            this.bAbout.Location = new System.Drawing.Point(462, 218);
+            this.bAbout.Location = new System.Drawing.Point(462, 318);
             this.bAbout.Name = "bAbout";
             this.bAbout.Size = new System.Drawing.Size(100, 40);
             this.bAbout.TabIndex = 9;
@@ -167,7 +171,7 @@
             // 
             // bRandom
             // 
-            this.bRandom.Location = new System.Drawing.Point(237, 264);
+            this.bRandom.Location = new System.Drawing.Point(237, 364);
             this.bRandom.Name = "bRandom";
             this.bRandom.Size = new System.Drawing.Size(100, 40);
             this.bRandom.TabIndex = 11;
@@ -177,7 +181,7 @@
             // 
             // bOpenExplorer
             // 
-            this.bOpenExplorer.Location = new System.Drawing.Point(124, 218);
+            this.bOpenExplorer.Location = new System.Drawing.Point(124, 318);
             this.bOpenExplorer.Name = "bOpenExplorer";
             this.bOpenExplorer.Size = new System.Drawing.Size(100, 40);
             this.bOpenExplorer.TabIndex = 12;
@@ -185,11 +189,33 @@
             this.bOpenExplorer.UseVisualStyleBackColor = true;
             this.bOpenExplorer.Click += new System.EventHandler(this.bOpenExplorer_Click);
             // 
-            // Form1
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.rtb_mod_description);
+            this.groupBox1.Location = new System.Drawing.Point(12, 218);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(550, 94);
+            this.groupBox1.TabIndex = 13;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Description";
+            // 
+            // rtb_mod_description
+            // 
+            this.rtb_mod_description.BackColor = System.Drawing.SystemColors.Control;
+            this.rtb_mod_description.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.rtb_mod_description.Location = new System.Drawing.Point(6, 19);
+            this.rtb_mod_description.Name = "rtb_mod_description";
+            this.rtb_mod_description.ReadOnly = true;
+            this.rtb_mod_description.Size = new System.Drawing.Size(538, 69);
+            this.rtb_mod_description.TabIndex = 0;
+            this.rtb_mod_description.Text = "Select an item to see its description.";
+            // 
+            // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(574, 316);
+            this.ClientSize = new System.Drawing.Size(574, 416);
+            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.bOpenExplorer);
             this.Controls.Add(this.bRandom);
             this.Controls.Add(this.bPriorityLast);
@@ -204,8 +230,9 @@
             this.Controls.Add(this.listMods);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "Form1";
+            this.Name = "MainForm";
             this.Text = "Sonic 4 Mod Manager";
+            this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -227,6 +254,8 @@
         private System.Windows.Forms.Button bPriorityLast;
         private System.Windows.Forms.Button bRandom;
         private System.Windows.Forms.Button bOpenExplorer;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.RichTextBox rtb_mod_description;
     }
 }
 

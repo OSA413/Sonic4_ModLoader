@@ -18,10 +18,11 @@ namespace Sonic4ModManager
 
             for (int i = 0; i < mod_list.Count; i++)
             {
-                ListViewItem item = new ListViewItem(mod_list[i].Item1);
-                item.SubItems.Add(mod_list[i].Item2);
-                item.SubItems.Add(mod_list[i].Item3);
-                item.SubItems.Add(mod_list[i].Item4);
+                ListViewItem item = new ListViewItem(mod_list[i].Item1); //Mod Name
+                item.SubItems.Add(mod_list[i].Item2); //Mod Authors
+                item.SubItems.Add(mod_list[i].Item3); //Mod Version
+                item.SubItems.Add(mod_list[i].Item4); //Mod Directory
+                item.SubItems.Add(mod_list[i].Item5); //Description
                 listMods.Items.Add(item);
             }
 
@@ -37,6 +38,7 @@ namespace Sonic4ModManager
             {
                 bOpenExplorer.Enabled = false;
             }
+
             if (File.Exists(@"mods\mods.ini"))
             {
                 string[] ini_preority = File.ReadAllLines(@"mods\mods.ini");
@@ -64,9 +66,9 @@ namespace Sonic4ModManager
             }
         }
 
-        static List<Tuple<string, string, string, string>> GetMods()
+        static List<Tuple<string, string, string, string, string>> GetMods()
         {
-            List<Tuple<string, string, string, string>> mod_list = new List<Tuple<string, string, string, string>>();
+            var mod_list = new List<Tuple<string, string, string, string, string>>();
 
             if (Directory.Exists("mods"))
             {
@@ -82,6 +84,7 @@ namespace Sonic4ModManager
                     string mod_name = dir_names[i];
                     string mod_authors = "???";
                     string mod_version = "???";
+                    string mod_desctiption = "No description.";
 
                     string ini_path = "mods" + Path.DirectorySeparatorChar + dir_names[i] + Path.DirectorySeparatorChar + "mod.ini";
 
@@ -102,9 +105,13 @@ namespace Sonic4ModManager
                             {
                                 mod_version = String.Join("=", ini_file[j].Split('=').Skip(1));
                             }
+                            else if (ini_file[j].StartsWith("Description="))
+                            {
+                                mod_desctiption = String.Join("=", ini_file[j].Split('=').Skip(1));
+                            }
                         }
                     }
-                    mod_list.Add(Tuple.Create(mod_name, mod_authors, mod_version, dir_names[i]));
+                    mod_list.Add(Tuple.Create(mod_name, mod_authors, mod_version, dir_names[i], mod_desctiption));
                 }
             }
             return mod_list;
@@ -298,6 +305,14 @@ namespace Sonic4ModManager
             {
                 bOpenExplorer.Enabled = false;
             }
+        }
+
+        private void listMods_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //Do nothing if selected nothing (it also deselects when changing)
+            if (listMods.SelectedItems.Count == 0) { return; }
+            rtb_mod_description.Lines = listMods.Items[listMods.SelectedIndices[0]].SubItems[4].Text
+                                        .Split(new[] {"\\n"}, StringSplitOptions.None);
         }
     }
 }
