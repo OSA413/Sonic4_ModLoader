@@ -39,7 +39,7 @@
             this.bExit = new System.Windows.Forms.Button();
             this.bSaveAndPlay = new System.Windows.Forms.Button();
             this.bRefresh = new System.Windows.Forms.Button();
-            this.bAbout = new System.Windows.Forms.Button();
+            this.bSettings = new System.Windows.Forms.Button();
             this.bPriorityFirst = new System.Windows.Forms.Button();
             this.bPriorityLast = new System.Windows.Forms.Button();
             this.bRandom = new System.Windows.Forms.Button();
@@ -84,7 +84,7 @@
             this.bSave.Location = new System.Drawing.Point(12, 318);
             this.bSave.Name = "bSave";
             this.bSave.Size = new System.Drawing.Size(100, 40);
-            this.bSave.TabIndex = 6;
+            this.bSave.TabIndex = 7;
             this.bSave.Text = "Save";
             this.bSave.UseVisualStyleBackColor = true;
             this.bSave.Click += new System.EventHandler(this.bSave_Click);
@@ -114,7 +114,7 @@
             this.bExit.Location = new System.Drawing.Point(462, 364);
             this.bExit.Name = "bExit";
             this.bExit.Size = new System.Drawing.Size(100, 40);
-            this.bExit.TabIndex = 10;
+            this.bExit.TabIndex = 13;
             this.bExit.Text = "Exit";
             this.bExit.UseVisualStyleBackColor = true;
             this.bExit.Click += new System.EventHandler(this.bExit_Click);
@@ -124,7 +124,7 @@
             this.bSaveAndPlay.Location = new System.Drawing.Point(12, 364);
             this.bSaveAndPlay.Name = "bSaveAndPlay";
             this.bSaveAndPlay.Size = new System.Drawing.Size(100, 40);
-            this.bSaveAndPlay.TabIndex = 7;
+            this.bSaveAndPlay.TabIndex = 8;
             this.bSaveAndPlay.Text = "Save and Play";
             this.bSaveAndPlay.UseVisualStyleBackColor = true;
             this.bSaveAndPlay.Click += new System.EventHandler(this.bSaveAndPlay_Click);
@@ -134,20 +134,20 @@
             this.bRefresh.Location = new System.Drawing.Point(237, 318);
             this.bRefresh.Name = "bRefresh";
             this.bRefresh.Size = new System.Drawing.Size(100, 40);
-            this.bRefresh.TabIndex = 8;
+            this.bRefresh.TabIndex = 10;
             this.bRefresh.Text = "Refresh";
             this.bRefresh.UseVisualStyleBackColor = true;
             this.bRefresh.Click += new System.EventHandler(this.bRefresh_Click);
             // 
-            // bAbout
+            // bSettings
             // 
-            this.bAbout.Location = new System.Drawing.Point(462, 318);
-            this.bAbout.Name = "bAbout";
-            this.bAbout.Size = new System.Drawing.Size(100, 40);
-            this.bAbout.TabIndex = 9;
-            this.bAbout.Text = "About";
-            this.bAbout.UseVisualStyleBackColor = true;
-            this.bAbout.Click += new System.EventHandler(this.bAbout_Click);
+            this.bSettings.Location = new System.Drawing.Point(462, 318);
+            this.bSettings.Name = "bSettings";
+            this.bSettings.Size = new System.Drawing.Size(100, 40);
+            this.bSettings.TabIndex = 12;
+            this.bSettings.Text = "Settings";
+            this.bSettings.UseVisualStyleBackColor = true;
+            this.bSettings.Click += new System.EventHandler(this.bAbout_Click);
             // 
             // bPriorityFirst
             // 
@@ -184,7 +184,7 @@
             this.bOpenExplorer.Location = new System.Drawing.Point(124, 318);
             this.bOpenExplorer.Name = "bOpenExplorer";
             this.bOpenExplorer.Size = new System.Drawing.Size(100, 40);
-            this.bOpenExplorer.TabIndex = 12;
+            this.bOpenExplorer.TabIndex = 9;
             this.bOpenExplorer.Text = "Open in Explorer";
             this.bOpenExplorer.UseVisualStyleBackColor = true;
             this.bOpenExplorer.Click += new System.EventHandler(this.bOpenExplorer_Click);
@@ -195,7 +195,7 @@
             this.groupBox1.Location = new System.Drawing.Point(12, 218);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(550, 94);
-            this.groupBox1.TabIndex = 13;
+            this.groupBox1.TabIndex = 6;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Description";
             // 
@@ -207,7 +207,7 @@
             this.rtb_mod_description.Name = "rtb_mod_description";
             this.rtb_mod_description.ReadOnly = true;
             this.rtb_mod_description.Size = new System.Drawing.Size(538, 69);
-            this.rtb_mod_description.TabIndex = 0;
+            this.rtb_mod_description.TabIndex = 6;
             this.rtb_mod_description.Text = "Select an item to see its description.";
             // 
             // MainForm
@@ -220,7 +220,7 @@
             this.Controls.Add(this.bRandom);
             this.Controls.Add(this.bPriorityLast);
             this.Controls.Add(this.bPriorityFirst);
-            this.Controls.Add(this.bAbout);
+            this.Controls.Add(this.bSettings);
             this.Controls.Add(this.bRefresh);
             this.Controls.Add(this.bSaveAndPlay);
             this.Controls.Add(this.bExit);
@@ -249,7 +249,7 @@
         private System.Windows.Forms.Button bExit;
         private System.Windows.Forms.Button bSaveAndPlay;
         private System.Windows.Forms.Button bRefresh;
-        private System.Windows.Forms.Button bAbout;
+        private System.Windows.Forms.Button bSettings;
         private System.Windows.Forms.Button bPriorityFirst;
         private System.Windows.Forms.Button bPriorityLast;
         private System.Windows.Forms.Button bRandom;

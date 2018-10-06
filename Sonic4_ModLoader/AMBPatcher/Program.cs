@@ -15,6 +15,7 @@ namespace AMBPatcher
          */
         public static List<string> log { set; get; }
         public static bool write_log { set; get; }
+        public static bool progress_bar { set; get; }
 
         static void ConsoleProgressBar(int i, int max_i, string title, int bar_len)
         {
@@ -31,6 +32,29 @@ namespace AMBPatcher
             Console.CursorLeft = 0;
             Console.WriteLine("[" + String.Concat(Enumerable.Repeat("#", bar_len * i / max_i)) +
                                 String.Concat(Enumerable.Repeat(" ", bar_len - bar_len * i / max_i)) + "] (" + (i * 100 / max_i).ToString() + "%)");
+        }
+
+        static void Load_Settings()
+        {
+            progress_bar = true;
+            write_log = false;
+            log = new List<string>();
+
+            if (File.Exists("AMBPatcher.cfg"))
+            {
+                string[] cfg_file = File.ReadAllLines("AMBPatcher.cfg");
+                for (int j = 0; j < cfg_file.Length; j++)
+                {
+                    if (cfg_file[j].StartsWith("ProgressBar="))
+                    {
+                        progress_bar = Convert.ToBoolean(Convert.ToInt32(String.Join("=", cfg_file[j].Split('=').Skip(1))));
+                    }
+                    else if (cfg_file[j].StartsWith("GenerateLog="))
+                    {
+                        write_log = Convert.ToBoolean(Convert.ToInt32(String.Join("=", cfg_file[j].Split('=').Skip(1))));
+                    }
+                }
+            }
         }
 
         //////////////////
@@ -392,7 +416,7 @@ namespace AMBPatcher
                     {
                         string mod_file_full = String.Join(Path.DirectorySeparatorChar.ToString(), new string[] { "mods", mod_paths[i], mod_files[i] });
 
-                        ConsoleProgressBar(i, mod_files.Count, mod_file_full, 32);
+                        if (progress_bar) { ConsoleProgressBar(i, mod_files.Count, mod_file_full, 32); }
 
                         if (file_name == mod_files[i])
                         {
@@ -585,27 +609,27 @@ namespace AMBPatcher
 
         static void Main(string[] args)
         {
-            write_log = false;
-            log = new List<string>();
+            Load_Settings();
 
             if (args.Length == 0)
             {
-                write_log = true;
-
-                log.Add("Getting list of enabled mods...");
+                if (write_log) { log.Add("Getting list of enabled mods..."); }
                 var test = GetModFiles();
 
-                log.Add("====================");
-                log.Add("File list:");
-                for (int i = 0; i < test.Count; i++)
+                if (write_log)
                 {
-                    log.Add("\n" + test[i].Item1);
-                    for (int j = 0; j < test[i].Item2.Count; j++)
+                    log.Add("====================");
+                    log.Add("File list:");
+                    for (int i = 0; i < test.Count; i++)
                     {
-                        log.Add("\t"+test[i].Item2[j] + "\t"+test[i].Item3[j]);
+                        log.Add("\n" + test[i].Item1);
+                        for (int j = 0; j < test[i].Item2.Count; j++)
+                        {
+                            log.Add("\t" + test[i].Item2[j] + "\t" + test[i].Item3[j]);
+                        }
                     }
+                    log.Add("====================");
                 }
-                log.Add("====================");
 
                 List<string> mods_prev = new List<string> { };
                 List<string> modified_files = new List<string> { };
@@ -615,12 +639,16 @@ namespace AMBPatcher
                     mods_prev = File.ReadAllLines(@"mods\mods_prev").ToList<string>();
                 }
 
-                log.Add("Patching original files...");
-                Console.WriteLine("Doing absolutely nothing!");
-                Console.WriteLine("Progress bar goes here");
-                Console.WriteLine("Sub-task!");
-                Console.WriteLine("sub%");
-                Console.CursorTop -= 2;
+                if (write_log) { log.Add("Patching original files..."); }
+
+                if (progress_bar)
+                {
+                    Console.WriteLine("Doing absolutely nothing!");
+                    Console.WriteLine("Progress bar goes here");
+                    Console.WriteLine("Sub-task!");
+                    Console.WriteLine("sub%");
+                    Console.CursorTop -= 2;
+                }
                 for (int i = 0; i < test.Count; i++)
                 {
                     modified_files.Add(test[i].Item1);
@@ -629,38 +657,44 @@ namespace AMBPatcher
                     {
                         Restore(test[i].Item1.Substring(0, test[i].Item1.Length - 4) + ".CPK");
                     }
-                    
-                    ConsoleProgressBar(i, test.Count, "Modifying \"" + test[i].Item1 + "\"...", 32);
-                    Console.CursorTop += 2;
+
+                    if (progress_bar)
+                    {
+                        ConsoleProgressBar(i, test.Count, "Modifying \"" + test[i].Item1 + "\"...", 32);
+                        Console.CursorTop += 2;
+                    }
                     PatchAll(test[i].Item1, test[i].Item2, test[i].Item3);
                     mods_prev.Remove(test[i].Item1);
-                    
-                    Console.CursorTop -= 2;
+
+                    if (progress_bar) { Console.CursorTop -= 2; }
                 }
-                
-                ConsoleProgressBar(1, 1, "", 32);
-                Console.CursorTop += 2;
-                ConsoleProgressBar(1, 1, "", 32);
-                
-                log.Add("\nRestoring unchanged files...");
+
+                if (progress_bar)
+                {
+                    ConsoleProgressBar(1, 1, "", 32);
+                    Console.CursorTop += 2;
+                    ConsoleProgressBar(1, 1, "", 32);
+                }
+
+                if (write_log) { log.Add("\nRestoring unchanged files..."); }
                 for (int i = 0; i < mods_prev.Count; i++)
                 {
-                    log.Add("Restoring " + mods_prev[i]);
+                    if (write_log) { log.Add("Restoring " + mods_prev[i]); }
                     Restore(mods_prev[i]);
                     if (File.Exists(mods_prev[i].Substring(0, mods_prev[i].Length - 4) + ".CPK"))
                     {
                         Restore(mods_prev[i].Substring(0, mods_prev[i].Length - 4) + ".CPK");
                     }
                 }
-                log.Add("Restored");
+                if (write_log) { log.Add("Restored"); }
 
-                log.Add("\nSaving list of modified files...");
+                if (write_log) { log.Add("\nSaving list of modified files..."); }
                 File.WriteAllText(@"mods\mods_prev", string.Join("\n", modified_files.ToArray()));
-                log.Add("Saved");
+                if (write_log) { log.Add("Saved"); }
 
-                log.Add("\nFinished.");
+                if (write_log) { log.Add("\nFinished."); }
 
-                File.WriteAllLines("AMBPatcher.log",log.ToArray());
+                if (write_log) { File.WriteAllLines("AMBPatcher.log", log.ToArray()); }
             }
 
             else if (args.Length == 1)

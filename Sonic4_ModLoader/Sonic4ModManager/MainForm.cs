@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace Sonic4ModManager
 {
-    public partial class MainForm : Form
+    public partial class MainForm:Form
     {
         public void RefreshMods()
         {
@@ -202,7 +202,7 @@ namespace Sonic4ModManager
                 Thread.Sleep(1); //I know that using it is not the best solution
                 listMods.Items.Remove(tmp);
                 listMods.Items.Insert(rnd.Next(listMods.Items.Count), tmp);
-                Thread.Sleep(1);
+                Thread.Sleep(1); //But they are at least more random
             }
 
             for (int i = 0; i < listMods.Items.Count; i++)
@@ -224,9 +224,215 @@ namespace Sonic4ModManager
             }
         }
 
+        static string WhereAmI()
+        {
+            string where = "dunno";
+
+            if (File.Exists("Sonic_vis.exe") && File.Exists("SonicLauncher.exe"))
+            {
+                where = "Episode 1";
+            }
+            else if (File.Exists("Sonic.exe") && File.Exists("Launcher.exe"))
+            {
+                where = "Episode 2";
+            }
+
+            return where;
+        }
+
+        static string GetGame()
+        {
+            string game = WhereAmI();
+
+            switch (WhereAmI())
+            {
+                case "Episode 1":
+                    game = "ep1";
+                    break;
+                case "Episode 2":
+                    game = "ep2";
+                    break;
+            }
+
+            return game;
+        }
+
+        public static int GetInstallationStatus()
+        {
+            /* status description
+             * -2   = This directory is not not a game directory
+             * -1   = First launch (.cfg file not present)
+             * 0    = Not installed
+             * 1    = Installed
+             */
+
+
+            int status = -2;
+
+            string game = GetGame();
+
+            if (game != "dunno")
+            {
+                if (File.Exists("mod_manager.cfg"))
+                {
+                    string tmp_status = File.ReadAllText("mod_manager.cfg");
+                    if (tmp_status != "")
+                    {
+                        if (int.TryParse(tmp_status, out int n))
+                        {
+                            status = Convert.ToInt32(tmp_status);
+                        }
+                    }
+                    else
+                    {
+                        status = 0;
+                        if (game == "ep1")
+                        {
+                            if (File.Exists("Sonic_vis.orig.exe"))
+                            {
+                                status = 1;
+                            }
+
+                        }
+                        else if (game == "ep2")
+                        {
+                            if (File.Exists("Sonic.orig.exe"))
+                            {
+                                status = 1;
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    status = -1;
+                }
+            }
+            return status;
+        }
+
+        public static void Install(int whattodo, int options = 0)
+        {
+            //This is in case if somebody want to change the .cfg file right before the (un)installation
+            //whattodo = 1 is install
+            //whattodo = 0 is uninstall
+            int status = GetInstallationStatus();
+            string game = GetGame();
+            
+            if ((status == 0 || status == -1) && whattodo == 1)
+            {
+                //Episode 1
+                if (game == "ep1")
+                {
+                    //We need to make sure that all the file required are present before installation
+                    if (File.Exists("Sonic_vis.exe") && File.Exists("PatchLauncher.exe") &&
+                        File.Exists("SonicLauncher.exe") && File.Exists("ManagerLauncher.exe"))
+                    {
+                        //Original game file
+                        File.Move("Sonic_vis.exe", "Sonic_vis.orig.exe");
+                        //PatchLauncher
+                        File.Move("PatchLauncher.exe", "Sonic_vis.exe");
+                        //Original launcher
+                        File.Move("SonicLauncher.exe", "SonicLauncher.orig.exe");
+                        //ManagerLauncher
+                        File.Move("ManagerLauncher.exe", "SonicLauncher.exe");
+
+                        //Saving info that installation has been finished
+                        File.WriteAllText("mod_manager.cfg", "1");
+
+                        //Renaming save file if present
+                        if (File.Exists("Sonic_vis_save.dat") && !File.Exists("Sonic_vis.orig_save.dat"))
+                        {
+                            File.Move("Sonic_vis_save.dat", "Sonic_vis.orig_save.dat");
+                        }
+                    }
+                }
+
+                //Episode 2
+                else if (game == "ep2")
+                {
+                    if (File.Exists("Sonic.exe") && File.Exists("PatchLauncher.exe") &&
+                        File.Exists("Launcher.exe") && File.Exists("ManagerLauncher.exe"))
+                    {
+                        //Original game file
+                        File.Move("Sonic.exe", "Sonic.orig.exe");
+                        //PatchLauncher
+                        File.Move("PatchLauncher.exe", "Sonic.exe");
+                        //Original launcher
+                        File.Move("Launcher.exe", "Launcher.orig.exe");
+                        //ManagerLauncher
+                        File.Move("ManagerLauncher.exe", "Launcher.exe");
+
+                        //Saving info that installation has been finished
+                        File.WriteAllText("mod_manager.cfg", "1");
+
+                        //Renaming save file if present
+                        if (File.Exists("Sonic_save.dat") && !File.Exists("Sonic.orig_save.dat"))
+                        {
+                            File.Move("Sonic_save.dat", "Sonic.orig_save.dat");
+                        }
+                    }
+                }
+            }
+            else if (status == 1 && whattodo == 0)
+            {
+                //Episode 1
+                if (game == "ep1")
+                {
+                    if (File.Exists("Sonic_vis.exe") && File.Exists("Sonic_vis.orig.exe") &&
+                        File.Exists("SonicLauncher.exe") && File.Exists("SonicLauncher.orig.exe"))
+                    {
+                        //ManagerLauncher
+                        File.Move("SonicLauncher.exe", "ManagerLauncher.exe");
+                        //Original launcher
+                        File.Move("SonicLauncher.orig.exe", "SonicLauncher.exe");
+                        //PatchLauncher
+                        File.Move("Sonic_vis.exe", "PatchLauncher.exe");
+                        //Original game file
+                        File.Move("Sonic_vis.orig.exe", "Sonic_vis.exe");
+
+                        //Saving info that installation has been finished
+                        File.WriteAllText("mod_manager.cfg", "0");
+
+                        //Renaming save file if present
+                        if (File.Exists("Sonic_vis.orig_save.dat") && !File.Exists("Sonic_vis_save.dat"))
+                        {
+                            File.Move("Sonic_vis.orig_save.dat", "Sonic_vis_save.dat");
+                        }
+                    }
+                }
+
+                //Episode 2
+                else if (game == "ep2")
+                {
+                    if (File.Exists("Sonic.exe") && File.Exists("Sonic.orig.exe") &&
+                        File.Exists("Launcher.exe") && File.Exists("Launcher.orig.exe"))
+                    {
+                        //ManagerLauncher
+                        File.Move("Launcher.exe", "ManagerLauncher.exe");
+                        //Original launcher
+                        File.Move("Launcher.orig.exe", "Launcher.exe");
+                        //PatchLauncher
+                        File.Move("Sonic.exe", "PatchLauncher.exe");
+                        //Original game file
+                        File.Move("Sonic.orig.exe", "Sonic.exe");
+
+                        //Saving info that uninstallation has been finished
+                        File.WriteAllText("mod_manager.cfg", "0");
+
+                        //Renaming save file if present
+                        if (File.Exists("Sonic.orig_save.dat") && !File.Exists("Sonic_save.dat"))
+                        {
+                            //File.Move("Sonic.orig_save.dat", "Sonic_save.dat");
+                        }
+                    }
+                }
+            }
+        }
+        
         public MainForm()
         {
-            if (!File.Exists("mod_manager.cfg"))
+            if (GetInstallationStatus() == -1)
             {
                 FirstLaunch f = new FirstLaunch();
                 f.ShowDialog();
@@ -271,7 +477,7 @@ namespace Sonic4ModManager
 
         private void bAbout_Click(object sender, EventArgs e)
         {
-            About f = new About();
+            Settings f = new Settings();
             f.ShowDialog();
         }
 
@@ -309,8 +515,9 @@ namespace Sonic4ModManager
 
         private void listMods_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //Do nothing if selected nothing (it also deselects when changing)
+            //Do nothing if nothing selected (it also deselects when changing)
             if (listMods.SelectedItems.Count == 0) { return; }
+
             rtb_mod_description.Lines = listMods.Items[listMods.SelectedIndices[0]].SubItems[4].Text
                                         .Split(new[] {"\\n"}, StringSplitOptions.None);
         }
