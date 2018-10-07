@@ -4,6 +4,15 @@
 
 dist/
 
+##############
+#Dependencies#
+##############
+
+dependencies/SonicAudioTools/*
+!dependencies/SonicAudioTools/readme.md
+
+dependencies/7-Zip/*
+!dependencies/7-Zip/readme.md
 
 #############
 #LibreOffice#
