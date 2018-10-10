@@ -252,21 +252,20 @@ namespace AMBPatcher
 
             for (int i = 0; i < files.Count; i++)
             {
-                //TODO: find a better way of getting only one element from enumeration
-                if (files[i].Item1 == String.Join("\\", mod_file_parts.Skip(orig_mod_part_ind).Take(1)))
+                //j is the number of subfolders + 1
+                // dir1/dir2/file3.dds
+                for (int j = 0; j < 3; j++)
                 {
-                    index = i;
-                    mod_file_in_orig = String.Join("\\", mod_file_parts.Skip(orig_mod_part_ind).Take(1));
-                    break; //TODO: find a better way of finding a variable in list of tuples.
-                }
-                else if (files[i].Item1 == String.Join("\\", mod_file_parts.Skip(orig_mod_part_ind).Take(2)))
-                {
-                    index = i;
-                    mod_file_in_orig = String.Join("\\", mod_file_parts.Skip(orig_mod_part_ind).Take(2));
-                    break; //TODO stays the same
+                    //TODO: find a better way of getting only one element from enumeration
+                    if (files[i].Item1 == String.Join("\\", mod_file_parts.Skip(orig_mod_part_ind).Take(j + 1)))
+                    {
+                        index = i;
+                        mod_file_in_orig = String.Join("\\", mod_file_parts.Skip(orig_mod_part_ind).Take(j + 1));
+                        break; //TODO: find a better way of finding a variable in list of tuples.
+                    }
                 }
             }
-            
+
             //If mod file is in the original file.
             if (index != -1)
             {
@@ -740,8 +739,8 @@ namespace AMBPatcher
                         for (int i = 0; i < data.Count; i++)
                         {
                             Console.WriteLine("\nFile name:    " + data[i].Item1);
-                            Console.WriteLine("File pointer: " + data[i].Item2 + " (0x" + data[i].Item2.ToString("X") + ")");
-                            Console.WriteLine("File length:  " + data[i].Item3 + " (0x" + data[i].Item3.ToString("X") + ")");
+                            Console.WriteLine("File pointer: " + data[i].Item2 + "\t(0x" + data[i].Item2.ToString("X") + ")");
+                            Console.WriteLine("File length:  " + data[i].Item3 + "\t(0x" + data[i].Item3.ToString("X") + ")");
                         }
                     }
                     else { ShowHelpMessage(); }

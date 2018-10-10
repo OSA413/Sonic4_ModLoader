@@ -11,7 +11,7 @@ cd /d %cwd%
 
 ::Creating empty "dist" directory
 rmdir /s /q dist
-mkdir "dist"
+::mkdir "dist"
 mkdir "dist/Sonic4ModLoader"
 
 ::Copying required files
