@@ -250,18 +250,29 @@ namespace AMBPatcher
                 orig_mod_part_ind = mod_file_parts_len - 1;
             }
 
+            //Finding the index of the file in the AMB archive
             for (int i = 0; i < files.Count; i++)
             {
-                //j is the number of subfolders + 1
+                if (index != -1) { break; }
+
+                //j is the number of maximum subfolders + 1
                 // dir1/dir2/file3.dds
                 for (int j = 0; j < 3; j++)
                 {
-                    //TODO: find a better way of getting only one element from enumeration
-                    if (files[i].Item1 == String.Join("\\", mod_file_parts.Skip(orig_mod_part_ind).Take(j + 1)))
+                    string internal_name = String.Join("\\", mod_file_parts.Skip(orig_mod_part_ind).Take(j + 1));
+
+                    if (files[i].Item1.StartsWith(internal_name))
                     {
-                        index = i;
-                        mod_file_in_orig = String.Join("\\", mod_file_parts.Skip(orig_mod_part_ind).Take(j + 1));
-                        break; //TODO: find a better way of finding a variable in list of tuples.
+                        if (files[i].Item1 == internal_name)
+                        {
+                            index = i;
+                            mod_file_in_orig = internal_name;
+                            break;
+                        }
+                    }
+                    else
+                    {
+                        break;
                     }
                 }
             }
