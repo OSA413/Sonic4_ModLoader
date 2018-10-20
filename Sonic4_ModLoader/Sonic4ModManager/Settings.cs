@@ -77,11 +77,13 @@ namespace Sonic4ModManager
             //AMBPatcher
             string AMBPatcher_progress_bar = Convert.ToInt32(cb_AMBPatcher_progress_bar.Checked).ToString();
             string AMBPatcher_generate_log = Convert.ToInt32(cb_AMBPatcher_generate_log.Checked).ToString();
+            string AMBPatcher_sha_check    = Convert.ToInt32(cb_AMBPatcher_sha_check.Checked).ToString();
 
             string text = String.Join("\n", new string[]
             {
                 "ProgressBar=" + AMBPatcher_progress_bar,
-                "GenerateLog=" + AMBPatcher_generate_log
+                "GenerateLog=" + AMBPatcher_generate_log,
+                "SHACheck="    + AMBPatcher_sha_check
             });
 
             File.WriteAllText("AMBPatcher.cfg", text);
@@ -92,6 +94,7 @@ namespace Sonic4ModManager
             //AMBPatcher
             cb_AMBPatcher_progress_bar.Checked = true;
             cb_AMBPatcher_generate_log.Checked = false;
+            cb_AMBPatcher_sha_check.Checked    = true;
 
             if (File.Exists("AMBPatcher.cfg"))
             {
@@ -105,6 +108,10 @@ namespace Sonic4ModManager
                     else if (cfg_file[j].StartsWith("GenerateLog="))
                     {
                         cb_AMBPatcher_generate_log.Checked = Convert.ToBoolean(Convert.ToInt32(String.Join("=", cfg_file[j].Split('=').Skip(1))));
+                    }
+                    else if (cfg_file[j].StartsWith("SHACheck="))
+                    {
+                        cb_AMBPatcher_sha_check.Checked = Convert.ToBoolean(Convert.ToInt32(String.Join("=", cfg_file[j].Split('=').Skip(1))));
                     }
                 }
             }

@@ -50,6 +50,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.bOK = new System.Windows.Forms.Button();
             this.bCancel = new System.Windows.Forms.Button();
+            this.cb_AMBPatcher_sha_check = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tabInstallation.SuspendLayout();
             this.tabAMBPatcher.SuspendLayout();
@@ -186,6 +187,7 @@
             // 
             // tabAMBPatcher
             // 
+            this.tabAMBPatcher.Controls.Add(this.cb_AMBPatcher_sha_check);
             this.tabAMBPatcher.Controls.Add(this.cb_AMBPatcher_generate_log);
             this.tabAMBPatcher.Controls.Add(this.cb_AMBPatcher_progress_bar);
             this.tabAMBPatcher.Location = new System.Drawing.Point(4, 22);
@@ -281,6 +283,16 @@
             this.bCancel.UseVisualStyleBackColor = true;
             this.bCancel.Click += new System.EventHandler(this.bCancel_Click);
             // 
+            // cb_AMBPatcher_sha_check
+            // 
+            this.cb_AMBPatcher_sha_check.AutoSize = true;
+            this.cb_AMBPatcher_sha_check.Location = new System.Drawing.Point(6, 52);
+            this.cb_AMBPatcher_sha_check.Name = "cb_AMBPatcher_sha_check";
+            this.cb_AMBPatcher_sha_check.Size = new System.Drawing.Size(187, 17);
+            this.cb_AMBPatcher_sha_check.TabIndex = 2;
+            this.cb_AMBPatcher_sha_check.Text = "Check files\' SHA1 (recommended)";
+            this.cb_AMBPatcher_sha_check.UseVisualStyleBackColor = true;
+            // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -327,5 +339,6 @@
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.RadioButton radioButton2;
         private System.Windows.Forms.RadioButton radioButton1;
+        private System.Windows.Forms.CheckBox cb_AMBPatcher_sha_check;
     }
 }

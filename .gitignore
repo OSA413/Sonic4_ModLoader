@@ -1,8 +1,18 @@
-################
-#Temp directory#
-################
+##################
+#Temp directories#
+##################
 
 dist/
+
+##############
+#Unit testing#
+##############
+
+unit-tests/actual-tests/AMBPatcher/*
+!unit-tests/actual-tests/AMBPatcher/AMBPatcher_unit_test.py
+!unit-tests/actual-tests/AMBPatcher/brown_brick.dds
+!unit-tests/actual-tests/AMBPatcher/brown_bricks.dds
+!unit-tests/actual-tests/AMBPatcher/readme.md
 
 ##############
 #Dependencies#

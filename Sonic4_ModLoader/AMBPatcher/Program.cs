@@ -4,6 +4,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
+using System.Security.Cryptography;
 
 namespace AMBPatcher
 {
@@ -16,6 +17,7 @@ namespace AMBPatcher
         public static List<string> log { set; get; }
         public static bool write_log { set; get; }
         public static bool progress_bar { set; get; }
+        public static bool sha_check { get; set; }
 
         static void ConsoleProgressBar(int i, int max_i, string title, int bar_len)
         {
@@ -39,6 +41,7 @@ namespace AMBPatcher
             progress_bar = true;
             write_log = false;
             log = new List<string>();
+            sha_check = true;
 
             if (File.Exists("AMBPatcher.cfg"))
             {
@@ -53,14 +56,27 @@ namespace AMBPatcher
                     {
                         write_log = Convert.ToBoolean(Convert.ToInt32(String.Join("=", cfg_file[j].Split('=').Skip(1))));
                     }
+                    else if (cfg_file[j].StartsWith("SHACheck="))
+                    {
+                        sha_check = Convert.ToBoolean(Convert.ToInt32(String.Join("=", cfg_file[j].Split('=').Skip(1))));
+                    }
                 }
             }
+        }
+
+        static string Sha1(byte[] file)
+        {
+            byte[] hash;
+            string str_hash = "";
+            hash = new SHA1CryptoServiceProvider().ComputeHash(file);
+            foreach (byte b in hash) { str_hash += b.ToString("X"); }
+            return str_hash;
         }
 
         //////////////////
         //Main functions//
         //////////////////
-        
+
         //File as bytes (raw file)
         static List<Tuple<string, int, int>> AMB_Read(byte[] raw_file)
         {
@@ -422,20 +438,79 @@ namespace AMBPatcher
                 Backup(file_name);
                 if (file_name.ToUpper().EndsWith(".AMB"))
                 {
+                    bool files_changed = false;
+                    if (!sha_check) { files_changed = true; }
+                    
+                    List<string> sha_list = new List<string> { };
+
+                    string orig_file_sha_root = "mods_sha" + Path.DirectorySeparatorChar + file_name;
+                    
+                    if (Directory.Exists(orig_file_sha_root))
+                    {
+                        sha_list = new List<string>(Directory.GetFiles(orig_file_sha_root, "*.txt"));
+                    }
+
+                    //Checking SHA1s
                     for (int i = 0; i < mod_files.Count; i++)
                     {
-                        string mod_file_full = String.Join(Path.DirectorySeparatorChar.ToString(), new string[] { "mods", mod_paths[i], mod_files[i] });
+                        if (files_changed) { break; }
 
-                        if (progress_bar) { ConsoleProgressBar(i, mod_files.Count, mod_file_full, 32); }
-
-                        if (file_name == mod_files[i])
+                        string mod_file_full = String.Join(Path.DirectorySeparatorChar.ToString(), new string[] { "mods",     mod_paths[i], mod_files[i] });
+                        string mod_file_sha  = String.Join(Path.DirectorySeparatorChar.ToString(), new string[] { "mods_sha", mod_files[i] + ".txt" });
+                        
+                        if (sha_list.Contains(mod_file_sha))
                         {
-                            if (write_log) { log.Add("PatchAll: replacing " + file_name + " with " + mod_file_full); }
-                            File.Copy(mod_file_full, file_name, true);
+                            sha_list.Remove(mod_file_sha);
                         }
                         else
                         {
-                            AMB_Patch(file_name, mod_file_full);
+                            files_changed = true;
+                            break;
+                        }
+
+                        if (File.Exists(mod_file_sha))
+                        {
+                            string sha_tmp = Sha1(File.ReadAllBytes(mod_file_full));
+                            if (sha_tmp != File.ReadAllText(mod_file_sha)) { files_changed = true; }
+                        }
+                        else { files_changed = true; }
+                    }
+
+                    //Checking if there're removed files
+                    if (!files_changed && sha_list.Count > 0)
+                    {
+                        files_changed = true;
+
+                        foreach (string file in sha_list)
+                        {
+                            File.Delete(file);
+                        }
+                    }
+
+                    //Patching
+                    if (files_changed)
+                    {
+                        for (int i = 0; i < mod_files.Count; i++)
+                        {
+                            string mod_file_full = String.Join(Path.DirectorySeparatorChar.ToString(), new string[] { "mods", mod_paths[i], mod_files[i] });
+
+                            if (progress_bar) { ConsoleProgressBar(i, mod_files.Count, mod_file_full, 32); }
+
+                            if (file_name == mod_files[i])
+                            {
+                                if (write_log) { log.Add("PatchAll: replacing " + file_name + " with " + mod_file_full); }
+                                File.Copy(mod_file_full, file_name, true);
+                            }
+                            else
+                            {
+                                AMB_Patch(file_name, mod_file_full);
+                            }
+
+                            string sha_file = "mods_sha" + Path.DirectorySeparatorChar + mod_files[i] + ".txt";
+                            string sha_dir = Path.GetDirectoryName(sha_file);
+                            
+                            if (!Directory.Exists(sha_dir)) { Directory.CreateDirectory(sha_dir); }
+                            File.WriteAllText(sha_file, Sha1(File.ReadAllBytes(mod_file_full)));
                         }
                     }
                 }
@@ -515,9 +590,9 @@ namespace AMBPatcher
                  */
                 string[] ini_mods = File.ReadAllLines("mods/mods.ini");
 
-                List<string> orig_files = new List<string>();
-                List<List<string>> mod_files = new List<List<string>>();
-                List<List<string>> mod_dirs = new List<List<string>>();
+                List<string>       orig_files = new List<string>();
+                List<List<string>> mod_files  = new List<List<string>>();
+                List<List<string>> mod_dirs   = new List<List<string>>();
 
                 for (int i = 0; i < ini_mods.Length; i++)
                 {
