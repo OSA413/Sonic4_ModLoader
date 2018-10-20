@@ -48,4 +48,4 @@ COPY "dependencies\SonicAudioTools\CsbEditor.exe"		%dist%"CsbEditor.exe"
 CD dist
 
 ::Archiving
-%SevenZ%\7z a "Sonic4ModLoader.zip" * -mx=9
+%SevenZ%\7z a "Sonic4ModLoader.7z" * -mx=9

@@ -17,5 +17,5 @@ cp "./docs/README-tldr.txt" "./dist/Sonic4ModLoader/README-tldr.txt"
 
 
 #Archiving
-7z a "./dist/Sonic4ModLoader.zip" ./dist/* -mx=9
+7z a "./dist/Sonic4ModLoader.7z" ./dist/* -mx=9
 
