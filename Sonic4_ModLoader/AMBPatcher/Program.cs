@@ -738,10 +738,6 @@ namespace AMBPatcher
                 {
                     modified_files.Add(test[i].Item1);
                     Restore(test[i].Item1);
-                    if (SHACheck)
-                    {
-                        Directory.Delete("mods_sha" + Path.DirectorySeparatorChar + test[i].Item1, true);
-                    }
                     if (File.Exists(test[i].Item1.Substring(0, test[i].Item1.Length - 4) + ".CPK"))
                     {
                         Restore(test[i].Item1.Substring(0, test[i].Item1.Length - 4) + ".CPK");
