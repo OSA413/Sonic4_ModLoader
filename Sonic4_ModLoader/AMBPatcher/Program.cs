@@ -14,10 +14,10 @@ namespace AMBPatcher
          * The log wont help you if your game is crashing, but it can tell you if you've named a file 
          * in the wrong way (e.g. haven't removed "_extracted" in the directory name).
          */
-        public static List<string> log { set; get; }
-        public static bool write_log { set; get; }
-        public static bool progress_bar { set; get; }
-        public static bool sha_check { get; set; }
+        public static List<string> Log { set; get; }
+        public static bool GenerateLog { set; get; }
+        public static bool ProgressBar { set; get; }
+        public static bool SHACheck { get; set; }
 
         static void ConsoleProgressBar(int i, int max_i, string title, int bar_len)
         {
@@ -38,10 +38,10 @@ namespace AMBPatcher
 
         static void Load_Settings()
         {
-            progress_bar = true;
-            write_log = false;
-            log = new List<string>();
-            sha_check = true;
+            ProgressBar = true;
+            GenerateLog = false;
+            Log = new List<string>();
+            SHACheck = true;
 
             if (File.Exists("AMBPatcher.cfg"))
             {
@@ -50,15 +50,15 @@ namespace AMBPatcher
                 {
                     if (cfg_file[j].StartsWith("ProgressBar="))
                     {
-                        progress_bar = Convert.ToBoolean(Convert.ToInt32(String.Join("=", cfg_file[j].Split('=').Skip(1))));
+                        ProgressBar = Convert.ToBoolean(Convert.ToInt32(String.Join("=", cfg_file[j].Split('=').Skip(1))));
                     }
                     else if (cfg_file[j].StartsWith("GenerateLog="))
                     {
-                        write_log = Convert.ToBoolean(Convert.ToInt32(String.Join("=", cfg_file[j].Split('=').Skip(1))));
+                        GenerateLog = Convert.ToBoolean(Convert.ToInt32(String.Join("=", cfg_file[j].Split('=').Skip(1))));
                     }
                     else if (cfg_file[j].StartsWith("SHACheck="))
                     {
-                        sha_check = Convert.ToBoolean(Convert.ToInt32(String.Join("=", cfg_file[j].Split('=').Skip(1))));
+                        SHACheck = Convert.ToBoolean(Convert.ToInt32(String.Join("=", cfg_file[j].Split('=').Skip(1))));
                     }
                 }
             }
@@ -316,7 +316,7 @@ namespace AMBPatcher
                 //The original file will be replaced
                 if (raw_mod_file.Length <= files[index].Item3)
                 {
-                    if (write_log) { log.Add("AMB_Patch: " + mod_file + " 's length is OK, replacing..."); }
+                    if (GenerateLog) { Log.Add("AMB_Patch: " + mod_file + " 's length is OK, replacing..."); }
                     for (int i = 0; i < files[index].Item3; i++)
                     {
                         if (raw_mod_file.Length - 1 >= i)
@@ -332,7 +332,7 @@ namespace AMBPatcher
                 //Else the AMB file will be expanded
                 else
                 {
-                    if (write_log) { log.Add("AMB_Patch: " + mod_file + " 's length is bigger than the original length, expanding..."); }
+                    if (GenerateLog) { Log.Add("AMB_Patch: " + mod_file + " 's length is bigger than the original length, expanding..."); }
                     //Splitting the AMB file into three parts
                     //Before the file data
                     byte[] part_one = new byte[files[index].Item2];
@@ -419,7 +419,7 @@ namespace AMBPatcher
             }
             else
             {
-                if (write_log) { log.Add("AMB_Patch: " + mod_file + " is not in " + orig_file); }
+                if (GenerateLog) { Log.Add("AMB_Patch: " + mod_file + " is not in " + orig_file); }
             }
             return raw_file;
         }
@@ -439,7 +439,7 @@ namespace AMBPatcher
                 if (file_name.ToUpper().EndsWith(".AMB"))
                 {
                     bool files_changed = false;
-                    if (!sha_check) { files_changed = true; }
+                    if (!SHACheck) { files_changed = true; }
                     
                     List<string> sha_list = new List<string> { };
 
@@ -494,11 +494,11 @@ namespace AMBPatcher
                         {
                             string mod_file_full = String.Join(Path.DirectorySeparatorChar.ToString(), new string[] { "mods", mod_paths[i], mod_files[i] });
 
-                            if (progress_bar) { ConsoleProgressBar(i, mod_files.Count, mod_file_full, 32); }
+                            if (ProgressBar) { ConsoleProgressBar(i, mod_files.Count, mod_file_full, 32); }
 
                             if (file_name == mod_files[i])
                             {
-                                if (write_log) { log.Add("PatchAll: replacing " + file_name + " with " + mod_file_full); }
+                                if (GenerateLog) { Log.Add("PatchAll: replacing " + file_name + " with " + mod_file_full); }
                                 File.Copy(mod_file_full, file_name, true);
                             }
                             else
@@ -522,7 +522,7 @@ namespace AMBPatcher
                         Backup(file_name.Substring(0, file_name.Length - 4) + ".CPK");
                     }
 
-                    if (write_log) { log.Add("PatchAll: asking CsbEditor to unpack " + file_name); }
+                    if (GenerateLog) { Log.Add("PatchAll: asking CsbEditor to unpack " + file_name); }
                     ConsoleProgressBar(0, 100, "Asking CsbEditor to unpack " + file_name, 32);
 
                     //Needs CSB Editor (from SonicAudioTools) to work
@@ -536,12 +536,12 @@ namespace AMBPatcher
                         string mod_file = String.Join(Path.DirectorySeparatorChar.ToString(), new string[] { "mods", mod_paths[i], mod_files[i] });
 
                         ConsoleProgressBar(i, mod_files.Count, mod_file, 32);
-                        if (write_log) { log.Add("PatchAll: copying " + mod_file + " to " + mod_files[i]); }
+                        if (GenerateLog) { Log.Add("PatchAll: copying " + mod_file + " to " + mod_files[i]); }
 
                         File.Copy(mod_file , mod_files[i], true);
                     }
 
-                    if (write_log) { log.Add("PatchAll: asking CsbEditor to repack " + file_name); }
+                    if (GenerateLog) { Log.Add("PatchAll: asking CsbEditor to repack " + file_name); }
                     ConsoleProgressBar(99, 100, "Asking CsbEditor to repack " + file_name, 32);
                     startInfo.Arguments = file_name.Substring(0, file_name.Length - 4);
                     Process.Start(startInfo).WaitForExit();
@@ -549,7 +549,7 @@ namespace AMBPatcher
             }
             else
             {
-                if (write_log) { log.Add("PatchAll: " + file_name + " file not found"); }
+                if (GenerateLog) { Log.Add("PatchAll: " + file_name + " file not found"); }
             }
         }
 
@@ -670,9 +670,9 @@ namespace AMBPatcher
             }
             else
             {
-                if (write_log)
+                if (GenerateLog)
                 {
-                    log.Add("GetModFiles: \"mods/mods.ini\" file not found");
+                    Log.Add("GetModFiles: \"mods/mods.ini\" file not found");
                 }
             }
             return result;
@@ -698,22 +698,22 @@ namespace AMBPatcher
 
             if (args.Length == 0)
             {
-                if (write_log) { log.Add("Getting list of enabled mods..."); }
+                if (GenerateLog) { Log.Add("Getting list of enabled mods..."); }
                 var test = GetModFiles();
 
-                if (write_log)
+                if (GenerateLog)
                 {
-                    log.Add("====================");
-                    log.Add("File list:");
+                    Log.Add("====================");
+                    Log.Add("File list:");
                     for (int i = 0; i < test.Count; i++)
                     {
-                        log.Add("\n" + test[i].Item1);
+                        Log.Add("\n" + test[i].Item1);
                         for (int j = 0; j < test[i].Item2.Count; j++)
                         {
-                            log.Add("\t" + test[i].Item2[j] + "\t" + test[i].Item3[j]);
+                            Log.Add("\t" + test[i].Item2[j] + "\t" + test[i].Item3[j]);
                         }
                     }
-                    log.Add("====================");
+                    Log.Add("====================");
                 }
 
                 List<string> mods_prev = new List<string> { };
@@ -724,9 +724,9 @@ namespace AMBPatcher
                     mods_prev = File.ReadAllLines(@"mods\mods_prev").ToList<string>();
                 }
 
-                if (write_log) { log.Add("Patching original files..."); }
+                if (GenerateLog) { Log.Add("Patching original files..."); }
 
-                if (progress_bar)
+                if (ProgressBar)
                 {
                     Console.WriteLine("Doing absolutely nothing!");
                     Console.WriteLine("Progress bar goes here");
@@ -743,7 +743,7 @@ namespace AMBPatcher
                         Restore(test[i].Item1.Substring(0, test[i].Item1.Length - 4) + ".CPK");
                     }
 
-                    if (progress_bar)
+                    if (ProgressBar)
                     {
                         ConsoleProgressBar(i, test.Count, "Modifying \"" + test[i].Item1 + "\"...", 32);
                         Console.CursorTop += 2;
@@ -751,35 +751,35 @@ namespace AMBPatcher
                     PatchAll(test[i].Item1, test[i].Item2, test[i].Item3);
                     mods_prev.Remove(test[i].Item1);
 
-                    if (progress_bar) { Console.CursorTop -= 2; }
+                    if (ProgressBar) { Console.CursorTop -= 2; }
                 }
 
-                if (progress_bar)
+                if (ProgressBar)
                 {
                     ConsoleProgressBar(1, 1, "", 32);
                     Console.CursorTop += 2;
                     ConsoleProgressBar(1, 1, "", 32);
                 }
 
-                if (write_log) { log.Add("\nRestoring unchanged files..."); }
+                if (GenerateLog) { Log.Add("\nRestoring unchanged files..."); }
                 for (int i = 0; i < mods_prev.Count; i++)
                 {
-                    if (write_log) { log.Add("Restoring " + mods_prev[i]); }
+                    if (GenerateLog) { Log.Add("Restoring " + mods_prev[i]); }
                     Restore(mods_prev[i]);
                     if (File.Exists(mods_prev[i].Substring(0, mods_prev[i].Length - 4) + ".CPK"))
                     {
                         Restore(mods_prev[i].Substring(0, mods_prev[i].Length - 4) + ".CPK");
                     }
                 }
-                if (write_log) { log.Add("Restored"); }
+                if (GenerateLog) { Log.Add("Restored"); }
 
-                if (write_log) { log.Add("\nSaving list of modified files..."); }
+                if (GenerateLog) { Log.Add("\nSaving list of modified files..."); }
                 File.WriteAllText(@"mods\mods_prev", string.Join("\n", modified_files.ToArray()));
-                if (write_log) { log.Add("Saved"); }
+                if (GenerateLog) { Log.Add("Saved"); }
 
-                if (write_log) { log.Add("\nFinished."); }
+                if (GenerateLog) { Log.Add("\nFinished."); }
 
-                if (write_log) { File.WriteAllLines("AMBPatcher.log", log.ToArray()); }
+                if (GenerateLog) { File.WriteAllLines("AMBPatcher.log", Log.ToArray()); }
             }
 
             else if (args.Length == 1)
