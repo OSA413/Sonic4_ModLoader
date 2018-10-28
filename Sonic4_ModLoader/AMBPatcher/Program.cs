@@ -447,7 +447,7 @@ namespace AMBPatcher
                     
                     if (Directory.Exists(orig_file_sha_root))
                     {
-                        sha_list = new List<string>(Directory.GetFiles(orig_file_sha_root, "*.txt"));
+                        sha_list = new List<string>(Directory.GetFiles(orig_file_sha_root, "*.txt", SearchOption.AllDirectories));
                     }
 
                     //Checking SHA1s
