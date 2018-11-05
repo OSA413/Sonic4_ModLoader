@@ -431,7 +431,7 @@ namespace AMBPatcher
             File.WriteAllBytes(file_name, raw_file);
         }
         
-        static void PatchAll(string file_name, List<string> mod_files, List<string> mod_paths)
+        static void PatchAll(string file_name, List<string> mod_files, List<string> mod_paths, bool recover_if_changed = false)
         {
             if (File.Exists(file_name))
             {
@@ -490,6 +490,15 @@ namespace AMBPatcher
                     //Patching
                     if (files_changed)
                     {
+                        if (recover_if_changed)
+                        {
+                            Restore(file_name);
+                            if (File.Exists(file_name.Substring(0, file_name.Length - 4) + ".CPK"))
+                            {
+                                Restore(file_name.Substring(0, file_name.Length - 4) + ".CPK");
+                            }
+                        }
+
                         for (int i = 0; i < mod_files.Count; i++)
                         {
                             string mod_file_full = String.Join(Path.DirectorySeparatorChar.ToString(), new string[] { "mods", mod_paths[i], mod_files[i] });
@@ -737,18 +746,13 @@ namespace AMBPatcher
                 for (int i = 0; i < test.Count; i++)
                 {
                     modified_files.Add(test[i].Item1);
-                    Restore(test[i].Item1);
-                    if (File.Exists(test[i].Item1.Substring(0, test[i].Item1.Length - 4) + ".CPK"))
-                    {
-                        Restore(test[i].Item1.Substring(0, test[i].Item1.Length - 4) + ".CPK");
-                    }
-
+                    
                     if (ProgressBar)
                     {
                         ConsoleProgressBar(i, test.Count, "Modifying \"" + test[i].Item1 + "\"...", 32);
                         Console.CursorTop += 2;
                     }
-                    PatchAll(test[i].Item1, test[i].Item2, test[i].Item3);
+                    PatchAll(test[i].Item1, test[i].Item2, test[i].Item3, true);
                     mods_prev.Remove(test[i].Item1);
 
                     if (ProgressBar) { Console.CursorTop -= 2; }
