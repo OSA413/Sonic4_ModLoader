@@ -497,6 +497,8 @@ namespace AMBPatcher
                             {
                                 Restore(file_name.Substring(0, file_name.Length - 4) + ".CPK");
                             }
+                            if (GenerateLog) { Log.Add("PatchAll: file " + file_name + " was restored."); }
+                            
                         }
 
                         for (int i = 0; i < mod_files.Count; i++)
@@ -522,6 +524,7 @@ namespace AMBPatcher
                             File.WriteAllText(sha_file, Sha1(File.ReadAllBytes(mod_file_full)));
                         }
                     }
+                    else if (GenerateLog) { Log.Add("PatchAll: file " + file_name + " wasn't changed (SHA1)."); }
                 }
                 else if (file_name.ToUpper().EndsWith(".CSB"))
                 {
