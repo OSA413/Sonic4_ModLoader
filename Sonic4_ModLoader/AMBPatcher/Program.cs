@@ -365,16 +365,10 @@ namespace AMBPatcher
 
                     //The mod file
                     int part_two_len;
-                    //This simply adds 0x00 at the the of the file
-                    if (raw_mod_file.Length % 16 == 0)
-                    {
-                        part_two_len = raw_mod_file.Length - raw_mod_file.Length % 16;
-                    }
-                    else
-                    {
-                        part_two_len = raw_mod_file.Length - raw_mod_file.Length % 16 + 16;
-                    }
 
+                    //This simply adds 0x00 at the the of the file
+                    part_two_len = raw_mod_file.Length + (16 - raw_mod_file.Length % 16) % 16;
+                   
                     byte[] part_two = new byte[part_two_len];
                     Array.Copy(raw_mod_file, 0, part_two, 0, raw_mod_file.Length);
 
@@ -435,7 +429,6 @@ namespace AMBPatcher
         {
             if (File.Exists(file_name))
             {
-                Backup(file_name);
                 if (file_name.ToUpper().EndsWith(".AMB"))
                 {
                     bool files_changed = false;
@@ -528,12 +521,6 @@ namespace AMBPatcher
                 }
                 else if (file_name.ToUpper().EndsWith(".CSB"))
                 {
-                    //Some CSB files may have CPK archive
-                    if (File.Exists(file_name.Substring(0, file_name.Length - 4) + ".CPK"))
-                    {
-                        Backup(file_name.Substring(0, file_name.Length - 4) + ".CPK");
-                    }
-
                     if (GenerateLog) { Log.Add("PatchAll: asking CsbEditor to unpack " + file_name); }
                     ConsoleProgressBar(0, 100, "Asking CsbEditor to unpack " + file_name, 32);
 
@@ -755,6 +742,14 @@ namespace AMBPatcher
                         ConsoleProgressBar(i, test.Count, "Modifying \"" + test[i].Item1 + "\"...", 32);
                         Console.CursorTop += 2;
                     }
+
+                    Backup(test[i].Item1);
+                    //Some CSB files may have CPK archive
+                    if (File.Exists(test[i].Item1.Substring(0, test[i].Item1.Length - 4) + ".CPK"))
+                    {
+                        Backup(test[i].Item1.Substring(0, test[i].Item1.Length - 4) + ".CPK");
+                    }
+
                     PatchAll(test[i].Item1, test[i].Item2, test[i].Item3, true);
                     mods_prev.Remove(test[i].Item1);
 
