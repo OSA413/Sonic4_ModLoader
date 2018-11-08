@@ -687,6 +687,8 @@ namespace AMBPatcher
             Console.WriteLine("\tAMBPatcher.exe read [AMB file] - Prints content of [AMB file]");
             Console.WriteLine("\tAMBPatcher.exe extract [AMB file] [dest dir] - Extract all files from [AMB file] to [dest dir] directory.");
             Console.WriteLine("\tAMBPatcher.exe patch [AMB file] [another file] - Patch [AMB file] by [another file] if [another file] is in [AMB file].");
+            Console.WriteLine("\tAMBPatcher.exe [AMB file] [directory] and");
+            Console.WriteLine("\tAMBPatcher.exe patch [AMB file] [directory] - Patch [AMB file] by all files in [directory] if those files are in [AMB file].");
             Console.WriteLine("\tAMBPatcher.exe -h and");
             Console.WriteLine("\tAMBPatcher.exe --help - Show this message.");
         }
@@ -833,6 +835,17 @@ namespace AMBPatcher
                     }
                     else { ShowHelpMessage(); }
                 }
+                else if (File.Exists(args[0]) && Directory.Exists(args[1]))
+                {
+                    var files = Directory.GetFiles(args[1], "*", SearchOption.AllDirectories);
+
+                    foreach (string file in files)
+                    {
+                        Console.WriteLine("Patching by \"" + file + "\"...");
+                        AMB_Patch(args[0], file);
+                    }
+                    Console.WriteLine("Done.");
+                }
                 else { ShowHelpMessage(); }
             }
 
@@ -855,6 +868,17 @@ namespace AMBPatcher
                     if (File.Exists(args[1]) && File.Exists(args[2]))
                     {
                         AMB_Patch(args[1], args[2]);
+                    }
+                    else if (File.Exists(args[1]) && Directory.Exists(args[2]))
+                    {
+                        var files = Directory.GetFiles(args[2], "*", SearchOption.AllDirectories);
+
+                        foreach (string file in files)
+                        {
+                            Console.WriteLine("Patching by \""+file+"\"...");
+                            AMB_Patch(args[1], file);
+                        }
+                        Console.WriteLine("Done.");
                     }
                     else { ShowHelpMessage(); }
                 }
