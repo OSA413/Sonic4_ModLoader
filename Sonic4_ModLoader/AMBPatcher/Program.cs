@@ -73,6 +73,18 @@ namespace AMBPatcher
             return str_hash;
         }
 
+        static void Sha1Remove(string file_name)
+        {
+            string orig_file_sha_root = "mods_sha" + Path.DirectorySeparatorChar + file_name;
+
+            var sha1_files = Directory.GetFiles(orig_file_sha_root, "*", SearchOption.AllDirectories);
+
+            foreach (string file in sha1_files)
+            {
+                File.Delete(file);
+            }
+        }
+
         //////////////////
         //Main functions//
         //////////////////
@@ -470,6 +482,7 @@ namespace AMBPatcher
                     }
 
                     //Checking if there're removed files
+                    //And removing those SHA1s
                     if (sha_list.Count > 0)
                     {
                         files_changed = true;
@@ -770,6 +783,8 @@ namespace AMBPatcher
                 {
                     if (GenerateLog) { Log.Add("Restoring " + mods_prev[i]); }
                     Restore(mods_prev[i]);
+                    Sha1Remove(mods_prev[i]);
+
                     if (File.Exists(mods_prev[i].Substring(0, mods_prev[i].Length - 4) + ".CPK"))
                     {
                         Restore(mods_prev[i].Substring(0, mods_prev[i].Length - 4) + ".CPK");
