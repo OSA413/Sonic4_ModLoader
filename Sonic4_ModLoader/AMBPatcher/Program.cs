@@ -470,7 +470,7 @@ namespace AMBPatcher
                     }
 
                     //Checking if there're removed files
-                    if (!files_changed && sha_list.Count > 0)
+                    if (sha_list.Count > 0)
                     {
                         files_changed = true;
 
