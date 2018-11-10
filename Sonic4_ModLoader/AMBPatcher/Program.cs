@@ -72,8 +72,8 @@ namespace AMBPatcher
             foreach (byte b in hash) { str_hash += b.ToString("X"); }
             return str_hash;
         }
-
-        static void Sha1Remove(string file_name)
+        
+        static void ShaRemove(string file_name)
         {
             string orig_file_sha_root = "mods_sha" + Path.DirectorySeparatorChar + file_name;
 
@@ -83,6 +83,71 @@ namespace AMBPatcher
             {
                 File.Delete(file);
             }
+        }
+
+        static bool ShaChanged(string file_name, List<string> mod_files, List<string> mod_paths)
+        {
+            if (!SHACheck) { return true; }
+
+            bool files_changed = false;
+            
+            List<string> sha_list = new List<string> { };
+
+            string orig_file_sha_root = "mods_sha" + Path.DirectorySeparatorChar + file_name;
+
+            if (Directory.Exists(orig_file_sha_root))
+            {
+                sha_list = new List<string>(Directory.GetFiles(orig_file_sha_root, "*.txt", SearchOption.AllDirectories));
+            }
+
+            //Checking SHA1s
+            for (int i = 0; i < mod_files.Count; i++)
+            {
+                if (files_changed) { break; }
+
+                string mod_file_full = String.Join(Path.DirectorySeparatorChar.ToString(), new string[] { "mods", mod_paths[i], mod_files[i] });
+                string mod_file_sha = String.Join(Path.DirectorySeparatorChar.ToString(), new string[] { "mods_sha", mod_files[i] + ".txt" });
+
+                if (sha_list.Contains(mod_file_sha))
+                {
+                    sha_list.Remove(mod_file_sha);
+                }
+                else
+                {
+                    files_changed = true;
+                    break;
+                }
+
+                if (File.Exists(mod_file_sha))
+                {
+                    string sha_tmp = Sha1(File.ReadAllBytes(mod_file_full));
+                    if (sha_tmp != File.ReadAllText(mod_file_sha)) { files_changed = true; }
+                }
+                else { files_changed = true; }
+            }
+
+            //Checking if there're removed files
+            //And removing those SHA1s
+            if (sha_list.Count > 0)
+            {
+                files_changed = true;
+
+                foreach (string file in sha_list)
+                {
+                    File.Delete(file);
+                }
+            }
+
+            return files_changed;
+        }
+
+        static void ShaWrite(string relative_mod_file_path, string full_mod_file_path)
+        {
+            string sha_file = "mods_sha" + Path.DirectorySeparatorChar + relative_mod_file_path + ".txt";
+            string sha_dir = Path.GetDirectoryName(sha_file);
+
+            if (!Directory.Exists(sha_dir)) { Directory.CreateDirectory(sha_dir); }
+            File.WriteAllText(sha_file, Sha1(File.ReadAllBytes(full_mod_file_path)));
         }
 
         //////////////////
@@ -437,75 +502,20 @@ namespace AMBPatcher
             File.WriteAllBytes(file_name, raw_file);
         }
         
-        static void PatchAll(string file_name, List<string> mod_files, List<string> mod_paths, bool recover_if_changed = false)
+        static void PatchAll(string file_name, List<string> mod_files, List<string> mod_paths)
         {
             if (File.Exists(file_name))
             {
                 if (file_name.ToUpper().EndsWith(".AMB"))
                 {
-                    bool files_changed = false;
-                    if (!SHACheck) { files_changed = true; }
-                    
-                    List<string> sha_list = new List<string> { };
-
-                    string orig_file_sha_root = "mods_sha" + Path.DirectorySeparatorChar + file_name;
-                    
-                    if (Directory.Exists(orig_file_sha_root))
+                    if (ShaChanged(file_name, mod_files, mod_paths))
                     {
-                        sha_list = new List<string>(Directory.GetFiles(orig_file_sha_root, "*.txt", SearchOption.AllDirectories));
-                    }
-
-                    //Checking SHA1s
-                    for (int i = 0; i < mod_files.Count; i++)
-                    {
-                        if (files_changed) { break; }
-
-                        string mod_file_full = String.Join(Path.DirectorySeparatorChar.ToString(), new string[] { "mods",     mod_paths[i], mod_files[i] });
-                        string mod_file_sha  = String.Join(Path.DirectorySeparatorChar.ToString(), new string[] { "mods_sha", mod_files[i] + ".txt" });
-                        
-                        if (sha_list.Contains(mod_file_sha))
+                        Restore(file_name);
+                        if (File.Exists(file_name.Substring(0, file_name.Length - 4) + ".CPK"))
                         {
-                            sha_list.Remove(mod_file_sha);
+                            Restore(file_name.Substring(0, file_name.Length - 4) + ".CPK");
                         }
-                        else
-                        {
-                            files_changed = true;
-                            break;
-                        }
-
-                        if (File.Exists(mod_file_sha))
-                        {
-                            string sha_tmp = Sha1(File.ReadAllBytes(mod_file_full));
-                            if (sha_tmp != File.ReadAllText(mod_file_sha)) { files_changed = true; }
-                        }
-                        else { files_changed = true; }
-                    }
-
-                    //Checking if there're removed files
-                    //And removing those SHA1s
-                    if (sha_list.Count > 0)
-                    {
-                        files_changed = true;
-
-                        foreach (string file in sha_list)
-                        {
-                            File.Delete(file);
-                        }
-                    }
-
-                    //Patching
-                    if (files_changed)
-                    {
-                        if (recover_if_changed)
-                        {
-                            Restore(file_name);
-                            if (File.Exists(file_name.Substring(0, file_name.Length - 4) + ".CPK"))
-                            {
-                                Restore(file_name.Substring(0, file_name.Length - 4) + ".CPK");
-                            }
-                            if (GenerateLog) { Log.Add("PatchAll: file " + file_name + " was restored."); }
-                            
-                        }
+                        if (GenerateLog) { Log.Add("PatchAll: file " + file_name + " was restored."); }
 
                         for (int i = 0; i < mod_files.Count; i++)
                         {
@@ -523,40 +533,47 @@ namespace AMBPatcher
                                 AMB_Patch(file_name, mod_file_full);
                             }
 
-                            string sha_file = "mods_sha" + Path.DirectorySeparatorChar + mod_files[i] + ".txt";
-                            string sha_dir = Path.GetDirectoryName(sha_file);
-                            
-                            if (!Directory.Exists(sha_dir)) { Directory.CreateDirectory(sha_dir); }
-                            File.WriteAllText(sha_file, Sha1(File.ReadAllBytes(mod_file_full)));
+                            ShaWrite(mod_files[i], mod_file_full);
                         }
                     }
                     else if (GenerateLog) { Log.Add("PatchAll: file " + file_name + " wasn't changed (SHA1)."); }
                 }
                 else if (file_name.ToUpper().EndsWith(".CSB"))
                 {
-                    if (GenerateLog) { Log.Add("PatchAll: asking CsbEditor to unpack " + file_name); }
-                    ConsoleProgressBar(0, 100, "Asking CsbEditor to unpack " + file_name, 32);
-
-                    //Needs CSB Editor (from SonicAudioTools) to work
-                    ProcessStartInfo startInfo = new ProcessStartInfo();
-                    startInfo.FileName = "CsbEditor.exe";
-                    startInfo.Arguments = file_name;
-                    Process.Start(startInfo).WaitForExit();
-                    
-                    for (int i = 0; i < mod_files.Count; i++)
+                    if (ShaChanged(file_name.Substring(0, file_name.Length - 4), mod_files, mod_paths))
                     {
-                        string mod_file = String.Join(Path.DirectorySeparatorChar.ToString(), new string[] { "mods", mod_paths[i], mod_files[i] });
+                        Restore(file_name);
+                        if (File.Exists(file_name.Substring(0, file_name.Length - 4) + ".CPK"))
+                        {
+                            Restore(file_name.Substring(0, file_name.Length - 4) + ".CPK");
+                        }
 
-                        ConsoleProgressBar(i, mod_files.Count, mod_file, 32);
-                        if (GenerateLog) { Log.Add("PatchAll: copying " + mod_file + " to " + mod_files[i]); }
+                        if (GenerateLog) { Log.Add("PatchAll: asking CsbEditor to unpack " + file_name); }
+                        ConsoleProgressBar(0, 100, "Asking CsbEditor to unpack " + file_name, 32);
 
-                        File.Copy(mod_file , mod_files[i], true);
+                        //Needs CSB Editor (from SonicAudioTools) to work
+                        ProcessStartInfo startInfo = new ProcessStartInfo();
+                        startInfo.FileName = "CsbEditor.exe";
+                        startInfo.Arguments = file_name;
+                        Process.Start(startInfo).WaitForExit();
+
+                        for (int i = 0; i < mod_files.Count; i++)
+                        {
+                            string mod_file = String.Join(Path.DirectorySeparatorChar.ToString(), new string[] { "mods", mod_paths[i], mod_files[i] });
+
+                            ConsoleProgressBar(i, mod_files.Count, mod_file, 32);
+                            if (GenerateLog) { Log.Add("PatchAll: copying " + mod_file + " to " + mod_files[i]); }
+
+                            File.Copy(mod_file, mod_files[i], true);
+
+                            ShaWrite(mod_files[i], mod_file);
+                        }
+
+                        if (GenerateLog) { Log.Add("PatchAll: asking CsbEditor to repack " + file_name); }
+                        ConsoleProgressBar(99, 100, "Asking CsbEditor to repack " + file_name, 32);
+                        startInfo.Arguments = file_name.Substring(0, file_name.Length - 4);
+                        Process.Start(startInfo).WaitForExit();
                     }
-
-                    if (GenerateLog) { Log.Add("PatchAll: asking CsbEditor to repack " + file_name); }
-                    ConsoleProgressBar(99, 100, "Asking CsbEditor to repack " + file_name, 32);
-                    startInfo.Arguments = file_name.Substring(0, file_name.Length - 4);
-                    Process.Start(startInfo).WaitForExit();
                 }
             }
             else
@@ -765,7 +782,7 @@ namespace AMBPatcher
                         Backup(test[i].Item1.Substring(0, test[i].Item1.Length - 4) + ".CPK");
                     }
 
-                    PatchAll(test[i].Item1, test[i].Item2, test[i].Item3, true);
+                    PatchAll(test[i].Item1, test[i].Item2, test[i].Item3);
                     mods_prev.Remove(test[i].Item1);
 
                     if (ProgressBar) { Console.CursorTop -= 2; }
@@ -778,23 +795,34 @@ namespace AMBPatcher
                     ConsoleProgressBar(1, 1, "", 32);
                 }
 
-                if (GenerateLog) { Log.Add("\nRestoring unchanged files..."); }
+                if (GenerateLog) { Log.Add("\nRestoring unchanged files:"); }
                 for (int i = 0; i < mods_prev.Count; i++)
                 {
                     if (GenerateLog) { Log.Add("Restoring " + mods_prev[i]); }
-                    Restore(mods_prev[i]);
-                    Sha1Remove(mods_prev[i]);
 
+                    Restore(mods_prev[i]);
+                    //Some CSB files may have CPK archive
                     if (File.Exists(mods_prev[i].Substring(0, mods_prev[i].Length - 4) + ".CPK"))
                     {
                         Restore(mods_prev[i].Substring(0, mods_prev[i].Length - 4) + ".CPK");
                     }
+                    
+                    if (mods_prev[i].EndsWith(".CSB", StringComparison.OrdinalIgnoreCase))
+                    { ShaRemove(mods_prev[i].Substring(0, mods_prev[i].Length - 4)); }
+                    else
+                    { ShaRemove(mods_prev[i]); }
+                    
+                    
                 }
                 if (GenerateLog) { Log.Add("Restored"); }
 
                 if (GenerateLog) { Log.Add("\nSaving list of modified files..."); }
-                File.WriteAllText(@"mods\mods_prev", string.Join("\n", modified_files.ToArray()));
-                if (GenerateLog) { Log.Add("Saved"); }
+                if (Directory.Exists("mods"))
+                {
+                    File.WriteAllText(@"mods\mods_prev", string.Join("\n", modified_files.ToArray()));
+                    if (GenerateLog) { Log.Add("Saved"); }
+                }
+                else { if (GenerateLog) { Log.Add("But \"mods\" folder is not present!"); } }
 
                 if (GenerateLog) { Log.Add("\nFinished."); }
 
