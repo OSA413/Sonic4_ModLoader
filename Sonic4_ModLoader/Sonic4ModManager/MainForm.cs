@@ -429,7 +429,7 @@ namespace Sonic4ModManager
                 }
             }
         }
-        
+
         public MainForm()
         {
             if (GetInstallationStatus() == -1)
@@ -440,6 +440,19 @@ namespace Sonic4ModManager
             InitializeComponent();
             RefreshMods();
             SetModPriority();
+
+            //TOP SECRET EASTER EGG
+            string today = System.DateTime.Now.ToString("dd.MM");
+            if (new string[] {
+                "01.01", //New Year
+                "13.01", //OSA413's BD
+                "19.01", //Sonic 4:1's release day
+                "29.02", //Leap year day
+                "15.05", //Sonic 4:2's release day
+                "23.06", //Sonic's BD
+                "31.12"  //New Year
+            }.Contains(today))
+            { bRandom.Text = "I'm Feeling Lucky"; }
         }
         
         private void bSave_Click(object sender, EventArgs e)
