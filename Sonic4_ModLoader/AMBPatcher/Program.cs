@@ -18,6 +18,7 @@ namespace AMBPatcher
         public static bool GenerateLog { set; get; }
         public static bool ProgressBar { set; get; }
         public static bool SHACheck { get; set; }
+        public static int SHAType { get; set; }
 
         static void ConsoleProgressBar(int i, int max_i, string title, int bar_len)
         {
@@ -42,6 +43,7 @@ namespace AMBPatcher
             GenerateLog = false;
             Log = new List<string>();
             SHACheck = true;
+            SHAType = 1;
 
             if (File.Exists("AMBPatcher.cfg"))
             {
@@ -60,16 +62,30 @@ namespace AMBPatcher
                     {
                         SHACheck = Convert.ToBoolean(Convert.ToInt32(String.Join("=", cfg_file[j].Split('=').Skip(1))));
                     }
+                    else if (cfg_file[j].StartsWith("SHAType="))
+                    {
+                        SHAType = Convert.ToInt32(String.Join("=", cfg_file[j].Split('=').Skip(1)));
+                    }
                 }
             }
         }
 
-        static string Sha1(byte[] file)
+        static string Sha(byte[] file)
         {
             byte[] hash;
             string str_hash = "";
-            hash = new SHA1CryptoServiceProvider().ComputeHash(file);
+
+            if (SHAType == 512)
+            { hash = new SHA512CryptoServiceProvider().ComputeHash(file); }
+            else if (SHAType == 384)
+            { hash = new SHA384CryptoServiceProvider().ComputeHash(file); }
+            else if (SHAType == 256)
+            { hash = new SHA256CryptoServiceProvider().ComputeHash(file); }
+            else
+            { hash = new SHA1CryptoServiceProvider().ComputeHash(file); }
+            
             foreach (byte b in hash) { str_hash += b.ToString("X"); }
+
             return str_hash;
         }
         
@@ -120,7 +136,7 @@ namespace AMBPatcher
 
                 if (File.Exists(mod_file_sha))
                 {
-                    string sha_tmp = Sha1(File.ReadAllBytes(mod_file_full));
+                    string sha_tmp = Sha(File.ReadAllBytes(mod_file_full));
                     if (sha_tmp != File.ReadAllText(mod_file_sha)) { files_changed = true; }
                 }
                 else { files_changed = true; }
@@ -147,7 +163,7 @@ namespace AMBPatcher
             string sha_dir = Path.GetDirectoryName(sha_file);
 
             if (!Directory.Exists(sha_dir)) { Directory.CreateDirectory(sha_dir); }
-            File.WriteAllText(sha_file, Sha1(File.ReadAllBytes(full_mod_file_path)));
+            File.WriteAllText(sha_file, Sha(File.ReadAllBytes(full_mod_file_path)));
         }
 
         //////////////////

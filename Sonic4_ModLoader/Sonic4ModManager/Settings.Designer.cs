@@ -42,6 +42,8 @@
             this.label_Installation_status = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.tabAMBPatcher = new System.Windows.Forms.TabPage();
+            this.list_SHAType = new System.Windows.Forms.ComboBox();
+            this.cb_AMBPatcher_sha_check = new System.Windows.Forms.CheckBox();
             this.cb_AMBPatcher_generate_log = new System.Windows.Forms.CheckBox();
             this.cb_AMBPatcher_progress_bar = new System.Windows.Forms.CheckBox();
             this.tabAbout = new System.Windows.Forms.TabPage();
@@ -50,7 +52,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.bOK = new System.Windows.Forms.Button();
             this.bCancel = new System.Windows.Forms.Button();
-            this.cb_AMBPatcher_sha_check = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tabInstallation.SuspendLayout();
             this.tabAMBPatcher.SuspendLayout();
@@ -187,6 +188,7 @@
             // 
             // tabAMBPatcher
             // 
+            this.tabAMBPatcher.Controls.Add(this.list_SHAType);
             this.tabAMBPatcher.Controls.Add(this.cb_AMBPatcher_sha_check);
             this.tabAMBPatcher.Controls.Add(this.cb_AMBPatcher_generate_log);
             this.tabAMBPatcher.Controls.Add(this.cb_AMBPatcher_progress_bar);
@@ -197,6 +199,31 @@
             this.tabAMBPatcher.TabIndex = 1;
             this.tabAMBPatcher.Text = "AMBPatcher";
             this.tabAMBPatcher.UseVisualStyleBackColor = true;
+            // 
+            // list_SHAType
+            // 
+            this.list_SHAType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.list_SHAType.ImeMode = System.Windows.Forms.ImeMode.Disable;
+            this.list_SHAType.Items.AddRange(new object[] {
+            "1",
+            "256",
+            "384",
+            "512"});
+            this.list_SHAType.Location = new System.Drawing.Point(150, 75);
+            this.list_SHAType.Name = "list_SHAType";
+            this.list_SHAType.Size = new System.Drawing.Size(47, 21);
+            this.list_SHAType.TabIndex = 3;
+            // 
+            // cb_AMBPatcher_sha_check
+            // 
+            this.cb_AMBPatcher_sha_check.AutoSize = true;
+            this.cb_AMBPatcher_sha_check.Location = new System.Drawing.Point(6, 52);
+            this.cb_AMBPatcher_sha_check.Name = "cb_AMBPatcher_sha_check";
+            this.cb_AMBPatcher_sha_check.Size = new System.Drawing.Size(191, 17);
+            this.cb_AMBPatcher_sha_check.TabIndex = 2;
+            this.cb_AMBPatcher_sha_check.Text = "Check SHA of files (recommended)";
+            this.cb_AMBPatcher_sha_check.UseVisualStyleBackColor = true;
+            this.cb_AMBPatcher_sha_check.CheckedChanged += new System.EventHandler(this.cb_AMBPatcher_sha_check_CheckedChanged);
             // 
             // cb_AMBPatcher_generate_log
             // 
@@ -283,16 +310,6 @@
             this.bCancel.UseVisualStyleBackColor = true;
             this.bCancel.Click += new System.EventHandler(this.bCancel_Click);
             // 
-            // cb_AMBPatcher_sha_check
-            // 
-            this.cb_AMBPatcher_sha_check.AutoSize = true;
-            this.cb_AMBPatcher_sha_check.Location = new System.Drawing.Point(6, 52);
-            this.cb_AMBPatcher_sha_check.Name = "cb_AMBPatcher_sha_check";
-            this.cb_AMBPatcher_sha_check.Size = new System.Drawing.Size(187, 17);
-            this.cb_AMBPatcher_sha_check.TabIndex = 2;
-            this.cb_AMBPatcher_sha_check.Text = "Check files\' SHA1 (recommended)";
-            this.cb_AMBPatcher_sha_check.UseVisualStyleBackColor = true;
-            // 
             // Settings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -340,5 +357,6 @@
         private System.Windows.Forms.RadioButton radioButton2;
         private System.Windows.Forms.RadioButton radioButton1;
         private System.Windows.Forms.CheckBox cb_AMBPatcher_sha_check;
+        private System.Windows.Forms.ComboBox list_SHAType;
     }
 }

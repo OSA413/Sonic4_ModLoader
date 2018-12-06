@@ -78,12 +78,14 @@ namespace Sonic4ModManager
             string AMBPatcher_progress_bar = Convert.ToInt32(cb_AMBPatcher_progress_bar.Checked).ToString();
             string AMBPatcher_generate_log = Convert.ToInt32(cb_AMBPatcher_generate_log.Checked).ToString();
             string AMBPatcher_sha_check    = Convert.ToInt32(cb_AMBPatcher_sha_check.Checked).ToString();
+            string SHAType                 = list_SHAType.SelectedItem.ToString();
 
             string text = String.Join("\n", new string[]
             {
                 "ProgressBar=" + AMBPatcher_progress_bar,
                 "GenerateLog=" + AMBPatcher_generate_log,
-                "SHACheck="    + AMBPatcher_sha_check
+                "SHACheck="    + AMBPatcher_sha_check,
+                "SHAType="     + SHAType
             });
 
             File.WriteAllText("AMBPatcher.cfg", text);
@@ -95,6 +97,7 @@ namespace Sonic4ModManager
             cb_AMBPatcher_progress_bar.Checked = true;
             cb_AMBPatcher_generate_log.Checked = false;
             cb_AMBPatcher_sha_check.Checked    = true;
+            list_SHAType.SelectedIndex = 0;
 
             if (File.Exists("AMBPatcher.cfg"))
             {
@@ -112,6 +115,12 @@ namespace Sonic4ModManager
                     else if (cfg_file[j].StartsWith("SHACheck="))
                     {
                         cb_AMBPatcher_sha_check.Checked = Convert.ToBoolean(Convert.ToInt32(String.Join("=", cfg_file[j].Split('=').Skip(1))));
+                    }
+                    else if (cfg_file[j].StartsWith("SHAType="))
+                    {
+                        string tmp = String.Join("=", cfg_file[j].Split('=').Skip(1));
+                        if (tmp == "256" || tmp == "384" || tmp == "512")
+                        { list_SHAType.SelectedItem = tmp; }
                     }
                 }
             }
@@ -175,6 +184,11 @@ namespace Sonic4ModManager
         private void bCancel_Click(object sender, System.EventArgs e)
         {
             Close();
+        }
+
+        private void cb_AMBPatcher_sha_check_CheckedChanged(object sender, EventArgs e)
+        {
+            list_SHAType.Enabled = cb_AMBPatcher_sha_check.Checked;
         }
     }
 }
