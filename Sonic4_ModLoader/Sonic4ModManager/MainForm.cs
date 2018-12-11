@@ -527,6 +527,11 @@ namespace Sonic4ModManager
             }
         }
 
+        private void rtb_mod_description_LinkClicked(object sender, LinkClickedEventArgs e)
+        {
+            Process.Start(e.LinkText);
+        }
+
         private void listMods_SelectedIndexChanged(object sender, EventArgs e)
         {
             //Do nothing if nothing selected (it also deselects when changing)
@@ -574,7 +579,7 @@ namespace Sonic4ModManager
                                 { rtb_mod_description.SelectionFont = new Font(rtb_mod_description.SelectionFont, FontStyle.Strikeout | rtb_mod_description.SelectionFont.Style); }
                             }
 
-                            //Remember folks, you can't delete any text (= "") if the richbox is ReadOnly
+                            //Remember folks, you can't delete any text (= "") if the richtextbox is ReadOnly
                             //I don't know why, but you can replace text this way.
                             rtb_mod_description.ReadOnly = false;
                             rtb_mod_description.Select(j, 3 + i.Length);
