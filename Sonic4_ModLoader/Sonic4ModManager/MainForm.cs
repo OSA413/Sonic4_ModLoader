@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -531,8 +532,62 @@ namespace Sonic4ModManager
             //Do nothing if nothing selected (it also deselects when changing)
             if (listMods.SelectedItems.Count == 0) { return; }
 
-            rtb_mod_description.Lines = listMods.Items[listMods.SelectedIndices[0]].SubItems[4].Text
-                                        .Split(new[] {"\\n"}, StringSplitOptions.None);
+            //Updating description
+            rtb_mod_description.Text = listMods.Items[listMods.SelectedIndices[0]].SubItems[4].Text.Replace("\\n", "\n");
+
+            foreach (string i in new string[] { "b", "i", "u", "strike" })
+            {
+                while (rtb_mod_description.Text.Contains("[" + i + "]"))
+                {
+                    //Getting the list of all [i] and [\i]
+                    int ind = 0;
+
+                    List<int> end_lst = new List<int> { };
+                    while (rtb_mod_description.Text.Substring(ind).Contains("[\\" + i + "]"))
+                    {
+                        end_lst.Add(rtb_mod_description.Text.Substring(ind).IndexOf("[\\" + i + "]") + ind);
+                        ind = end_lst[end_lst.Count - 1] + 1;
+                    }
+
+                    int start_ind = rtb_mod_description.Text.IndexOf("[" + i + "]");
+
+                    //Formating the original text
+                    if (end_lst.Count == 0)
+                    {
+                        end_lst.Add(rtb_mod_description.Text.Length);
+                    }
+                    foreach (int j in end_lst)
+                    {
+                        if (j > start_ind)
+                        {
+                            for (int k = 0; k < j - start_ind; k++)
+                            {
+                                rtb_mod_description.Select(start_ind + k, 1);
+
+                                if (i == "b")
+                                { rtb_mod_description.SelectionFont = new Font(rtb_mod_description.SelectionFont, FontStyle.Bold | rtb_mod_description.SelectionFont.Style); }
+                                else if (i == "i")
+                                { rtb_mod_description.SelectionFont = new Font(rtb_mod_description.SelectionFont, FontStyle.Italic | rtb_mod_description.SelectionFont.Style); }
+                                else if (i == "u")
+                                { rtb_mod_description.SelectionFont = new Font(rtb_mod_description.SelectionFont, FontStyle.Underline | rtb_mod_description.SelectionFont.Style); }
+                                else if (i == "strike")
+                                { rtb_mod_description.SelectionFont = new Font(rtb_mod_description.SelectionFont, FontStyle.Strikeout | rtb_mod_description.SelectionFont.Style); }
+                            }
+
+                            //Remember folks, you can't delete any text (= "") if the richbox is ReadOnly
+                            //I don't know why, but you can replace text this way.
+                            rtb_mod_description.ReadOnly = false;
+                            rtb_mod_description.Select(j, 3 + i.Length);
+                            rtb_mod_description.SelectedText = "";
+                            rtb_mod_description.Select(start_ind, 2 + i.Length);
+                            rtb_mod_description.SelectedText = "";
+                            rtb_mod_description.ReadOnly = true;
+
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
 }
