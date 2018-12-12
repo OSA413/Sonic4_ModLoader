@@ -319,7 +319,7 @@ namespace Sonic4ModManager
             //whattodo = 0 is uninstall
             int status = GetInstallationStatus();
             string game = GetGame();
-            
+
             if ((status == 0 || status == -1) && whattodo == 1)
             {
                 //Episode 1
@@ -455,7 +455,7 @@ namespace Sonic4ModManager
             }.Contains(today))
             { bRandom.Text = "I'm Feeling Lucky"; }
         }
-        
+
         private void bSave_Click(object sender, EventArgs e)
         {
             Save();
@@ -561,6 +561,7 @@ namespace Sonic4ModManager
                     rtb_mod_description.Text = "Error: \"" + desciption_file + "\" file not found.";
                 }
             }
+
             //Description from mod.ini
             foreach (string i in new string[] { "b", "i", "u", "strike" })
             {
@@ -610,6 +611,38 @@ namespace Sonic4ModManager
                             rtb_mod_description.SelectedText = "";
                             rtb_mod_description.ReadOnly = true;
 
+                            break;
+                        }
+                    }
+                }
+            }
+
+            //Text alignment
+            if (rtb_mod_description.Text.Contains("[l]") ||
+                rtb_mod_description.Text.Contains("[c]") ||
+                rtb_mod_description.Text.Contains("[r]"))
+            {
+                int ind = 0;
+                while (rtb_mod_description.Text.Substring(ind).Contains("["))
+                {
+                    ind = rtb_mod_description.Text.Substring(ind).IndexOf("[") + ind;
+
+                    foreach (string i in new string[] { "l", "c", "r" })
+                    {
+                        if (rtb_mod_description.Text.Substring(ind, 3) == ("[" + i + "]"))
+                        {
+                            rtb_mod_description.Select(ind, 3);
+
+                            if (i == "c")
+                            { rtb_mod_description.SelectionAlignment = HorizontalAlignment.Center; }
+                            else if (i == "r")
+                            { rtb_mod_description.SelectionAlignment = HorizontalAlignment.Right; }
+                            else
+                            { rtb_mod_description.SelectionAlignment = HorizontalAlignment.Left; }
+
+                            rtb_mod_description.ReadOnly = false;
+                            rtb_mod_description.SelectedText = "";
+                            rtb_mod_description.ReadOnly = true;
                             break;
                         }
                     }
