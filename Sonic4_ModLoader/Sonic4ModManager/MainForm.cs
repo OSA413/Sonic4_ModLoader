@@ -540,6 +540,28 @@ namespace Sonic4ModManager
             //Updating description
             rtb_mod_description.Text = listMods.Items[listMods.SelectedIndices[0]].SubItems[4].Text.Replace("\\n", "\n");
 
+            //Description as a text file
+            if (rtb_mod_description.Text.StartsWith("file="))
+            {
+                string desciption_file = Path.Combine("mods", listMods.Items[listMods.SelectedIndices[0]].SubItems[3].Text, rtb_mod_description.Text.Substring(5));
+
+                if (File.Exists(desciption_file))
+                {
+                    if (desciption_file.EndsWith(".TXT", StringComparison.OrdinalIgnoreCase))
+                    {
+                        rtb_mod_description.Text = File.ReadAllText(desciption_file);
+                    }
+                    else
+                    {
+                        rtb_mod_description.Text = "Error: unsupported format of \"" + desciption_file + "\" file.";
+                    }
+                }
+                else
+                {
+                    rtb_mod_description.Text = "Error: \"" + desciption_file + "\" file not found.";
+                }
+            }
+            //Description from mod.ini
             foreach (string i in new string[] { "b", "i", "u", "strike" })
             {
                 while (rtb_mod_description.Text.Contains("[" + i + "]"))
