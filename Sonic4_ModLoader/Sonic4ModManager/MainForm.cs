@@ -540,6 +540,9 @@ namespace Sonic4ModManager
             //Updating description
             rtb_mod_description.Text = listMods.Items[listMods.SelectedIndices[0]].SubItems[4].Text.Replace("\\n", "\n");
 
+            //Tab character
+            rtb_mod_description.Text = rtb_mod_description.Text.Replace("\\t","\t");
+
             //Description as a text file
             if (rtb_mod_description.Text.StartsWith("file="))
             {
