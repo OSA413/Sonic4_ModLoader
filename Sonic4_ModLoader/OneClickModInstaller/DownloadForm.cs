@@ -244,7 +244,7 @@ namespace OneClickModInstaller
                 string mod_root_name = mod_root.Split(Path.DirectorySeparatorChar)[mod_root.Split(Path.DirectorySeparatorChar).Length - 1];
 
                 toolStripStatusLabel1.Text = "Installing downloaded mod...";
-                CopyAll(new DirectoryInfo(mod_root), new DirectoryInfo("mods" + Path.DirectorySeparatorChar + mod_root_name));
+                CopyAll(new DirectoryInfo(mod_root), new DirectoryInfo(Path.Combine("mods", mod_root_name)));
 
                 DFtEM enable_mod = new DFtEM();
                 enable_mod.ShowDialog();
@@ -269,9 +269,9 @@ namespace OneClickModInstaller
             string unit;
             int divider;
 
-            if (e.TotalBytesToReceive > 1024*1024*10)
+            if (e.TotalBytesToReceive > 1024*1024*5)
             {unit = "MBs"; divider = 1024*1024;}
-            else if (e.TotalBytesToReceive > 1024*10)
+            else if (e.TotalBytesToReceive > 1024*5)
             {unit = "KBs"; divider = 1024;}
             else
             {unit = "Bytes"; divider = 1;}

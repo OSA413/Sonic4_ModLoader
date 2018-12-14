@@ -96,8 +96,7 @@ namespace OneClickModInstaller
              * -1   = Improperly installed (something is not installed)
              * 2    = Another installation present (different path in registry)
              */
-
-
+            
             int status = 0;
             
             string game = GetGame();

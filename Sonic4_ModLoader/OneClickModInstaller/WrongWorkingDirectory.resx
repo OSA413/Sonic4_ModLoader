@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="label1.Text" xml:space="preserve">
-    <value>It seem that you have run this program in the wrong place. Installation will not be continued to prevent everything bad.
+    <value>It seem that you have run this program in the wrong place. Installation will not be continued to prevent anything bad.
 
 This program have to be placed in the root directory of the game to be installed properly.
 

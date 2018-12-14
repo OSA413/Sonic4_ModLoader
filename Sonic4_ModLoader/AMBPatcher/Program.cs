@@ -91,7 +91,7 @@ namespace AMBPatcher
         
         static void ShaRemove(string file_name)
         {
-            string orig_file_sha_root = "mods_sha" + Path.DirectorySeparatorChar + file_name;
+            string orig_file_sha_root = Path.Combine("mods_sha", file_name);
 
             var sha1_files = Directory.GetFiles(orig_file_sha_root, "*", SearchOption.AllDirectories);
 
@@ -109,7 +109,7 @@ namespace AMBPatcher
             
             List<string> sha_list = new List<string> { };
 
-            string orig_file_sha_root = "mods_sha" + Path.DirectorySeparatorChar + file_name;
+            string orig_file_sha_root = Path.Combine("mods_sha", file_name);
 
             if (Directory.Exists(orig_file_sha_root))
             {
@@ -121,8 +121,8 @@ namespace AMBPatcher
             {
                 if (files_changed) { break; }
 
-                string mod_file_full = String.Join(Path.DirectorySeparatorChar.ToString(), new string[] { "mods", mod_paths[i], mod_files[i] });
-                string mod_file_sha = String.Join(Path.DirectorySeparatorChar.ToString(), new string[] { "mods_sha", mod_files[i] + ".txt" });
+                string mod_file_full = Path.Combine("mods", mod_paths[i], mod_files[i] );
+                string mod_file_sha = Path.Combine("mods_sha", mod_files[i] + ".txt");
 
                 if (sha_list.Contains(mod_file_sha))
                 {
@@ -159,7 +159,7 @@ namespace AMBPatcher
 
         static void ShaWrite(string relative_mod_file_path, string full_mod_file_path)
         {
-            string sha_file = "mods_sha" + Path.DirectorySeparatorChar + relative_mod_file_path + ".txt";
+            string sha_file = Path.Combine("mods_sha", relative_mod_file_path + ".txt");
             string sha_dir = Path.GetDirectoryName(sha_file);
 
             if (!Directory.Exists(sha_dir)) { Directory.CreateDirectory(sha_dir); }
@@ -311,7 +311,7 @@ namespace AMBPatcher
 
             for (int i = 0; i < files.Count; i++)
             {
-                string output_file = output + Path.DirectorySeparatorChar + files[i].Item1;
+                string output_file = Path.Combine(output, files[i].Item1);
 
                 //Copying raw file from the archive into a byte array.
                 byte[] file_bytes = new byte[files[i].Item3];
@@ -535,7 +535,7 @@ namespace AMBPatcher
 
                         for (int i = 0; i < mod_files.Count; i++)
                         {
-                            string mod_file_full = String.Join(Path.DirectorySeparatorChar.ToString(), new string[] { "mods", mod_paths[i], mod_files[i] });
+                            string mod_file_full = Path.Combine("mods", mod_paths[i], mod_files[i]);
 
                             if (ProgressBar) { ConsoleProgressBar(i, mod_files.Count, mod_file_full, 32); }
 
@@ -575,7 +575,7 @@ namespace AMBPatcher
 
                         for (int i = 0; i < mod_files.Count; i++)
                         {
-                            string mod_file = String.Join(Path.DirectorySeparatorChar.ToString(), new string[] { "mods", mod_paths[i], mod_files[i] });
+                            string mod_file = Path.Combine("mods", mod_paths[i], mod_files[i]);
 
                             ConsoleProgressBar(i, mod_files.Count, mod_file, 32);
                             if (GenerateLog) { Log.Add("PatchAll: copying " + mod_file + " to " + mod_files[i]); }
@@ -653,7 +653,7 @@ namespace AMBPatcher
                             
                             for (int k = 0; k < filename_parts.Length - 2; k++)
                             {
-                                string possible_orig_file = String.Join(Path.DirectorySeparatorChar.ToString(), filename_parts.Skip(2).Take(k+1));
+                                string possible_orig_file = Path.Combine(filename_parts.Skip(2).Take(k+1).ToArray());
                                 
                                 if (File.Exists(possible_orig_file))
                                 {
@@ -670,7 +670,7 @@ namespace AMBPatcher
                             if (original_file == "") { continue; }
 
                             //Getting "folder/file/mod_file" from "mods/mod/folder/file/mod_file"
-                            string mod_file = String.Join(Path.DirectorySeparatorChar.ToString(), filename_parts.Skip(2));
+                            string mod_file = Path.Combine(filename_parts.Skip(2).ToArray());
 
                             //Getting "mod" from "mods/mod/folder/file/mod_file"
                             string mod_path = filename_parts[1];

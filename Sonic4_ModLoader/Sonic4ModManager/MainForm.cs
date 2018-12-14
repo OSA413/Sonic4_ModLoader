@@ -87,7 +87,7 @@ namespace Sonic4ModManager
                     string mod_version = "???";
                     string mod_desctiption = "No description.";
 
-                    string ini_path = "mods" + Path.DirectorySeparatorChar + dir_names[i] + Path.DirectorySeparatorChar + "mod.ini";
+                    string ini_path = Path.Combine("mods", dir_names[i], "mod.ini");
 
                     if (File.Exists(ini_path))
                     {
