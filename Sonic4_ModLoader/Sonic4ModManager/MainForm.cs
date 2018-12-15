@@ -454,6 +454,20 @@ namespace Sonic4ModManager
                 "31.12"  //New Year
             }.Contains(today))
             { bRandom.Text = "I'm Feeling Lucky"; }
+
+            string whats_new = "\n\n[c][b][i]What's new:[\\i][\\b]\n";
+            if (File.Exists("Mod Loader - Whats new.txt"))
+            {
+                whats_new += File.ReadAllText("Mod Loader - Whats new.txt");
+            }
+            else
+            {
+                whats_new += "File \"Mod Loader - Whats new.txt\" not found.";
+            }
+
+            rtb_mod_description.Text += whats_new;
+            
+            FormatDescription();
         }
 
         private void bSave_Click(object sender, EventArgs e)
@@ -532,39 +546,13 @@ namespace Sonic4ModManager
             Process.Start(e.LinkText);
         }
 
-        private void listMods_SelectedIndexChanged(object sender, EventArgs e)
+        public void FormatDescription()
         {
-            //Do nothing if nothing selected (it also deselects when changing)
-            if (listMods.SelectedItems.Count == 0) { return; }
-
-            //Updating description
-            rtb_mod_description.Text = listMods.Items[listMods.SelectedIndices[0]].SubItems[4].Text.Replace("\\n", "\n");
+            //Newline character
+            rtb_mod_description.Text = rtb_mod_description.Text.Replace("\\n", "\n");
 
             //Tab character
-            rtb_mod_description.Text = rtb_mod_description.Text.Replace("\\t","\t");
-
-            //Description as a text file
-            if (rtb_mod_description.Text.StartsWith("file="))
-            {
-                string desciption_file = Path.Combine("mods", listMods.Items[listMods.SelectedIndices[0]].SubItems[3].Text, rtb_mod_description.Text.Substring(5));
-
-                if (File.Exists(desciption_file))
-                {
-                    if (desciption_file.EndsWith(".TXT", StringComparison.OrdinalIgnoreCase))
-                    {
-                        rtb_mod_description.Text = File.ReadAllText(desciption_file);
-                    }
-                    else
-                    {
-                        rtb_mod_description.Text = "Error: unsupported format of \"" + desciption_file + "\" file.";
-                    }
-                }
-                else
-                {
-                    rtb_mod_description.Text = "Error: \"" + desciption_file + "\" file not found.";
-                }
-            }
-
+            rtb_mod_description.Text = rtb_mod_description.Text.Replace("\\t", "\t");
             //Description from mod.ini
             foreach (string i in new string[] { "b", "i", "u", "strike" })
             {
@@ -621,36 +609,68 @@ namespace Sonic4ModManager
             }
 
             //Text alignment
-            if (rtb_mod_description.Text.Contains("[l]") ||
-                rtb_mod_description.Text.Contains("[c]") ||
-                rtb_mod_description.Text.Contains("[r]"))
+            while (rtb_mod_description.Text.Contains("[l]") ||
+                   rtb_mod_description.Text.Contains("[c]") ||
+                   rtb_mod_description.Text.Contains("[r]"))
             {
-                int ind = 0;
-                while (rtb_mod_description.Text.Substring(ind).Contains("["))
+                int ind_l = rtb_mod_description.Text.IndexOf("[l]");
+                if (ind_l == -1) { ind_l = rtb_mod_description.Text.Length; }
+                int ind_c = rtb_mod_description.Text.IndexOf("[c]");
+                if (ind_c == -1) { ind_c = rtb_mod_description.Text.Length; }
+                int ind_r = rtb_mod_description.Text.IndexOf("[r]");
+                if (ind_r == -1) { ind_r = rtb_mod_description.Text.Length; }
+
+                //Nearest tag
+                int ind = Math.Min(Math.Min(ind_l, ind_c), ind_r);
+                string tag = rtb_mod_description.Text[ind+1].ToString();
+
+
+                rtb_mod_description.Select(ind, 3);
+
+                if (tag == "c")
+                { rtb_mod_description.SelectionAlignment = HorizontalAlignment.Center; }
+                else if (tag == "r")
+                { rtb_mod_description.SelectionAlignment = HorizontalAlignment.Right; }
+                else
+                { rtb_mod_description.SelectionAlignment = HorizontalAlignment.Left; }
+
+                rtb_mod_description.ReadOnly = false;
+                rtb_mod_description.SelectedText = "";
+                rtb_mod_description.ReadOnly = true;
+            }
+        }
+
+        private void listMods_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //Do nothing if nothing selected (it also deselects when changing)
+            if (listMods.SelectedItems.Count == 0) { return; }
+
+            //Updating description
+            rtb_mod_description.Text = listMods.Items[listMods.SelectedIndices[0]].SubItems[4].Text;
+
+            //Updating description if there's a description link
+            if (rtb_mod_description.Text.StartsWith("file="))
+            {
+                string desciption_file = Path.Combine("mods", listMods.Items[listMods.SelectedIndices[0]].SubItems[3].Text, rtb_mod_description.Text.Substring(5));
+
+                if (File.Exists(desciption_file))
                 {
-                    ind = rtb_mod_description.Text.Substring(ind).IndexOf("[") + ind;
-
-                    foreach (string i in new string[] { "l", "c", "r" })
+                    if (desciption_file.EndsWith(".TXT", StringComparison.OrdinalIgnoreCase))
                     {
-                        if (rtb_mod_description.Text.Substring(ind, 3) == ("[" + i + "]"))
-                        {
-                            rtb_mod_description.Select(ind, 3);
-
-                            if (i == "c")
-                            { rtb_mod_description.SelectionAlignment = HorizontalAlignment.Center; }
-                            else if (i == "r")
-                            { rtb_mod_description.SelectionAlignment = HorizontalAlignment.Right; }
-                            else
-                            { rtb_mod_description.SelectionAlignment = HorizontalAlignment.Left; }
-
-                            rtb_mod_description.ReadOnly = false;
-                            rtb_mod_description.SelectedText = "";
-                            rtb_mod_description.ReadOnly = true;
-                            break;
-                        }
+                        rtb_mod_description.Text = File.ReadAllText(desciption_file);
+                    }
+                    else
+                    {
+                        rtb_mod_description.Text = "Error: unsupported format of \"" + desciption_file + "\" file.";
                     }
                 }
+                else
+                {
+                    rtb_mod_description.Text = "Error: \"" + desciption_file + "\" file not found.";
+                }
             }
+
+            FormatDescription();
         }
     }
 }
