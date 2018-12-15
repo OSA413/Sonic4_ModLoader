@@ -245,8 +245,9 @@ namespace OneClickModInstaller
             }
             else
             {
-                WrongModStructureForm wmsf = new WrongModStructureForm();
-                wmsf.ShowDialog();
+                //replace with a dialog to choose which mods to install
+                //WrongModStructureForm wmsf = new WrongModStructureForm();
+                //wmsf.ShowDialog();
 
                 Application.Exit();
             }

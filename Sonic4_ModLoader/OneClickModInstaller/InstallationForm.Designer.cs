@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(InstallationForm));
             this.label1 = new System.Windows.Forms.Label();
             this.lInstallationStatus = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -112,7 +113,7 @@
             this.lGameName.TabIndex = 7;
             this.lGameName.Text = "//Game name goes here";
             // 
-            // Install
+            // InstallationForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -126,7 +127,8 @@
             this.Controls.Add(this.lInstallationStatus);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Name = "Install";
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Name = "InstallationForm";
             this.Text = "Installation Dialog";
             this.ResumeLayout(false);
             this.PerformLayout();

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DFtEM));
             this.label1 = new System.Windows.Forms.Label();
             this.bOpen = new System.Windows.Forms.Button();
             this.bExit = new System.Windows.Forms.Button();
@@ -72,6 +73,7 @@
             this.Controls.Add(this.bOpen);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "DFtEM";
             this.Text = "Mod Installed";
             this.ResumeLayout(false);

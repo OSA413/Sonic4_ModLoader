@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(DownloadForm));
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.bDownload = new System.Windows.Forms.Button();
             this.statusBar = new System.Windows.Forms.StatusStrip();
@@ -138,7 +139,7 @@
             this.lType.TabIndex = 9;
             this.lType.Text = "Type";
             // 
-            // Form1
+            // DownloadForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -154,7 +155,8 @@
             this.Controls.Add(this.bDownload);
             this.Controls.Add(this.progressBar);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Name = "Form1";
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Name = "DownloadForm";
             this.Text = "1-Click Mod Installer";
             this.statusBar.ResumeLayout(false);
             this.statusBar.PerformLayout();

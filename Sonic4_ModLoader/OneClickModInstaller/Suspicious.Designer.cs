@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Suspicious));
             this.label1 = new System.Windows.Forms.Label();
             this.bContinue = new System.Windows.Forms.Button();
             this.bCancelAndExit = new System.Windows.Forms.Button();
@@ -93,7 +94,7 @@
             this.clFileNames.Text = "File Names";
             this.clFileNames.Width = 440;
             // 
-            // Form2
+            // Suspicious
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -104,7 +105,8 @@
             this.Controls.Add(this.bContinue);
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.Name = "Form2";
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Name = "Suspicious";
             this.Text = "Suspicious Dialog";
             this.ResumeLayout(false);
             this.PerformLayout();
