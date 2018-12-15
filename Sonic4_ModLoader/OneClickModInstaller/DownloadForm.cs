@@ -55,35 +55,25 @@ namespace OneClickModInstaller
             }
         }
         
-        //<from = https://docs.microsoft.com/en-us/dotnet/api/system.io.directoryinfo >
-        public static void CopyAll(DirectoryInfo source, DirectoryInfo target)
+        static void CopyAll(string source, string destination)
         {
-            if (source.FullName.ToLower() == target.FullName.ToLower())
-            {
-                return;
-            }
+            if (source.ToLower() == destination.ToLower())
+            { return; }
 
-            // Check if the target directory exists, if not, create it.
-            if (!Directory.Exists(target.FullName))
+            Directory.CreateDirectory(destination);
+            
+            foreach (string file in Directory.GetFiles(source))
             {
-                Directory.CreateDirectory(target.FullName);
+                File.Copy(file, Path.Combine(destination, Path.GetFileName(file)), true);
             }
-
-            // Copy each file into it's new directory.
-            foreach (FileInfo fi in source.GetFiles())
+            
+            foreach (string dir in Directory.GetDirectories(source))
             {
-                fi.CopyTo(Path.Combine(target.ToString(), fi.Name), true);
-            }
-
-            // Copy each subdirectory using recursion.
-            foreach (DirectoryInfo diSourceSubDir in source.GetDirectories())
-            {
-                DirectoryInfo nextTargetSubDir =
-                    target.CreateSubdirectory(diSourceSubDir.Name);
-                CopyAll(diSourceSubDir, nextTargetSubDir);
+                string dir_name = Path.GetDirectoryName(dir);
+                Directory.CreateDirectory(Path.Combine(destination, dir_name));
+                CopyAll(Path.Combine(source, dir_name), Path.Combine(destination, dir_name));
             }
         }
-        //</from>
 
         static void ExtractArchive(string file_name)
         {
@@ -244,7 +234,7 @@ namespace OneClickModInstaller
                 string mod_root_name = mod_root.Split(Path.DirectorySeparatorChar)[mod_root.Split(Path.DirectorySeparatorChar).Length - 1];
 
                 toolStripStatusLabel1.Text = "Installing downloaded mod...";
-                CopyAll(new DirectoryInfo(mod_root), new DirectoryInfo(Path.Combine("mods", mod_root_name)));
+                CopyAll(mod_root, Path.Combine("mods", mod_root_name));
 
                 DFtEM enable_mod = new DFtEM();
                 enable_mod.ShowDialog();
