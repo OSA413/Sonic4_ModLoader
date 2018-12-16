@@ -22,13 +22,13 @@ namespace Sonic4ModManager
             {
                 label_Installation_status.Text = "Installed";
                 bInstall.Text = "Uninstall";
-                label5.Enabled = radioButton1.Enabled = radioButton2.Enabled = checkBox1.Enabled = true;
+                label5.Enabled = rb_rename.Enabled = rb_delete.Enabled = cb_recover_orig.Enabled = true;
             }
             else if (status == 0 || status == -1)
             {
                 label_Installation_status.Text = "Not installed";
                 bInstall.Text = "Install";
-                label5.Enabled = radioButton1.Enabled = radioButton2.Enabled = checkBox1.Enabled = false;
+                label5.Enabled = rb_rename.Enabled = rb_delete.Enabled = cb_recover_orig.Enabled = false;
             }
             else
             {
@@ -41,12 +41,12 @@ namespace Sonic4ModManager
                     label_Installation_status.Text = "You have changed the .cfg file?";
                 }
                 bInstall.Text = "Install";
-                bInstall.Enabled = label5.Enabled = radioButton1.Enabled = radioButton2.Enabled = checkBox1.Enabled = false;
+                bInstall.Enabled = label5.Enabled = rb_rename.Enabled = rb_delete.Enabled = cb_recover_orig.Enabled = false;
             }
 
-            radioButton1.Checked = true;
-            radioButton2.Checked = !radioButton1.Checked;
-            checkBox1.Checked = false;
+            rb_rename.Checked = true;
+            rb_delete.Checked = !rb_rename.Checked;
+            cb_recover_orig.Checked = false;
         }
         
         private void ReadLicense(string program)
@@ -137,13 +137,19 @@ namespace Sonic4ModManager
 
         private void bInstall_Click(object sender, EventArgs e)
         {
+            //Pro tip: imagine the binary representation of the integer
+            int options = 0;
+
+            options += Convert.ToInt32(cb_recover_orig.Checked);
+            options += Convert.ToInt32(rb_delete.Checked)*2;
+
             if (bInstall.Text == "Install")
             {
                 MainForm.Install(1);
             }
             else if (bInstall.Text == "Uninstall")
             {
-                MainForm.Install(0);
+                MainForm.Install(0, options);
             }
             UpdateInstallationStartus();
         }

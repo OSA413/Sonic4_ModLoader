@@ -314,12 +314,12 @@ namespace Sonic4ModManager
 
         public static void Install(int whattodo, int options = 0)
         {
-            //This is in case if somebody want to change the .cfg file right before the (un)installation
             //whattodo = 1 is install
             //whattodo = 0 is uninstall
             int status = GetInstallationStatus();
             string game = GetGame();
 
+            //Installation
             if ((status == 0 || status == -1) && whattodo == 1)
             {
                 //Episode 1
@@ -375,6 +375,8 @@ namespace Sonic4ModManager
                     }
                 }
             }
+
+            //Uninstallation
             else if (status == 1 && whattodo == 0)
             {
                 //Episode 1
@@ -424,8 +426,60 @@ namespace Sonic4ModManager
                         //Renaming save file if present
                         if (File.Exists("Sonic.orig_save.dat") && !File.Exists("Sonic_save.dat"))
                         {
-                            //File.Move("Sonic.orig_save.dat", "Sonic_save.dat");
+                            File.Move("Sonic.orig_save.dat", "Sonic_save.dat");
                         }
+                    }
+                }
+
+                //Options
+
+                //Recover original files
+                if ((options & 1) == 1)
+                {
+                    Process.Start("AMBPatcher.exe", "recover").WaitForExit();
+                    if ((options & 2) == 2)
+                    {
+                        if (Directory.Exists("mods_sha"))
+                        Directory.Delete("mods_sha", true);
+                    }
+                }
+
+                //Delete Mod Loader files
+                {
+                    if ((options & 2) == 2)
+                    {
+                        foreach (string file in new string[] { "7z.exe", "7z.dll",
+                                                           "AMBPatcher.exe", "CsbEditor.exe",
+                                                           "LICENSE-Sonic4_ModLoader",
+                                                           "LICENSE-Sonic4_ModLoader_files",
+                                                           "LICENSE-SonicAudioTools",
+                                                           "LICENSE-SonicAudioTools_files",
+                                                           "ManagerLauncher.exe",
+                                                           "Mod Loader - Whats new.txt",
+                                                           "PatchLauncher.exe",
+                                                           "README.rtf", "README.txt",
+                                                           "README-tldr.txt",
+                                                           "SonicAudioLib.dll",
+                                                           "LICENSE-7-Zip",
+                                                           "LICENSE-7-Zip_files",
+                                                           "mod_manager.cfg",
+                                                           "AMBPatcher.cfg"})
+                        {
+                            if (File.Exists(file))
+                            {
+                                File.Delete(file);
+                            }
+                        }
+
+                        //Sonic4ModManager.exe
+                        //The only (easy and fast) way to delete an open program is to create a .bat file
+                        //that deletes the .exe file and itself.
+                        string bat = "taskkill /IM Sonic4ModManager.exe /F\n" +
+                                     "DEL Sonic4ModManager.exe\n" +
+                                     "DEL tmp.bat";
+                        File.WriteAllText("tmp.bat", bat);
+
+                        Process.Start("tmp.bat");
                     }
                 }
             }

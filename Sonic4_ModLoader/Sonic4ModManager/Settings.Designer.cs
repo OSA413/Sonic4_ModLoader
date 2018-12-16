@@ -35,9 +35,9 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabInstallation = new System.Windows.Forms.TabPage();
             this.label5 = new System.Windows.Forms.Label();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.cb_recover_orig = new System.Windows.Forms.CheckBox();
+            this.rb_delete = new System.Windows.Forms.RadioButton();
+            this.rb_rename = new System.Windows.Forms.RadioButton();
             this.bInstall = new System.Windows.Forms.Button();
             this.label_Installation_status = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -103,9 +103,9 @@
             // tabInstallation
             // 
             this.tabInstallation.Controls.Add(this.label5);
-            this.tabInstallation.Controls.Add(this.checkBox1);
-            this.tabInstallation.Controls.Add(this.radioButton2);
-            this.tabInstallation.Controls.Add(this.radioButton1);
+            this.tabInstallation.Controls.Add(this.cb_recover_orig);
+            this.tabInstallation.Controls.Add(this.rb_delete);
+            this.tabInstallation.Controls.Add(this.rb_rename);
             this.tabInstallation.Controls.Add(this.bInstall);
             this.tabInstallation.Controls.Add(this.label_Installation_status);
             this.tabInstallation.Controls.Add(this.label3);
@@ -126,37 +126,37 @@
             this.label5.TabIndex = 6;
             this.label5.Text = "Uninstallation options:";
             // 
-            // checkBox1
+            // cb_recover_orig
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(64, 152);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(231, 17);
-            this.checkBox1.TabIndex = 3;
-            this.checkBox1.Text = "Recover original game files (AMBs, CSBs...)";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.cb_recover_orig.AutoSize = true;
+            this.cb_recover_orig.Location = new System.Drawing.Point(64, 152);
+            this.cb_recover_orig.Name = "cb_recover_orig";
+            this.cb_recover_orig.Size = new System.Drawing.Size(231, 17);
+            this.cb_recover_orig.TabIndex = 3;
+            this.cb_recover_orig.Text = "Recover original game files (AMBs, CSBs...)";
+            this.cb_recover_orig.UseVisualStyleBackColor = true;
             // 
-            // radioButton2
+            // rb_delete
             // 
-            this.radioButton2.AutoSize = true;
-            this.radioButton2.Location = new System.Drawing.Point(64, 129);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(150, 17);
-            this.radioButton2.TabIndex = 2;
-            this.radioButton2.TabStop = true;
-            this.radioButton2.Text = "Delete all Mod Loader files";
-            this.radioButton2.UseVisualStyleBackColor = true;
+            this.rb_delete.AutoSize = true;
+            this.rb_delete.Location = new System.Drawing.Point(64, 129);
+            this.rb_delete.Name = "rb_delete";
+            this.rb_delete.Size = new System.Drawing.Size(150, 17);
+            this.rb_delete.TabIndex = 2;
+            this.rb_delete.TabStop = true;
+            this.rb_delete.Text = "Delete all Mod Loader files";
+            this.rb_delete.UseVisualStyleBackColor = true;
             // 
-            // radioButton1
+            // rb_rename
             // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Location = new System.Drawing.Point(64, 106);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(113, 17);
-            this.radioButton1.TabIndex = 1;
-            this.radioButton1.TabStop = true;
-            this.radioButton1.Text = "Rename files back";
-            this.radioButton1.UseVisualStyleBackColor = true;
+            this.rb_rename.AutoSize = true;
+            this.rb_rename.Location = new System.Drawing.Point(64, 106);
+            this.rb_rename.Name = "rb_rename";
+            this.rb_rename.Size = new System.Drawing.Size(113, 17);
+            this.rb_rename.TabIndex = 1;
+            this.rb_rename.TabStop = true;
+            this.rb_rename.Text = "Rename files back";
+            this.rb_rename.UseVisualStyleBackColor = true;
             // 
             // bInstall
             // 
@@ -353,9 +353,9 @@
         private System.Windows.Forms.Button bInstall;
         private System.Windows.Forms.Label label_Installation_status;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.RadioButton radioButton2;
-        private System.Windows.Forms.RadioButton radioButton1;
+        private System.Windows.Forms.CheckBox cb_recover_orig;
+        private System.Windows.Forms.RadioButton rb_delete;
+        private System.Windows.Forms.RadioButton rb_rename;
         private System.Windows.Forms.CheckBox cb_AMBPatcher_sha_check;
         private System.Windows.Forms.ComboBox list_SHAType;
     }
