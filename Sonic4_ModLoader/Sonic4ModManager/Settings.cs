@@ -56,13 +56,18 @@ namespace Sonic4ModManager
 
             if (program == "S4ML")
             {
-                files   = "LICENSE-Sonic4_ModLoader_files";
                 license = "LICENSE-Sonic4_ModLoader";
+                files   = "LICENSE-Sonic4_ModLoader_files";
             }
             else if (program == "SAT")
             {
-                files   = "LICENSE-SonicAudioTools_files";
                 license = "LICENSE-SonicAudioTools";
+                files   = "LICENSE-SonicAudioTools_files";
+            }
+            else if (program == "7z")
+            {
+                license = "LICENSE-7-Zip";
+                files   = "LICENSE-7-Zip_files";
             }
 
             if (files != "" && license != "")

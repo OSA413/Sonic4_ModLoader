@@ -15,7 +15,11 @@ namespace Sonic4ModManager
 
             if (File.Exists(args[0]))
             {
-                files = "This license applies to the following files:\n" + File.ReadAllText(args[0]);
+                files = "This license applies to the following files:";
+                foreach (string f in File.ReadLines(args[0]))
+                {
+                    files += "\n • " + f;
+                }
             }
             if (File.Exists(args[1]))
             {

@@ -24,6 +24,7 @@ COPY "Mod Loader - Whats new.txt"	%dist%"Mod Loader - Whats new.txt"
 ::Sonic4ModLoader
 ::License
 COPY "LICENSE"				%dist%"LICENSE-Sonic4_ModLoader"
+COPY "docs\files"			%dist%"LICENSE-Sonic4_ModLoader_files"
 ::EXEs
 COPY "Sonic4_ModLoader\AMBPatcher\bin\Release\AMBPatcher.exe"			%dist%"AMBPatcher.exe"
 COPY "Sonic4_ModLoader\ManagerLauncher\bin\Release\ManagerLauncher.exe" 	%dist%"ManagerLauncher.exe"
@@ -37,13 +38,15 @@ COPY "docs\README-tldr.txt"	%dist%"README-tldr.txt"
 ::SonicAudioTools
 ::License
 COPY "dependencies\SonicAudioTools\LICENSE"		%dist%"LICENSE-SonicAudioTools"
+COPY "dependencies\SonicAudioTools\files"		%dist%"LICENSE-SonicAudioTools_files"
 ::EXEs
 COPY "dependencies\SonicAudioTools\SonicAudioLib.dll"	%dist%"SonicAudioLib.dll"
 COPY "dependencies\SonicAudioTools\CsbEditor.exe"	%dist%"CsbEditor.exe"
 
 ::7-Zip
 ::License
-::COPY "dependencies\7-Zip\License.txt"	%dist%"License-7-Zip.txt"
+::COPY "dependencies\7-Zip\License.txt"	%dist%"LICENSE-7-Zip"
+::COPY "dependencies\7-Zip\files"	%dist%"LICENSE-7-Zip_files"
 ::EXEs
 ::COPY "dependencies\7-Zip\7z.exe"	%dist%"7z.exe"
 ::COPY "dependencies\7-Zip\7z.dll"	%dist%"7z.dll"

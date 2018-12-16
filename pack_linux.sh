@@ -5,6 +5,7 @@ mkdir -p "./dist/Sonic4ModLoader"
 #Sonic4ModLoader
 #License
 cp "LICENSE" "./dist/Sonic4ModLoader/LICENSE-Sonic4_ModLoader"
+cp "./docs/files" "./dist/Sonic4ModLoader/LICENSE-Sonic4_ModLoader_files"
 #EXEs
 cp "./Sonic4_ModLoader/AMBPatcher/bin/Release/AMBPatcher.exe" "./dist/Sonic4ModLoader/AMBPatcher.exe"
 cp "./Sonic4_ModLoader/ManagerLauncher/bin/Release/ManagerLauncher.exe" "./dist/Sonic4ModLoader/ManagerLauncher.exe"
