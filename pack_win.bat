@@ -18,13 +18,16 @@ mkdir "dist/Sonic4ModLoader"
 
 SET dist="dist\Sonic4ModLoader\"
 
+::What's new
+COPY "Mod Loader - Whats new.txt"	%dist%"Mod Loader - Whats new.txt"
+
 ::Sonic4ModLoader
 ::License
-COPY "LICENSE"	%dist%"LICENSE-Sonic4_ModLoader"
+COPY "LICENSE"				%dist%"LICENSE-Sonic4_ModLoader"
 ::EXEs
-COPY "Sonic4_ModLoader\AMBPatcher\bin\Release\AMBPatcher.exe"				%dist%"AMBPatcher.exe"
+COPY "Sonic4_ModLoader\AMBPatcher\bin\Release\AMBPatcher.exe"			%dist%"AMBPatcher.exe"
 COPY "Sonic4_ModLoader\ManagerLauncher\bin\Release\ManagerLauncher.exe" 	%dist%"ManagerLauncher.exe"
-COPY "Sonic4_ModLoader\PatchLauncher\bin\Release\PatchLauncher.exe"			%dist%"PatchLauncher.exe"
+COPY "Sonic4_ModLoader\PatchLauncher\bin\Release\PatchLauncher.exe"		%dist%"PatchLauncher.exe"
 COPY "Sonic4_ModLoader\Sonic4ModManager\bin\Release\Sonic4ModManager.exe"	%dist%"Sonic4ModManager.exe"
 ::READMEs
 COPY "docs\README.rtf"		%dist%"README.rtf"
@@ -33,10 +36,10 @@ COPY "docs\README-tldr.txt"	%dist%"README-tldr.txt"
 
 ::SonicAudioTools
 ::License
-COPY "dependencies\SonicAudioTools\LICENSE"	%dist%"LICENSE-SonicAudioTools"
+COPY "dependencies\SonicAudioTools\LICENSE"		%dist%"LICENSE-SonicAudioTools"
 ::EXEs
 COPY "dependencies\SonicAudioTools\SonicAudioLib.dll"	%dist%"SonicAudioLib.dll"
-COPY "dependencies\SonicAudioTools\CsbEditor.exe"		%dist%"CsbEditor.exe"
+COPY "dependencies\SonicAudioTools\CsbEditor.exe"	%dist%"CsbEditor.exe"
 
 ::7-Zip
 ::License

@@ -669,7 +669,6 @@ namespace Sonic4ModManager
                     rtb_mod_description.Text = "Error: \"" + desciption_file + "\" file not found.";
                 }
             }
-
             FormatDescription();
         }
     }

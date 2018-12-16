@@ -81,7 +81,7 @@
             // 
             // bSave
             // 
-            this.bSave.Location = new System.Drawing.Point(12, 318);
+            this.bSave.Location = new System.Drawing.Point(12, 340);
             this.bSave.Name = "bSave";
             this.bSave.Size = new System.Drawing.Size(100, 40);
             this.bSave.TabIndex = 7;
@@ -111,7 +111,7 @@
             // 
             // bExit
             // 
-            this.bExit.Location = new System.Drawing.Point(462, 364);
+            this.bExit.Location = new System.Drawing.Point(462, 385);
             this.bExit.Name = "bExit";
             this.bExit.Size = new System.Drawing.Size(100, 40);
             this.bExit.TabIndex = 13;
@@ -121,7 +121,7 @@
             // 
             // bSaveAndPlay
             // 
-            this.bSaveAndPlay.Location = new System.Drawing.Point(12, 364);
+            this.bSaveAndPlay.Location = new System.Drawing.Point(12, 385);
             this.bSaveAndPlay.Name = "bSaveAndPlay";
             this.bSaveAndPlay.Size = new System.Drawing.Size(100, 40);
             this.bSaveAndPlay.TabIndex = 8;
@@ -131,7 +131,7 @@
             // 
             // bRefresh
             // 
-            this.bRefresh.Location = new System.Drawing.Point(237, 318);
+            this.bRefresh.Location = new System.Drawing.Point(237, 340);
             this.bRefresh.Name = "bRefresh";
             this.bRefresh.Size = new System.Drawing.Size(100, 40);
             this.bRefresh.TabIndex = 10;
@@ -141,7 +141,7 @@
             // 
             // bSettings
             // 
-            this.bSettings.Location = new System.Drawing.Point(462, 318);
+            this.bSettings.Location = new System.Drawing.Point(462, 340);
             this.bSettings.Name = "bSettings";
             this.bSettings.Size = new System.Drawing.Size(100, 40);
             this.bSettings.TabIndex = 12;
@@ -171,7 +171,7 @@
             // 
             // bRandom
             // 
-            this.bRandom.Location = new System.Drawing.Point(237, 364);
+            this.bRandom.Location = new System.Drawing.Point(237, 385);
             this.bRandom.Name = "bRandom";
             this.bRandom.Size = new System.Drawing.Size(100, 40);
             this.bRandom.TabIndex = 11;
@@ -181,7 +181,7 @@
             // 
             // bOpenExplorer
             // 
-            this.bOpenExplorer.Location = new System.Drawing.Point(124, 318);
+            this.bOpenExplorer.Location = new System.Drawing.Point(124, 340);
             this.bOpenExplorer.Name = "bOpenExplorer";
             this.bOpenExplorer.Size = new System.Drawing.Size(100, 40);
             this.bOpenExplorer.TabIndex = 9;
@@ -194,7 +194,7 @@
             this.groupBox1.Controls.Add(this.rtb_mod_description);
             this.groupBox1.Location = new System.Drawing.Point(12, 218);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(550, 94);
+            this.groupBox1.Size = new System.Drawing.Size(550, 115);
             this.groupBox1.TabIndex = 6;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Description";
@@ -206,7 +206,7 @@
             this.rtb_mod_description.Location = new System.Drawing.Point(6, 19);
             this.rtb_mod_description.Name = "rtb_mod_description";
             this.rtb_mod_description.ReadOnly = true;
-            this.rtb_mod_description.Size = new System.Drawing.Size(538, 69);
+            this.rtb_mod_description.Size = new System.Drawing.Size(538, 90);
             this.rtb_mod_description.TabIndex = 6;
             this.rtb_mod_description.Text = "Select an item to see its description.";
             this.rtb_mod_description.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.rtb_mod_description_LinkClicked);
@@ -215,7 +215,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(574, 416);
+            this.ClientSize = new System.Drawing.Size(574, 436);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.bOpenExplorer);
             this.Controls.Add(this.bRandom);
