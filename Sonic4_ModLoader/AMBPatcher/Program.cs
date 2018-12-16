@@ -526,10 +526,10 @@ namespace AMBPatcher
                 {
                     if (ShaChanged(file_name, mod_files, mod_paths))
                     {
-                        Restore(file_name);
-                        if (File.Exists(file_name.Substring(0, file_name.Length - 4) + ".CPK"))
+                        Recover(file_name);
+                        if (file_name.EndsWith(".CSB", StringComparison.OrdinalIgnoreCase))
                         {
-                            Restore(file_name.Substring(0, file_name.Length - 4) + ".CPK");
+                            Recover(file_name.Substring(0, file_name.Length - 4) + ".CPK");
                         }
                         if (GenerateLog) { Log.Add("PatchAll: file " + file_name + " was restored."); }
 
@@ -558,10 +558,10 @@ namespace AMBPatcher
                 {
                     if (ShaChanged(file_name.Substring(0, file_name.Length - 4), mod_files, mod_paths))
                     {
-                        Restore(file_name);
-                        if (File.Exists(file_name.Substring(0, file_name.Length - 4) + ".CPK"))
+                        Recover(file_name);
+                        if (file_name.EndsWith(".CSB", StringComparison.OrdinalIgnoreCase))
                         {
-                            Restore(file_name.Substring(0, file_name.Length - 4) + ".CPK");
+                            Recover(file_name.Substring(0, file_name.Length - 4) + ".CPK");
                         }
 
                         if (GenerateLog) { Log.Add("PatchAll: asking CsbEditor to unpack " + file_name); }
@@ -606,7 +606,7 @@ namespace AMBPatcher
             }
         }
 
-        static void Restore(string file_name)
+        static void Recover(string file_name)
         {
             if (File.Exists(file_name + ".bkp"))
             {
@@ -735,6 +735,7 @@ namespace AMBPatcher
             Console.WriteLine("\tAMBPatcher.exe patch [AMB file] [another file] - Patch [AMB file] by [another file] if [another file] is in [AMB file].");
             Console.WriteLine("\tAMBPatcher.exe [AMB file] [directory] and");
             Console.WriteLine("\tAMBPatcher.exe patch [AMB file] [directory] - Patch [AMB file] by all files in [directory] if those files are in [AMB file].");
+            Console.WriteLine("\tAMBPatcher.exe recover - Recover original files that were changed.");
             Console.WriteLine("\tAMBPatcher.exe -h and");
             Console.WriteLine("\tAMBPatcher.exe --help - Show this message.");
         }
@@ -816,11 +817,11 @@ namespace AMBPatcher
                 {
                     if (GenerateLog) { Log.Add("Restoring " + mods_prev[i]); }
 
-                    Restore(mods_prev[i]);
+                    Recover(mods_prev[i]);
                     //Some CSB files may have CPK archive
-                    if (File.Exists(mods_prev[i].Substring(0, mods_prev[i].Length - 4) + ".CPK"))
+                    if (mods_prev[i].EndsWith(".CSB", StringComparison.OrdinalIgnoreCase))
                     {
-                        Restore(mods_prev[i].Substring(0, mods_prev[i].Length - 4) + ".CPK");
+                        Recover(mods_prev[i].Substring(0, mods_prev[i].Length - 4) + ".CPK");
                     }
                     
                     if (mods_prev[i].EndsWith(".CSB", StringComparison.OrdinalIgnoreCase))
@@ -850,6 +851,33 @@ namespace AMBPatcher
                 if (args[0] == "-h" || args[0] == "--help")
                 {
                     ShowHelpMessage();
+                }
+                else if (args[0] == "recover")
+                {
+                    if (File.Exists(@"mods\mods_prev"))
+                    {
+                        string[] mods_prev = File.ReadAllLines(@"mods\mods_prev");
+
+                        for (int i = 0; i < mods_prev.Length; i++)
+                        {
+                            string file = mods_prev[i];
+
+                            ConsoleProgressBar(i, mods_prev.Length, "Recovering \""+ file +"\" file...", 32);
+
+                            Recover(file);
+                            if (file.EndsWith(".CSB", StringComparison.OrdinalIgnoreCase))
+                            {
+                                Recover(file.Substring(0, file.Length - 4) + ".CPK");
+                                ShaRemove(file.Substring(0, file.Length - 4));
+                            }
+                            else
+                            {
+                                ShaRemove(file);
+                            }
+                        }
+                        File.Delete(@"mods\mods_prev");
+                        ConsoleProgressBar(1, 1, "", 32);
+                    }
                 }
                 else
                 {
