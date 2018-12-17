@@ -14,44 +14,28 @@ namespace OneClickModInstaller
 
         public DownloadForm(string[] args)
         {
-            bool install = false;
+            local = false;
+            if (args[0] == "--local")
+            { local = true; }
 
-            if (args.Length == 1)
-            {
-                if (args[0] == "--install")
-                {
-                    install = true;
-                }
-            }
+            InitializeComponent();
 
-            if (args.Length == 0 || install)
+            string tmp = "download";
+            if (local) { tmp = "installation"; }
+            toolStripStatusLabel1.Text = toolStripStatusLabel1.Text.Replace("{0}", tmp);
+
+            //TODO
+
+            if (local)
             {
-                InstallationForm install_form = new InstallationForm(args);
-                install_form.ShowDialog();
-                Application.Exit();
+
             }
             else
             {
-                InitializeComponent();
-                toolStripStatusLabel1.Text = "A wild download button appeared!";
-
-                local = false;
-
-                if (args.Length == 1)
-                {
-                    string[] gb_parameters = args[0].Split(',');
-                    if (gb_parameters.Length > 0) { lURL.Text = gb_parameters[0]; }
-                    if (gb_parameters.Length > 1) { lType.Text = gb_parameters[1]; }
-                    if (gb_parameters.Length > 2) { lModID.Text = gb_parameters[2]; }
-                }
-                else if (args.Length == 2)
-                {
-                    if (args[0] == "--local")
-                    {
-                        local = true;
-                        lURL.Text = args[1];
-                    }
-                }
+                string[] gb_parameters = args[0].Split(',');
+                if (gb_parameters.Length > 0) { lURL.Text = gb_parameters[0]; }
+                if (gb_parameters.Length > 1) { lType.Text = gb_parameters[1]; }
+                if (gb_parameters.Length > 2) { lModID.Text = gb_parameters[2]; }
             }
         }
         
