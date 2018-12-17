@@ -76,7 +76,7 @@
             this.bIDUNNO.UseVisualStyleBackColor = false;
             this.bIDUNNO.Click += new System.EventHandler(this.bIDUNNO_Click);
             // 
-            // Form2
+            // FirstLaunch
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -87,7 +87,7 @@
             this.Controls.Add(this.label1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "Form2";
+            this.Name = "FirstLaunch";
             this.Text = "First Launch Dialog";
             this.ResumeLayout(false);
 

@@ -52,6 +52,9 @@
             this.label2 = new System.Windows.Forms.Label();
             this.bOK = new System.Windows.Forms.Button();
             this.bCancel = new System.Windows.Forms.Button();
+            this.bRL_7z = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.link7z = new System.Windows.Forms.LinkLabel();
             this.tabControl1.SuspendLayout();
             this.tabInstallation.SuspendLayout();
             this.tabAMBPatcher.SuspendLayout();
@@ -61,7 +64,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 15);
+            this.label1.Location = new System.Drawing.Point(6, 6);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(303, 13);
             this.label1.TabIndex = 0;
@@ -70,7 +73,7 @@
             // linkSAT
             // 
             this.linkSAT.AutoSize = true;
-            this.linkSAT.Location = new System.Drawing.Point(22, 97);
+            this.linkSAT.Location = new System.Drawing.Point(22, 83);
             this.linkSAT.Name = "linkSAT";
             this.linkSAT.Size = new System.Drawing.Size(282, 13);
             this.linkSAT.TabIndex = 3;
@@ -81,7 +84,7 @@
             // linkMain
             // 
             this.linkMain.AutoSize = true;
-            this.linkMain.Location = new System.Drawing.Point(22, 28);
+            this.linkMain.Location = new System.Drawing.Point(22, 19);
             this.linkMain.Name = "linkMain";
             this.linkMain.Size = new System.Drawing.Size(238, 13);
             this.linkMain.TabIndex = 1;
@@ -132,7 +135,7 @@
             this.cb_recover_orig.Location = new System.Drawing.Point(64, 152);
             this.cb_recover_orig.Name = "cb_recover_orig";
             this.cb_recover_orig.Size = new System.Drawing.Size(231, 17);
-            this.cb_recover_orig.TabIndex = 3;
+            this.cb_recover_orig.TabIndex = 4;
             this.cb_recover_orig.Text = "Recover original game files (AMBs, CSBs...)";
             this.cb_recover_orig.UseVisualStyleBackColor = true;
             // 
@@ -142,7 +145,7 @@
             this.rb_delete.Location = new System.Drawing.Point(64, 129);
             this.rb_delete.Name = "rb_delete";
             this.rb_delete.Size = new System.Drawing.Size(150, 17);
-            this.rb_delete.TabIndex = 2;
+            this.rb_delete.TabIndex = 3;
             this.rb_delete.TabStop = true;
             this.rb_delete.Text = "Delete all Mod Loader files";
             this.rb_delete.UseVisualStyleBackColor = true;
@@ -153,7 +156,7 @@
             this.rb_rename.Location = new System.Drawing.Point(64, 106);
             this.rb_rename.Name = "rb_rename";
             this.rb_rename.Size = new System.Drawing.Size(113, 17);
-            this.rb_rename.TabIndex = 1;
+            this.rb_rename.TabIndex = 2;
             this.rb_rename.TabStop = true;
             this.rb_rename.Text = "Rename files back";
             this.rb_rename.UseVisualStyleBackColor = true;
@@ -163,7 +166,7 @@
             this.bInstall.Location = new System.Drawing.Point(115, 55);
             this.bInstall.Name = "bInstall";
             this.bInstall.Size = new System.Drawing.Size(128, 32);
-            this.bInstall.TabIndex = 0;
+            this.bInstall.TabIndex = 1;
             this.bInstall.Text = "(Un)install";
             this.bInstall.UseVisualStyleBackColor = true;
             this.bInstall.Click += new System.EventHandler(this.bInstall_Click);
@@ -212,7 +215,7 @@
             this.list_SHAType.Location = new System.Drawing.Point(150, 75);
             this.list_SHAType.Name = "list_SHAType";
             this.list_SHAType.Size = new System.Drawing.Size(47, 21);
-            this.list_SHAType.TabIndex = 3;
+            this.list_SHAType.TabIndex = 4;
             // 
             // cb_AMBPatcher_sha_check
             // 
@@ -220,7 +223,7 @@
             this.cb_AMBPatcher_sha_check.Location = new System.Drawing.Point(6, 52);
             this.cb_AMBPatcher_sha_check.Name = "cb_AMBPatcher_sha_check";
             this.cb_AMBPatcher_sha_check.Size = new System.Drawing.Size(191, 17);
-            this.cb_AMBPatcher_sha_check.TabIndex = 2;
+            this.cb_AMBPatcher_sha_check.TabIndex = 3;
             this.cb_AMBPatcher_sha_check.Text = "Check SHA of files (recommended)";
             this.cb_AMBPatcher_sha_check.UseVisualStyleBackColor = true;
             this.cb_AMBPatcher_sha_check.CheckedChanged += new System.EventHandler(this.cb_AMBPatcher_sha_check_CheckedChanged);
@@ -231,7 +234,7 @@
             this.cb_AMBPatcher_generate_log.Location = new System.Drawing.Point(7, 29);
             this.cb_AMBPatcher_generate_log.Name = "cb_AMBPatcher_generate_log";
             this.cb_AMBPatcher_generate_log.Size = new System.Drawing.Size(144, 17);
-            this.cb_AMBPatcher_generate_log.TabIndex = 1;
+            this.cb_AMBPatcher_generate_log.TabIndex = 2;
             this.cb_AMBPatcher_generate_log.Text = "Generate Simple Log File";
             this.cb_AMBPatcher_generate_log.UseVisualStyleBackColor = true;
             // 
@@ -241,12 +244,15 @@
             this.cb_AMBPatcher_progress_bar.Location = new System.Drawing.Point(6, 6);
             this.cb_AMBPatcher_progress_bar.Name = "cb_AMBPatcher_progress_bar";
             this.cb_AMBPatcher_progress_bar.Size = new System.Drawing.Size(86, 17);
-            this.cb_AMBPatcher_progress_bar.TabIndex = 0;
+            this.cb_AMBPatcher_progress_bar.TabIndex = 1;
             this.cb_AMBPatcher_progress_bar.Text = "Progress Bar";
             this.cb_AMBPatcher_progress_bar.UseVisualStyleBackColor = true;
             // 
             // tabAbout
             // 
+            this.tabAbout.Controls.Add(this.bRL_7z);
+            this.tabAbout.Controls.Add(this.label4);
+            this.tabAbout.Controls.Add(this.link7z);
             this.tabAbout.Controls.Add(this.bRL_SAT);
             this.tabAbout.Controls.Add(this.bRL_S4ML);
             this.tabAbout.Controls.Add(this.label2);
@@ -263,7 +269,7 @@
             // 
             // bRL_SAT
             // 
-            this.bRL_SAT.Location = new System.Drawing.Point(261, 113);
+            this.bRL_SAT.Location = new System.Drawing.Point(261, 99);
             this.bRL_SAT.Name = "bRL_SAT";
             this.bRL_SAT.Size = new System.Drawing.Size(91, 23);
             this.bRL_SAT.TabIndex = 4;
@@ -273,7 +279,7 @@
             // 
             // bRL_S4ML
             // 
-            this.bRL_S4ML.Location = new System.Drawing.Point(261, 44);
+            this.bRL_S4ML.Location = new System.Drawing.Point(261, 35);
             this.bRL_S4ML.Name = "bRL_S4ML";
             this.bRL_S4ML.Size = new System.Drawing.Size(91, 23);
             this.bRL_S4ML.TabIndex = 2;
@@ -284,7 +290,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 84);
+            this.label2.Location = new System.Drawing.Point(6, 70);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(303, 13);
             this.label2.TabIndex = 3;
@@ -295,7 +301,7 @@
             this.bOK.Location = new System.Drawing.Point(12, 236);
             this.bOK.Name = "bOK";
             this.bOK.Size = new System.Drawing.Size(180, 38);
-            this.bOK.TabIndex = 1;
+            this.bOK.TabIndex = 98;
             this.bOK.Text = "OK";
             this.bOK.UseVisualStyleBackColor = true;
             this.bOK.Click += new System.EventHandler(this.bOK_Click);
@@ -305,10 +311,39 @@
             this.bCancel.Location = new System.Drawing.Point(198, 236);
             this.bCancel.Name = "bCancel";
             this.bCancel.Size = new System.Drawing.Size(180, 38);
-            this.bCancel.TabIndex = 2;
+            this.bCancel.TabIndex = 99;
             this.bCancel.Text = "Cancel";
             this.bCancel.UseVisualStyleBackColor = true;
             this.bCancel.Click += new System.EventHandler(this.bCancel_Click);
+            // 
+            // bRL_7z
+            // 
+            this.bRL_7z.Location = new System.Drawing.Point(261, 163);
+            this.bRL_7z.Name = "bRL_7z";
+            this.bRL_7z.Size = new System.Drawing.Size(91, 23);
+            this.bRL_7z.TabIndex = 7;
+            this.bRL_7z.Text = "Read License";
+            this.bRL_7z.UseVisualStyleBackColor = true;
+            this.bRL_7z.Click += new System.EventHandler(this.bRL_7z_Click);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 134);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(205, 13);
+            this.label4.TabIndex = 5;
+            this.label4.Text = "7-Zip Copyright (C) 1999-2018 Igor Pavlov";
+            // 
+            // link7z
+            // 
+            this.link7z.AutoSize = true;
+            this.link7z.Location = new System.Drawing.Point(22, 147);
+            this.link7z.Name = "link7z";
+            this.link7z.Size = new System.Drawing.Size(115, 13);
+            this.link7z.TabIndex = 6;
+            this.link7z.TabStop = true;
+            this.link7z.Text = "https://www.7-zip.org/";
             // 
             // Settings
             // 
@@ -358,5 +393,8 @@
         private System.Windows.Forms.RadioButton rb_rename;
         private System.Windows.Forms.CheckBox cb_AMBPatcher_sha_check;
         private System.Windows.Forms.ComboBox list_SHAType;
+        private System.Windows.Forms.Button bRL_7z;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.LinkLabel link7z;
     }
 }

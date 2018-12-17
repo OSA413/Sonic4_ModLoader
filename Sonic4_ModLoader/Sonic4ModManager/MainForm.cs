@@ -595,9 +595,12 @@ namespace Sonic4ModManager
             }
         }
 
-        private void rtb_mod_description_LinkClicked(object sender, LinkClickedEventArgs e)
+        public static void LinkClicked(object sender, LinkClickedEventArgs e)
         {
-            Process.Start(e.LinkText);
+            try
+            { Process.Start(e.LinkText); }
+            catch (Exception err)
+            { MessageBox.Show("Clicking on the link raised following exception:\n\n"+err.Message, "Watch out! You are going to crash!"); }
         }
 
         public void FormatDescription()

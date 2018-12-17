@@ -172,14 +172,19 @@ namespace Sonic4ModManager
             Process.Start("https://github.com/blueskythlikesclouds/SonicAudioTools");
         }
         
-        private void bRL_S4ML_Click(object sender, System.EventArgs e)
+        private void bRL_S4ML_Click(object sender, EventArgs e)
         {
             ReadLicense("S4ML");
         }
 
-        private void bRL_SAT_Click(object sender, System.EventArgs e)
+        private void bRL_SAT_Click(object sender, EventArgs e)
         {
             ReadLicense("SAT");
+        }
+
+        private void bRL_7z_Click(object sender, EventArgs e)
+        {
+            ReadLicense("7z");
         }
 
         ////////

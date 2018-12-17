@@ -41,6 +41,8 @@
             this.richTextBox1.Size = new System.Drawing.Size(540, 235);
             this.richTextBox1.TabIndex = 0;
             this.richTextBox1.Text = "";
+            this.richTextBox1.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(MainForm.LinkClicked);
+
             // 
             // button1
             // 

@@ -31,7 +31,7 @@ namespace Sonic4ModManager
 
             richTextBox1.Text = text;
         }
-
+        
         private void button1_Click(object sender, EventArgs e)
         {
             Close();

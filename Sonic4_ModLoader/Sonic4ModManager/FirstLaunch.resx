@@ -119,9 +119,9 @@
   </resheader>
   <data name="label1.Text" xml:space="preserve">
     <value>Hello!
-It seems that you have launched the Mod Manager for the first time. Do you want the Mod Manager to configure itself to be able to launch from other shortcuts (e.g. Steam)?
+It seems that you have launched the Mod Manager for the first time. Do you want to install the Mod Loader to be able to launch it from other shortcuts (e.g. Steam)?
 
-This also will make the patcher run every single launch of the game to keep your game files correspond to your enabled mods (may be harmful to SSDs).</value>
+You can install/uninstall and configure it through the settings menu at any time.</value>
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">

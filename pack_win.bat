@@ -45,11 +45,11 @@ COPY "dependencies\SonicAudioTools\CsbEditor.exe"	%dist%"CsbEditor.exe"
 
 ::7-Zip
 ::License
-::COPY "dependencies\7-Zip\License.txt"	%dist%"LICENSE-7-Zip"
-::COPY "dependencies\7-Zip\files"	%dist%"LICENSE-7-Zip_files"
+COPY "dependencies\7-Zip\License.txt"	%dist%"LICENSE-7-Zip"
+COPY "dependencies\7-Zip\files"		%dist%"LICENSE-7-Zip_files"
 ::EXEs
-::COPY "dependencies\7-Zip\7z.exe"	%dist%"7z.exe"
-::COPY "dependencies\7-Zip\7z.dll"	%dist%"7z.dll"
+COPY "dependencies\7-Zip\7z.exe"	%dist%"7z.exe"
+COPY "dependencies\7-Zip\7z.dll"	%dist%"7z.dll"
 
 CD dist
 
