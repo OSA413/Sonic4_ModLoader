@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using System.Net;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 
 namespace OneClickModInstaller
 {
@@ -23,19 +24,25 @@ namespace OneClickModInstaller
             string tmp = "download";
             if (local) { tmp = "installation"; }
             toolStripStatusLabel1.Text = toolStripStatusLabel1.Text.Replace("{0}", tmp);
-
-            //TODO
-
+            
             if (local)
             {
+                bDownload.Text = "Install";
+                label3.Text = label3.Text.Replace("{0}", "install a mod from hard drive");
+                lURL.Text = args[1];
 
+                lType.Text = lModID.Text = label2.Text = label4.Text = "";
+
+                label1.Text = "Path to the mod:";
             }
             else
             {
-                string[] gb_parameters = args[0].Split(',');
-                if (gb_parameters.Length > 0) { lURL.Text = gb_parameters[0]; }
-                if (gb_parameters.Length > 1) { lType.Text = gb_parameters[1]; }
-                if (gb_parameters.Length > 2) { lModID.Text = gb_parameters[2]; }
+                label3.Text = label3.Text.Replace("{0}", "download a mod from GameBanana");
+
+                string[] parameters = args[0].Split(',');
+                if (parameters.Length > 0) { lURL.Text =    parameters[0]; }
+                if (parameters.Length > 1) { lType.Text =   parameters[1]; }
+                if (parameters.Length > 2) { lModID.Text =  parameters[2]; }
             }
         }
         
@@ -54,6 +61,7 @@ namespace OneClickModInstaller
             foreach (string dir in Directory.GetDirectories(source))
             {
                 string dir_name = Path.GetDirectoryName(dir);
+
                 Directory.CreateDirectory(Path.Combine(destination, dir_name));
                 CopyAll(Path.Combine(source, dir_name), Path.Combine(destination, dir_name));
             }
@@ -77,40 +85,28 @@ namespace OneClickModInstaller
             string[] all_files = Directory.GetFiles(dir_name, "*", SearchOption.AllDirectories);
             List<string> suspicious_files = new List<string>();
 
-            for (int i = 0; i < all_files.Length; i++)
+            foreach (string file in all_files)
             {
-                bool does_it_end = false;
-
-                if (int.TryParse(Path.GetFileName(all_files[i]), out int n) && all_files[i].Contains("DEMO\\WORLDMAP\\WORLDMAP.AMB"))
+                if (int.TryParse(Path.GetFileName(file), out int n) && file.Contains("DEMO\\WORLDMAP\\WORLDMAP.AMB"))
                 {
-                    does_it_end = true;
+                    continue;
                 }
 
-                for (int j = 0; j < good_formats.Length; j++)
+                if (good_formats.Contains(Path.GetExtension(file), StringComparer.OrdinalIgnoreCase))
                 {
-                    if (all_files[i].ToUpper().EndsWith("." + good_formats[j]))
-                    {
-                        does_it_end = true;
-                    }
-                    if (does_it_end) { break; }
+                    continue;
                 }
-
-                if (!does_it_end)
-                {
-                    suspicious_files.Add(all_files[i]);
-                }
+                
+                suspicious_files.Add(file);
             }
 
-            int cont = 0;
-            if (suspicious_files.Count > 0)
+
+            int cont = 1;
+            if (suspicious_files.Count != 0)
             {
-                Suspicious SuspiciousDialog = new Suspicious();
-
-                foreach (string file in suspicious_files)
-                {
-                    SuspiciousDialog.listView1.Items.Add(file);
-                }
-
+                cont = 0;
+                Suspicious SuspiciousDialog = new Suspicious(suspicious_files.ToArray());
+                
                 DialogResult result = SuspiciousDialog.ShowDialog();
 
                 //Continue
@@ -118,24 +114,13 @@ namespace OneClickModInstaller
                 {
                     cont = 1;
                 }
-                //Delete those files and Continue
-                else if (result == DialogResult.OK)
-                {
-                    foreach (string file in suspicious_files)
-                    {
-                        File.Delete(file);
-                    }
-                    cont = 1;
-                }
-                else {cont = -1;}
             }
             return cont;
         }
 
-        static string FindRootDirectory(string dir_name)
+        static string[] FindRootDirs(string dir_name)
         {
-            string root_name = "???";
-            List<string> mod_possible_root = new List<string>();
+            List<string> mod_roots = new List<string>();
             string[] game_folders = "CUTSCENE,DEMO,G_COM,G_SS,G_EP1COM,G_EP1ZONE2,G_EP1ZONE3,G_EP1ZONE4,G_ZONE1,G_ZONE2,G_ZONE3,G_ZONE4,G_ZONEF,MSG,NNSTDSHADER,SOUND".Split(',');
 
             foreach (string folder in game_folders)
@@ -143,19 +128,14 @@ namespace OneClickModInstaller
                 foreach (string mod_folder in Directory.GetDirectories(dir_name, folder, SearchOption.AllDirectories))
                 {
                     string tmp_root = Path.GetDirectoryName(mod_folder);
-                    if (!mod_possible_root.Contains(tmp_root))
+                    if (!mod_roots.Contains(tmp_root))
                     {
-                        mod_possible_root.Add(tmp_root);
+                        mod_roots.Add(tmp_root);
                     }
                 }
             }
 
-            if (mod_possible_root.Count == 1)
-            {
-                root_name = mod_possible_root[0];
-            }
-
-            return root_name;
+            return mod_roots.ToArray();
         }
 
         private void bDownload_Click(object sender, EventArgs e)
@@ -167,7 +147,7 @@ namespace OneClickModInstaller
             if (local)
             {
                 toolStripStatusLabel1.Text = "Copying local archive...";
-                File.Copy(lURL.Text, lModID.Text + ".zip");
+                File.Copy(lURL.Text, Path.GetFileNameWithoutExtension(lURL.Text) + ".zip");
                 DoTheRest();
             }
             else
@@ -193,50 +173,51 @@ namespace OneClickModInstaller
         private void DoTheRest()
         {
             toolStripStatusLabel1.Text = "Extracting downloaded archive...";
-
-            string mod_arc = lModID.Text + ".zip";
+            
+            string mod_archive = lModID.Text + ".zip";
+            if (local)
+            { mod_archive = Path.GetFileNameWithoutExtension(lURL.Text) + ".zip"; }
 
             string mod_dir = "extracted_mod";
             if (Directory.Exists(mod_dir))
             {
                 Directory.Delete(mod_dir, true);
             }
-            ExtractArchive(mod_arc);
+            ExtractArchive(mod_archive);
 
             toolStripStatusLabel1.Text = "Checking extracted files...";
             int cont = CheckFiles(mod_dir);
 
             if (cont == -1) { Application.Exit(); }
 
-            toolStripStatusLabel1.Text = "Trying to find mod root directory...";
-            string mod_root = FindRootDirectory(mod_dir);
+            toolStripStatusLabel1.Text = "Finding root directories...";
+            string[] mod_roots = FindRootDirs(mod_dir);
 
-            if (mod_root != "???")
+            if (mod_roots.Length > 1)
             {
-                Console.WriteLine(mod_root);
+                TooManyMods tmm_form = new TooManyMods(mod_roots);
+                tmm_form.ShowDialog();
 
-                string mod_root_name = mod_root.Split(Path.DirectorySeparatorChar)[mod_root.Split(Path.DirectorySeparatorChar).Length - 1];
-
-                toolStripStatusLabel1.Text = "Installing downloaded mod...";
-                CopyAll(mod_root, Path.Combine("mods", mod_root_name));
-
-                DFtEM enable_mod = new DFtEM();
-                enable_mod.ShowDialog();
-
-                Directory.Delete("extracted_mod", true);
-                File.Delete(mod_arc);
-                Application.Exit();
+                mod_roots = tmm_form.mods;
             }
-            else
+
+            toolStripStatusLabel1.Text = "Installing downloaded mod...";
+
+            foreach (string mod in mod_roots)
             {
-                //replace with a dialog to choose which mods to install
-                //WrongModStructureForm wmsf = new WrongModStructureForm();
-                //wmsf.ShowDialog();
-
-                Application.Exit();
+                CopyAll(mod, Path.Combine("mods", Path.GetFileName(mod)));
             }
+
+            DFtEM enable_mod = new DFtEM();
+            enable_mod.ShowDialog();
+
+            Directory.Delete("extracted_mod", true);
+            File.Delete(mod_archive);
+            Application.Exit();
+
+
         }
-        
+
         void wc_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
             progressBar.Value = e.ProgressPercentage;

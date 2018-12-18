@@ -5,17 +5,16 @@ namespace OneClickModInstaller
 {
     public partial class Suspicious : Form
     {
-        public Suspicious()
+        public Suspicious(string[] args)
         {
             InitializeComponent();
+            foreach (string file in args)
+            {
+                listView1.Items.Add(file);
+            }
         }
 
         private void bContinue_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
-
-        private void bDelContinue_Click(object sender, EventArgs e)
         {
             Close();
         }

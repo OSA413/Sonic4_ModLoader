@@ -33,9 +33,7 @@ namespace OneClickModInstaller
                 { Application.Run(new InstallationForm(args)); }
             }
             else
-            {
-                Application.Run(new InstallationForm(args));
-            }
+            { Application.Run(new InstallationForm(args)); }
         }
     }
 }

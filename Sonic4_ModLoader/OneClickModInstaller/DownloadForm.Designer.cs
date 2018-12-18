@@ -99,9 +99,9 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(12, 9);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(259, 26);
+            this.label3.Size = new System.Drawing.Size(104, 26);
             this.label3.TabIndex = 5;
-            this.label3.Text = "You are trying to download a mod from GameBanana.\r\nAren\'t you?";
+            this.label3.Text = "You are trying to {0}.\r\nAren\'t you?";
             // 
             // label1
             // 
