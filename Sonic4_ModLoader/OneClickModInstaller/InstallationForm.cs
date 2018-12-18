@@ -24,8 +24,8 @@ namespace OneClickModInstaller
                 }
                 else
                 {
-                    SetButtonShield(bInstall, true);
-                    SetButtonShield(bUninstall, true);
+                    SetButtonShield(bInstall);
+                    SetButtonShield(bUninstall);
                 }
 
                 if (args.Length == 1)
@@ -191,10 +191,10 @@ namespace OneClickModInstaller
         [DllImport("user32.dll", CharSet = CharSet.Unicode)]
         public static extern IntPtr SendMessage(HandleRef hWnd, UInt32 Msg, IntPtr wParam, IntPtr lParam);
 
-        public static void SetButtonShield(Button btn, bool showShield)
+        public static void SetButtonShield(Button btn)
         {
             btn.FlatStyle = FlatStyle.System;
-            SendMessage(new HandleRef(btn, btn.Handle), 0x160C, IntPtr.Zero, showShield ? new IntPtr(1) : IntPtr.Zero);
+            SendMessage(new HandleRef(btn, btn.Handle), 0x160C, IntPtr.Zero, true ? new IntPtr(1) : IntPtr.Zero);
         }
 
         private void UpdateWindow()
