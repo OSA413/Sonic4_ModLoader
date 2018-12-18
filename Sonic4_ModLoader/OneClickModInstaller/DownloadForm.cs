@@ -60,8 +60,7 @@ namespace OneClickModInstaller
             
             foreach (string dir in Directory.GetDirectories(source))
             {
-                string dir_name = Path.GetDirectoryName(dir);
-
+                string dir_name = Path.GetFileName(dir);
                 Directory.CreateDirectory(Path.Combine(destination, dir_name));
                 CopyAll(Path.Combine(source, dir_name), Path.Combine(destination, dir_name));
             }
@@ -73,7 +72,7 @@ namespace OneClickModInstaller
             ProcessStartInfo startInfo = new ProcessStartInfo
             {
                 FileName = "7z.exe",
-                Arguments = "x " + file_name + " -o" + "extracted_mod"
+                Arguments = "x \"" + file_name + "\" -o" + "extracted_mod"
             };
             Process.Start(startInfo).WaitForExit();
         }
@@ -91,8 +90,8 @@ namespace OneClickModInstaller
                 {
                     continue;
                 }
-
-                if (good_formats.Contains(Path.GetExtension(file), StringComparer.OrdinalIgnoreCase))
+                
+                if (good_formats.Contains(Path.GetExtension(file).Substring(1), StringComparer.OrdinalIgnoreCase))
                 {
                     continue;
                 }
@@ -147,7 +146,8 @@ namespace OneClickModInstaller
             if (local)
             {
                 toolStripStatusLabel1.Text = "Copying local archive...";
-                File.Copy(lURL.Text, Path.GetFileNameWithoutExtension(lURL.Text) + ".zip");
+                Console.WriteLine(Path.GetFileNameWithoutExtension(lURL.Text) + ".zip");
+                File.Copy(lURL.Text, Path.GetFileNameWithoutExtension(lURL.Text) + ".zip", true);
                 DoTheRest();
             }
             else
@@ -205,14 +205,16 @@ namespace OneClickModInstaller
 
             foreach (string mod in mod_roots)
             {
-                CopyAll(mod, Path.Combine("mods", Path.GetFileName(mod)));
+                string dest = Path.Combine("mods", Path.GetFileName(mod));
+                if (Directory.Exists(dest)) { Directory.Delete(dest, true); }
+                CopyAll(mod, dest);
             }
 
             DFtEM enable_mod = new DFtEM();
             enable_mod.ShowDialog();
 
             Directory.Delete("extracted_mod", true);
-            File.Delete(mod_archive);
+            if (!local) { File.Delete(mod_archive); }
             Application.Exit();
 
 
