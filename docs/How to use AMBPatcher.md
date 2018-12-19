@@ -15,3 +15,12 @@ Available commands:
 * `AMBPatcher read [AMB file]` - Prints content of `[AMB file]` (File names, pointers, and lengths).
 * `AMBPatcher patch [AMB file] [another file]` - Patch `[AMB file]` by `[another file]` if `[another file]` is in `[AMB file]`.
 * `AMBPatcher [AMB file] [directory]` and `AMBPatcher patch [AMB file] [directory]` - Patch `[AMB file]` by all files in `[directory]` (recursively) if those files are in `[AMB file]`.
+
+**This information may be outdated. To get currently supported commands enter* `AMBPatcher -h`
+
+## FAQ
+
+### Big files
+Q: Can this program replace/change/repack/re-import a file by a bigger one?
+
+A: Yes, AMBPatcher can do this automatically.

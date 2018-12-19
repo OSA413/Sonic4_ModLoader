@@ -40,12 +40,25 @@ namespace OneClickModInstaller
             }
             else
             {
-                label3.Text = label3.Text.Replace("{0}", "download a mod from GameBanana");
-
+                label3.Text = label3.Text.Replace("{0}", "download a mod from {1}");
+                
                 string[] parameters = args[0].Substring(12).Split(',');
                 archive_url = lURL.Text                   = parameters[0];
                 if (parameters.Length > 1) { lType.Text   = parameters[1]; }
                 if (parameters.Length > 2) { lModID.Text  = parameters[2]; }
+
+                if (lURL.Text.Contains("gamebanana.com"))
+                {
+                    label3.Text = label3.Text.Replace("{1}", "GameBanana");
+                }
+                else if (lURL.Text.Contains("github.com"))
+                {
+                    label3.Text = label3.Text.Replace("{1}", "GitHub");
+                }
+                else
+                {
+                    label3.Text = label3.Text.Replace("{1}", "the Internet");
+                }
             }
 
             if (lType.Text == "???")
