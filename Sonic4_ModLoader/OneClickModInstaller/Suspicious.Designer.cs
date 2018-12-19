@@ -79,7 +79,7 @@
             // 
             // clFileNames
             // 
-            this.clFileNames.Text = "File Names";
+            this.clFileNames.Text = "Files";
             this.clFileNames.Width = 440;
             // 
             // Suspicious

@@ -46,8 +46,10 @@
             // progressBar
             // 
             this.progressBar.Location = new System.Drawing.Point(12, 144);
+            this.progressBar.MarqueeAnimationSpeed = 0;
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(280, 32);
+            this.progressBar.Step = 1;
             this.progressBar.TabIndex = 0;
             // 
             // bDownload
@@ -81,9 +83,9 @@
             this.lModID.AutoSize = true;
             this.lModID.Location = new System.Drawing.Point(26, 110);
             this.lModID.Name = "lModID";
-            this.lModID.Size = new System.Drawing.Size(31, 13);
+            this.lModID.Size = new System.Drawing.Size(25, 13);
             this.lModID.TabIndex = 3;
-            this.lModID.Text = "0000";
+            this.lModID.Text = "???";
             // 
             // label2
             // 
@@ -114,10 +116,11 @@
             // 
             // lURL
             // 
-            this.lURL.AutoSize = true;
+            this.lURL.AutoEllipsis = true;
             this.lURL.Location = new System.Drawing.Point(26, 58);
+            this.lURL.MaximumSize = new System.Drawing.Size(266, 45);
             this.lURL.Name = "lURL";
-            this.lURL.Size = new System.Drawing.Size(53, 13);
+            this.lURL.Size = new System.Drawing.Size(266, 45);
             this.lURL.TabIndex = 7;
             this.lURL.Text = "Unknown";
             // 
@@ -135,9 +138,9 @@
             this.lType.AutoSize = true;
             this.lType.Location = new System.Drawing.Point(26, 84);
             this.lType.Name = "lType";
-            this.lType.Size = new System.Drawing.Size(31, 13);
+            this.lType.Size = new System.Drawing.Size(25, 13);
             this.lType.TabIndex = 9;
-            this.lType.Text = "Type";
+            this.lType.Text = "???";
             // 
             // DownloadForm
             // 

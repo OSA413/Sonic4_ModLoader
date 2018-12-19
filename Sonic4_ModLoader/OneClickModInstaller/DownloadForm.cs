@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Net;
-using System.Web;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -14,6 +13,7 @@ namespace OneClickModInstaller
     {
         public static bool      local { set; get; }
         public static string    archive_name { set; get; }
+        public static string    archive_url { set; get; }
 
         public DownloadForm(string[] args)
         {
@@ -31,7 +31,8 @@ namespace OneClickModInstaller
             {
                 bDownload.Text = "Install";
                 label3.Text = label3.Text.Replace("{0}", "install a mod from hard drive");
-                lURL.Text = args[1];
+                archive_url = args[1];
+                lURL.Text = archive_url.Replace(' ', '\u2007');
 
                 lType.Text = lModID.Text = label2.Text = label4.Text = "";
 
@@ -42,12 +43,32 @@ namespace OneClickModInstaller
                 label3.Text = label3.Text.Replace("{0}", "download a mod from GameBanana");
 
                 string[] parameters = args[0].Substring(12).Split(',');
-                if (parameters.Length > 0) { lURL.Text =    parameters[0]; }
-                if (parameters.Length > 1) { lType.Text =   parameters[1]; }
-                if (parameters.Length > 2) { lModID.Text =  parameters[2]; }
+                archive_url = lURL.Text                   = parameters[0];
+                if (parameters.Length > 1) { lType.Text   = parameters[1]; }
+                if (parameters.Length > 2) { lModID.Text  = parameters[2]; }
+            }
+
+            if (lType.Text == "???")
+            {
+                lType.Text = "";
+                label4.Text = "";
+            }
+            if (lModID.Text == "???")
+            {
+                lModID.Text = "";
+                label2.Text = "";
             }
         }
         
+        static string GetRedirectURL(string url)
+        {
+            var t = WebRequest.Create(url);
+            var r = t.GetResponse();
+            var y = r.ResponseUri;
+            r.Close();
+            return y.ToString();
+        }
+
         static void CopyAll(string source, string destination)
         {
             if (source.ToLower() == destination.ToLower())
@@ -144,37 +165,35 @@ namespace OneClickModInstaller
         
         private void bDownload_Click(object sender, EventArgs e)
         {
-            if (File.Exists(lModID.Text + ".zip"))
-            {
-                File.Delete(lModID.Text + ".zip");
-            }
             if (local)
             {
                 toolStripStatusLabel1.Text = "Copying local archive...";
-                File.Copy(lURL.Text, Path.GetFileNameWithoutExtension(lURL.Text) + ".zip", true);
+
+                archive_name = Path.GetFileName(archive_url);
+                
+                File.Copy(archive_url, archive_name, true);
                 DoTheRest();
             }
             else
             {
                 using (WebClient wc = new WebClient())
                 {
-                    toolStripStatusLabel1.Text = "Downloading...";
+                    toolStripStatusLabel1.Text = "Connecting to the server...";
                     bDownload.Enabled = false;
                     wc.DownloadFileCompleted += new AsyncCompletedEventHandler(fake_DoTheRest);
                     wc.DownloadProgressChanged += wc_DownloadProgressChanged;
 
                     //Download link goes here
-                    Uri url = new Uri(lURL.Text);
+                    string url = GetRedirectURL(archive_url);
 
-                    //I HAVE FINALLY MANAGED TO GET REDIRECT LINK//
-                    ///////////////////////////////////////////////
-                    var t = WebRequest.Create(url);
-                    var r = t.GetResponse();
-                    var y = r.ResponseUri;
-                    r.Close();
-                    Console.WriteLine(y);
-                    ///////////////////////////////////////////////
-                    wc.DownloadFileAsync(url, lModID.Text + ".zip");
+                    archive_name = url.Split('/')[url.Split('/').Length-1];
+                    
+                    if (File.Exists(archive_name))
+                    {
+                        File.Delete(archive_name);
+                    }
+                    
+                    wc.DownloadFileAsync(new Uri(url), archive_name);
                 }
             }
         }
@@ -188,54 +207,57 @@ namespace OneClickModInstaller
         {
             toolStripStatusLabel1.Text = "Extracting downloaded archive...";
             
-            string mod_archive = lModID.Text + ".zip";
-            if (local)
-            { mod_archive = Path.GetFileNameWithoutExtension(lURL.Text) + ".zip"; }
-
             string mod_dir = "extracted_mod";
             if (Directory.Exists(mod_dir))
             {
                 Directory.Delete(mod_dir, true);
             }
-            ExtractArchive(mod_archive);
+            ExtractArchive(archive_name);
 
             toolStripStatusLabel1.Text = "Checking extracted files...";
             int cont = CheckFiles(mod_dir);
 
-            if (cont == 0) { Directory.Delete("extracted_mod", true); Application.Exit(); }
-
-            toolStripStatusLabel1.Text = "Finding root directories...";
-            string[] mod_roots = FindRootDirs(mod_dir);
-
-            if (mod_roots.Length > 1)
+            if (cont != 1)
             {
-                TooManyMods tmm_form = new TooManyMods(mod_roots);
-                tmm_form.ShowDialog();
-
-                mod_roots = tmm_form.mods;
+                Directory.Delete("extracted_mod", true);
+                Application.Exit();
             }
 
-            toolStripStatusLabel1.Text = "Installing downloaded mod...";
-
-            foreach (string mod in mod_roots)
+            if (cont == 1)
             {
-                string dest = Path.Combine("mods", Path.GetFileName(mod));
-                if (Directory.Exists(dest)) { Directory.Delete(dest, true); }
-                CopyAll(mod, dest);
+                toolStripStatusLabel1.Text = "Finding root directories...";
+                string[] mod_roots = FindRootDirs(mod_dir);
+
+                if (mod_roots.Length > 1)
+                {
+                    TooManyMods tmm_form = new TooManyMods(mod_roots);
+                    tmm_form.ShowDialog();
+
+                    mod_roots = tmm_form.mods;
+                }
+
+                toolStripStatusLabel1.Text = "Installing downloaded mod...";
+
+                foreach (string mod in mod_roots)
+                {
+                    string dest = Path.Combine("mods", Path.GetFileName(mod));
+                    if (Directory.Exists(dest)) { Directory.Delete(dest, true); }
+                    CopyAll(mod, dest);
+                }
+
+                DFtEM enable_mod = new DFtEM();
+                enable_mod.ShowDialog();
+
+                Directory.Delete("extracted_mod", true);
+                File.Delete(archive_name);
+                Application.Exit();
             }
-
-            DFtEM enable_mod = new DFtEM();
-            enable_mod.ShowDialog();
-
-            Directory.Delete("extracted_mod", true);
-            if (!local) { File.Delete(mod_archive); }
-            Application.Exit();
         }
 
         void wc_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
             progressBar.Value = e.ProgressPercentage;
-
+            
             string unit;
             int divider;
 
@@ -246,7 +268,15 @@ namespace OneClickModInstaller
             else
             {unit = "Bytes"; divider = 1;}
 
-            toolStripStatusLabel1.Text = "Downloading... (" + e.BytesReceived/divider + unit + " / " + e.TotalBytesToReceive/divider + unit + ")";
+            //Yep, sometimes TotalBytesToReceive equals -1
+            if (e.TotalBytesToReceive == -1)
+            {
+                toolStripStatusLabel1.Text = "Downloading... (" + e.BytesReceived / divider + unit + ")";
+            }
+            else
+            {
+                toolStripStatusLabel1.Text = "Downloading... (" + e.BytesReceived / divider + unit + " / " + e.TotalBytesToReceive / divider + unit + ")";
+            }
         }
     }
 }

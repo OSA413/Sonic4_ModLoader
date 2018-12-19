@@ -10,8 +10,9 @@ namespace OneClickModInstaller
             InitializeComponent();
             foreach (string file in args)
             {
-                listView1.Items.Add(file);
+                listView1.Items.Add(file.Substring(13));
             }
+            listView1.Columns[0].Width = -2;
         }
 
         private void bContinue_Click(object sender, EventArgs e)
