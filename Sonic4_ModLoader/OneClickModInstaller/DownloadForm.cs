@@ -14,9 +14,15 @@ namespace OneClickModInstaller
         public static bool      local { set; get; }
         public static string    archive_name { set; get; }
         public static string    archive_url { set; get; }
+        public static string    server_host { set; get; }
 
         public DownloadForm(string[] args)
         {
+            if (!Application.ExecutablePath.Contains(Path.Combine("bin","Debug")))
+            {
+                Environment.CurrentDirectory = Path.GetDirectoryName(Application.ExecutablePath);
+            }
+
             local = false;
             if (args[0] == "--local")
             { local = true; }
@@ -50,17 +56,20 @@ namespace OneClickModInstaller
                 if (lURL.Text.Contains("gamebanana.com"))
                 {
                     label3.Text = label3.Text.Replace("{1}", "GameBanana");
+                    server_host = "gamebanana";
                 }
                 else if (lURL.Text.Contains("github.com"))
                 {
                     label3.Text = label3.Text.Replace("{1}", "GitHub");
+                    server_host = "github";
                 }
                 else
                 {
                     label3.Text = label3.Text.Replace("{1}", "the Internet");
+                    server_host = "else";
                 }
             }
-
+            
             if (lType.Text == "???")
             {
                 lType.Text = "";
@@ -115,7 +124,7 @@ namespace OneClickModInstaller
         
         private int CheckFiles(string dir_name)
         {
-            string[] good_formats = "TXT,INI,DDS,TXB,AMA,AME,ZNO,TXB,ZNM,ZNV,DC,EV,RG,MD,MP,AT,DF,DI,PSH,VSH,LTS,XNM,MFS,SSS,GPB,MSG,AYK".Split(',');
+            string[] good_formats = "TXT,INI,DDS,TXB,AMA,AME,ZNO,TXB,ZNM,ZNV,DC,EV,RG,MD,MP,AT,DF,DI,PSH,VSH,LTS,XNM,MFS,SSS,GPB,MSG,AYK,ADX".Split(',');
 
             string[] all_files = Directory.GetFiles(dir_name, "*", SearchOption.AllDirectories);
             List<string> suspicious_files = new List<string>();
@@ -183,8 +192,8 @@ namespace OneClickModInstaller
                 toolStripStatusLabel1.Text = "Copying local archive...";
 
                 archive_name = Path.GetFileName(archive_url);
-                
-                File.Copy(archive_url, archive_name, true);
+
+                File.Copy(archive_url, Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), archive_name), true);
                 DoTheRest();
             }
             else
@@ -199,7 +208,16 @@ namespace OneClickModInstaller
                     //Download link goes here
                     string url = GetRedirectURL(archive_url);
 
-                    archive_name = url.Split('/')[url.Split('/').Length-1];
+                    //Getting file name of the archive
+                    if (server_host == "github")
+                    {
+                        //GitHub's redirect link is something like a request rather than a file "path" on a server
+                        archive_name = archive_url.Split('/')[archive_url.Split('/').Length - 1];
+                    }
+                    else
+                    {
+                        archive_name = url.Split('/')[url.Split('/').Length - 1];
+                    }
                     
                     if (File.Exists(archive_name))
                     {

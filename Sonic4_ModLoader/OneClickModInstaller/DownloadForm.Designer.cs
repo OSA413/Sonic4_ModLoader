@@ -81,7 +81,7 @@
             // lModID
             // 
             this.lModID.AutoSize = true;
-            this.lModID.Location = new System.Drawing.Point(26, 110);
+            this.lModID.Location = new System.Drawing.Point(102, 119);
             this.lModID.Name = "lModID";
             this.lModID.Size = new System.Drawing.Size(25, 13);
             this.lModID.TabIndex = 3;
@@ -90,7 +90,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 97);
+            this.label2.Location = new System.Drawing.Point(88, 106);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(45, 13);
             this.label2.TabIndex = 4;
@@ -127,7 +127,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(12, 71);
+            this.label4.Location = new System.Drawing.Point(9, 106);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(54, 13);
             this.label4.TabIndex = 8;
@@ -136,7 +136,7 @@
             // lType
             // 
             this.lType.AutoSize = true;
-            this.lType.Location = new System.Drawing.Point(26, 84);
+            this.lType.Location = new System.Drawing.Point(23, 119);
             this.lType.Name = "lType";
             this.lType.Size = new System.Drawing.Size(25, 13);
             this.lType.TabIndex = 9;

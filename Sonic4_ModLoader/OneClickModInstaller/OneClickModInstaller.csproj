@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{F993D5C4-5D52-4CC3-91E5-E5D7FA0357BA}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <OutputType>WinExe</OutputType>
     <RootNamespace>OneClickModInstaller</RootNamespace>
     <AssemblyName>OneClickModInstaller</AssemblyName>
     <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
