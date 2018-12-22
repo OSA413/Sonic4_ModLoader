@@ -34,7 +34,6 @@ COPY "Sonic4_ModLoader\OneClickModInstaller\bin\Release\OneClickModInstaller.exe
 ::READMEs
 COPY "docs\README.rtf"		%dist%"README.rtf"
 COPY "docs\README.txt"		%dist%"README.txt"
-COPY "docs\README-tldr.txt"	%dist%"README-tldr.txt"
 
 ::SonicAudioTools
 ::License

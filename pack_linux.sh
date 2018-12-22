@@ -14,7 +14,6 @@ cp "./Sonic4_ModLoader/Sonic4ModManager/bin/Release/Sonic4ModManager.exe" "./dis
 #READMEs
 cp "./docs/README.rtf" "./dist/Sonic4ModLoader/README.rtf"
 cp "./docs/README.txt" "./dist/Sonic4ModLoader/README.txt"
-cp "./docs/README-tldr.txt" "./dist/Sonic4ModLoader/README-tldr.txt"
 
 
 #Archiving

@@ -5,7 +5,7 @@
  |____/ \___/|_| |_|_|\___|    |_|   |_|  |_|\___/ \__,_| |_____\___/ \__,_|\__,_|\___|_|   
                                                                                             
 
-Last updated: 08.30.2018
+Last updated: 12.23.2018
 
 ===================
 Table of content:
@@ -13,13 +13,9 @@ Table of content:
 * How to install the Mod Loader
 * How to uninstall the Mod Loader
 * How to install mods
-* How to install mods manually
-* How to make this Mod Loader work with your mod
-* "Before Mod Loader" mods compatibility
-* mod.ini structure
-* How to compile this program
 * Third party works
-* Managed to break the program? Found an error? Have suggestions?
+* Bug reports and suggestions
+* Useful documentation
 ===================
 
 
@@ -27,133 +23,59 @@ Table of content:
 What is this?
 ===================
 
-This program is a mod loader for Sonic 4 (both episodes).
-It contains a Mod Manager to manage your mods (enabling/disabling and changing mod priority), AMBPatcher to edit .AMB files, and CsbEditor to edit .CSB files.
-
-Mod Manager and AMBPatcher by OSA413 under MIT License.
-For information about third party programs refer to the "Third party works" section.
+This program is a mod loader for Sonic 4 (works with both episodes).
+The whole Mod Loader includes:
+* Mod Manager to manage your mods (enabling/disabling and changing mod priority)
+* 1-Click Mod Installer for an easier mod installation through the web and local archives
+* AMBPatcher for editing .AMB files
+* CsbEditor for editing .CSB files
+* 7-Zip as a dependency for 1-Click Mod Installer
 
 
 ===================
 How to install the Mod Loader
 ===================
 
-1. Move all the files to the root directory of Sonic 4 Episode (I or II).
+1. Extract all files from the archive to the root directory of the game.
 
-2. Launch "Sonic4ModManager.exe". Mod Manager will offer to be configured automatically, press "Yes" button (if you press "No" button, refer to the "How to install mods manually" section).
+2. Launch `Sonic4ModManager.exe` and press "Yes" button on the First Launch Dialogue.
+
+If you want to enable 1-Click integration, launch `OneClickModInstaller.exe` and press "Install" button (requires administrator privileges).
 
 
 ===================
 How to uninstall the Mod Loader
 ===================
 
-If you haven't installed the Mod Loader yet, remove all the files that were added:
+0. Install the Mod Loader in the Mod Manager settings menu (yes, that's right)
+1. Go to the settings menu in the Mod Manager, select the "Installation" tab.
+2. Select the "Delete all Mod Loader files" radio button, check the "Recover original game files" box if you want it.
+3. Click "Uninstall"
 
-* AMBPatcher.exe
-* CsbEditor.exe
-* LICENSE-Sonic4_ModLoader
-* LICENSE-SonicAudioTools
-* ManagerLauncher.exe
-* PatchLauncher.exe
-* README (.txt, .rtf, .md, -tldr.txt)
-* Sonic4ModManager.exe
-* SonicAudioLib.dll
-
-But if you have already installed it:
-
-1.
-~~~~~ Episode 1
-Check if "Sonic_vis.orig.exe" and "SonicLauncher.orig.exe" are present. If they are, delete "Sonic_vis.exe" and "SonicLauncher.exe" and remove ".orig" part in the names of that files.
-
-~~~~~ Episode 2
-The same as for Episode 1, but "Sonic.orig.exe" and "Launcher.orig.exe"
-
-2. Delete "mod_manager.cfg", "/mods/mods.ini" and "/mods/mods_prev", if exist.
-
-3. Delete all the files listed above.
+1-Click Mod Installer won't be uninstalled automatically. If you have enabled the 1-Click integration, launch the program and click "Uninstall" button. Then you can delete the `OneClickModInstaller.exe`
 
 
 ===================
 How to install mods
 ===================
 
-1. Create a "mods" folder in the root directory of the game (or press "Save" button in the Mod Loader)
+    Manually:
 
-2. Place your mod folder in that "mods" folder.
-For more information refer to "How to make this Mod Loader work with your mod" section.
+0. Create a `mods` folder in the root directory of the game if it's not present.
+1. Place/extract your mod folder into that `mods` folder. The path to the `mod.ini` file must be something like `/mods/My Cool Mod/mod.ini`
+2. Enable the mod in the Mod Manager.
 
-3. Enable the mod in the Mod Loader.
+    Automatically:
 
+Installation from a local archive:
+1. Drag and drop a mod archive on `OneClickModInstaller.exe`
+2. Press the "Install" button.
+3. Enable the mod in the Mod Manager.
 
-===================
-How to install mods manually
-===================
-
-0. Follow the steps from "How to install mods" section.
-
-1. Every time you change something in mods (files, mods priority, etc.), run "AMBPatcher.exe"
-
-
-===================
-How to make this Mod Loader work with your mod
-===================
-
-Changed something in a .CSB file? Name the folder with no extension.
-Changed something in an .AMB file? Name the folder as the file.
-
-Note: AMBPatcher can do recursive patching, so there's no need to manually patch sub-archives.
-
-Here's an example of mod structure:
-~~~~~~~~
-/mods/My Cool Mod/mod.ini
-/mods/My Cool Mod/G_COM/CPIT/CPIT_MAIN.AMB/G_FIX.AMB/USER_FONT00.DDS
-/mods/My Cool Mod/SOUND/SONICDL_SNG01/Synth/materials/SNG_EMERALD_AIF.aax/Intro.adx
-~~~~~~~~
-
-
-===================
-"Before Mod Loader" mods compatibility
-===================
-
-At this moment Mod Loader can simply copy files that have already been modified, replacing the old files (even if they were changed during patching). This in designed only for that mods and should not be used in new mods. If you are a mod creator, refer to "How to make this Mod Loader work with your mod" section.
-
-P.S. - This applies only to AMB files!
-
-
-===================
-mod.ini structure
-===================
-
-"mod.ini" file is not necessary, but recommended if you want to share your mod.
-
-Place "mod.ini" in the root directory of your mod.
-/mods/My Cool Mod/mod.ini
-
-Here's an example of mod.ini structure:
-~~~~~~~~
-Name=My Cool Mod
-Authors=Author0, Author1, and Author2
-Version=0.1.0.0-rc3
-~~~~~~~~
-If "Name" is missed, folder name will be used instead.
-Any other missing parameter will be replaced with "???"
-
-
-===================
-How to compile this program
-===================
-
-0. Download Visual Studio 2017 (C#)
-
-1. Download source code of this Mod Loader: https://github.com/OSA413/Sonic4_ModLoader
-Build everything from it.
-
-2. Download source code of SonicAudioTools: https://github.com/blueskythlikesclouds/SonicAudioTools
-Build only CsbEditor from it (SonicAudioLib.dll will be built as well).
-Note: you will need to replace all ".csb" with ".CSB" in the source code of CsbEditor, otherwise it will not work.
-
-3. Take all the executables (EXEs and DLLs) and place them somewhere together.
-That's all.
+From a web-site with 1-Click integration (e.g. GameBanana):
+1. Press the "1-CLICK INSTALL" button on the mod page.
+2. Press the "Download" button in the 1-Click Mod Installer
+3. Enable the mod in the Mod Manager.
 
 
 ===================
@@ -163,14 +85,28 @@ Third party works
 CsbEditor (from SonicAudioTools) by Skyth under MIT License.
 https://github.com/blueskythlikesclouds/SonicAudioTools
 
-Read LICENSE-SonicAudioTools for license (should be included in distributable versions).
+7-Zip Copyright (C) 1999-2018 Igor Pavlov.
+License - http://7-zip.org/license.txt
+https://7-zip.org
 
 
 ===================
-Managed to break the program? Found an error? Have suggestions?
+Bug reports and suggestions
 ===================
 
-There are many ways to contact me in the Internet. One of them is through GitHub's issues:
+Bugs reports and suggestions should be sent to GitHub's issues page of the Mod Loader:
 https://github.com/OSA413/Sonic4_ModLoader/issues
+
+For other types of discussions contact my somewhere on the Internet.
+
+
+===================
+Useful documentation
+===================
+Documentation index - https://github.com/OSA413/Sonic4_ModLoader/blob/master/docs/Index.md
+* How to use AMBPatcher - https://github.com/OSA413/Sonic4_ModLoader/blob/master/docs/How%20to%20use%20AMBPatcher.md
+* Mod structure - https://github.com/OSA413/Sonic4_ModLoader/blob/master/docs/Mod%20structure.md
+* How to compile this program on Windows - https://github.com/OSA413/Sonic4_ModLoader/blob/master/docs/Compile%20on%20Windows.md
+* How to compile this program on Linux - https://github.com/OSA413/Sonic4_ModLoader/blob/master/docs/Compile%20on%20Linux.md
 
 ~OSA413
