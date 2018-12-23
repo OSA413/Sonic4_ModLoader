@@ -11,7 +11,7 @@ namespace AMBPatcher
     class Program
     {
         /* Two variable to store log
-         * The log wont help you if your game is crashing, but it can tell you if you've named a file 
+         * The log won't help you if your game is crashing, but it can tell you if you've named a file 
          * in the wrong way (e.g. haven't removed "_extracted" in the directory name).
          */
         public static List<string> Log { set; get; }
@@ -93,11 +93,14 @@ namespace AMBPatcher
         {
             string orig_file_sha_root = Path.Combine("mods_sha", file_name);
 
-            var sha1_files = Directory.GetFiles(orig_file_sha_root, "*", SearchOption.AllDirectories);
-
-            foreach (string file in sha1_files)
+            if (Directory.Exists(orig_file_sha_root))
             {
-                File.Delete(file);
+                var sha1_files = Directory.GetFiles(orig_file_sha_root, "*", SearchOption.AllDirectories);
+
+                foreach (string file in sha1_files)
+                {
+                    File.Delete(file);
+                }
             }
         }
 
@@ -856,6 +859,7 @@ namespace AMBPatcher
                 {
                     if (File.Exists(@"mods\mods_prev"))
                     {
+                        Console.WriteLine("\n");
                         string[] mods_prev = File.ReadAllLines(@"mods\mods_prev");
 
                         for (int i = 0; i < mods_prev.Length; i++)
