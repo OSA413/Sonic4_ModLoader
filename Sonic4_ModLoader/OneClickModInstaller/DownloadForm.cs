@@ -236,6 +236,22 @@ namespace OneClickModInstaller
         {
             DoTheRest();
         }
+
+        static void DirectoryRemoveRecursively(string dir)
+        {
+            foreach (string file in Directory.GetFiles(dir))
+            {
+                //Program crashes if it tries to delete a read-only file
+                File.SetAttributes(file, FileAttributes.Normal);
+                File.Delete(file);
+            }
+
+            foreach (string dirr in Directory.GetDirectories(dir))
+            {
+                DirectoryRemoveRecursively(dirr);
+            }
+            Directory.Delete(dir);
+        }
         
         private void DoTheRest()
         {
@@ -244,16 +260,25 @@ namespace OneClickModInstaller
             string mod_dir = "extracted_mod";
             if (Directory.Exists(mod_dir))
             {
-                Directory.Delete(mod_dir, true);
+                //Program crashes if it tries to delete a read-only file
+                new DirectoryInfo(mod_dir).Attributes = FileAttributes.Normal;
+                DirectoryRemoveRecursively(mod_dir);
             }
-            ExtractArchive(archive_name);
+            if (local)
+            {
+                ExtractArchive(archive_url);
+            }
+            else
+            {
+                ExtractArchive(archive_name);
+            }
 
             toolStripStatusLabel1.Text = "Checking extracted files...";
             int cont = CheckFiles(mod_dir);
 
             if (cont != 1)
             {
-                Directory.Delete("extracted_mod", true);
+                DirectoryRemoveRecursively("extracted_mod");
                 Application.Exit();
             }
 
@@ -275,15 +300,18 @@ namespace OneClickModInstaller
                 foreach (string mod in mod_roots)
                 {
                     string dest = Path.Combine("mods", Path.GetFileName(mod));
-                    if (Directory.Exists(dest)) { Directory.Delete(dest, true); }
+                    if (Directory.Exists(dest)) { DirectoryRemoveRecursively(dest); }
                     CopyAll(mod, dest);
                 }
 
                 DFtEM enable_mod = new DFtEM();
                 enable_mod.ShowDialog();
 
-                Directory.Delete("extracted_mod", true);
-                File.Delete(archive_name);
+                DirectoryRemoveRecursively("extracted_mod");
+                if (!local)
+                {
+                    File.Delete(archive_name);
+                }
                 Application.Exit();
             }
         }
