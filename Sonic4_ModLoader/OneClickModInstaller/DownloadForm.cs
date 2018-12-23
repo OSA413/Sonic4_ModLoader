@@ -193,7 +193,10 @@ namespace OneClickModInstaller
 
                 archive_name = Path.GetFileName(archive_url);
 
-                File.Copy(archive_url, Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), archive_name), true);
+                if (archive_url != Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), archive_name))
+                {
+                    File.Copy(archive_url, Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), archive_name), true);
+                }
                 DoTheRest();
             }
             else
