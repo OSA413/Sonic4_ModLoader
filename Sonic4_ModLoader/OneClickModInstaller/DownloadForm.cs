@@ -189,14 +189,8 @@ namespace OneClickModInstaller
         {
             if (local)
             {
-                toolStripStatusLabel1.Text = "Copying local archive...";
-
                 archive_name = Path.GetFileName(archive_url);
 
-                if (archive_url != Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), archive_name))
-                {
-                    File.Copy(archive_url, Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), archive_name), true);
-                }
                 DoTheRest();
             }
             else
@@ -232,11 +226,6 @@ namespace OneClickModInstaller
             }
         }
 
-        private void fake_DoTheRest(object sender, AsyncCompletedEventArgs e)
-        {
-            DoTheRest();
-        }
-
         static void DirectoryRemoveRecursively(string dir)
         {
             foreach (string file in Directory.GetFiles(dir))
@@ -252,6 +241,11 @@ namespace OneClickModInstaller
             }
             Directory.Delete(dir);
         }
+
+        private void fake_DoTheRest(object sender, AsyncCompletedEventArgs e)
+        {
+            DoTheRest();
+        }
         
         private void DoTheRest()
         {
@@ -260,18 +254,12 @@ namespace OneClickModInstaller
             string mod_dir = "extracted_mod";
             if (Directory.Exists(mod_dir))
             {
-                //Program crashes if it tries to delete a read-only file
-                new DirectoryInfo(mod_dir).Attributes = FileAttributes.Normal;
                 DirectoryRemoveRecursively(mod_dir);
             }
             if (local)
-            {
-                ExtractArchive(archive_url);
-            }
+            { ExtractArchive(archive_url); }
             else
-            {
-                ExtractArchive(archive_name);
-            }
+            { ExtractArchive(archive_name); }
 
             toolStripStatusLabel1.Text = "Checking extracted files...";
             int cont = CheckFiles(mod_dir);
