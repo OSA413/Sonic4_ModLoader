@@ -14,6 +14,7 @@ namespace OneClickModInstaller
         public static bool      local { set; get; }
         public static string    archive_name { set; get; }
         public static string    archive_url { set; get; }
+        public static string    archive_dir { set; get; }
         public static string    server_host { set; get; }
 
         public DownloadForm(string[] args)
@@ -21,6 +22,12 @@ namespace OneClickModInstaller
             if (!Application.ExecutablePath.Contains(Path.Combine("bin","Debug")))
             {
                 Environment.CurrentDirectory = Path.GetDirectoryName(Application.ExecutablePath);
+            }
+
+            if (!File.Exists("7z.exe") || !File.Exists("7z.dll"))
+            {
+                MessageBox.Show("Please, reinstall the Mod Loader (or place \"7z.exe\" and \"7z.dll\" here). 1-Click Mod Installer will be closed.", "7-Zip not found");
+                Environment.Exit(0);
             }
 
             local = false;
@@ -117,7 +124,7 @@ namespace OneClickModInstaller
             ProcessStartInfo startInfo = new ProcessStartInfo
             {
                 FileName = "7z.exe",
-                Arguments = "x \"" + file_name + "\" -o" + "extracted_mod"
+                Arguments = "x \"" + file_name + "\" -o" + archive_dir
             };
             Process.Start(startInfo).WaitForExit();
         }
@@ -190,6 +197,7 @@ namespace OneClickModInstaller
             if (local)
             {
                 archive_name = Path.GetFileName(archive_url);
+                archive_dir = Path.GetFileNameWithoutExtension(archive_name);
 
                 DoTheRest();
             }
@@ -215,7 +223,9 @@ namespace OneClickModInstaller
                     {
                         archive_name = url.Split('/')[url.Split('/').Length - 1];
                     }
-                    
+
+                    archive_dir = archive_name;
+
                     if (File.Exists(archive_name))
                     {
                         File.Delete(archive_name);
@@ -246,15 +256,15 @@ namespace OneClickModInstaller
         {
             DoTheRest();
         }
-        
+
         private void DoTheRest()
         {
             toolStripStatusLabel1.Text = "Extracting downloaded archive...";
-            
-            string mod_dir = "extracted_mod";
-            if (Directory.Exists(mod_dir))
+            Refresh();
+
+            if (Directory.Exists(archive_dir))
             {
-                DirectoryRemoveRecursively(mod_dir);
+                DirectoryRemoveRecursively(archive_dir);
             }
             if (local)
             { ExtractArchive(archive_url); }
@@ -262,46 +272,51 @@ namespace OneClickModInstaller
             { ExtractArchive(archive_name); }
 
             toolStripStatusLabel1.Text = "Checking extracted files...";
-            int cont = CheckFiles(mod_dir);
+            Refresh();
+            int cont = CheckFiles(archive_dir);
 
             if (cont != 1)
             {
-                DirectoryRemoveRecursively("extracted_mod");
-                Application.Exit();
+                DirectoryRemoveRecursively(archive_dir);
+                Environment.Exit(0);
             }
-
-            if (cont == 1)
+            
+            toolStripStatusLabel1.Text = "Finding root directories...";
+            Refresh();
+            string[] mod_roots = FindRootDirs(archive_dir);
+            
+            if (mod_roots.Length > 1)
             {
-                toolStripStatusLabel1.Text = "Finding root directories...";
-                string[] mod_roots = FindRootDirs(mod_dir);
+                TooManyMods tmm_form = new TooManyMods(mod_roots);
+                tmm_form.ShowDialog();
 
-                if (mod_roots.Length > 1)
-                {
-                    TooManyMods tmm_form = new TooManyMods(mod_roots);
-                    tmm_form.ShowDialog();
-
-                    mod_roots = tmm_form.mods;
-                }
-
-                toolStripStatusLabel1.Text = "Installing downloaded mod...";
-
-                foreach (string mod in mod_roots)
-                {
-                    string dest = Path.Combine("mods", Path.GetFileName(mod));
-                    if (Directory.Exists(dest)) { DirectoryRemoveRecursively(dest); }
-                    CopyAll(mod, dest);
-                }
-
-                DFtEM enable_mod = new DFtEM();
-                enable_mod.ShowDialog();
-
-                DirectoryRemoveRecursively("extracted_mod");
-                if (!local)
-                {
-                    File.Delete(archive_name);
-                }
-                Application.Exit();
+                mod_roots = tmm_form.mods;
             }
+            else if (mod_roots.Length == 0)
+            {
+                MessageBox.Show("1-Click Mod Installer couldn't find any root directories of the mod. The mod won't be installed. Try to install the mod manually or try to contact the mod creator or the creator of the Mod Loader.");
+                Environment.Exit(0);
+            }
+
+            toolStripStatusLabel1.Text = "Installing downloaded mod...";
+            Refresh();
+            
+            foreach (string mod in mod_roots)
+            {
+                string dest = Path.Combine("mods", Path.GetFileName(mod));
+                if (Directory.Exists(dest)) { DirectoryRemoveRecursively(dest); }
+                CopyAll(mod, dest);
+            }
+
+            DFtEM enable_mod = new DFtEM();
+            enable_mod.ShowDialog();
+
+            DirectoryRemoveRecursively(archive_dir);
+            if (!local)
+            {
+                File.Delete(archive_name);
+            }
+            Environment.Exit(0);
         }
 
         void wc_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
