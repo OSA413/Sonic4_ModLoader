@@ -209,7 +209,6 @@
             this.rtb_mod_description.Size = new System.Drawing.Size(538, 90);
             this.rtb_mod_description.TabIndex = 6;
             this.rtb_mod_description.Text = "Select an item to see its description.";
-            this.rtb_mod_description.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(MainForm.LinkClicked);
             // 
             // MainForm
             // 
@@ -248,7 +247,6 @@
         private System.Windows.Forms.Button bPriorityUp;
         private System.Windows.Forms.Button bPriorityDown;
         private System.Windows.Forms.Button bExit;
-        private System.Windows.Forms.Button bSaveAndPlay;
         private System.Windows.Forms.Button bRefresh;
         private System.Windows.Forms.Button bSettings;
         private System.Windows.Forms.Button bPriorityFirst;
@@ -257,6 +255,7 @@
         private System.Windows.Forms.Button bOpenExplorer;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.RichTextBox rtb_mod_description;
+        internal System.Windows.Forms.Button bSaveAndPlay;
     }
 }
 

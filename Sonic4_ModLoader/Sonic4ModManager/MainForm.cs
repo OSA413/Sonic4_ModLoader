@@ -149,6 +149,14 @@ namespace Sonic4ModManager
             }
         }
 
+        public void UpdateUI()
+        {
+            if (GetInstallationStatus() == 1 && WhereAmI() != "dunno")
+            { bSaveAndPlay.Enabled = true; }
+            else
+            { bSaveAndPlay.Enabled = false; }
+        }
+
         private void ChangePriority(string direction)
         {
             if (listMods.SelectedIndices.Count > 0)
@@ -495,6 +503,8 @@ namespace Sonic4ModManager
             InitializeComponent();
             RefreshMods();
             SetModPriority();
+            
+            UpdateUI();
 
             //TOP SECRET EASTER EGG
             string today = System.DateTime.Now.ToString("dd.MM");
@@ -518,6 +528,8 @@ namespace Sonic4ModManager
             {
                 whats_new += "File \"Mod Loader - Whats new.txt\" not found.";
             }
+
+            whats_new += "\n\nHome page: https://github.com/OSA413/Sonic4_ModLoader";
 
             rtb_mod_description.Text += whats_new;
             
@@ -610,6 +622,10 @@ namespace Sonic4ModManager
 
             //Tab character
             rtb_mod_description.Text = rtb_mod_description.Text.Replace("\\t", "\t");
+
+            //Bullet character at the biginning of a line
+            rtb_mod_description.Text = rtb_mod_description.Text.Replace("\n* ", "\n • ");
+
             //Description from mod.ini
             foreach (string i in new string[] { "b", "i", "u", "strike" })
             {
