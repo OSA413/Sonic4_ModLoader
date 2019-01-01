@@ -135,8 +135,9 @@ namespace Sonic4ModManager
             File.WriteAllText(@"mods\mods.ini", string.Join("\n", checked_mods.ToArray()));
         }
 
-        static void Play()
+        static bool Play()
         {
+            bool IsThisStarted = true;
             //Episode 1
             if (File.Exists("Sonic_vis.exe"))
             {
@@ -147,16 +148,14 @@ namespace Sonic4ModManager
             {
                 Process.Start("Sonic.exe");
             }
-        }
-
-        public void UpdateUI()
-        {
-            if (GetInstallationStatus() == 1 && WhereAmI() != "dunno")
-            { bSaveAndPlay.Enabled = true; }
             else
-            { bSaveAndPlay.Enabled = false; }
-        }
+            {
+                IsThisStarted = false;
+            }
 
+            return IsThisStarted;
+        }
+        
         private void ChangePriority(string direction)
         {
             if (listMods.SelectedIndices.Count > 0)
@@ -493,7 +492,7 @@ namespace Sonic4ModManager
             }
         }
 
-        public MainForm()
+        public MainForm(string[] args)
         {
             if (GetInstallationStatus() == -1)
             {
@@ -503,9 +502,21 @@ namespace Sonic4ModManager
             InitializeComponent();
             RefreshMods();
             SetModPriority();
-            
-            UpdateUI();
 
+            if (args.Length == 1)
+            {
+                for (int i = 0; i < listMods.Items.Count; i++)
+                {
+                    if (listMods.Items[i].SubItems[3].Text == args[0])
+                    {
+                        listMods.Items[i].Selected = true;
+                        listMods.TopItem = listMods.Items[i];
+                        listMods.Select();
+                        break;
+                    }
+                }
+            }
+            
             //TOP SECRET EASTER EGG
             string today = System.DateTime.Now.ToString("dd.MM");
             if (new string[] {
@@ -544,8 +555,10 @@ namespace Sonic4ModManager
         private void bSaveAndPlay_Click(object sender, EventArgs e)
         {
             Save();
-            Play();
-            Application.Exit();
+            if (Play())
+            {
+                Application.Exit();
+            }
         }
 
         private void bRefresh_Click(object sender, EventArgs e)

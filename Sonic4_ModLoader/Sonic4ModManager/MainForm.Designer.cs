@@ -255,7 +255,7 @@
         private System.Windows.Forms.Button bOpenExplorer;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.RichTextBox rtb_mod_description;
-        internal System.Windows.Forms.Button bSaveAndPlay;
+        private System.Windows.Forms.Button bSaveAndPlay;
     }
 }
 
