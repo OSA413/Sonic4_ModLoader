@@ -9,7 +9,7 @@ The files are in G_ZONE?\MAP\ZONE??_MAP.AMB\OUT\EL
 File name | Description
 ------------ | -------------
 ZONE??.DC | ???
-ZONE??.EV | entity placement (springs, rings, enemies, breakables, etc.)
+ZONE??.EV | entity placement (springs, rings(?), enemies, breakables, etc.)
 ZONE??.RG | ???
 ZONE??_A.MD | ???
 ZONE??_A.MP | ???
