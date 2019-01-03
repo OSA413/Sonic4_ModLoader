@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Diagnostics;
 using System.Windows.Forms;
 
@@ -13,8 +14,11 @@ namespace OneClickModInstaller
 
         private void bOpen_Click(object sender, EventArgs e)
         {
-            Process.Start("Sonic4ModManager.exe");
-            Close();
+            if (File.Exists("Sonic4ModManager.exe"))
+            {
+                Process.Start("Sonic4ModManager.exe", DownloadForm.last_mod);
+                Close();
+            }
         }
 
         private void bExit_Click(object sender, EventArgs e)

@@ -502,20 +502,6 @@ namespace Sonic4ModManager
             InitializeComponent();
             RefreshMods();
             SetModPriority();
-
-            if (args.Length == 1)
-            {
-                for (int i = 0; i < listMods.Items.Count; i++)
-                {
-                    if (listMods.Items[i].SubItems[3].Text == args[0])
-                    {
-                        listMods.Items[i].Selected = true;
-                        listMods.TopItem = listMods.Items[i];
-                        listMods.Select();
-                        break;
-                    }
-                }
-            }
             
             //TOP SECRET EASTER EGG
             string today = System.DateTime.Now.ToString("dd.MM");
@@ -545,6 +531,21 @@ namespace Sonic4ModManager
             rtb_mod_description.Text += whats_new;
             
             FormatDescription();
+
+            //The call after 1CMI installation
+            if (args.Length == 1)
+            {
+                for (int i = 0; i < listMods.Items.Count; i++)
+                {
+                    if (listMods.Items[i].SubItems[3].Text == args[0])
+                    {
+                        listMods.Items[i].Selected = true;
+                        listMods.TopItem = listMods.Items[i];
+                        listMods.Select();
+                        break;
+                    }
+                }
+            }
         }
 
         private void bSave_Click(object sender, EventArgs e)

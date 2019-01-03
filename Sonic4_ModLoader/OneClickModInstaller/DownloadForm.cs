@@ -15,10 +15,13 @@ namespace OneClickModInstaller
         public static string    archive_name { set; get; }
         public static string    archive_url { set; get; }
         public static string    archive_dir { set; get; }
+        public static string    last_mod { set; get; }
         public static string    server_host { set; get; }
 
         public DownloadForm(string[] args)
         {
+            last_mod = "";
+
             if (!Application.ExecutablePath.Contains(Path.Combine("bin","Debug")))
             {
                 Environment.CurrentDirectory = Path.GetDirectoryName(Application.ExecutablePath);
@@ -224,7 +227,7 @@ namespace OneClickModInstaller
                         archive_name = url.Split('/')[url.Split('/').Length - 1];
                     }
 
-                    archive_dir = archive_name;
+                    archive_dir = Path.GetFileNameWithoutExtension(archive_name);
 
                     if (File.Exists(archive_name))
                     {
@@ -297,6 +300,8 @@ namespace OneClickModInstaller
                 MessageBox.Show("1-Click Mod Installer couldn't find any root directories of the mod. The mod won't be installed. Try to install the mod manually or try to contact the mod creator or the creator of the Mod Loader.");
                 Environment.Exit(0);
             }
+
+            last_mod = Path.GetFileName(mod_roots[0]);
 
             toolStripStatusLabel1.Text = "Installing downloaded mod...";
             Refresh();
