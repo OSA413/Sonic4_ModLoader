@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
 using System.Security.Cryptography;
+using System.Threading;
 
 namespace AMBPatcher
 {
@@ -330,7 +331,7 @@ namespace AMBPatcher
         }
         
         //File as bytes (raw file)
-        static byte[] AMB_Patch(byte[] raw_file, string orig_file, string mod_file)
+        static byte[] AMB_Patch(byte[] raw_file, string orig_file, string mod_file, string OriginalModFileName)
         {
             //Why do I need the original file name? To patch files that are inside of an AMB file that is inside of an AMB file that is inside of ...
             var files = AMB_Read(raw_file);
@@ -345,14 +346,14 @@ namespace AMBPatcher
             string[] orig_file_parts = orig_file.Split(Path.DirectorySeparatorChar);
             string orig_file_last = orig_file_parts[orig_file_parts.Length - 1];
             string mod_file_in_orig = "";
-
+            
             //Trying to find where the original file name starts in the mod file name.
             //e.g. for "\1\2\3.AMB" and "\mods\1\2\3.AMB\4\file.dds" if sets index of "3.AMB" in the second one.
             for (int i = 0; i < mod_file_parts.Length; i++)
             {
-                if (mod_file_parts[mod_file_parts_len - 1 - i] == orig_file_last)
+                if (mod_file_parts[i] == orig_file_last)
                 {
-                    orig_mod_part_ind = mod_file_parts_len - i;
+                    orig_mod_part_ind = i + 1;
                     break;
                 }
             }
@@ -369,7 +370,7 @@ namespace AMBPatcher
 
                 //j is the number of maximum subfolders + 1
                 // dir1/dir2/file3.dds
-                for (int j = 0; j < 3; j++)
+                for (int j = 0; j < 5; j++)
                 {
                     string internal_name = String.Join("\\", mod_file_parts.Skip(orig_mod_part_ind).Take(j + 1));
 
@@ -397,7 +398,7 @@ namespace AMBPatcher
                 //If the mod file is in the original file
                 if (mod_file.EndsWith(mod_file_in_orig))
                 {
-                    raw_mod_file = File.ReadAllBytes(mod_file);
+                    raw_mod_file = File.ReadAllBytes(OriginalModFileName);
                 }
                 //If the mod file is in another AMB file that is in the original file
                 //recursive patching
@@ -405,7 +406,10 @@ namespace AMBPatcher
                 {
                     byte[] tmp_orig = new byte[files[index].Item3];
                     Array.Copy(raw_file, files[index].Item2, tmp_orig, 0, files[index].Item3);
-                    raw_mod_file = AMB_Patch(tmp_orig, orig_file + "\\" + mod_file_in_orig, mod_file);
+                    raw_mod_file = AMB_Patch(tmp_orig,
+                                             "the_orig_file" + "\\" + mod_file_in_orig,
+                                             String.Join("\\", mod_file_parts.Skip(orig_mod_part_ind)),
+                                             OriginalModFileName);
                 }
 
                 //If the mod file's length is smaller or equal to the original one
@@ -511,13 +515,14 @@ namespace AMBPatcher
             {
                 if (GenerateLog) { Log.Add("AMB_Patch: " + mod_file + " is not in " + orig_file); }
             }
+            
             return raw_file;
         }
 
         //File as string (path to it)
         static void AMB_Patch(string file_name, string mod_file)
         {
-            byte[] raw_file = AMB_Patch(File.ReadAllBytes(file_name), file_name, mod_file);
+            byte[] raw_file = AMB_Patch(File.ReadAllBytes(file_name), file_name, mod_file, mod_file);
             File.WriteAllBytes(file_name, raw_file);
         }
         
