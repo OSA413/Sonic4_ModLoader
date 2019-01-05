@@ -127,7 +127,7 @@ namespace OneClickModInstaller
             ProcessStartInfo startInfo = new ProcessStartInfo
             {
                 FileName = "7z.exe",
-                Arguments = "x \"" + file_name + "\" -o" + archive_dir
+                Arguments = "x \"" + file_name + "\" -o\"" + archive_dir + "\""
             };
             Process.Start(startInfo).WaitForExit();
         }
@@ -228,6 +228,14 @@ namespace OneClickModInstaller
                     }
 
                     archive_dir = Path.GetFileNameWithoutExtension(archive_name);
+
+                    if (server_host == "gamebanana")
+                    {
+                        //Well, it seems that GB's counter doesn't increase if you download
+                        //the file directly from the redirect url. But I'm not sure that
+                        //this works, too. And this is slower as well.
+                        url = archive_url;
+                    }
 
                     if (File.Exists(archive_name))
                     {

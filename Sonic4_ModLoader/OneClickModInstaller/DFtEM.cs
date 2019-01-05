@@ -16,7 +16,7 @@ namespace OneClickModInstaller
         {
             if (File.Exists("Sonic4ModManager.exe"))
             {
-                Process.Start("Sonic4ModManager.exe", DownloadForm.last_mod);
+                Process.Start("Sonic4ModManager.exe", "\"" + DownloadForm.last_mod + "\"");
                 Close();
             }
         }
