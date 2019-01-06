@@ -82,7 +82,7 @@
     <Compile Include="TooManyMods.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TooManyMods.designer.cs">
+    <Compile Include="TooManyMods.Designer.cs">
       <DependentUpon>TooManyMods.cs</DependentUpon>
     </Compile>
     <Compile Include="WrongWorkingDirectory.cs">
