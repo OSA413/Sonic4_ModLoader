@@ -543,9 +543,115 @@ namespace AMBPatcher
             //Add//
             ///////
 
-            public static void Add()
+            public static byte[] Add(byte[] raw_file, string file_name, string mod_file)
             {
+                //Okay, I've got a great plan:
+                //Add empty file and patch it.
 
+                string mod_file_name = "";
+
+                int file_number = raw_file[0x10] +
+                                  raw_file[0x11] * 0x100 +
+                                  raw_file[0x12] * 0x10000 +
+                                  raw_file[0x13] * 0x1000000;
+
+                int data_pointer = raw_file[0x18] +
+                                   raw_file[0x19] * 0x100 +
+                                   raw_file[0x1A] * 0x10000 +
+                                   raw_file[0x1B] * 0x1000000;
+
+                int name_pointer = raw_file[0x1C] +
+                                   raw_file[0x1D] * 0x100 +
+                                   raw_file[0x1E] * 0x10000 +
+                                   raw_file[0x1F] * 0x1000000;
+                
+                byte[] enumeration_part = new byte[data_pointer];
+                byte[] data_part        = new byte[name_pointer - data_pointer];
+                byte[] name_part        = new byte[raw_file.Length - name_pointer];
+
+                Array.Copy(raw_file, 0, enumeration_part, 0, enumeration_part.Length);
+                Array.Copy(raw_file, data_pointer, data_part, 0, data_part.Length);
+                Array.Copy(raw_file, name_pointer, name_part, 0, name_part.Length);
+
+                //////////
+                //Header//
+                //////////
+                
+                //TODO: add a function that mirrors bytes
+
+                //Increasing file counter by 1
+                file_number += 1;
+
+                enumeration_part[0x10] = (byte)(file_number % 0x100);
+                enumeration_part[0x11] = (byte)((file_number - file_number % 0x100) % 0x10000 / 0x100);
+                enumeration_part[0x12] = (byte)((file_number - file_number % 0x10000) % 0x1000000 / 0x10000);
+                enumeration_part[0x13] = (byte)((file_number - file_number % 0x1000000) % 0x100000000 / 0x1000000);
+
+                //Shifting data pointer by 0x10
+                data_pointer += 0x10;
+
+                enumeration_part[0x1C] = (byte)(data_pointer % 0x100);
+                enumeration_part[0x1D] = (byte)((data_pointer - data_pointer % 0x100) % 0x10000 / 0x100);
+                enumeration_part[0x1E] = (byte)((data_pointer - data_pointer % 0x10000) % 0x1000000 / 0x10000);
+                enumeration_part[0x1F] = (byte)((data_pointer - data_pointer % 0x1000000) % 0x100000000 / 0x1000000);
+
+                //Shifting name pointer by 0x10
+                name_pointer += 0x10;
+
+                enumeration_part[0x1C] = (byte)(name_pointer % 0x100);
+                enumeration_part[0x1D] = (byte)((name_pointer - name_pointer % 0x100) % 0x10000 / 0x100);
+                enumeration_part[0x1E] = (byte)((name_pointer - name_pointer % 0x10000) % 0x1000000 / 0x10000);
+                enumeration_part[0x1F] = (byte)((name_pointer - name_pointer % 0x1000000) % 0x100000000 / 0x1000000);
+
+                ///////////////
+                //Enumeration//
+                ///////////////
+
+                //Injecting empty file pointer and length
+                byte[] empty_file_enumeration = new byte[0x10];
+                //Using the original name pointer
+                name_pointer -= 0x10;
+
+                empty_file_enumeration[0x0] = (byte)(name_pointer % 0x100);
+                empty_file_enumeration[0x1] = (byte)((name_pointer - name_pointer % 0x100) % 0x10000 / 0x100);
+                empty_file_enumeration[0x2] = (byte)((name_pointer - name_pointer % 0x10000) % 0x1000000 / 0x10000);
+                empty_file_enumeration[0x3] = (byte)((name_pointer - name_pointer % 0x1000000) % 0x100000000 / 0x1000000);
+
+                name_pointer += 0x10;
+
+                //Length
+                empty_file_enumeration[0x4] = 0x10;
+                empty_file_enumeration[0x5] =
+                empty_file_enumeration[0x6] =
+                empty_file_enumeration[0x7] = 0x00;
+
+                empty_file_enumeration[0x8] =
+                empty_file_enumeration[0x9] =
+                empty_file_enumeration[0xA] =
+                empty_file_enumeration[0xB] = 0xFF;
+                empty_file_enumeration[0xC] =
+                empty_file_enumeration[0xD] =
+                empty_file_enumeration[0xE] =
+                empty_file_enumeration[0xF] = 0x00;
+
+                byte[] mod_file_name_bytes = new byte[0x20];
+
+                for (int i = 0; i < mod_file_name.Length; i++)
+                {
+                    mod_file_name_bytes[i] = (byte)mod_file_name[i];
+                }
+
+                enumeration_part = enumeration_part.Concat(empty_file_enumeration).ToArray();
+                data_part        = data_part.Concat(new byte[0x10]).ToArray();
+                name_part        = name_part.Concat(mod_file_name_bytes).ToArray();
+                
+                return AMB.Patch(raw_file, file_name, mod_file, mod_file);
+            }
+
+            public static void Add(string file_name, string mod_file)
+            {
+                byte[] raw_file = AMB.Add(File.ReadAllBytes(file_name), file_name, mod_file);
+                File.WriteAllBytes(file_name, raw_file);
             }
         }
 
@@ -767,6 +873,7 @@ namespace AMBPatcher
             Console.WriteLine("\tAMBPatcher.exe [AMB file] [directory] and");
             Console.WriteLine("\tAMBPatcher.exe patch [AMB file] [directory] - Patch [AMB file] by all files in [directory] if those files are in [AMB file].");
             Console.WriteLine("\tAMBPatcher.exe recover - Recover original files that were changed.");
+            Console.WriteLine("\tAMBPatcher.exe add [AMB file] [another file] - Aaron please add details.");
             Console.WriteLine("\tAMBPatcher.exe -h and");
             Console.WriteLine("\tAMBPatcher.exe --help - Show this message.");
         }
@@ -998,6 +1105,14 @@ namespace AMBPatcher
                             AMB.Patch(args[1], file);
                         }
                         Console.WriteLine("Done.");
+                    }
+                    else { ShowHelpMessage(); }
+                }
+                else if (args[0] == "add")
+                {
+                    if (File.Exists(args[1]) && File.Exists(args[2]))
+                    {
+                        AMB.Add(args[1], args[2]);
                     }
                     else { ShowHelpMessage(); }
                 }
