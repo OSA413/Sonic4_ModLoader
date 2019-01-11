@@ -548,12 +548,17 @@ namespace AMBPatcher
                 //Okay, I've got a great plan:
                 //Add empty file and patch it.
 
-                string mod_file_name = "";
+                string mod_file_name = "test";
 
                 int file_number = raw_file[0x10] +
                                   raw_file[0x11] * 0x100 +
                                   raw_file[0x12] * 0x10000 +
                                   raw_file[0x13] * 0x1000000;
+
+                int enum_pointer = raw_file[0x14] +
+                                   raw_file[0x15] * 0x100 +
+                                   raw_file[0x16] * 0x10000 +
+                                   raw_file[0x17] * 0x1000000;
 
                 int data_pointer = raw_file[0x18] +
                                    raw_file[0x19] * 0x100 +
@@ -565,12 +570,12 @@ namespace AMBPatcher
                                    raw_file[0x1E] * 0x10000 +
                                    raw_file[0x1F] * 0x1000000;
                 
-                byte[] enumeration_part = new byte[data_pointer];
-                byte[] data_part        = new byte[name_pointer - data_pointer];
+                byte[] enumeration_part = new byte[enum_pointer + 0x10 * file_number];
+                byte[] data_part        = new byte[name_pointer - enumeration_part.Length];
                 byte[] name_part        = new byte[raw_file.Length - name_pointer];
 
                 Array.Copy(raw_file, 0, enumeration_part, 0, enumeration_part.Length);
-                Array.Copy(raw_file, data_pointer, data_part, 0, data_part.Length);
+                Array.Copy(raw_file, enumeration_part.Length, data_part, 0, data_part.Length);
                 Array.Copy(raw_file, name_pointer, name_part, 0, name_part.Length);
 
                 //////////
@@ -590,13 +595,13 @@ namespace AMBPatcher
                 //Shifting data pointer by 0x10
                 data_pointer += 0x10;
 
-                enumeration_part[0x1C] = (byte)(data_pointer % 0x100);
-                enumeration_part[0x1D] = (byte)((data_pointer - data_pointer % 0x100) % 0x10000 / 0x100);
-                enumeration_part[0x1E] = (byte)((data_pointer - data_pointer % 0x10000) % 0x1000000 / 0x10000);
-                enumeration_part[0x1F] = (byte)((data_pointer - data_pointer % 0x1000000) % 0x100000000 / 0x1000000);
+                enumeration_part[0x18] = (byte)(data_pointer % 0x100);
+                enumeration_part[0x19] = (byte)((data_pointer - data_pointer % 0x100) % 0x10000 / 0x100);
+                enumeration_part[0x1A] = (byte)((data_pointer - data_pointer % 0x10000) % 0x1000000 / 0x10000);
+                enumeration_part[0x1B] = (byte)((data_pointer - data_pointer % 0x1000000) % 0x100000000 / 0x1000000);
 
-                //Shifting name pointer by 0x10
-                name_pointer += 0x10;
+                //Shifting name pointer by 0x20
+                name_pointer += 0x20;
 
                 enumeration_part[0x1C] = (byte)(name_pointer % 0x100);
                 enumeration_part[0x1D] = (byte)((name_pointer - name_pointer % 0x100) % 0x10000 / 0x100);
@@ -606,10 +611,26 @@ namespace AMBPatcher
                 ///////////////
                 //Enumeration//
                 ///////////////
+                
+                //Shifting other file pointers by 0x10
+                for (int i = 0; i < file_number - 1; i++)
+                {
+                    int file_pointer = enumeration_part[enum_pointer + 0x10 * i] +
+                                       enumeration_part[enum_pointer + 0x10 * i + 1] * 0x100 +
+                                       enumeration_part[enum_pointer + 0x10 * i + 2] * 0x10000 +
+                                       enumeration_part[enum_pointer + 0x10 * i + 3] * 0x1000000;
+
+                    file_pointer += 0x10;
+
+                    enumeration_part[enum_pointer + 0x10 * i] = (byte)(file_pointer % 0x100);
+                    enumeration_part[enum_pointer + 0x10 * i + 1] = (byte)((file_pointer - file_pointer % 0x100) % 0x10000 / 0x100);
+                    enumeration_part[enum_pointer + 0x10 * i + 2] = (byte)((file_pointer - file_pointer % 0x10000) % 0x1000000 / 0x10000);
+                    enumeration_part[enum_pointer + 0x10 * i + 3] = (byte)((file_pointer - file_pointer % 0x1000000) % 0x100000000 / 0x1000000);
+
+                }
 
                 //Injecting empty file pointer and length
                 byte[] empty_file_enumeration = new byte[0x10];
-                //Using the original name pointer
                 name_pointer -= 0x10;
 
                 empty_file_enumeration[0x0] = (byte)(name_pointer % 0x100);
@@ -644,8 +665,12 @@ namespace AMBPatcher
                 enumeration_part = enumeration_part.Concat(empty_file_enumeration).ToArray();
                 data_part        = data_part.Concat(new byte[0x10]).ToArray();
                 name_part        = name_part.Concat(mod_file_name_bytes).ToArray();
+
+                raw_file = enumeration_part.Concat(
+                                  data_part.Concat(
+                                  name_part)).ToArray();
                 
-                return AMB.Patch(raw_file, file_name, mod_file, mod_file);
+                return AMB.Patch(raw_file, file_name, mod_file_name, mod_file);
             }
 
             public static void Add(string file_name, string mod_file)
