@@ -258,7 +258,6 @@ namespace AMBPatcher
                                 {
                                     for (int j = 0; j < files_names_raw[i].Length / 32 + 1; j++)
                                     {
-                                        Console.WriteLine(Math.Min(32 * (j + 1), files_names_raw[i].Length));
                                         files_names.Add(files_names_raw[i].Substring(32 * j, Math.Min(32, files_names_raw[i].Length - 32 * j)));
                                     }
                                 }
