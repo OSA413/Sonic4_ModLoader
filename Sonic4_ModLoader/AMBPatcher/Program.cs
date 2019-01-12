@@ -527,7 +527,8 @@ namespace AMBPatcher
                 }
                 else
                 {
-                    if (GenerateLog) { Log.Add("AMB.Patch: " + mod_file + " is not in " + orig_file); }
+                    if (GenerateLog) { Log.Add("AMB.Patch: " + mod_file + " is not in " + orig_file + ", trying to add!"); }
+                    AMB.Add(raw_file, orig_file, mod_file, mod_file);
                 }
 
                 return raw_file;
