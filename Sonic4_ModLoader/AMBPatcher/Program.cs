@@ -178,8 +178,7 @@ namespace AMBPatcher
             ////////
             //Read//
             ////////
-
-            //File as bytes (raw file)
+            
             public static List<Tuple<string, int, int>> Read(byte[] raw_file)
             {
                 /* returns a list of:
@@ -257,7 +256,11 @@ namespace AMBPatcher
                             {
                                 if (files_names_raw[i] != "")
                                 {
-                                    files_names.Add(files_names_raw[i]);
+                                    for (int j = 0; j < files_names_raw[i].Length / 32 + 1; j++)
+                                    {
+                                        Console.WriteLine(Math.Min(32 * (j + 1), files_names_raw[i].Length));
+                                        files_names.Add(files_names_raw[i].Substring(32 * j, Math.Min(32, files_names_raw[i].Length - 32 * j)));
+                                    }
                                 }
                             }
                         }
@@ -299,8 +302,7 @@ namespace AMBPatcher
                 }
                 return result;
             }
-
-            //File as string (path to it)
+            
             public static List<Tuple<string, int, int>> Read(string file_name)
             {
                 return AMB.Read(File.ReadAllBytes(file_name));
@@ -342,8 +344,7 @@ namespace AMBPatcher
             /////////
             //Patch//
             /////////
-
-            //File as bytes (raw file)
+            
             public static byte[] Patch(byte[] raw_file, string orig_file, string mod_file, string OriginalModFileName)
             {
                 //Why do I need the original file name? To patch files that are inside of an AMB file that is inside of an AMB file that is inside of ...
@@ -531,8 +532,7 @@ namespace AMBPatcher
 
                 return raw_file;
             }
-
-            //File as string (path to it)
+            
             public static void Patch(string file_name, string mod_file)
             {
                 byte[] raw_file = AMB.Patch(File.ReadAllBytes(file_name), file_name, mod_file, mod_file);
@@ -543,13 +543,80 @@ namespace AMBPatcher
             //Add//
             ///////
 
-            public static byte[] Add(byte[] raw_file, string file_name, string mod_file)
+            public static byte[] Add(byte[] raw_file, string file_name, string mod_file, string ModFileName)
             {
                 //Okay, I've got a great plan:
                 //Add empty file and patch it.
 
-                string mod_file_name = "test";
+                string mod_file_name = ModFileName;
 
+                if (ModFileName == mod_file)
+                {
+                    //TODO: take this part into a separated method
+                    int index = -1;
+
+                    //Turning "C:\1\2\3" into {"C:","1","2","3"}
+                    string[] mod_file_parts = mod_file.Split(Path.DirectorySeparatorChar);
+                    int mod_file_parts_len = mod_file_parts.Length;
+
+                    int orig_mod_part_ind = -1;
+                    string[] orig_file_parts = file_name.Split(Path.DirectorySeparatorChar);
+                    string orig_file_last = orig_file_parts[orig_file_parts.Length - 1];
+                    string mod_file_in_orig = "";
+
+                    //Trying to find where the original file name starts in the mod file name.
+                    //e.g. for "\1\2\3.AMB" and "\mods\1\2\3.AMB\4\file.dds" if sets index of "3.AMB" in the second one.
+                    for (int i = 0; i < mod_file_parts.Length; i++)
+                    {
+                        if (mod_file_parts[i] == orig_file_last)
+                        {
+                            orig_mod_part_ind = i + 1;
+                            break;
+                        }
+                    }
+
+                    if (orig_mod_part_ind == -1)
+                    {
+                        orig_mod_part_ind = mod_file_parts_len - 1;
+                    }
+
+                    var files = AMB.Read(raw_file);
+
+                    //Finding the index of the file in the AMB archive
+                    for (int i = 0; i < files.Count; i++)
+                    {
+                        if (index != -1) { break; }
+
+                        //j is the number of maximum subfolders + 1
+                        // dir1/dir2/file3.dds
+                        for (int j = 0; j < 5; j++)
+                        {
+                            string internal_name = String.Join("\\", mod_file_parts.Skip(orig_mod_part_ind).Take(j + 1));
+
+                            if (files[i].Item1.StartsWith(internal_name))
+                            {
+                                if (files[i].Item1 == internal_name)
+                                {
+                                    index = i;
+                                    mod_file_in_orig = internal_name;
+                                    break;
+                                }
+                            }
+                            else
+                            {
+                                break;
+                            }
+                        }
+                    }
+
+                    if (index != -1)
+                    {
+                        return AMB.Patch(raw_file, file_name, mod_file, mod_file);
+                    }
+                    
+                    mod_file_name = String.Join("\\", mod_file_parts.Skip(orig_mod_part_ind));
+                }
+                
                 int file_number = raw_file[0x10] +
                                   raw_file[0x11] * 0x100 +
                                   raw_file[0x12] * 0x10000 +
@@ -626,7 +693,6 @@ namespace AMBPatcher
                     enumeration_part[enum_pointer + 0x10 * i + 1] = (byte)((file_pointer - file_pointer % 0x100) % 0x10000 / 0x100);
                     enumeration_part[enum_pointer + 0x10 * i + 2] = (byte)((file_pointer - file_pointer % 0x10000) % 0x1000000 / 0x10000);
                     enumeration_part[enum_pointer + 0x10 * i + 3] = (byte)((file_pointer - file_pointer % 0x1000000) % 0x100000000 / 0x1000000);
-
                 }
 
                 //Injecting empty file pointer and length
@@ -659,9 +725,10 @@ namespace AMBPatcher
 
                 for (int i = 0; i < mod_file_name.Length; i++)
                 {
+                    if (i >= mod_file_name_bytes.Length) { break; }
                     mod_file_name_bytes[i] = (byte)mod_file_name[i];
                 }
-
+                
                 enumeration_part = enumeration_part.Concat(empty_file_enumeration).ToArray();
                 data_part        = data_part.Concat(new byte[0x10]).ToArray();
                 name_part        = name_part.Concat(mod_file_name_bytes).ToArray();
@@ -673,9 +740,15 @@ namespace AMBPatcher
                 return AMB.Patch(raw_file, file_name, mod_file_name, mod_file);
             }
 
+            public static void Add(string file_name, string mod_file, string ModFileName)
+            {
+                byte[] raw_file = AMB.Add(File.ReadAllBytes(file_name), file_name, mod_file, ModFileName);
+                File.WriteAllBytes(file_name, raw_file);
+            }
+
             public static void Add(string file_name, string mod_file)
             {
-                byte[] raw_file = AMB.Add(File.ReadAllBytes(file_name), file_name, mod_file);
+                byte[] raw_file = AMB.Add(File.ReadAllBytes(file_name), file_name, mod_file, mod_file);
                 File.WriteAllBytes(file_name, raw_file);
             }
         }
@@ -899,6 +972,7 @@ namespace AMBPatcher
             Console.WriteLine("\tAMBPatcher.exe patch [AMB file] [directory] - Patch [AMB file] by all files in [directory] if those files are in [AMB file].");
             Console.WriteLine("\tAMBPatcher.exe recover - Recover original files that were changed.");
             Console.WriteLine("\tAMBPatcher.exe add [AMB file] [another file] - Aaron please add details.");
+            Console.WriteLine("\tAMBPatcher.exe add [AMB file] [another file] [file name] - Aaron please add details.");
             Console.WriteLine("\tAMBPatcher.exe -h and");
             Console.WriteLine("\tAMBPatcher.exe --help - Show this message.");
         }
@@ -1138,6 +1212,18 @@ namespace AMBPatcher
                     if (File.Exists(args[1]) && File.Exists(args[2]))
                     {
                         AMB.Add(args[1], args[2]);
+                    }
+                    else { ShowHelpMessage(); }
+                }
+                else { ShowHelpMessage(); }
+            }
+            else if (args.Length == 4)
+            {
+                if (args[0] == "add")
+                {
+                    if (File.Exists(args[1]) && File.Exists(args[2]))
+                    {
+                        AMB.Add(args[1], args[2], args[3]);
                     }
                     else { ShowHelpMessage(); }
                 }
