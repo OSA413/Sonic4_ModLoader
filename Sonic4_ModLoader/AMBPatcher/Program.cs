@@ -471,17 +471,11 @@ namespace AMBPatcher
 
                         //Changing Name Pointer
                         name_pointer += len_dif;
-                        part_one[0x1C] = (byte)(name_pointer % 0x100);
-                        part_one[0x1D] = (byte)((name_pointer - name_pointer % 0x100) % 0x10000 / 0x100);
-                        part_one[0x1E] = (byte)((name_pointer - name_pointer % 0x10000) % 0x1000000 / 0x10000);
-                        part_one[0x1F] = (byte)((name_pointer - name_pointer % 0x1000000) % 0x100000000 / 0x1000000);
+                        Array.Copy(BitConverter.GetBytes(name_pointer), 0, part_one, 0x1C, 4);
 
                         //Changing File Length
-                        part_one[0x24 + index * 0x10] = (byte)(raw_mod_file.Length % 0x100);
-                        part_one[0x25 + index * 0x10] = (byte)((raw_mod_file.Length - raw_mod_file.Length % 0x100) % 0x10000 / 0x100);
-                        part_one[0x26 + index * 0x10] = (byte)((raw_mod_file.Length - raw_mod_file.Length % 0x10000) % 0x1000000 / 0x10000);
-                        part_one[0x27 + index * 0x10] = (byte)((raw_mod_file.Length - raw_mod_file.Length % 0x1000000) % 0x100000000 / 0x1000000);
-
+                        Array.Copy(BitConverter.GetBytes(raw_mod_file.Length), 0, part_one, 0x24 + index * 0x10, 4);
+                        
                         //Changing Files Pointers
                         for (int i = index + 1; i < files.Count; i++)
                         {
@@ -490,10 +484,8 @@ namespace AMBPatcher
 
                             //Writing the new pointer
                             tmp_pointer += len_dif;
-                            part_one[0x20 + i * 0x10] = (byte)(tmp_pointer % 0x100);
-                            part_one[0x21 + i * 0x10] = (byte)((tmp_pointer - tmp_pointer % 0x100) % 0x10000 / 0x100);
-                            part_one[0x22 + i * 0x10] = (byte)((tmp_pointer - tmp_pointer % 0x10000) % 0x1000000 / 0x10000);
-                            part_one[0x23 + i * 0x10] = (byte)((tmp_pointer - tmp_pointer % 0x1000000) % 0x100000000 / 0x1000000);
+
+                            Array.Copy(BitConverter.GetBytes(tmp_pointer), 0, part_one, 0x20 + i * 0x10, 4);
                         }
 
                         //This may not be fast, but it is readable and is in one line.
@@ -611,31 +603,17 @@ namespace AMBPatcher
                 //Header//
                 //////////
                 
-                //TODO: add a function that mirrors bytes
-
                 //Increasing file counter by 1
                 file_number += 1;
-
-                enumeration_part[0x10] = (byte)(file_number % 0x100);
-                enumeration_part[0x11] = (byte)((file_number - file_number % 0x100) % 0x10000 / 0x100);
-                enumeration_part[0x12] = (byte)((file_number - file_number % 0x10000) % 0x1000000 / 0x10000);
-                enumeration_part[0x13] = (byte)((file_number - file_number % 0x1000000) % 0x100000000 / 0x1000000);
+                Array.Copy(BitConverter.GetBytes(file_number), 0, enumeration_part, 0x10, 4);
 
                 //Shifting data pointer by 0x10
                 data_pointer += 0x10;
-
-                enumeration_part[0x18] = (byte)(data_pointer % 0x100);
-                enumeration_part[0x19] = (byte)((data_pointer - data_pointer % 0x100) % 0x10000 / 0x100);
-                enumeration_part[0x1A] = (byte)((data_pointer - data_pointer % 0x10000) % 0x1000000 / 0x10000);
-                enumeration_part[0x1B] = (byte)((data_pointer - data_pointer % 0x1000000) % 0x100000000 / 0x1000000);
+                Array.Copy(BitConverter.GetBytes(data_pointer), 0, enumeration_part, 0x18, 4);
 
                 //Shifting name pointer by 0x20
                 name_pointer += 0x20;
-
-                enumeration_part[0x1C] = (byte)(name_pointer % 0x100);
-                enumeration_part[0x1D] = (byte)((name_pointer - name_pointer % 0x100) % 0x10000 / 0x100);
-                enumeration_part[0x1E] = (byte)((name_pointer - name_pointer % 0x10000) % 0x1000000 / 0x10000);
-                enumeration_part[0x1F] = (byte)((name_pointer - name_pointer % 0x1000000) % 0x100000000 / 0x1000000);
+                Array.Copy(BitConverter.GetBytes(name_pointer), 0, enumeration_part, 0x1C, 4);
 
                 ///////////////
                 //Enumeration//
@@ -647,21 +625,13 @@ namespace AMBPatcher
                     int file_pointer = BitConverter.ToInt32(enumeration_part, enum_pointer + 0x10 * i);
 
                     file_pointer += 0x10;
-
-                    enumeration_part[enum_pointer + 0x10 * i] = (byte)(file_pointer % 0x100);
-                    enumeration_part[enum_pointer + 0x10 * i + 1] = (byte)((file_pointer - file_pointer % 0x100) % 0x10000 / 0x100);
-                    enumeration_part[enum_pointer + 0x10 * i + 2] = (byte)((file_pointer - file_pointer % 0x10000) % 0x1000000 / 0x10000);
-                    enumeration_part[enum_pointer + 0x10 * i + 3] = (byte)((file_pointer - file_pointer % 0x1000000) % 0x100000000 / 0x1000000);
+                    Array.Copy(BitConverter.GetBytes(file_pointer), 0, enumeration_part, enum_pointer + 0x10 * i, 4);
                 }
 
                 //Injecting empty file pointer and length
                 byte[] empty_file_enumeration = new byte[0x10];
                 name_pointer -= 0x10;
-
-                empty_file_enumeration[0x0] = (byte)(name_pointer % 0x100);
-                empty_file_enumeration[0x1] = (byte)((name_pointer - name_pointer % 0x100) % 0x10000 / 0x100);
-                empty_file_enumeration[0x2] = (byte)((name_pointer - name_pointer % 0x10000) % 0x1000000 / 0x10000);
-                empty_file_enumeration[0x3] = (byte)((name_pointer - name_pointer % 0x1000000) % 0x100000000 / 0x1000000);
+                Array.Copy(BitConverter.GetBytes(name_pointer), 0, empty_file_enumeration, 0x00, 4);
 
                 name_pointer += 0x10;
 
