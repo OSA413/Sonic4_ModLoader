@@ -198,15 +198,8 @@ namespace AMBPatcher
                     raw_file[2] == 0x4D &&  //M
                     raw_file[3] == 0x42)    //B
                 {
-                    files_counter = raw_file[0x10] +
-                                    raw_file[0x11] * 0x100 +
-                                    raw_file[0x12] * 0x10000 +
-                                    raw_file[0x13] * 0x1000000;
-
-                    int list_pointer = raw_file[0x14] +
-                                       raw_file[0x15] * 0x100 +
-                                       raw_file[0x16] * 0x10000 +
-                                       raw_file[0x17] * 0x1000000;
+                    files_counter = BitConverter.ToInt32(raw_file, 0x10);
+                    int list_pointer = BitConverter.ToInt32(raw_file, 0x14);
 
                     //Some AMB files have no file inside of it
                     if (files_counter > 0)
@@ -218,15 +211,8 @@ namespace AMBPatcher
                             //Adding pointers and lengths of files into corresponding lists
                             if (raw_file[point + 0xb] == 0xff)
                             {
-                                files_pointers.Add(raw_file[point] +
-                                                   raw_file[point + 1] * 0x100 +
-                                                   raw_file[point + 2] * 0x10000 +
-                                                   raw_file[point + 3] * 0x1000000);
-
-                                files_lens.Add(raw_file[point + 4] +
-                                               raw_file[point + 5] * 0x100 +
-                                               raw_file[point + 6] * 0x10000 +
-                                               raw_file[point + 7] * 0x1000000);
+                                files_pointers.Add(BitConverter.ToInt32(raw_file, point));
+                                files_lens.Add(BitConverter.ToInt32(raw_file, point));
                             }
                         }
 
@@ -234,10 +220,7 @@ namespace AMBPatcher
                         files_counter = files_pointers.Count;
 
                         //This is the pointer to where the names of the files start
-                        int name_pointer = raw_file[0x1C] +
-                                           raw_file[0x1D] * 0x100 +
-                                           raw_file[0x1E] * 0x10000 +
-                                           raw_file[0x1F] * 0x1000000;
+                        int name_pointer = BitConverter.ToInt32(raw_file, 0x1C);
 
                         //Getting the raw files names (with 0x00)
                         int filenames_offset = raw_file.Length - name_pointer;
@@ -454,10 +437,7 @@ namespace AMBPatcher
                         //After the file data
                         byte[] part_thr;
 
-                        int name_pointer = part_one[0x1C] +
-                                           part_one[0x1D] * 0x100 +
-                                           part_one[0x1E] * 0x10000 +
-                                           part_one[0x1F] * 0x1000000;
+                        int name_pointer = BitConverter.ToInt32(part_one, 0x1C);
 
                         int len_dif;
                         //If this is the last file, start copying from names
@@ -506,10 +486,7 @@ namespace AMBPatcher
                         for (int i = index + 1; i < files.Count; i++)
                         {
                             //Reading the original pointer
-                            int tmp_pointer = part_one[0x20 + i * 0x10] +
-                                              part_one[0x21 + i * 0x10] * 0x100 +
-                                              part_one[0x22 + i * 0x10] * 0x10000 +
-                                              part_one[0x23 + i * 0x10] * 0x1000000;
+                            int tmp_pointer = BitConverter.ToInt32(part_one, 0x20 + i * 0x10);
 
                             //Writing the new pointer
                             tmp_pointer += len_dif;
@@ -617,25 +594,10 @@ namespace AMBPatcher
                     mod_file_name = String.Join("\\", mod_file_parts.Skip(orig_mod_part_ind));
                 }
                 
-                int file_number = raw_file[0x10] +
-                                  raw_file[0x11] * 0x100 +
-                                  raw_file[0x12] * 0x10000 +
-                                  raw_file[0x13] * 0x1000000;
-
-                int enum_pointer = raw_file[0x14] +
-                                   raw_file[0x15] * 0x100 +
-                                   raw_file[0x16] * 0x10000 +
-                                   raw_file[0x17] * 0x1000000;
-
-                int data_pointer = raw_file[0x18] +
-                                   raw_file[0x19] * 0x100 +
-                                   raw_file[0x1A] * 0x10000 +
-                                   raw_file[0x1B] * 0x1000000;
-
-                int name_pointer = raw_file[0x1C] +
-                                   raw_file[0x1D] * 0x100 +
-                                   raw_file[0x1E] * 0x10000 +
-                                   raw_file[0x1F] * 0x1000000;
+                int file_number  = BitConverter.ToInt32(raw_file, 0x10);
+                int enum_pointer = BitConverter.ToInt32(raw_file, 0x14);
+                int data_pointer = BitConverter.ToInt32(raw_file, 0x18);
+                int name_pointer = BitConverter.ToInt32(raw_file, 0x1C);
                 
                 byte[] enumeration_part = new byte[enum_pointer + 0x10 * file_number];
                 byte[] data_part        = new byte[name_pointer - enumeration_part.Length];
@@ -682,10 +644,7 @@ namespace AMBPatcher
                 //Shifting other file pointers by 0x10
                 for (int i = 0; i < file_number - 1; i++)
                 {
-                    int file_pointer = enumeration_part[enum_pointer + 0x10 * i] +
-                                       enumeration_part[enum_pointer + 0x10 * i + 1] * 0x100 +
-                                       enumeration_part[enum_pointer + 0x10 * i + 2] * 0x10000 +
-                                       enumeration_part[enum_pointer + 0x10 * i + 3] * 0x1000000;
+                    int file_pointer = BitConverter.ToInt32(enumeration_part, enum_pointer + 0x10 * i);
 
                     file_pointer += 0x10;
 
