@@ -31,7 +31,7 @@ for i in a:
         c += 1
 
     else:
-        print(i)
+        pass#print(i)
 
 with open("extract_everything.bat","w") as f:
     f.write(b)
