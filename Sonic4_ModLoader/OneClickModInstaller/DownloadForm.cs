@@ -134,7 +134,7 @@ namespace OneClickModInstaller
         
         private int CheckFiles(string dir_name)
         {
-            string[] good_formats = "TXT,INI,DDS,TXB,AMA,AME,ZNO,TXB,ZNM,ZNV,DC,EV,RG,MD,MP,AT,DF,DI,PSH,VSH,LTS,XNM,MFS,SSS,GPB,MSG,AYK,ADX,AMB,CPK,CBS".Split(',');
+            string[] good_formats = "TXT,INI,DDS,TXB,AMA,AME,ZNO,TXB,ZNM,ZNV,DC,EV,RG,MD,MP,AT,DF,DI,PSH,VSH,LTS,XNM,MFS,SSS,GPB,MSG,AYK,ADX,AMB,CPK,CSB".Split(',');
 
             string[] all_files = Directory.GetFiles(dir_name, "*", SearchOption.AllDirectories);
             List<string> suspicious_files = new List<string>();
