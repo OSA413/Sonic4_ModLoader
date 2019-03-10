@@ -680,6 +680,59 @@ namespace AMBPatcher
                 byte[] raw_file = AMB.Add(File.ReadAllBytes(file_name), file_name, mod_file, mod_file);
                 File.WriteAllBytes(file_name, raw_file);
             }
+
+            ///////////////////
+            //Swap endianness//
+            ///////////////////
+            
+            public static byte[] SwapEndianness(byte[] raw_file)
+            {
+                List<int> PointerList = new List<int> { 0x4, //Endianness
+                                                       0x10,
+                                                       0x14,
+                                                       0x18,
+                                                       0x1C };
+
+                bool FileIsLittleEndianness = BitConverter.IsLittleEndian;
+                if (BitConverter.ToInt32(raw_file, 4) > 0xFFFF)
+                {
+                    FileIsLittleEndianness = !FileIsLittleEndianness;
+                }
+
+
+                byte[] FileCounter_raw = new byte[4];
+                byte[] ListPointer_raw = new byte[4];
+
+                Array.Copy(raw_file, 0x10, FileCounter_raw, 0, 4);
+                Array.Copy(raw_file, 0x14, ListPointer_raw, 0, 4);
+
+                if (FileIsLittleEndianness != BitConverter.IsLittleEndian)
+                {
+                    Array.Reverse(FileCounter_raw);
+                    Array.Reverse(ListPointer_raw);
+                }
+
+                int FileCounter = BitConverter.ToInt32(FileCounter_raw, 0);
+                int ListPointer = BitConverter.ToInt32(ListPointer_raw, 0);
+
+                for (int i = 0; i < FileCounter; i++)
+                {
+                    PointerList.Add(ListPointer + 0x10 * i);
+                    PointerList.Add(ListPointer + 0x10 * i + 4);
+                }
+                
+                foreach (int pointer in PointerList)
+                {
+                    Array.Reverse(raw_file, pointer, 4);
+                }
+
+                return raw_file;
+            }
+
+            public static void SwapEndianness(string FileName)
+            {
+                File.WriteAllBytes(FileName, SwapEndianness(File.ReadAllBytes(FileName)));
+            }
         }
 
         static void PatchAll(string file_name, List<string> mod_files, List<string> mod_paths)
@@ -892,16 +945,17 @@ namespace AMBPatcher
             Console.WriteLine("AMB Patcher by OSA413");
             Console.WriteLine("Usage:");
             Console.WriteLine("\tAMBPatcher.exe - Patch all files used by enabled mods.");
-            Console.WriteLine("\tAMBPatcher.exe [AMB file] and");
-            Console.WriteLine("\tAMBPatcher.exe extract [AMB file] - Extract all files from [AMB file] to \"[AMB file]_extracted\" directory.");
-            Console.WriteLine("\tAMBPatcher.exe read [AMB file] - Prints content of [AMB file]");
-            Console.WriteLine("\tAMBPatcher.exe extract [AMB file] [dest dir] - Extract all files from [AMB file] to [dest dir] directory.");
-            Console.WriteLine("\tAMBPatcher.exe patch [AMB file] [another file] - Patch [AMB file] by [another file] if [another file] is in [AMB file].");
-            Console.WriteLine("\tAMBPatcher.exe [AMB file] [directory] and");
-            Console.WriteLine("\tAMBPatcher.exe patch [AMB file] [directory] - Patch [AMB file] by all files in [directory] if those files are in [AMB file].");
+            Console.WriteLine("\tAMBPatcher.exe [AMB] and");
+            Console.WriteLine("\tAMBPatcher.exe extract [AMB] - Extract all files from [AMB] to \"[AMB]_extracted\" directory.");
+            Console.WriteLine("\tAMBPatcher.exe read [AMB file] - Prints content of [AMB]");
+            Console.WriteLine("\tAMBPatcher.exe extract [AMB] [dir] - Extract all files from [AMB] to [dir] directory.");
+            Console.WriteLine("\tAMBPatcher.exe patch [AMB] [file] - Patch [AMB] by [file] if [file] is in [AMB].");
+            Console.WriteLine("\tAMBPatcher.exe [AMB] [dir] and");
+            Console.WriteLine("\tAMBPatcher.exe patch [AMB] [dir] - Patch [AMB] by all files in [dir] if those files are in [AMB].");
             Console.WriteLine("\tAMBPatcher.exe recover - Recover original files that were changed.");
-            Console.WriteLine("\tAMBPatcher.exe add [AMB file] [another file] - Aaron please add details.");
-            Console.WriteLine("\tAMBPatcher.exe add [AMB file] [another file] [file name] - Aaron please add details.");
+            Console.WriteLine("\tAMBPatcher.exe add [AMB] [file] - Add [file] to [AMB].");
+            Console.WriteLine("\tAMBPatcher.exe add [AMB] [file] [name] - Add [file] to [AMB] with internal name of [name].");
+            Console.WriteLine("\tAMBPatcher.exe swap_endianness [AMB] - Swaps endianness of pointers and lengths of [AMB].");
             Console.WriteLine("\tAMBPatcher.exe -h and");
             Console.WriteLine("\tAMBPatcher.exe --help - Show this message.");
         }
@@ -1099,6 +1153,10 @@ namespace AMBPatcher
                         AMB.Patch(args[0], file);
                     }
                     Console.WriteLine("Done.");
+                }
+                else if (args[0] == "swap_endianness" && File.Exists(args[1]))
+                {
+                    AMB.SwapEndianness(args[1]);
                 }
                 else { ShowHelpMessage(); }
             }
