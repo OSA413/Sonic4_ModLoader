@@ -209,10 +209,10 @@ namespace AMBPatcher
                             int point = list_pointer + i * 0x10;
 
                             //Adding pointers and lengths of files into corresponding lists
-                            if (raw_file[point + 0xb] == 0xff)
+                            if (BitConverter.ToInt32(raw_file, point) != 0)
                             {
                                 files_pointers.Add(BitConverter.ToInt32(raw_file, point));
-                                files_lens.Add(BitConverter.ToInt32(raw_file, point));
+                                files_lens.Add(BitConverter.ToInt32(raw_file, point + 4));
                             }
                         }
 
