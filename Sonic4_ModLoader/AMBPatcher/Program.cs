@@ -41,15 +41,15 @@ namespace AMBPatcher
         static void ConsoleProgressBar(int i, int max_i, string title, int bar_len)
         {
             Console.CursorTop -= 2;
-
+            
             //What it is doing
-            Console.Write(String.Concat(Enumerable.Repeat(" ", 100)));
+            Console.Write(String.Concat(Enumerable.Repeat(" ", Console.WindowWidth-1)));
             Console.CursorLeft = 0;
             if (i == max_i) {Console.WriteLine("Done!");}
             else            {Console.WriteLine(title);}
             
             //Percentage
-            Console.Write(String.Concat(Enumerable.Repeat(" ", 100)));
+            Console.Write(String.Concat(Enumerable.Repeat(" ", Console.WindowWidth-1)));
             Console.CursorLeft = 0;
             Console.WriteLine("[" + String.Concat(Enumerable.Repeat("#", bar_len * i / max_i)) +
                                 String.Concat(Enumerable.Repeat(" ", bar_len - bar_len * i / max_i)) + "] (" + (i * 100 / max_i).ToString() + "%)");
@@ -346,7 +346,6 @@ namespace AMBPatcher
             
             public static byte[] Patch(byte[] raw_file, string orig_file, string mod_file, string OriginalModFileName)
             {
-                Console.WriteLine(OriginalModFileName);
                 //Why do I need the original file name? To patch files that are inside of an AMB file that is inside of an AMB file that is inside of ...
                 var files = AMB.Read(raw_file);
 
@@ -774,8 +773,6 @@ namespace AMBPatcher
                         for (int i = 0; i < mod_files.Count; i++)
                         {
                             string mod_file_full = Path.Combine("mods", mod_paths[i], mod_files[i]);
-                            Console.WriteLine(mod_file_full);
-                            Console.Read();
 
                             if (ProgressBar) { ConsoleProgressBar(i, mod_files.Count, mod_file_full, 64); }
 
