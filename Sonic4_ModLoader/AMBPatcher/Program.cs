@@ -14,11 +14,20 @@ namespace AMBPatcher
          * The log won't help you if your game is crashing, but it can tell you if you've named a file 
          * in the wrong way (e.g. haven't removed "_extracted" in the directory name).
          */
-        public static List<string> Log { set; get; }
         public static bool GenerateLog { set; get; }
         public static bool ProgressBar { set; get; }
         public static bool SHACheck { get; set; }
         public static int SHAType { get; set; }
+        
+        public static void LogWrite(string Message)
+        {
+            if (!GenerateLog) { return; }
+
+            string PrevMessage = "";
+            if (File.Exists("AMBPatcher.log")) { PrevMessage = File.ReadAllText("AMBPatcher.log"); }
+
+            File.WriteAllText("AMBPatcher.log", PrevMessage + Environment.NewLine + Message);
+        }
 
         static void ConsoleProgressBar(int i, int max_i, string title, int bar_len)
         {
@@ -41,7 +50,6 @@ namespace AMBPatcher
         {
             ProgressBar = true;
             GenerateLog = false;
-            Log = new List<string>();
             SHACheck = true;
             SHAType = 1;
 
@@ -412,7 +420,7 @@ namespace AMBPatcher
                     //The original file will be replaced
                     if (raw_mod_file.Length <= files[index].Item3)
                     {
-                        if (GenerateLog) { Log.Add("AMB.Patch: " + mod_file + " 's length is OK, replacing..."); }
+                        LogWrite("AMB.Patch: " + mod_file + " 's length is OK, replacing...");
                         for (int i = 0; i < files[index].Item3; i++)
                         {
                             if (raw_mod_file.Length - 1 >= i)
@@ -428,7 +436,7 @@ namespace AMBPatcher
                     //Else the AMB file will be expanded
                     else
                     {
-                        if (GenerateLog) { Log.Add("AMB.Patch: " + mod_file + " 's length is bigger than the original length, expanding..."); }
+                        LogWrite("AMB.Patch: " + mod_file + " 's length is bigger than the original length, expanding...");
                         //Splitting the AMB file into three parts
                         //Before the file data
                         byte[] part_one = new byte[files[index].Item2];
@@ -495,7 +503,7 @@ namespace AMBPatcher
                 }
                 else
                 {
-                    if (GenerateLog) { Log.Add("AMB.Patch: " + mod_file + " is not in " + orig_file + ", trying to add!"); }
+                    LogWrite("AMB.Patch: " + mod_file + " is not in " + orig_file + ", trying to add!");
                     raw_file = AMB.Add(raw_file, orig_file, mod_file, mod_file);
                 }
 
@@ -748,7 +756,7 @@ namespace AMBPatcher
                         {
                             Recover(file_name.Substring(0, file_name.Length - 4) + ".CPK");
                         }
-                        if (GenerateLog) { Log.Add("PatchAll: file " + file_name + " was restored."); }
+                        LogWrite("PatchAll: file " + file_name + " was restored.");
 
                         for (int i = 0; i < mod_files.Count; i++)
                         {
@@ -758,7 +766,7 @@ namespace AMBPatcher
 
                             if (file_name == mod_files[i])
                             {
-                                if (GenerateLog) { Log.Add("PatchAll: replacing " + file_name + " with " + mod_file_full); }
+                                LogWrite("PatchAll: replacing " + file_name + " with " + mod_file_full);
                                 File.Copy(mod_file_full, file_name, true);
                             }
                             else
@@ -769,7 +777,7 @@ namespace AMBPatcher
                             ShaWrite(mod_files[i], mod_file_full);
                         }
                     }
-                    else if (GenerateLog) { Log.Add("PatchAll: file " + file_name + " wasn't changed (SHA1)."); }
+                    else { LogWrite("PatchAll: file " + file_name + " wasn't changed."); }
                 }
                 else if (file_name.ToUpper().EndsWith(".CSB"))
                 {
@@ -781,7 +789,7 @@ namespace AMBPatcher
                             Recover(file_name.Substring(0, file_name.Length - 4) + ".CPK");
                         }
 
-                        if (GenerateLog) { Log.Add("PatchAll: asking CsbEditor to unpack " + file_name); }
+                        LogWrite("PatchAll: asking CsbEditor to unpack " + file_name);
                         ConsoleProgressBar(0, 100, "Asking CsbEditor to unpack " + file_name, 64);
 
                         //Needs CSB Editor (from SonicAudioTools) to work
@@ -795,24 +803,21 @@ namespace AMBPatcher
                             string mod_file = Path.Combine("mods", mod_paths[i], mod_files[i]);
 
                             ConsoleProgressBar(i, mod_files.Count, mod_file, 64);
-                            if (GenerateLog) { Log.Add("PatchAll: copying " + mod_file + " to " + mod_files[i]); }
+                            LogWrite("PatchAll: copying " + mod_file + " to " + mod_files[i]);
 
                             File.Copy(mod_file, mod_files[i], true);
 
                             ShaWrite(mod_files[i], mod_file);
                         }
 
-                        if (GenerateLog) { Log.Add("PatchAll: asking CsbEditor to repack " + file_name); }
+                        LogWrite("PatchAll: asking CsbEditor to repack " + file_name);
                         ConsoleProgressBar(99, 100, "Asking CsbEditor to repack " + file_name, 64);
                         startInfo.Arguments = file_name.Substring(0, file_name.Length - 4);
                         Process.Start(startInfo).WaitForExit();
                     }
                 }
             }
-            else
-            {
-                if (GenerateLog) { Log.Add("PatchAll: " + file_name + " file not found"); }
-            }
+            else { LogWrite("PatchAll: " + file_name + " file not found"); }
         }
 
         static void Backup(string file_name)
@@ -852,9 +857,9 @@ namespace AMBPatcher
                  */
                 string[] ini_mods = File.ReadAllLines("mods/mods.ini");
 
-                List<string>       orig_files = new List<string>();
-                List<List<string>> mod_files  = new List<List<string>>();
-                List<List<string>> mod_dirs   = new List<List<string>>();
+                List<string> orig_files = new List<string>();
+                List<List<string>> mod_files = new List<List<string>>();
+                List<List<string>> mod_dirs = new List<List<string>>();
 
                 for (int i = 0; i < ini_mods.Length; i++)
                 {
@@ -867,11 +872,11 @@ namespace AMBPatcher
                             //Getting "folder/file" from "mods/mod/folder/file/mod_file"
                             string[] filename_parts = filenames[j].Split(Path.DirectorySeparatorChar);
                             string original_file = "";
-                            
+
                             for (int k = 0; k < filename_parts.Length - 2; k++)
                             {
-                                string possible_orig_file = Path.Combine(filename_parts.Skip(2).Take(k+1).ToArray());
-                                
+                                string possible_orig_file = Path.Combine(filename_parts.Skip(2).Take(k + 1).ToArray());
+
                                 if (File.Exists(possible_orig_file))
                                 {
                                     original_file = possible_orig_file;
@@ -891,7 +896,7 @@ namespace AMBPatcher
 
                             //Getting "mod" from "mods/mod/folder/file/mod_file"
                             string mod_path = filename_parts[1];
-                           
+
                             //Adding all of this into lists
                             if (!orig_files.Contains(original_file))
                             {
@@ -899,9 +904,9 @@ namespace AMBPatcher
                                 mod_files.Add(new List<string> { });
                                 mod_dirs.Add(new List<string> { });
                             }
-                            
+
                             int ind = orig_files.IndexOf(original_file);
-                            
+
                             if (mod_files[ind].Contains(mod_file))
                             {
                                 /* Updating queue of the files that will be modified
@@ -930,13 +935,8 @@ namespace AMBPatcher
                     result.Add(Tuple.Create(orig_files[i], mod_files[i], mod_dirs[i]));
                 }
             }
-            else
-            {
-                if (GenerateLog)
-                {
-                    Log.Add("GetModFiles: \"mods/mods.ini\" file not found");
-                }
-            }
+            else { LogWrite("GetModFiles: \"mods/mods.ini\" file not found"); }
+
             return result;
         }
 
@@ -966,22 +966,22 @@ namespace AMBPatcher
 
             if (args.Length == 0)
             {
-                if (GenerateLog) { Log.Add("Getting list of enabled mods..."); }
+                LogWrite("Getting list of enabled mods...");
                 var test = GetModFiles();
 
                 if (GenerateLog)
                 {
-                    Log.Add("====================");
-                    Log.Add("File list:");
+                    LogWrite("====================");
+                    LogWrite("File list:");
                     for (int i = 0; i < test.Count; i++)
                     {
-                        Log.Add("\n" + test[i].Item1);
+                        LogWrite("\n" + test[i].Item1);
                         for (int j = 0; j < test[i].Item2.Count; j++)
                         {
-                            Log.Add("\t" + test[i].Item2[j] + "\t" + test[i].Item3[j]);
+                            LogWrite("\t" + test[i].Item2[j] + "\t" + test[i].Item3[j]);
                         }
                     }
-                    Log.Add("====================");
+                    LogWrite("====================");
                 }
 
                 List<string> mods_prev = new List<string> { };
@@ -992,7 +992,7 @@ namespace AMBPatcher
                     mods_prev = File.ReadAllLines(@"mods\mods_prev").ToList<string>();
                 }
 
-                if (GenerateLog) { Log.Add("Patching original files..."); }
+                LogWrite("Patching original files...");
 
                 if (ProgressBar)
                 {
@@ -1032,10 +1032,10 @@ namespace AMBPatcher
                     ConsoleProgressBar(1, 1, "", 64);
                 }
 
-                if (GenerateLog) { Log.Add("\nRestoring unchanged files:"); }
+                LogWrite("\nRestoring unchanged files:");
                 for (int i = 0; i < mods_prev.Count; i++)
                 {
-                    if (GenerateLog) { Log.Add("Restoring " + mods_prev[i]); }
+                    LogWrite("Restoring " + mods_prev[i]);
 
                     Recover(mods_prev[i]);
                     //Some CSB files may have CPK archive
@@ -1051,19 +1051,17 @@ namespace AMBPatcher
                     
                     
                 }
-                if (GenerateLog) { Log.Add("Restored"); }
+                LogWrite("Restored");
 
-                if (GenerateLog) { Log.Add("\nSaving list of modified files..."); }
+                LogWrite("\nSaving list of modified files...");
                 if (Directory.Exists("mods"))
                 {
                     File.WriteAllText(@"mods\mods_prev", string.Join("\n", modified_files.ToArray()));
-                    if (GenerateLog) { Log.Add("Saved"); }
+                    LogWrite("Saved");
                 }
-                else { if (GenerateLog) { Log.Add("But \"mods\" folder is not present!"); } }
+                else { LogWrite("But \"mods\" folder is not present!"); }
 
-                if (GenerateLog) { Log.Add("\nFinished."); }
-
-                if (GenerateLog) { File.WriteAllLines("AMBPatcher.log", Log.ToArray()); }
+                LogWrite("\nFinished.");
             }
 
             else if (args.Length == 1)
