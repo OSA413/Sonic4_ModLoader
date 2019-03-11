@@ -24,11 +24,8 @@ namespace AMBPatcher
             public static void Write(string Message)
             {
                 if (!GenerateLog) { return; }
-
-                string PrevMessage = "";
-                if (File.Exists("AMBPatcher.log")) { PrevMessage = File.ReadAllText("AMBPatcher.log"); }
-
-                File.WriteAllText("AMBPatcher.log", PrevMessage + Environment.NewLine + Message);
+                
+                File.AppendAllText("AMBPatcher.log", Message + Environment.NewLine);
             }
             
             public static void Reset()
