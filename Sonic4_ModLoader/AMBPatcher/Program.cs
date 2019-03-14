@@ -218,23 +218,49 @@ namespace AMBPatcher
                     //Some AMB files have no file inside of it
                     if (files_counter > 0)
                     {
-                        for (int i = 0; i < files_counter; i++)
-                        {
-                            int point = list_pointer + i * 0x10;
+                        //This is actually used to identify extra zero bytes in messed AMBs
+                        int DataPointer = BitConverter.ToInt32(raw_file, 0x18);
 
-                            //Adding pointers and lengths of files into corresponding lists
-                            if (BitConverter.ToInt32(raw_file, point) != 0)
+                        //This is the pointer to where the names of the files start
+                        int name_pointer;
+
+                        if (DataPointer == 0)
+                        {
+                            //Well, this means that we have "empty" integers in the places where pointers should be.
+                            //We need to skip them
+
+                            name_pointer = BitConverter.ToInt32(raw_file, 0x20);
+
+                            for (int i = 0; i < files_counter; i++)
                             {
-                                files_pointers.Add(BitConverter.ToInt32(raw_file, point));
-                                files_lens.Add(BitConverter.ToInt32(raw_file, point + 4));
+                                int point = list_pointer + i * 0x14;
+                                
+                                if (BitConverter.ToInt32(raw_file, point) != 0)
+                                {
+                                    files_pointers.Add(BitConverter.ToInt32(raw_file, point));
+                                    files_lens.Add(BitConverter.ToInt32(raw_file, point + 8));
+                                }
+                            }
+                        }
+                        else
+                        {
+                            name_pointer = BitConverter.ToInt32(raw_file, 0x1C);
+
+                            for (int i = 0; i < files_counter; i++)
+                            {
+                                int point = list_pointer + i * 0x10;
+
+                                //Adding pointers and lengths of files into corresponding lists
+                                if (BitConverter.ToInt32(raw_file, point) != 0)
+                                {
+                                    files_pointers.Add(BitConverter.ToInt32(raw_file, point));
+                                    files_lens.Add(BitConverter.ToInt32(raw_file, point + 4));
+                                }
                             }
                         }
 
                         //Actual number of files inside may differ from the number given in the header
                         files_counter = files_pointers.Count;
-
-                        //This is the pointer to where the names of the files start
-                        int name_pointer = BitConverter.ToInt32(raw_file, 0x1C);
 
                         //Getting the raw files names (with 0x00)
                         int filenames_offset = raw_file.Length - name_pointer;
