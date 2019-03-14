@@ -310,8 +310,6 @@ namespace AMBPatcher
 
             public static void Extract(string file_name, string output)
             {
-                var files = AMB.Read(file_name);
-
                 byte[] raw_file = File.ReadAllBytes(file_name);
 
                 //Creating folder if it doesn't exist
@@ -319,6 +317,13 @@ namespace AMBPatcher
                 {
                     Directory.CreateDirectory(output);
                 }
+                
+                if (BitConverter.IsLittleEndian != AMB.IsLittleEndian(raw_file))
+                {
+                    raw_file = AMB.SwapEndianness(raw_file);
+                }
+
+                var files = AMB.Read(raw_file);
 
                 for (int i = 0; i < files.Count; i++)
                 {
