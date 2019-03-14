@@ -698,24 +698,39 @@ namespace AMBPatcher
                 File.WriteAllBytes(file_name, raw_file);
             }
 
+            //////////////////
+            //Get endianness//
+            //////////////////
+            
+            public static bool IsLittleEndian(byte[] raw_file)
+            {
+                bool FileIsLittleEndian = BitConverter.IsLittleEndian;
+                if (BitConverter.ToInt32(raw_file, 4) > 0xFFFF)
+                {
+                    FileIsLittleEndian = !FileIsLittleEndian;
+                }
+
+                return FileIsLittleEndian;
+            }
+
+            public static bool IsLittleEndian(string FileName)
+            {
+                return AMB.IsLittleEndian(File.ReadAllBytes(FileName));
+            }
+
             ///////////////////
             //Swap endianness//
             ///////////////////
-            
+
             public static byte[] SwapEndianness(byte[] raw_file)
             {
+                bool FileIsLittleEndian = IsLittleEndian(raw_file);
+
                 List<int> PointerList = new List<int> { 0x4, //Endianness
                                                        0x10,
                                                        0x14,
                                                        0x18,
                                                        0x1C };
-
-                bool FileIsLittleEndianness = BitConverter.IsLittleEndian;
-                if (BitConverter.ToInt32(raw_file, 4) > 0xFFFF)
-                {
-                    FileIsLittleEndianness = !FileIsLittleEndianness;
-                }
-
 
                 byte[] FileCounter_raw = new byte[4];
                 byte[] ListPointer_raw = new byte[4];
@@ -723,7 +738,7 @@ namespace AMBPatcher
                 Array.Copy(raw_file, 0x10, FileCounter_raw, 0, 4);
                 Array.Copy(raw_file, 0x14, ListPointer_raw, 0, 4);
 
-                if (FileIsLittleEndianness != BitConverter.IsLittleEndian)
+                if (FileIsLittleEndian != BitConverter.IsLittleEndian)
                 {
                     Array.Reverse(FileCounter_raw);
                     Array.Reverse(ListPointer_raw);
@@ -964,6 +979,7 @@ namespace AMBPatcher
             Console.WriteLine("\tAMBPatcher.exe recover - Recover original files that were changed.");
             Console.WriteLine("\tAMBPatcher.exe add [AMB] [file] - Add [file] to [AMB].");
             Console.WriteLine("\tAMBPatcher.exe add [AMB] [file] [name] - Add [file] to [AMB] with internal name of [name].");
+            Console.WriteLine("\tAMBPatcher.exe endianness [AMB] - Print endianness of [AMB].");
             Console.WriteLine("\tAMBPatcher.exe swap_endianness [AMB] - Swaps endianness of pointers and lengths of [AMB].");
             Console.WriteLine("\tAMBPatcher.exe -h and");
             Console.WriteLine("\tAMBPatcher.exe --help - Show this message.");
@@ -1165,6 +1181,13 @@ namespace AMBPatcher
                 else if (args[0] == "swap_endianness" && File.Exists(args[1]))
                 {
                     AMB.SwapEndianness(args[1]);
+                }
+                else if (args[0] == "endianness" && File.Exists(args[1]))
+                {
+                    Console.WriteLine("This file's endianness is...");
+                    if (AMB.IsLittleEndian(args[1]))
+                    { Console.WriteLine("Little endian!"); }
+                    else { Console.WriteLine("Big endian!"); }
                 }
                 else { ShowHelpMessage(); }
             }
