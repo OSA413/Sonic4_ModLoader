@@ -22,11 +22,6 @@ namespace OneClickModInstaller
                 {
                     label3.Text = "";
                 }
-                else
-                {
-                    SetButtonShield(bInstall);
-                    SetButtonShield(bUninstall);
-                }
 
                 if (args.Length == 1)
                 {
@@ -186,15 +181,6 @@ namespace OneClickModInstaller
             WindowsIdentity id = WindowsIdentity.GetCurrent();
             WindowsPrincipal principal = new WindowsPrincipal(id);
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
-        }
-
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        public static extern IntPtr SendMessage(HandleRef hWnd, UInt32 Msg, IntPtr wParam, IntPtr lParam);
-
-        public static void SetButtonShield(Button btn)
-        {
-            btn.FlatStyle = FlatStyle.System;
-            SendMessage(new HandleRef(btn, btn.Handle), 0x160C, IntPtr.Zero, true ? new IntPtr(1) : IntPtr.Zero);
         }
 
         private void UpdateWindow()
