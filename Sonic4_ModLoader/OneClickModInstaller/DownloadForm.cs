@@ -134,7 +134,7 @@ namespace OneClickModInstaller
         
         private int CheckFiles(string dir_name)
         {
-            string[] good_formats = "TXT,INI,DDS,TXB,AMA,AME,ZNO,TXB,ZNM,ZNV,DC,EV,RG,MD,MP,AT,DF,DI,PSH,VSH,LTS,XNM,MFS,SSS,GPB,MSG,AYK,ADX,AMB,CPK,CSB".Split(',');
+            string[] good_formats = "TXT,INI,DDS,TXB,AMA,AME,ZNO,ZNM,ZNV,DC,EV,RG,MD,MP,AT,DF,DI,PSH,VSH,LTS,XNM,MFS,SSS,GPB,MSG,AYK,ADX,AMB,CPK,CSB,PNG".Split(',');
 
             string[] all_files = Directory.GetFiles(dir_name, "*", SearchOption.AllDirectories);
             List<string> suspicious_files = new List<string>();
@@ -175,24 +175,39 @@ namespace OneClickModInstaller
             return cont;
         }
 
-        static string[] FindRootDirs(string dir_name)
+        static Tuple<string[], string> FindRootDirs(string dir_name)
         {
-            List<string> mod_roots = new List<string>();
-            string[] game_folders = "CUTSCENE,DEMO,G_COM,G_SS,G_EP1COM,G_EP1ZONE2,G_EP1ZONE3,G_EP1ZONE4,G_ZONE1,G_ZONE2,G_ZONE3,G_ZONE4,G_ZONEF,MSG,NNSTDSHADER,SOUND".Split(',');
+            string platform = "???";
+            string[] platforms = new string[2] { "pc", "dolphin" };
 
-            foreach (string folder in game_folders)
+            List<string> mod_roots = new List<string>();
+            string[] game_folders_array = new string[2] { "CUTSCENE,DEMO,G_COM,G_SS,G_EP1COM,G_EP1ZONE2,G_EP1ZONE3,G_EP1ZONE4,G_ZONE1,G_ZONE2,G_ZONE3,G_ZONE4,G_ZONEF,MSG,NNSTDSHADER,SOUND"
+                                                  , "WSNE8P,WSNP8P,WSNJ8P"};
+
+            for (int i = 0; i < platforms.Length; i++)
             {
-                foreach (string mod_folder in Directory.GetDirectories(dir_name, folder, SearchOption.AllDirectories))
+                string[] game_folders = game_folders_array[i].Split(',');
+
+                foreach (string folder in game_folders)
                 {
-                    string tmp_root = Path.GetDirectoryName(mod_folder);
-                    if (!mod_roots.Contains(tmp_root))
+                    foreach (string mod_folder in Directory.GetDirectories(dir_name, folder, SearchOption.AllDirectories))
                     {
-                        mod_roots.Add(tmp_root);
+                        string tmp_root = Path.GetDirectoryName(mod_folder);
+                        if (!mod_roots.Contains(tmp_root))
+                        {
+                            mod_roots.Add(tmp_root);
+                        }
                     }
+                }
+
+                if (mod_roots.Count > 1)
+                {
+                    platform = platforms[i];
+                    break;
                 }
             }
 
-            return mod_roots.ToArray();
+            return Tuple.Create(mod_roots.ToArray(), platform);
         }
         
         private void bDownload_Click(object sender, EventArgs e)
@@ -294,7 +309,10 @@ namespace OneClickModInstaller
             
             toolStripStatusLabel1.Text = "Finding root directories...";
             Refresh();
-            string[] mod_roots = FindRootDirs(archive_dir);
+
+            var FoundRootDirs = FindRootDirs(archive_dir);
+            string[] mod_roots = FoundRootDirs.Item1;
+            string platform = FoundRootDirs.Item2;
             
             if (mod_roots.Length > 1)
             {
@@ -316,8 +334,13 @@ namespace OneClickModInstaller
             
             foreach (string mod in mod_roots)
             {
-                string dest = Path.Combine("mods", Path.GetFileName(mod));
-                if (Directory.Exists(dest)) { DirectoryRemoveRecursively(dest); }
+                string dest;
+                if (platform == "pc")
+                { dest = Path.Combine("mods", Path.GetFileName(mod)); }
+                else
+                { dest = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Dolphin Emulator", "Load", "Textures"); }
+
+                if (Directory.Exists(dest) && platform == "pc") { DirectoryRemoveRecursively(dest); }
                 CopyAll(mod, dest);
             }
 
