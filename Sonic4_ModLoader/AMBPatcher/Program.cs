@@ -189,6 +189,64 @@ namespace AMBPatcher
         
         public class AMB
         {
+            //////////////////
+            //Some internals//
+            //////////////////
+
+            internal static Tuple<string, int, string> GetInternalThings(byte[] raw_file, string OriginalFileName, string ModFileName)
+            {
+                /*
+                 * Item1 is InternalName (like from AMB.Read)
+                 * Item2 is ParentIndex (index of parent file in AMB.Read, if present)
+                 * Item3 is ParentName (AMB.Read()[ParentIndex].Item1, if present)
+                 */
+
+                var files = AMB.Read(raw_file);
+
+                /////////////////
+                //Internal Name//
+                /////////////////
+
+                string InternalName;
+                
+                //Turning "C:\1\2\3" into {"C:","1","2","3"}
+                string[] mod_file_parts = ModFileName.Split(Path.DirectorySeparatorChar);
+                
+                string orig_file_last = Path.GetFileName(OriginalFileName);
+
+                //Trying to find where the original file name starts in the mod file name.
+                int index = Array.IndexOf(mod_file_parts, orig_file_last);
+                
+                //If it's inside, return the part after original file ends
+                if (index != -1)
+                {
+                    InternalName = String.Join("\\", mod_file_parts.Skip(index + 1).ToArray());
+                }
+                //Else use file name
+                else
+                {
+                    InternalName = mod_file_parts.Last();
+                }
+
+                ////////////////
+                //Parent Index//
+                ////////////////
+
+                int ParentIndex = -1;
+                string ParentName = "";
+
+                for (int i = 0; i < files.Count; i++)
+                {
+                    if ((InternalName + "\\").StartsWith(files[i].Item1 + "\\"))
+                    {
+                        ParentIndex = i;
+                        ParentName = files[i].Item1;
+                    }
+                }
+                
+                return Tuple.Create(InternalName, ParentIndex, ParentName);
+            }
+
             ////////
             //Read//
             ////////
@@ -377,6 +435,8 @@ namespace AMBPatcher
                 //Why do I need the original file name? To patch files that are inside of an AMB file that is inside of an AMB file that is inside of ...
                 var files = AMB.Read(raw_file);
 
+                var InternalThings = AMB.GetInternalThings(raw_file, orig_file, mod_file);
+
                 int index = -1;
 
                 //Turning "C:\1\2\3" into {"C:","1","2","3"}
@@ -430,6 +490,11 @@ namespace AMBPatcher
                         }
                     }
                 }
+            
+                Console.WriteLine(GetInternalThings(raw_file, orig_file, mod_file).Item1);
+                Console.WriteLine(GetInternalThings(raw_file, orig_file, mod_file).Item2);
+                Console.WriteLine(GetInternalThings(raw_file, orig_file, mod_file).Item3);
+                Console.Read();
 
                 //If mod file is in the original file.
                 if (index != -1)
