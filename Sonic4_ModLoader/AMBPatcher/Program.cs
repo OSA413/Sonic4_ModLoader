@@ -37,6 +37,9 @@ namespace AMBPatcher
 
         static void ConsoleProgressBar(int i, int max_i, string title, int bar_len)
         {
+            //To prevent crashes out of nowhere when progress bar is turned off
+            if (!ProgressBar) { return; }
+
             Console.CursorTop -= 2;
             
             //What it is doing
@@ -829,7 +832,7 @@ namespace AMBPatcher
                         {
                             string mod_file_full = Path.Combine("mods", mod_paths[i], mod_files[i]);
 
-                            if (ProgressBar) { ConsoleProgressBar(i, mod_files.Count, mod_file_full, 64); }
+                            ConsoleProgressBar(i, mod_files.Count, mod_file_full, 64);
 
                             if (file_name == mod_files[i])
                             {
@@ -1149,7 +1152,7 @@ namespace AMBPatcher
                         for (int i = 0; i < mods_prev.Length; i++)
                         {
                             string file = mods_prev[i];
-
+                            
                             ConsoleProgressBar(i, mods_prev.Length, "Recovering \""+ file +"\" file...", 64);
 
                             Recover(file);
