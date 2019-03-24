@@ -1030,8 +1030,8 @@ namespace AMBPatcher
 
         static void Main(string[] args)
         {
-            Log.Reset();
             Load_Settings();
+            Log.Reset();
 
             if (args.Length == 0)
             {
