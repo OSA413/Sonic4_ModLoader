@@ -200,7 +200,7 @@ namespace OneClickModInstaller
                     }
                 }
 
-                if (mod_roots.Count > 1)
+                if (mod_roots.Count > 0)
                 {
                     platform = platforms[i];
                     break;

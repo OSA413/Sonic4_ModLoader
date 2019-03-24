@@ -189,9 +189,9 @@ namespace AMBPatcher
         
         public class AMB
         {
-            //////////////////
-            //Some internals//
-            //////////////////
+            ///////////////////////////////
+            //Things needed for patching //
+            ///////////////////////////////
 
             internal static Tuple<string, int, string> GetInternalThings(byte[] raw_file, string OriginalFileName, string ModFileName)
             {
@@ -430,71 +430,16 @@ namespace AMBPatcher
             //Patch//
             /////////
             
-            public static byte[] Patch(byte[] raw_file, string orig_file, string mod_file, string OriginalModFileName)
+            public static byte[] Patch(byte[] raw_file, string OrigFileName, string ModFileName, string ModFilePath)
             {
                 //Why do I need the original file name? To patch files that are inside of an AMB file that is inside of an AMB file that is inside of ...
                 var files = AMB.Read(raw_file);
 
-                var InternalThings = AMB.GetInternalThings(raw_file, orig_file, mod_file);
-
-                int index = -1;
-
-                //Turning "C:\1\2\3" into {"C:","1","2","3"}
-                string[] mod_file_parts = mod_file.Split(Path.DirectorySeparatorChar);
-                int mod_file_parts_len = mod_file_parts.Length;
-
-                int orig_mod_part_ind = -1;
-                string[] orig_file_parts = orig_file.Split(Path.DirectorySeparatorChar);
-                string orig_file_last = orig_file_parts[orig_file_parts.Length - 1];
-                string mod_file_in_orig = "";
-
-                //Trying to find where the original file name starts in the mod file name.
-                //e.g. for "\1\2\3.AMB" and "\mods\1\2\3.AMB\4\file.dds" if sets index of "3.AMB" in the second one.
-                for (int i = 0; i < mod_file_parts.Length; i++)
-                {
-                    if (mod_file_parts[i] == orig_file_last)
-                    {
-                        orig_mod_part_ind = i + 1;
-                        break;
-                    }
-                }
-
-                if (orig_mod_part_ind == -1)
-                {
-                    orig_mod_part_ind = mod_file_parts_len - 1;
-                }
-
-                //Finding the index of the file in the AMB archive
-                for (int i = 0; i < files.Count; i++)
-                {
-                    if (index != -1) { break; }
-
-                    //j is the number of maximum subfolders + 1
-                    // dir1/dir2/file3.dds
-                    for (int j = 0; j < 5; j++)
-                    {
-                        string internal_name = String.Join("\\", mod_file_parts.Skip(orig_mod_part_ind).Take(j + 1));
-
-                        if (files[i].Item1.StartsWith(internal_name))
-                        {
-                            if (files[i].Item1 == internal_name)
-                            {
-                                index = i;
-                                mod_file_in_orig = internal_name;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                }
-            
-                Console.WriteLine(GetInternalThings(raw_file, orig_file, mod_file).Item1);
-                Console.WriteLine(GetInternalThings(raw_file, orig_file, mod_file).Item2);
-                Console.WriteLine(GetInternalThings(raw_file, orig_file, mod_file).Item3);
-                Console.Read();
+                var InternalThings = AMB.GetInternalThings(raw_file, OrigFileName, ModFileName);
+                
+                string InternalName = InternalThings.Item1;
+                int    index        = InternalThings.Item2;
+                string ParentName   = InternalThings.Item3;
 
                 //If mod file is in the original file.
                 if (index != -1)
@@ -502,27 +447,29 @@ namespace AMBPatcher
                     byte[] raw_mod_file;
 
                     //If the mod file is in the original file
-                    if (mod_file.EndsWith(mod_file_in_orig))
+                    if (ModFileName.EndsWith(ParentName))
                     {
-                        raw_mod_file = File.ReadAllBytes(OriginalModFileName);
+                        raw_mod_file = File.ReadAllBytes(ModFilePath);
                     }
                     //If the mod file is in another AMB file that is in the original file
                     //recursive patching
                     else
                     {
-                        byte[] tmp_orig = new byte[files[index].Item3];
-                        Array.Copy(raw_file, files[index].Item2, tmp_orig, 0, files[index].Item3);
-                        raw_mod_file = AMB.Patch(tmp_orig,
-                                                 "the_orig_file" + "\\" + mod_file_in_orig,
-                                                 String.Join("\\", mod_file_parts.Skip(orig_mod_part_ind)),
-                                                 OriginalModFileName);
+                        //These two lines "extract" parent file
+                        byte[] parent_raw = new byte[files[index].Item3];
+                        Array.Copy(raw_file, files[index].Item2, parent_raw, 0, files[index].Item3);
+
+                        raw_mod_file = AMB.Patch(parent_raw,
+                                                 ParentName,
+                                                 InternalName,
+                                                 ModFilePath);
                     }
 
                     //If the mod file's length is smaller or equal to the original one
                     //The original file will be replaced
                     if (raw_mod_file.Length <= files[index].Item3)
                     {
-                        Log.Write("AMB.Patch: " + mod_file + " 's length is OK, replacing...");
+                        Log.Write("AMB.Patch: " + ModFileName + " 's length is OK, replacing...");
                         for (int i = 0; i < files[index].Item3; i++)
                         {
                             if (raw_mod_file.Length - 1 >= i)
@@ -538,7 +485,7 @@ namespace AMBPatcher
                     //Else the AMB file will be expanded
                     else
                     {
-                        Log.Write("AMB.Patch: " + mod_file + " 's length is bigger than the original length, expanding...");
+                        Log.Write("AMB.Patch: " + ModFileName + " 's length is bigger than the original length, expanding...");
                         //Splitting the AMB file into three parts
                         //Before the file data
                         byte[] part_one = new byte[files[index].Item2];
@@ -605,8 +552,8 @@ namespace AMBPatcher
                 }
                 else
                 {
-                    Log.Write("AMB.Patch: " + mod_file + " is not in " + orig_file + ", trying to add!");
-                    raw_file = AMB.Add(raw_file, orig_file, mod_file, mod_file);
+                    Log.Write("AMB.Patch: " + ModFileName + " is not in " + OrigFileName + ", trying to add!");
+                    raw_file = AMB.Add(raw_file, OrigFileName, ModFileName, ModFileName);
                 }
 
                 return raw_file;
