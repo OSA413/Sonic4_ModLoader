@@ -551,10 +551,10 @@ namespace AMBPatcher
 
                         //Combining the parts into one file
                         raw_file = new byte[part_one.Length + part_two.Length + part_thr.Length];
-
-                        Array.Copy(part_one, 0, raw_file, 0, part_one.Length);
-                        Array.Copy(part_two, 0, raw_file, part_one.Length, part_two.Length);
-                        Array.Copy(part_thr, 0, raw_file, part_two.Length, part_thr.Length);
+                        
+                        Buffer.BlockCopy(part_one, 0, raw_file, 0, part_one.Length);
+                        Buffer.BlockCopy(part_two, 0, raw_file, part_one.Length, part_two.Length);
+                        Buffer.BlockCopy(part_thr, 0, raw_file, part_one.Length + part_two.Length, part_thr.Length);
                     }
                 }
                 else
