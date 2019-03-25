@@ -85,15 +85,15 @@ namespace Sonic4ModManager
             string AMBPatcher_sha_check    = Convert.ToInt32(cb_AMBPatcher_sha_check.Checked).ToString();
             string SHAType                 = list_SHAType.SelectedItem.ToString();
 
-            string text = String.Join("\n", new string[]
+            string[] text = new string[]
             {
                 "ProgressBar=" + AMBPatcher_progress_bar,
                 "GenerateLog=" + AMBPatcher_generate_log,
                 "SHACheck="    + AMBPatcher_sha_check,
                 "SHAType="     + SHAType
-            });
+            };
 
-            File.WriteAllText("AMBPatcher.cfg", text);
+            File.WriteAllLines("AMBPatcher.cfg", text);
         }
 
         private void Settings_Load()

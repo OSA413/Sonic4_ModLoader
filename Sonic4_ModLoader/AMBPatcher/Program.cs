@@ -548,9 +548,13 @@ namespace AMBPatcher
                             Array.Copy(BitConverter.GetBytes(tmp_pointer), 0, part_one, 0x20 + i * 0x10, 4);
                         }
 
-                        //This may not be fast, but it is readable and is in one line.
-                        //https://stackoverflow.com/a/415396/9245204
-                        raw_file = part_one.Concat(part_two.Concat(part_thr)).ToArray();
+
+                        //Combining the parts into one file
+                        raw_file = new byte[part_one.Length + part_two.Length + part_thr.Length];
+
+                        Array.Copy(part_one, 0, raw_file, 0, part_one.Length);
+                        Array.Copy(part_two, 0, raw_file, part_one.Length, part_two.Length);
+                        Array.Copy(part_thr, 0, raw_file, part_two.Length, part_thr.Length);
                     }
                 }
                 else
