@@ -577,7 +577,7 @@ namespace AMBPatcher
                 else
                 {
                     Log.Write("AMB.Patch: " + ModFileName + " is not in " + OrigFileName + ", trying to add!");
-                    raw_file = AMB.Add(raw_file, OrigFileName, ModFileName, ModFileName);
+                    raw_file = AMB.Add(raw_file, OrigFileName, ModFileName, ModFilePath);
                 }
 
                 return raw_file;
