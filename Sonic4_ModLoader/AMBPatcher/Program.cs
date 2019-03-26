@@ -196,12 +196,13 @@ namespace AMBPatcher
             //Things needed for patching //
             ///////////////////////////////
 
-            internal static Tuple<string, int, string> GetInternalThings(byte[] raw_file, string OriginalFileName, string ModFileName)
+            internal static Tuple<string, int, string, int> GetInternalThings(byte[] raw_file, string OriginalFileName, string ModFileName)
             {
                 /*
                  * Item1 is InternalName (like from AMB.Read)
-                 * Item2 is ParentIndex (index of parent file in AMB.Read, if present)
-                 * Item3 is ParentName (AMB.Read()[ParentIndex].Item1, if present)
+                 * Item2 is InternalIndex (index of file name in AMB.Read, if present)
+                 * Item4 is ParentName (AMB.Read()[ParentIndex].Item1, if present)
+                 * Item3 is ParentIndex (index of parent file in AMB.Read, if present)
                  */
 
                 var files = AMB.Read(raw_file);
@@ -211,6 +212,7 @@ namespace AMBPatcher
                 /////////////////
 
                 string InternalName;
+                int InternalIndex = -1;
                 
                 //Turning "C:\1\2\3" into {"C:","1","2","3"}
                 string[] mod_file_parts = ModFileName.Split(Path.DirectorySeparatorChar);
@@ -231,10 +233,15 @@ namespace AMBPatcher
                     InternalName = mod_file_parts.Last();
                 }
 
-                ////////////////
-                //Parent Index//
-                ////////////////
-
+                //Find internal index
+                for (int i = 0; i < files.Count; i++)
+                {
+                    if (InternalName == files[i].Item1)
+                    {
+                        InternalIndex = i;
+                    }
+                }
+                
                 int ParentIndex = -1;
                 string ParentName = "";
 
@@ -247,7 +254,7 @@ namespace AMBPatcher
                     }
                 }
                 
-                return Tuple.Create(InternalName, ParentIndex, ParentName);
+                return Tuple.Create(InternalName, InternalIndex, ParentName, ParentIndex);
             }
 
             ////////
@@ -440,48 +447,58 @@ namespace AMBPatcher
 
                 var InternalThings = AMB.GetInternalThings(raw_file, OrigFileName, ModFileName);
                 
-                string InternalName = InternalThings.Item1;
-                int    index        = InternalThings.Item2;
-                string ParentName   = InternalThings.Item3;
+                string InternalName  = InternalThings.Item1;
+                int    InternalIndex = InternalThings.Item2;
+                string ParentName    = InternalThings.Item3;
+                int    ParentIndex   = InternalThings.Item4;
 
-                //If mod file is in the original file.
-                if (index != -1)
+                //If mod file is in the original file or it has a parent file.
+                if (InternalIndex != -1 || ParentIndex != -1)
                 {
                     byte[] raw_mod_file;
 
-                    //If the mod file is in the original file
-                    if (ModFileName.EndsWith(ParentName))
+
+                    //In case if the file is in another file, we need to get patched(!) parent file and patch original file.
+                    //Else we can simply get mod file and patch original one.
+                    
+                    //If the file file is in the original file (not in a parent file)
+                    if (InternalIndex != -1)
                     {
                         raw_mod_file = File.ReadAllBytes(ModFilePath);
                     }
-                    //If the mod file is in another AMB file that is in the original file
-                    //recursive patching
+                    //Else we get parent file and patch it.
+                    //This is the place where recursive patching begins
                     else
                     {
-                        //These two lines "extract" parent file
-                        byte[] parent_raw = new byte[files[index].Item3];
-                        Array.Copy(raw_file, files[index].Item2, parent_raw, 0, files[index].Item3);
+                        //These two lines "extract" parent file (TODO: add a feature to extract only one file)
+                        byte[] parent_raw = new byte[files[ParentIndex].Item3];
+                        Array.Copy(raw_file, files[ParentIndex].Item2, parent_raw, 0, files[ParentIndex].Item3);
 
+                        //This returns pathed parent file
                         raw_mod_file = AMB.Patch(parent_raw,
                                                  ParentName,
                                                  InternalName,
                                                  ModFilePath);
+
+                        //Now we have a parent file, so we need to replace it.
+                        InternalName  = ParentName;
+                        InternalIndex = ParentIndex;
                     }
 
                     //If the mod file's length is smaller or equal to the original one
                     //The original file will be replaced
-                    if (raw_mod_file.Length <= files[index].Item3)
+                    if (raw_mod_file.Length <= files[InternalIndex].Item3)
                     {
                         Log.Write("AMB.Patch: " + ModFileName + " 's length is OK, replacing...");
-                        for (int i = 0; i < files[index].Item3; i++)
+                        for (int i = 0; i < files[InternalIndex].Item3; i++)
                         {
                             if (raw_mod_file.Length - 1 >= i)
                             {
-                                raw_file[files[index].Item2 + i] = raw_mod_file[i];
+                                raw_file[files[InternalIndex].Item2 + i] = raw_mod_file[i];
                             }
                             else
                             {
-                                raw_file[files[index].Item2 + i] = 0;
+                                raw_file[files[InternalIndex].Item2 + i] = 0;
                             }
                         }
                     }
@@ -491,8 +508,8 @@ namespace AMBPatcher
                         Log.Write("AMB.Patch: " + ModFileName + " 's length is bigger than the original length, expanding...");
                         //Splitting the AMB file into three parts
                         //Before the file data
-                        byte[] part_one = new byte[files[index].Item2];
-                        Array.Copy(raw_file, 0, part_one, 0, files[index].Item2);
+                        byte[] part_one = new byte[files[InternalIndex].Item2];
+                        Array.Copy(raw_file, 0, part_one, 0, files[InternalIndex].Item2);
 
                         //After the file data
                         byte[] part_thr;
@@ -501,19 +518,19 @@ namespace AMBPatcher
 
                         int len_dif;
                         //If this is the last file, start copying from names
-                        if (index + 1 == files.Count)
+                        if (InternalIndex + 1 == files.Count)
                         {
-                            len_dif = name_pointer - files[index].Item2;
+                            len_dif = name_pointer - files[InternalIndex].Item2;
                             int tmp_len = raw_file.Length - name_pointer;
                             part_thr = new byte[tmp_len];
                             Array.Copy(raw_file, name_pointer, part_thr, 0, tmp_len);
                         }
                         else
                         {
-                            len_dif = files[index + 1].Item2 - files[index].Item2;
-                            int tmp_len = raw_file.Length - files[index + 1].Item2;
+                            len_dif = files[InternalIndex + 1].Item2 - files[InternalIndex].Item2;
+                            int tmp_len = raw_file.Length - files[InternalIndex + 1].Item2;
                             part_thr = new byte[tmp_len];
-                            Array.Copy(raw_file, files[index + 1].Item2, part_thr, 0, tmp_len);
+                            Array.Copy(raw_file, files[InternalIndex + 1].Item2, part_thr, 0, tmp_len);
                         }
 
                         //The mod file
@@ -534,10 +551,10 @@ namespace AMBPatcher
                         Array.Copy(BitConverter.GetBytes(name_pointer), 0, part_one, 0x1C, 4);
 
                         //Changing File Length
-                        Array.Copy(BitConverter.GetBytes(raw_mod_file.Length), 0, part_one, 0x24 + index * 0x10, 4);
+                        Array.Copy(BitConverter.GetBytes(raw_mod_file.Length), 0, part_one, 0x24 + InternalIndex * 0x10, 4);
                         
                         //Changing Files Pointers
-                        for (int i = index + 1; i < files.Count; i++)
+                        for (int i = InternalIndex + 1; i < files.Count; i++)
                         {
                             //Reading the original pointer
                             int tmp_pointer = BitConverter.ToInt32(part_one, 0x20 + i * 0x10);
