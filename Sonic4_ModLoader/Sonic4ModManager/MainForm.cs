@@ -393,11 +393,18 @@ namespace Sonic4ModManager
                         File.Exists("SonicLauncher.exe") && File.Exists("SonicLauncher.orig.exe"))
                     {
                         //ManagerLauncher
+                        if (File.Exists("ManagerLauncher.exe"))
+                           {File.Delete("ManagerLauncher.exe");}
                         File.Move("SonicLauncher.exe", "ManagerLauncher.exe");
+                        
                         //Original launcher
                         File.Move("SonicLauncher.orig.exe", "SonicLauncher.exe");
+                        
                         //PatchLauncher
+                        if (File.Exists("PatchLauncher.exe"))
+                           {File.Delete("PatchLauncher.exe");}
                         File.Move("Sonic_vis.exe", "PatchLauncher.exe");
+                        
                         //Original game file
                         File.Move("Sonic_vis.orig.exe", "Sonic_vis.exe");
 
@@ -419,11 +426,18 @@ namespace Sonic4ModManager
                         File.Exists("Launcher.exe") && File.Exists("Launcher.orig.exe"))
                     {
                         //ManagerLauncher
+                        if (File.Exists("ManagerLauncher.exe"))
+                           {File.Delete("ManagerLauncher.exe");}
                         File.Move("Launcher.exe", "ManagerLauncher.exe");
+                        
                         //Original launcher
                         File.Move("Launcher.orig.exe", "Launcher.exe");
+                        
                         //PatchLauncher
+                        if (File.Exists("PatchLauncher.exe"))
+                           {File.Delete("PatchLauncher.exe");}
                         File.Move("Sonic.exe", "PatchLauncher.exe");
+                        
                         //Original game file
                         File.Move("Sonic.orig.exe", "Sonic.exe");
 
