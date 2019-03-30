@@ -12,10 +12,10 @@ namespace Sonic4ModManager
         {
             InitializeComponent();
             Settings_Load();
-            UpdateInstallationStartus();
+            UpdateInstallationStatus();
         }
 
-        private void UpdateInstallationStartus()
+        private void UpdateInstallationStatus()
         {
             int status = MainForm.GetInstallationStatus();
             if (status == 1)
@@ -151,7 +151,7 @@ namespace Sonic4ModManager
             {
                 MainForm.Install(0, options);
             }
-            UpdateInstallationStartus();
+            UpdateInstallationStatus();
         }
 
         //////////////

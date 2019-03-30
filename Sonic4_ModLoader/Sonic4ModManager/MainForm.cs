@@ -42,14 +42,14 @@ namespace Sonic4ModManager
 
             if (File.Exists(@"mods\mods.ini"))
             {
-                string[] ini_preority = File.ReadAllLines(@"mods\mods.ini");
+                string[] ini_priority = File.ReadAllLines(@"mods\mods.ini");
 
-                for (int i = 0; i < ini_preority.Length; i++)
+                for (int i = 0; i < ini_priority.Length; i++)
                 {
                     int folder_ind = -1;
                     for (int j = 0; j < listMods.Items.Count; j++)
                     {
-                        if (ini_preority[i] == listMods.Items[j].SubItems[3].Text)
+                        if (ini_priority[i] == listMods.Items[j].SubItems[3].Text)
                         {
                             folder_ind = j;
                             break;
@@ -85,7 +85,7 @@ namespace Sonic4ModManager
                     string mod_name = dir_names[i];
                     string mod_authors = "???";
                     string mod_version = "???";
-                    string mod_desctiption = "No description.";
+                    string mod_description = "No description.";
 
                     string ini_path = Path.Combine("mods", dir_names[i], "mod.ini");
 
@@ -108,11 +108,11 @@ namespace Sonic4ModManager
                             }
                             else if (ini_file[j].StartsWith("Description="))
                             {
-                                mod_desctiption = String.Join("=", ini_file[j].Split('=').Skip(1));
+                                mod_description = String.Join("=", ini_file[j].Split('=').Skip(1));
                             }
                         }
                     }
-                    mod_list.Add(Tuple.Create(mod_name, mod_authors, mod_version, dir_names[i], mod_desctiption));
+                    mod_list.Add(Tuple.Create(mod_name, mod_authors, mod_version, dir_names[i], mod_description));
                 }
             }
             return mod_list;
@@ -469,22 +469,24 @@ namespace Sonic4ModManager
                 {
                     if ((options & 2) == 2)
                     {
-                        foreach (string file in new string[] { "7z.exe", "7z.dll",
-                                                           "AMBPatcher.exe", "CsbEditor.exe",
-                                                           "LICENSE-Sonic4_ModLoader",
-                                                           "LICENSE-Sonic4_ModLoader_files",
-                                                           "LICENSE-SonicAudioTools",
-                                                           "LICENSE-SonicAudioTools_files",
-                                                           "ManagerLauncher.exe",
-                                                           "Mod Loader - Whats new.txt",
-                                                           "PatchLauncher.exe",
-                                                           "README.rtf", "README.txt",
-                                                           "README-tldr.txt",
-                                                           "SonicAudioLib.dll",
-                                                           "LICENSE-7-Zip",
-                                                           "LICENSE-7-Zip_files",
-                                                           "mod_manager.cfg",
-                                                           "AMBPatcher.cfg"})
+                        foreach (string file in new string[] { "7z.exe",
+                                                                "7z.dll",
+                                                                "AMBPatcher.exe",
+                                                                "CsbEditor.exe",
+                                                                "LICENSE-Sonic4_ModLoader",
+                                                                "LICENSE-Sonic4_ModLoader_files",
+                                                                "LICENSE-SonicAudioTools",
+                                                                "LICENSE-SonicAudioTools_files",
+                                                                "ManagerLauncher.exe",
+                                                                "Mod Loader - Whats new.txt",
+                                                                "PatchLauncher.exe",
+                                                                "README.rtf",
+                                                                "README.txt",
+                                                                "SonicAudioLib.dll",
+                                                                "LICENSE-7-Zip",
+                                                                "LICENSE-7-Zip_files",
+                                                                "mod_manager.cfg",
+                                                                "AMBPatcher.cfg"})
                         {
                             if (File.Exists(file))
                             {
@@ -752,22 +754,22 @@ namespace Sonic4ModManager
             //Updating description if there's a description link
             if (rtb_mod_description.Text.StartsWith("file="))
             {
-                string desciption_file = Path.Combine("mods", listMods.Items[listMods.SelectedIndices[0]].SubItems[3].Text, rtb_mod_description.Text.Substring(5));
+                string description_file = Path.Combine("mods", listMods.Items[listMods.SelectedIndices[0]].SubItems[3].Text, rtb_mod_description.Text.Substring(5));
 
-                if (File.Exists(desciption_file))
+                if (File.Exists(description_file))
                 {
-                    if (desciption_file.EndsWith(".TXT", StringComparison.OrdinalIgnoreCase))
+                    if (description_file.EndsWith(".TXT", StringComparison.OrdinalIgnoreCase))
                     {
-                        rtb_mod_description.Text = File.ReadAllText(desciption_file);
+                        rtb_mod_description.Text = File.ReadAllText(description_file);
                     }
                     else
                     {
-                        rtb_mod_description.Text = "Error: unsupported format of \"" + desciption_file + "\" file.";
+                        rtb_mod_description.Text = "Error: unsupported format of \"" + description_file + "\" file.";
                     }
                 }
                 else
                 {
-                    rtb_mod_description.Text = "Error: \"" + desciption_file + "\" file not found.";
+                    rtb_mod_description.Text = "Error: \"" + description_file + "\" file not found.";
                 }
             }
             FormatDescription();

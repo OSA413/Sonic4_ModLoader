@@ -274,7 +274,7 @@ namespace AMBPatcher
                 List<string> files_names = new List<string>();
                 int files_counter = 0;
 
-                //Identifing that the file is an AMB file
+                //Identifying that the file is an AMB file
                 if (raw_file[0] == 0x23 &&  //#
                     raw_file[1] == 0x41 &&  //A
                     raw_file[2] == 0x4D &&  //M
@@ -335,7 +335,7 @@ namespace AMBPatcher
                         byte[] files_names_bytes = new byte[filenames_offset];
                         Array.Copy(raw_file, name_pointer, files_names_bytes, 0, filenames_offset);
 
-                        //Encoding charactes from HEX to ASCII characters
+                        //Encoding characters from HEX to ASCII characters
                         string files_names_str = Encoding.ASCII.GetString(files_names_bytes);
                         string[] files_names_raw = files_names_str.Split('\x00');
 
@@ -474,7 +474,7 @@ namespace AMBPatcher
                         byte[] parent_raw = new byte[files[ParentIndex].Item3];
                         Array.Copy(raw_file, files[ParentIndex].Item2, parent_raw, 0, files[ParentIndex].Item3);
 
-                        //This returns pathed parent file
+                        //This returns patched parent file
                         raw_mod_file = AMB.Patch(parent_raw,
                                                  ParentName,
                                                  InternalName,
