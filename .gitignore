@@ -10,28 +10,6 @@ Mod Loader - Whats new.txt
 
 dist/
 
-##############
-#Unit testing#
-##############
-
-unit-tests/actual-tests/AMBPatcher/*
-!unit-tests/actual-tests/AMBPatcher/AMBPatcher_unit_test.py
-!unit-tests/actual-tests/AMBPatcher/brown_brick.dds
-!unit-tests/actual-tests/AMBPatcher/brown_bricks.dds
-!unit-tests/actual-tests/AMBPatcher/readme.md
-
-##############
-#Dependencies#
-##############
-
-dependencies/SonicAudioTools/*
-!dependencies/SonicAudioTools/readme.md
-!dependencies/SonicAudioTools/files
-
-dependencies/7-Zip/*
-!dependencies/7-Zip/readme.md
-!dependencies/7-Zip/files
-
 #############
 #LibreOffice#
 #############
