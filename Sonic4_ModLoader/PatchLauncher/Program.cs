@@ -8,10 +8,19 @@ namespace PatchLauncher
         static void Main()
         {
             Process.Start("AMBPatcher").WaitForExit();
+
+            //Episode 1
             if  (File.Exists("Sonic_vis.orig.exe"))
             {
+                if (!File.Exists("main.conf"))
+                {
+                    Process.Start("SonicLauncher.orig.exe");
+                    return;
+                }
                 Process.Start("Sonic_vis.orig.exe");
             }
+
+            //Episode 2
             else if (File.Exists("Sonic.orig.exe"))
             {
                 Process.Start("Sonic.orig.exe");

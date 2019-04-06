@@ -18,6 +18,11 @@ namespace ManagerLauncher
             //Episode 1
             if (File.Exists("Sonic_vis.exe"))
             {
+                if (!File.Exists("main.conf"))
+                {
+                    Process.Start("SonicLauncher.orig.exe");
+                    return;
+                }
                 Process.Start("Sonic_vis.exe");
             }
             //Episode 2
