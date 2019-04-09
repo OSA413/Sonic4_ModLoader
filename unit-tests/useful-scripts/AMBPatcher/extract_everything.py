@@ -10,9 +10,10 @@ How to use this:
 
 Result: no errors should appear, every AMB file should be extracted.
 """
-import finder, os
+import glob, os
 
-a = finder.find("","",recursive = 1, case_sensitive = 0)
+a = glob.glob("./**", recursive = True)
+a = [os.path.abspath(x) for x in a]
 
 other_formats = "DDS,TXB,AMA,AME,ZNO,TXB,ZNM,ZNV,DC,EV,RG,MD,MP,AT,DF,DI,PSH,VSH,LTS,XNM,MFS,SSS,GPB,MSG,AYK".split(",")
 
