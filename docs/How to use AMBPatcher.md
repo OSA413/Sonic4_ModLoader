@@ -25,6 +25,7 @@ Q: Can this program replace/change/repack/re-import a file by a bigger one?
 
 A: Yes, AMBPatcher can do this automatically.
 
+### Recursive patching
 Q: What is recursive patching?
 
 A: This means that if your file is located in an AMB (child) that is inside of another AMB (parent), you can directly patch the file in the child AMB. (Maximum depth is not defined)
