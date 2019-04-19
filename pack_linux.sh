@@ -14,7 +14,8 @@ cp "./Sonic4_ModLoader/Sonic4ModManager/bin/Release/Sonic4ModManager.exe" "./dis
 #READMEs
 cp "./docs/README.rtf" "./dist/Sonic4ModLoader/README.rtf"
 cp "./docs/README.txt" "./dist/Sonic4ModLoader/README.txt"
-
+#Change log
+cp "./docs/Mod Loader - Whats new.txt" "./dist/Sonic4ModLoader/Mod Loader - Whats new.txt"
 
 #Archiving
 7z a "./dist/Sonic4ModLoader.7z" ./dist/* -mx=9
