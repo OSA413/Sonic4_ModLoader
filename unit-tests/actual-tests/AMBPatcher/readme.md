@@ -1,5 +1,10 @@
 # TODO: to do.
 
+### How to start
+
+1. Place `AMBPatcher.exe` to `sandbox` directory
+2. Place `G_COM/CPIT/CPIT_MAIN.AMB` (from Episode 1 or 2) to `sandbox` directory
+3. Run `unit_test.py` with Python 3
 
 ### Info about textures
 

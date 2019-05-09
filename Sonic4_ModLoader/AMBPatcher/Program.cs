@@ -666,8 +666,7 @@ namespace AMBPatcher
                 empty_file_enumeration[0x4] = 0x10;
                 empty_file_enumeration[0x5] =
                 empty_file_enumeration[0x6] =
-                empty_file_enumeration[0x7] = 0x00;
-
+                empty_file_enumeration[0x7] =
                 //Blank space
                 empty_file_enumeration[0x8] =
                 empty_file_enumeration[0x9] =
@@ -775,6 +774,11 @@ namespace AMBPatcher
             public static void SwapEndianness(string FileName)
             {
                 File.WriteAllBytes(FileName, SwapEndianness(File.ReadAllBytes(FileName)));
+            }
+
+            public static void Delete(byte[] raw_file, string file_name_to_delete)
+            {
+                
             }
         }
 
