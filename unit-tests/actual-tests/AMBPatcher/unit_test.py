@@ -5,8 +5,13 @@ import subprocess
 import glob
 import shutil
 
-#Changing working directory to the sandbox
-os.chdir(os.path.join(os.path.dirname(sys.argv[0]),"sandbox"))
+#Entering the sandbox
+os.chdir(os.path.join(os.path.dirname(sys.argv[0]), "sandbox"))
+
+#Copying the textures of brown bricks
+shutil.copyfile("../brown_brick.dds",  "brown_brick.dds")
+shutil.copyfile("../brown_bricks.dds", "brown_bricks.dds")
+
 
 #Defining some constants
 ORIG_FILE_NAME = "CPIT_MAIN.AMB"
@@ -17,12 +22,28 @@ HASH_LIST = {
     "ep1": {
         "original_file":            "2c53ec1661bae68f1897f3b917d3546b4c1f6cf01c4fc9a97d020075b5ac8c03",
         "extracted_dir":            "f8f34eba2f5aca37a86446b513cdf5e9f3455bdf8a7376c10d22a7dc37e49366",
-        "orig_endianness_swapped":  "cbf8d5a08b574a327e78a3e165105e15370ad274c7a26b8f703829ba39bd0582"
+        "orig_endianness_swapped":  "cbf8d5a08b574a327e78a3e165105e15370ad274c7a26b8f703829ba39bd0582",
+        "added_small":              "1b9ab25052045b2d5f45838496d4a1c2324d5f4d15223bb7fd0348ea07a6aeff",
+        "added_big":                "d525d12a7542f6dfd73bdc789c9b4e00edd1ad03b182632a12ab61e72a49ee5d",
+        "patched_by_small":         "",
+        "patched_by_big":           "",
+        "added_recurs_small":       "",
+        "added_recurs_big":         "",
+        "patched_recurs_small":     "",
+        "patched_recurs_big":       ""
     },
     "ep2": {
         "original_file":            "1dd32285b0157f4dd96e4b9efcffd8f3403662a1fde9736392723248c5a77fde",
         "extracted_dir":            "475e73817779ee02ff66c5d83a316cdac6ac492a1c15fe0d508590c4ad0de99a",
-        "orig_endianness_swapped":  "9c2dd9458354613be3f87a30eb26f5d5f17603745760cb918406a06612a1d011"
+        "orig_endianness_swapped":  "9c2dd9458354613be3f87a30eb26f5d5f17603745760cb918406a06612a1d011",
+        "added_small":              "b7f7aebd5ac29b21798885cb110a053b54e6e26cba4824cbc7779f417cb472d7",
+        "added_big":                "9c84b90ab16f589fdb39ef73bec4ae1e7dea123e75be2805878c8bec5dc1812c",
+        "patched_by_small":         "",
+        "patched_by_big":           "",
+        "added_recurs_small":       "",
+        "added_recurs_big":         "",
+        "patched_recurs_small":     "",
+        "patched_recurs_big":       ""
     }
 }
 
@@ -82,17 +103,22 @@ def run_test(test_name, orig_file=ORIG_FILE_NAME, mono_or_wine=mono_or_wine(), E
     test_result = "Failed"
     
     test_types = {
-        "extract": ["AMBPatcher.exe", "extract", orig_file],
-        "add": ["AMBPatcher.exe", "add", orig_file, ""],#mod_file],
-        "swap_endianness": ["AMBPatcher.exe", "swap_endianness", orig_file]
+        "extract":          ["AMBPatcher.exe", "extract", orig_file],
+        "swap_endianness":  ["AMBPatcher.exe", "swap_endianness", orig_file],
+        "add_small":        ["AMBPatcher.exe", "add", orig_file, "brown_brick.dds"],
+        "add_big":          ["AMBPatcher.exe", "add", orig_file, "brown_bricks.dds"],
+        "patch_by_small":   ["AMBPatcher.exe", "patch", orig_file, "G_FIX.AMA"],
+        "patch_by_big":     ["AMBPatcher.exe", "patch", orig_file, "G_FIX.AMA"]
     }
+    
+    before_test_setup(test_name)
     
     exe_command = test_types[test_name]
     
     if os.name == "posix":
         exe_command.insert(0, mono_or_wine)
     
-    console_output = subprocess.check_output(exe_command)
+    subprocess.check_output(exe_command)
     
     if test_name == "extract":
         real_sha = dir_sha(orig_file + "_extracted")
@@ -107,7 +133,7 @@ def run_test(test_name, orig_file=ORIG_FILE_NAME, mono_or_wine=mono_or_wine(), E
         expecting_sha = HASH_LIST[EPISODE]["orig_endianness_swapped"]
 
         if real_sha == expecting_sha:
-            console_output = subprocess.check_output(exe_command)
+            subprocess.check_output(exe_command)
             
             real_sha = sha256(orig_file)
             expecting_sha = HASH_LIST[EPISODE]["original_file"]
@@ -115,9 +141,29 @@ def run_test(test_name, orig_file=ORIG_FILE_NAME, mono_or_wine=mono_or_wine(), E
             if real_sha == expecting_sha:
                 test_result = "OK"
                 
+    elif test_name.startswith("add"):
+        real_sha = sha256(orig_file)
+        if "rec" in test_name:
+            pass
+        else:
+            if "small" in test_name:
+                expecting_sha = HASH_LIST[EPISODE]["added_small"]
+            elif "big" in test_name:
+                expecting_sha = HASH_LIST[EPISODE]["added_big"]
+            
+            if real_sha == expecting_sha:
+                test_result = "OK"
+
     after_test_cleanup(test_name)
     
     return test_result
+
+def before_test_setup(test_name):
+    if test_name.startswith("patch_by"):
+        if test_name.endswith("small"):
+            shutil.copyfile("brown_brick.dds",  "G_FIX.AMA")
+        elif test_name.endswith("big"):
+            shutil.copyfile("brown_bricks.dds", "G_FIX.AMA")
 
 def after_test_cleanup(test_name):
     if test_name == "extract":
@@ -125,6 +171,13 @@ def after_test_cleanup(test_name):
         
     elif test_name == "swap_endianness":
         #it will recover original file in case if it fails
+        shutil.copyfile(ORIG_FILE_NAME+".bkp", ORIG_FILE_NAME)
+        
+    elif test_name.startswith("add"):
+        shutil.copyfile(ORIG_FILE_NAME+".bkp", ORIG_FILE_NAME)
+        
+    elif test_name.startswith("patch_by"):
+        os.remove("G_FIX.AMA")
         shutil.copyfile(ORIG_FILE_NAME+".bkp", ORIG_FILE_NAME)
 
 if __name__ == "__main__":
@@ -142,7 +195,7 @@ if __name__ == "__main__":
     print("Creating a backup of main file")
     shutil.copyfile(ORIG_FILE_NAME, ORIG_FILE_NAME+".bkp")
     
-    test_list = ["extract", "swap_endianness"]
+    test_list = ["extract", "swap_endianness", "add_small", "add_big"]
     summary = []
     
     print()
