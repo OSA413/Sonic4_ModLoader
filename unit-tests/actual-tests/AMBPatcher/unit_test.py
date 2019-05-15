@@ -115,8 +115,6 @@ def run_test(test_name, orig_file=ORIG_FILE_NAME, mono_or_wine=mono_or_wine(), E
         "modloader_recovery":   ["AMBPatcher.exe", "recover"]
     }
     
-    before_test_setup(test_name)
-    
     exe_command = test_types[test_name]
     
     if os.name == "posix":
@@ -165,8 +163,6 @@ def run_test(test_name, orig_file=ORIG_FILE_NAME, mono_or_wine=mono_or_wine(), E
 
     print(real_sha)                
 
-    after_test_cleanup(test_name)
-    
     return test_result
 
 def before_test_setup(test_name):
@@ -218,11 +214,17 @@ if __name__ == "__main__":
     print()
 
     for i in test_list:
-        t_start = time.time()
         print("Running \"" + i + "\"...")
+
+        before_test_setup(i)
+
+        t_start = time.time()
         summary.append(run_test(i))
+
         print(summary[-1], end=" ")
         print("("+str(round(time.time() - t_start, 4))+"s)")
+
+        after_test_cleanup(i)
         
     after_test_cleanup("end")
         

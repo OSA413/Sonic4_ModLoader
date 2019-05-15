@@ -204,6 +204,7 @@ namespace Sonic4ModManager
         public void RandomMods()
         {
             Random rnd = new Random();
+            //Placement
             for (int i = 0; i < listMods.Items.Count; i++)
             {
                 var tmp = listMods.Items[rnd.Next(listMods.Items.Count)];
@@ -213,6 +214,7 @@ namespace Sonic4ModManager
                 Thread.Sleep(1); //But they are at least more random
             }
 
+            //Enabling
             for (int i = 0; i < listMods.Items.Count; i++)
             {
                 //I would use Convert.ToBoolean(rnd.Next(2)), but I think it'll be slower
