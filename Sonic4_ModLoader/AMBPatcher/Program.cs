@@ -35,6 +35,40 @@ namespace AMBPatcher
             }
         }
 
+        public class Settings
+        {
+            public static void Load()
+            {
+                ProgressBar = true;
+                GenerateLog = false;
+                SHACheck = true;
+                SHAType = 1;
+
+                if (File.Exists("AMBPatcher.cfg"))
+                {
+                    string[] cfg_file = File.ReadAllLines("AMBPatcher.cfg");
+                    
+                    foreach (string line in cfg_file)
+                    {
+                        if (!line.Contains("=")) {continue;}
+                        string formatted_line = line.Substring(line.IndexOf("=") + 1);
+
+                        if (formatted_line.StartsWith("ProgressBar="))
+                        { ProgressBar = Convert.ToBoolean(Convert.ToInt32(formatted_line)); }
+                        
+                        else if (formatted_line.StartsWith("GenerateLog="))
+                        { GenerateLog = Convert.ToBoolean(Convert.ToInt32(formatted_line)); }
+                        
+                        else if (formatted_line.StartsWith("SHACheck="))
+                        { SHACheck = Convert.ToBoolean(Convert.ToInt32(formatted_line)); }
+                        
+                        else if (formatted_line.StartsWith("SHAType="))
+                        { SHAType = Convert.ToInt32(formatted_line); }
+                    }
+                }
+            }
+        }
+
         static void ConsoleProgressBar(int i, int max_i, string title, int bar_len)
         {
             //To prevent crashes out of nowhere when progress bar is turned off
@@ -55,51 +89,18 @@ namespace AMBPatcher
                                 String.Concat(Enumerable.Repeat(" ", bar_len - bar_len * i / max_i)) + "] (" + (i * 100 / max_i).ToString() + "%)");
         }
 
-        static void Load_Settings()
-        {
-            ProgressBar = true;
-            GenerateLog = false;
-            SHACheck = true;
-            SHAType = 1;
-
-            if (File.Exists("AMBPatcher.cfg"))
-            {
-                string[] cfg_file = File.ReadAllLines("AMBPatcher.cfg");
-                for (int j = 0; j < cfg_file.Length; j++)
-                {
-                    if (cfg_file[j].StartsWith("ProgressBar="))
-                    {
-                        ProgressBar = Convert.ToBoolean(Convert.ToInt32(String.Join("=", cfg_file[j].Split('=').Skip(1))));
-                    }
-                    else if (cfg_file[j].StartsWith("GenerateLog="))
-                    {
-                        GenerateLog = Convert.ToBoolean(Convert.ToInt32(String.Join("=", cfg_file[j].Split('=').Skip(1))));
-                    }
-                    else if (cfg_file[j].StartsWith("SHACheck="))
-                    {
-                        SHACheck = Convert.ToBoolean(Convert.ToInt32(String.Join("=", cfg_file[j].Split('=').Skip(1))));
-                    }
-                    else if (cfg_file[j].StartsWith("SHAType="))
-                    {
-                        SHAType = Convert.ToInt32(String.Join("=", cfg_file[j].Split('=').Skip(1)));
-                    }
-                }
-            }
-        }
-
         static string Sha(byte[] file)
         {
             byte[] hash;
             string str_hash = "";
 
-            if (SHAType == 512)
-            { hash = new SHA512CryptoServiceProvider().ComputeHash(file); }
-            else if (SHAType == 384)
-            { hash = new SHA384CryptoServiceProvider().ComputeHash(file); }
-            else if (SHAType == 256)
-            { hash = new SHA256CryptoServiceProvider().ComputeHash(file); }
-            else
-            { hash = new SHA1CryptoServiceProvider().ComputeHash(file); }
+            switch (SHAType)
+            {
+                case 512: hash = new SHA512CryptoServiceProvider().ComputeHash(file); break;
+                case 384: hash = new SHA384CryptoServiceProvider().ComputeHash(file); break;
+                case 256: hash = new SHA256CryptoServiceProvider().ComputeHash(file); break;
+                default:  hash = new SHA1CryptoServiceProvider().ComputeHash(file); break;
+            }
             
             foreach (byte b in hash) { str_hash += b.ToString("X"); }
 
@@ -163,7 +164,7 @@ namespace AMBPatcher
             }
 
             //Checking if there're removed files
-            //And removing those SHA1s
+            //And removing those SHAs
             if (sha_list.Count > 0)
             {
                 files_changed = true;
@@ -182,7 +183,7 @@ namespace AMBPatcher
             string sha_file = Path.Combine("mods_sha", relative_mod_file_path + ".txt");
             string sha_dir = Path.GetDirectoryName(sha_file);
 
-            if (!Directory.Exists(sha_dir)) { Directory.CreateDirectory(sha_dir); }
+            Directory.CreateDirectory(sha_dir);
             File.WriteAllText(sha_file, Sha(File.ReadAllBytes(full_mod_file_path)));
         }
 
@@ -237,9 +238,7 @@ namespace AMBPatcher
                 for (int i = 0; i < files.Count; i++)
                 {
                     if (InternalName == files[i].Item1)
-                    {
-                        InternalIndex = i;
-                    }
+                    { InternalIndex = i; break; }
                 }
                 
                 int ParentIndex = -1;
@@ -251,6 +250,7 @@ namespace AMBPatcher
                     {
                         ParentIndex = i;
                         ParentName = files[i].Item1;
+                        break;
                     }
                 }
                 
@@ -406,11 +406,7 @@ namespace AMBPatcher
             {
                 byte[] raw_file = File.ReadAllBytes(file_name);
 
-                //Creating folder if it doesn't exist
-                if (!Directory.Exists(output))
-                {
-                    Directory.CreateDirectory(output);
-                }
+                Directory.CreateDirectory(output);
                 
                 if (BitConverter.IsLittleEndian != AMB.IsLittleEndian(raw_file))
                 {
@@ -427,10 +423,8 @@ namespace AMBPatcher
                     byte[] file_bytes = new byte[files[i].Item3];
                     Array.Copy(raw_file, files[i].Item2, file_bytes, 0, files[i].Item3);
 
-                    if (!Directory.Exists(Path.GetDirectoryName(output_file)))
-                    {
-                        Directory.CreateDirectory(Path.GetDirectoryName(output_file));
-                    }
+                    Directory.CreateDirectory(Path.GetDirectoryName(output_file));
+
                     //And writing that byte array into a file
                     File.WriteAllBytes(output_file, file_bytes);
                 }
@@ -786,7 +780,7 @@ namespace AMBPatcher
         {
             if (File.Exists(file_name))
             {
-                if (file_name.ToUpper().EndsWith(".AMB"))
+                if (file_name.EndsWith(".AMB", StringComparison.OrdinalIgnoreCase))
                 {
                     if (ShaChanged(file_name, mod_files, mod_paths))
                     {
@@ -918,13 +912,11 @@ namespace AMBPatcher
 
                                 if (File.Exists(possible_orig_file))
                                 {
-                                    original_file = possible_orig_file;
-                                    break;
+                                    original_file = possible_orig_file; break;
                                 }
                                 else if (File.Exists(possible_orig_file + ".CSB"))
                                 {
-                                    original_file = possible_orig_file + ".CSB";
-                                    break;
+                                    original_file = possible_orig_file + ".CSB"; break;
                                 }
                             }
 
@@ -1002,7 +994,7 @@ namespace AMBPatcher
 
         static void Main(string[] args)
         {
-            Load_Settings();
+            Settings.Load();
             Log.Reset();
 
             if (args.Length == 0)
@@ -1143,10 +1135,7 @@ namespace AMBPatcher
                 {
                     if (File.Exists(args[0]))
                     {
-                        if (!Directory.Exists(args[0] + "_extracted"))
-                        {
-                            Directory.CreateDirectory(args[0] + "_extracted");
-                        }
+                        Directory.CreateDirectory(args[0] + "_extracted");
                         AMB.Extract(args[0], args[0] + "_extracted");
                     }
                     else { ShowHelpMessage(); }
@@ -1159,10 +1148,8 @@ namespace AMBPatcher
                 {
                     if (File.Exists(args[1]))
                     {
-                        if (!Directory.Exists(args[1] + "_extracted"))
-                        {
-                            Directory.CreateDirectory(args[1] + "_extracted");
-                        }
+
+                        Directory.CreateDirectory(args[1] + "_extracted");
                         AMB.Extract(args[1], args[1] + "_extracted");
                     }
                     else { ShowHelpMessage(); }
@@ -1213,10 +1200,7 @@ namespace AMBPatcher
                 {
                     if (File.Exists(args[1]))
                     {
-                        if (!Directory.Exists(args[2]))
-                        {
-                            Directory.CreateDirectory(args[2]);
-                        }
+                        Directory.CreateDirectory(args[2]);
                         AMB.Extract(args[1], args[2]);
                     }
                     else { ShowHelpMessage(); }
