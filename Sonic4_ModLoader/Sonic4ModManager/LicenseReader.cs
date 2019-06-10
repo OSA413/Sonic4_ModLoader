@@ -26,8 +26,12 @@ namespace Sonic4ModManager
                 license = File.ReadAllText(args[1]);
             }
 
-            string text = "====================\n" + args[0] + "\n====================\n\n" + files +
-                            "\n\n====================\n" + args[1] + "\n====================\n\n" + license;
+            string text = "====================\n" + args[0] + "\n====================\n\n"
+                            + files
+                            + "\n\n====================\n"
+                            + args[1]
+                            + "\n====================\n\n"
+                            + license;
 
             richTextBox1.Text = text;
         }

@@ -92,24 +92,23 @@ namespace Sonic4ModManager
                     if (File.Exists(ini_path))
                     {
                         string[] ini_file = File.ReadAllLines(ini_path);
-                        for (int j = 0; j < ini_file.Length; j++)
+
+                        foreach (string line in ini_file)
                         {
-                            if (ini_file[j].StartsWith("Name="))
-                            {
-                                mod_name = String.Join("=", ini_file[j].Split('=').Skip(1));
-                            }
-                            else if (ini_file[j].StartsWith("Authors="))
-                            {
-                                mod_authors = String.Join("=", ini_file[j].Split('=').Skip(1));
-                            }
-                            else if (ini_file[j].StartsWith("Version="))
-                            {
-                                mod_version = String.Join("=", ini_file[j].Split('=').Skip(1));
-                            }
-                            else if (ini_file[j].StartsWith("Description="))
-                            {
-                                mod_description = String.Join("=", ini_file[j].Split('=').Skip(1));
-                            }
+                            if (!line.Contains("=")) {continue;}
+                            string formatted_line = line.Substring(line.IndexOf("=") + 1);
+
+                            if (line.StartsWith("Name="))
+                            { mod_name = formatted_line; }
+
+                            else if (line.StartsWith("Authors="))
+                            { mod_authors = formatted_line; }
+
+                            else if (line.StartsWith("Version="))
+                            { mod_version = formatted_line; }
+
+                            else if (line.StartsWith("Description="))
+                            { mod_description = formatted_line; }
                         }
                     }
                     mod_list.Add(Tuple.Create(mod_name, mod_authors, mod_version, dir_names[i], mod_description));
@@ -132,7 +131,7 @@ namespace Sonic4ModManager
             {
                 Directory.CreateDirectory("mods");
             }
-            File.WriteAllText(@"mods\mods.ini", string.Join("\n", checked_mods.ToArray()));
+            File.WriteAllLines(@"mods\mods.ini", checked_mods.ToArray());
         }
 
         static bool Play()
@@ -475,18 +474,12 @@ namespace Sonic4ModManager
                                                                 "7z.dll",
                                                                 "AMBPatcher.exe",
                                                                 "CsbEditor.exe",
-                                                                "LICENSE-Sonic4_ModLoader",
-                                                                "LICENSE-Sonic4_ModLoader_files",
-                                                                "LICENSE-SonicAudioTools",
-                                                                "LICENSE-SonicAudioTools_files",
                                                                 "ManagerLauncher.exe",
                                                                 "Mod Loader - Whats new.txt",
                                                                 "PatchLauncher.exe",
                                                                 "README.rtf",
                                                                 "README.txt",
                                                                 "SonicAudioLib.dll",
-                                                                "LICENSE-7-Zip",
-                                                                "LICENSE-7-Zip_files",
                                                                 "mod_manager.cfg",
                                                                 "AMBPatcher.cfg"})
                         {
@@ -496,13 +489,19 @@ namespace Sonic4ModManager
                             }
                         }
 
+                        if (Directory.Exists("ModLoader_licenses"))
+                        { Directory.Delete("ModLoader_licenses", true); }
+
                         //Sonic4ModManager.exe
                         //The only (easy and fast) way to delete an open program is to create a .bat file
                         //that deletes the .exe file and itself.
-                        string bat = "taskkill /IM Sonic4ModManager.exe /F\n" +
-                                     "DEL Sonic4ModManager.exe\n" +
-                                     "DEL tmp.bat";
-                        File.WriteAllText("tmp.bat", bat);
+                        string[] bat = 
+                        {   
+                            "taskkill /IM Sonic4ModManager.exe /F",
+                            "DEL Sonic4ModManager.exe",
+                            "DEL tmp.bat"
+                        };
+                        File.WriteAllLines("tmp.bat", bat);
 
                         Process.Start("tmp.bat");
                     }
@@ -626,12 +625,18 @@ namespace Sonic4ModManager
         {
             if (Directory.Exists("mods"))
             {
-                ProcessStartInfo startInfo = new ProcessStartInfo
+                string local_explorer = "";
+                switch ((int) Environment.OSVersion.Platform)
                 {
-                    FileName = "explorer",
-                    Arguments = "mods"
-                };
-                Process.Start(startInfo);
+                    //Windows
+                    case 2: local_explorer = "explorer"; break;
+                    //Linux (with xdg)
+                    case 4: local_explorer = "xdg-open"; break;
+                    //MacOS (not tested)
+                    case 6: local_explorer = "open"; break;
+                }
+
+                Process.Start(local_explorer, "mods");
             }
             else
             {
@@ -644,7 +649,10 @@ namespace Sonic4ModManager
             try
             { Process.Start(e.LinkText); }
             catch (Exception err)
-            { MessageBox.Show("Clicking on the link raised following exception:\n\n"+err.Message, "Watch out! You are going to crash!"); }
+            { MessageBox.Show("Clicking on the link raised the following exception:\n\n"+err.Message,
+                                "Watch out! You are going to crash!",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning); }
         }
 
         public void FormatDescription()
@@ -688,18 +696,20 @@ namespace Sonic4ModManager
                             {
                                 rtb_mod_description.Select(start_ind + k, 1);
 
-                                if (i == "b")
-                                { rtb_mod_description.SelectionFont = new Font(rtb_mod_description.SelectionFont, FontStyle.Bold | rtb_mod_description.SelectionFont.Style); }
-                                else if (i == "i")
-                                { rtb_mod_description.SelectionFont = new Font(rtb_mod_description.SelectionFont, FontStyle.Italic | rtb_mod_description.SelectionFont.Style); }
-                                else if (i == "u")
-                                { rtb_mod_description.SelectionFont = new Font(rtb_mod_description.SelectionFont, FontStyle.Underline | rtb_mod_description.SelectionFont.Style); }
-                                else if (i == "strike")
-                                { rtb_mod_description.SelectionFont = new Font(rtb_mod_description.SelectionFont, FontStyle.Strikeout | rtb_mod_description.SelectionFont.Style); }
+                                FontStyle new_style = FontStyle.Regular;
+
+                                switch (i)
+                                {
+                                    case "b":      new_style =  FontStyle.Bold; break;
+                                    case "i":      new_style =  FontStyle.Italic; break;
+                                    case "u":      new_style =  FontStyle.Underline; break;
+                                    case "strike": new_style =  FontStyle.Strikeout; break;
+                                }
+
+                                rtb_mod_description.SelectionFont = new Font(rtb_mod_description.SelectionFont, new_style | rtb_mod_description.SelectionFont.Style);
                             }
 
-                            //Remember folks, you can't delete any text (= "") if the richtextbox is ReadOnly
-                            //I don't know why, but you can replace text this way.
+                            //Remember folks, you can't delete any text if the richtextbox is ReadOnly
                             rtb_mod_description.ReadOnly = false;
                             rtb_mod_description.Select(j, 3 + i.Length);
                             rtb_mod_description.SelectedText = "";

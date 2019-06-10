@@ -53,16 +53,16 @@ namespace AMBPatcher
                         if (!line.Contains("=")) {continue;}
                         string formatted_line = line.Substring(line.IndexOf("=") + 1);
 
-                        if (formatted_line.StartsWith("ProgressBar="))
+                        if (line.StartsWith("ProgressBar="))
                         { ProgressBar = Convert.ToBoolean(Convert.ToInt32(formatted_line)); }
                         
-                        else if (formatted_line.StartsWith("GenerateLog="))
+                        else if (line.StartsWith("GenerateLog="))
                         { GenerateLog = Convert.ToBoolean(Convert.ToInt32(formatted_line)); }
                         
-                        else if (formatted_line.StartsWith("SHACheck="))
+                        else if (line.StartsWith("SHACheck="))
                         { SHACheck = Convert.ToBoolean(Convert.ToInt32(formatted_line)); }
                         
-                        else if (formatted_line.StartsWith("SHAType="))
+                        else if (line.StartsWith("SHAType="))
                         { SHAType = Convert.ToInt32(formatted_line); }
                     }
                 }

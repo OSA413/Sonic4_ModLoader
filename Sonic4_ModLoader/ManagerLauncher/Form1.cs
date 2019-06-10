@@ -18,12 +18,14 @@ namespace ManagerLauncher
             //Episode 1
             if (File.Exists("Sonic_vis.exe"))
             {
-                if (!File.Exists("main.conf"))
+                if (File.Exists("main.conf"))
+                {
+                    Process.Start("Sonic_vis.exe");
+                }
+                else
                 {
                     Process.Start("SonicLauncher.orig.exe");
-                    return;
                 }
-                Process.Start("Sonic_vis.exe");
             }
             //Episode 2
             else if (File.Exists("Sonic.exe"))
@@ -50,7 +52,10 @@ namespace ManagerLauncher
 
         private void bManager_Click(object sender, EventArgs e)
         {
-            Process.Start("Sonic4ModManager.exe");
+            if (File.Exists("Sonic4ModManager.exe"))
+            {
+                Process.Start("Sonic4ModManager.exe");
+            }
             Application.Exit();
         }
     }

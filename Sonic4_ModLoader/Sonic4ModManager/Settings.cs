@@ -18,17 +18,27 @@ namespace Sonic4ModManager
         private void UpdateInstallationStatus()
         {
             int status = MainForm.GetInstallationStatus();
+
+            bInstall.Enabled =
+            label5.Enabled =
+            rb_rename.Enabled =
+            rb_delete.Enabled =
+            cb_recover_orig.Enabled = false;
+            bInstall.Text = "Install";
+
             if (status == 1)
             {
                 label_Installation_status.Text = "Installed";
                 bInstall.Text = "Uninstall";
-                label5.Enabled = rb_rename.Enabled = rb_delete.Enabled = cb_recover_orig.Enabled = true;
+                
+                label5.Enabled =
+                rb_rename.Enabled =
+                rb_delete.Enabled =
+                cb_recover_orig.Enabled = true;
             }
             else if (status == 0 || status == -1)
             {
                 label_Installation_status.Text = "Not installed";
-                bInstall.Text = "Install";
-                label5.Enabled = rb_rename.Enabled = rb_delete.Enabled = cb_recover_orig.Enabled = false;
             }
             else
             {
@@ -40,8 +50,6 @@ namespace Sonic4ModManager
                 {
                     label_Installation_status.Text = "You have changed the .cfg file?";
                 }
-                bInstall.Text = "Install";
-                bInstall.Enabled = label5.Enabled = rb_rename.Enabled = rb_delete.Enabled = cb_recover_orig.Enabled = false;
             }
 
             rb_rename.Checked = true;
@@ -51,23 +59,19 @@ namespace Sonic4ModManager
         
         private void ReadLicense(string program)
         {
-            string files = "";
-            string license = "";
+            string files = "ModLoader_licenses/";
+            string license = "ModLoader_licenses/";
 
-            if (program == "S4ML")
+            switch (program)
             {
-                license = "LICENSE-Sonic4_ModLoader";
-                files   = "LICENSE-Sonic4_ModLoader_files";
-            }
-            else if (program == "SAT")
-            {
-                license = "LICENSE-SonicAudioTools";
-                files   = "LICENSE-SonicAudioTools_files";
-            }
-            else if (program == "7z")
-            {
-                license = "LICENSE-7-Zip";
-                files   = "LICENSE-7-Zip_files";
+                case "S4ML":    license += "LICENSE-Sonic4_ModLoader";
+                                files   += "LICENSE-Sonic4_ModLoader_files"; break;
+                
+                case "SAT":     license += "LICENSE-SonicAudioTools";
+                                files   += "LICENSE-SonicAudioTools_files"; break;
+
+                case "7z":      license += "LICENSE-7-Zip";
+                                files   += "LICENSE-7-Zip_files"; break;
             }
 
             if (files != "" && license != "")
@@ -107,25 +111,25 @@ namespace Sonic4ModManager
             if (File.Exists("AMBPatcher.cfg"))
             {
                 string[] cfg_file = File.ReadAllLines("AMBPatcher.cfg");
-                for (int j = 0; j < cfg_file.Length; j++)
+                    
+                foreach (string line in cfg_file)
                 {
-                    if (cfg_file[j].StartsWith("ProgressBar="))
-                    {
-                        cb_AMBPatcher_progress_bar.Checked = Convert.ToBoolean(Convert.ToInt32(String.Join("=", cfg_file[j].Split('=').Skip(1))));
-                    }
-                    else if (cfg_file[j].StartsWith("GenerateLog="))
-                    {
-                        cb_AMBPatcher_generate_log.Checked = Convert.ToBoolean(Convert.ToInt32(String.Join("=", cfg_file[j].Split('=').Skip(1))));
-                    }
-                    else if (cfg_file[j].StartsWith("SHACheck="))
-                    {
-                        cb_AMBPatcher_sha_check.Checked = Convert.ToBoolean(Convert.ToInt32(String.Join("=", cfg_file[j].Split('=').Skip(1))));
-                    }
-                    else if (cfg_file[j].StartsWith("SHAType="))
-                    {
-                        string tmp = String.Join("=", cfg_file[j].Split('=').Skip(1));
-                        if (tmp == "256" || tmp == "384" || tmp == "512")
-                        { list_SHAType.SelectedItem = tmp; }
+                    if (!line.Contains("=")) {continue;}
+                    string formatted_line = line.Substring(line.IndexOf("=") + 1);
+
+                    if (line.StartsWith("ProgressBar="))
+                    { cb_AMBPatcher_progress_bar.Checked = Convert.ToBoolean(Convert.ToInt32(formatted_line)); }
+                        
+                    else if (line.StartsWith("GenerateLog="))
+                    { cb_AMBPatcher_generate_log.Checked = Convert.ToBoolean(Convert.ToInt32(formatted_line)); }
+                        
+                    else if (line.StartsWith("SHACheck="))
+                    { cb_AMBPatcher_sha_check.Checked = Convert.ToBoolean(Convert.ToInt32(formatted_line)); }
+                        
+                    else if (line.StartsWith("SHAType="))
+                    { 
+                        if (new string[] {"256", "384", "512"}.Contains(formatted_line))
+                        { list_SHAType.SelectedItem = formatted_line; }
                     }
                 }
             }
