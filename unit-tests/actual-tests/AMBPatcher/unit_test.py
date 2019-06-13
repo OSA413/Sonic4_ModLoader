@@ -102,7 +102,7 @@ def get_episode():
 EPISODE = get_episode()
 
 def run_test(test_name, orig_file=ORIG_FILE_NAME, mono_or_wine=mono_or_wine(), EPISODE=EPISODE):
-    test_result = "Failed"
+    test_result = "✖ Failed"
     
     test_types = {
         "extract":              ["AMBPatcher.exe", "extract", orig_file],
@@ -159,9 +159,9 @@ def run_test(test_name, orig_file=ORIG_FILE_NAME, mono_or_wine=mono_or_wine(), E
                 expecting_sha = HASH_LIST[EPISODE]["patched_by_big"]
                 
     if real_sha == expecting_sha:
-            test_result = "OK"
+            test_result = "✔ OK"
 
-    print(real_sha)                
+    #print(real_sha)                
 
     return test_result
 
@@ -214,7 +214,7 @@ if __name__ == "__main__":
     print()
 
     for i in test_list:
-        print("Running \"" + i + "\"...")
+        print("Running \"" + i + "\"...", end=" "*(32-len(i)))
 
         before_test_setup(i)
 
@@ -227,9 +227,9 @@ if __name__ == "__main__":
         after_test_cleanup(i)
         
     after_test_cleanup("end")
-        
+
     print("\nSummary:")
-    print(str(summary.count("OK")) + " out of " + str(len(summary))
+    print(str(summary.count("✔ OK")) + " out of " + str(len(summary))
           + " tests were successful (" + str(100*summary.count("OK")//len(summary))+"%)")
     if summary.count("Failed"):
         print("The following tests are failed:")

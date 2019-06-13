@@ -559,13 +559,8 @@ namespace AMBPatcher
                             Array.Copy(BitConverter.GetBytes(tmp_pointer), 0, part_one, 0x20 + i * 0x10, 4);
                         }
 
-
-                        //Combining the parts into one file
-                        raw_file = new byte[part_one.Length + part_two.Length + part_thr.Length];
-                        
-                        Buffer.BlockCopy(part_one, 0, raw_file, 0, part_one.Length);
-                        Buffer.BlockCopy(part_two, 0, raw_file, part_one.Length, part_two.Length);
-                        Buffer.BlockCopy(part_thr, 0, raw_file, part_one.Length + part_two.Length, part_thr.Length);
+                        //Combining the parts into one file                        
+                        raw_file = part_one.Join(part_two.Join(part_thr));
                     }
                 }
                 else
@@ -679,13 +674,14 @@ namespace AMBPatcher
                     mod_file_name_bytes[i] = (byte)InternalName[i];
                 }
                 
-                enumeration_part = enumeration_part.Concat(empty_file_enumeration).ToArray();
-                data_part        = data_part.Concat(new byte[0x10]).ToArray();
-                name_part        = name_part.Concat(mod_file_name_bytes).ToArray();
+                enumeration_part = enumeration_part.Join(empty_file_enumeration);
+                data_part        = data_part.Join(new byte[0x10]);
+                name_part        = name_part.Join(mod_file_name_bytes);
 
-                raw_file = enumeration_part.Concat(
-                                  data_part.Concat(
-                                  name_part)).ToArray();
+                
+                raw_file = enumeration_part.Join(
+                                  data_part.Join(
+                                  name_part));
                 
                 return AMB.Patch(raw_file, OrigFileName, ModFileName, ModFilePath);
             }
@@ -1249,4 +1245,19 @@ namespace AMBPatcher
             else { ShowHelpMessage(); }
         }
     }
+
+    public static class Extensions
+    {
+        //This thing joins two byte arrays just like Concat().ToArray() but faster (i think)
+        public static byte[] Join(this byte[] first, byte[] second)
+        {
+            byte[] output = new byte[first.Length + second.Length];
+
+            Array.Copy(first,  0, output, 0, first.Length);
+            Array.Copy(second, 0, output, first.Length, second.Length);
+
+            return output;
+        }
+    }
+
 }

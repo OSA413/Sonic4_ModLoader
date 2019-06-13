@@ -22,3 +22,5 @@ cp "./docs/Mod Loader - Whats new.txt" "./dist/Sonic4ModLoader/Mod Loader - What
 #Archiving
 7z a "./dist/Sonic4ModLoader.7z" ./dist/* -mx=9
 
+#Unit-testing
+bash ./unit-tests/run_tests.sh
