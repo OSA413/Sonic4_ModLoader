@@ -230,7 +230,7 @@ if __name__ == "__main__":
 
     print("\nSummary:")
     print(str(summary.count("✔ OK")) + " out of " + str(len(summary))
-          + " tests were successful (" + str(100*summary.count("OK")//len(summary))+"%)")
+          + " tests were successful (" + str(100*summary.count("✔ OK")//len(summary))+"%)")
     if summary.count("Failed"):
         print("The following tests are failed:")
         for i in range(len(summary)):
