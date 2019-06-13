@@ -1,6 +1,6 @@
 # How to compile this program on Windows.
 
-0. Download and install Visual Studio 2017 (C#)
+0. Download and install Visual Studio (C#) or [MSBuild](https://docs.microsoft.com/visualstudio/msbuild/msbuild)
 
 1. Download source code of this Mod Loader: https://github.com/OSA413/Sonic4_ModLoader
 Build the solution.
