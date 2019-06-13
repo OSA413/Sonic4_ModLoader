@@ -766,9 +766,97 @@ namespace AMBPatcher
                 File.WriteAllBytes(FileName, SwapEndianness(File.ReadAllBytes(FileName)));
             }
 
-            public static void Delete(byte[] raw_file, string file_name_to_delete)
+            ////////////////////////
+            //Delete file from AMB//
+            ////////////////////////
+
+            public static byte[] Delete(byte[] raw_file, string file_name_to_delete)
             {
-                
+                var files = AMB.Read(raw_file);
+
+                int pointer_of_file_to_delete = -1;
+                int len_of_file_to_delete = -1;
+
+                for (int i = 0; i < files.Count; i++)
+                {
+                    if (files[i].Item1 == file_name_to_delete)
+                    {
+                        pointer_of_file_to_delete = files[i].Item2;
+                        len_of_file_to_delete = files[i].Item3;
+                    }
+                }
+
+                if (pointer_of_file_to_delete != -1)
+                {
+                    //Remember that the actual number of files inside may be different
+                    int prev_file_number = BitConverter.ToInt32(raw_file, 0x10);
+                    //Changing File Number
+                    Array.Copy(BitConverter.GetBytes(prev_file_number - 1)
+                                , 0, raw_file, 0x10, 4);
+
+                    int list_pointer = BitConverter.ToInt32(raw_file, 0x14);
+
+                    int prev_data_pointer = BitConverter.ToInt32(raw_file, 0x18);
+                    //Changing Data Pointer
+                    Array.Copy(BitConverter.GetBytes(prev_data_pointer - 0x10)
+                                , 0, raw_file, 0x18, 4);
+
+                    int prev_name_pointer = BitConverter.ToInt32(raw_file, 0x1C);
+                    //Changing Name Pointer
+                    Array.Copy(BitConverter.GetBytes(prev_name_pointer - 0x10 - len_of_file_to_delete)
+                                , 0, raw_file, 0x1C, 4);
+
+                    int enum_pointer_of_file_to_delete = -1;
+                    int file_index = -1;
+
+                    //decreasing file data pointers by the length of the file to delete
+                    for (int i = 0; i < prev_file_number; i++)
+                    {
+                        int file_pointer = BitConverter.ToInt32(raw_file, list_pointer + 0x10 * i);
+
+                        if (enum_pointer_of_file_to_delete != -1 && file_pointer != 0)
+                        {
+                            Array.Copy(BitConverter.GetBytes(file_pointer - len_of_file_to_delete)
+                                        , 0, raw_file, list_pointer + 0x10 * i, 4);
+                        }
+
+                        if (file_pointer == pointer_of_file_to_delete)
+                        {
+                            enum_pointer_of_file_to_delete = list_pointer + 0x10 * i;
+                            file_index = i;
+                        }
+                    }
+
+                    //Copying the part before the pointer in the list
+                    byte[] before_enum = new byte[enum_pointer_of_file_to_delete];
+                    Array.Copy(raw_file, 0, before_enum, 0, before_enum.Length);
+
+                    //Copyting the part after the pointer in the list and before the file data
+                    byte[] before_data = new byte[prev_data_pointer - (enum_pointer_of_file_to_delete + 0x10)];
+                    Array.Copy(raw_file, enum_pointer_of_file_to_delete + 0x10
+                                , before_data, 0, before_data.Length);
+
+                    //Copyting the part after file data and before the file name
+                    byte[] before_name = new byte[prev_name_pointer + file_index * 0x20 - (pointer_of_file_to_delete + len_of_file_to_delete)];
+                    Array.Copy(raw_file, pointer_of_file_to_delete + len_of_file_to_delete
+                                , before_name, 0, before_name.Length);
+
+                    //Copyting the part after file data and before the file name
+                    byte[] after_name = new byte[raw_file.Length - prev_name_pointer + file_index * 0x20];
+                    Array.Copy(raw_file, prev_name_pointer + (file_index + 1) * 0x20
+                                , after_name, 0, after_name.Length);
+
+                    //Joining all together
+                    raw_file = before_enum.Join(before_data.Join(before_name.Join(after_name)));
+                }
+
+                return raw_file;
+            }
+
+            public static void Delete(string file_name, string file_name_to_delete)
+            {
+                File.WriteAllBytes(file_name,
+                                    AMB.Delete(File.ReadAllBytes(file_name), file_name_to_delete));
             }
         }
 
@@ -984,6 +1072,7 @@ namespace AMBPatcher
             Console.WriteLine("\tAMBPatcher.exe add [AMB] [file] [name] - Add [file] to [AMB] with internal name of [name].");
             Console.WriteLine("\tAMBPatcher.exe endianness [AMB] - Print endianness of [AMB].");
             Console.WriteLine("\tAMBPatcher.exe swap_endianness [AMB] - Swaps endianness of pointers and lengths of [AMB].");
+            Console.WriteLine("\tAMBPatcher.exe delete [AMB] [file] - Delete [file] from [AMB].");
             Console.WriteLine("\tAMBPatcher.exe -h and");
             Console.WriteLine("\tAMBPatcher.exe --help - Show this message.");
         }
@@ -1227,6 +1316,13 @@ namespace AMBPatcher
                         AMB.Add(args[1], args[2]);
                     }
                     else { ShowHelpMessage(); }
+                }
+                else if (args[0] == "delete" || args[0] == "remove")
+                {
+                    if (File.Exists(args[1]))
+                    {
+                        AMB.Delete(args[1], args[2]);
+                    } else { ShowHelpMessage(); }
                 }
                 else { ShowHelpMessage(); }
             }
