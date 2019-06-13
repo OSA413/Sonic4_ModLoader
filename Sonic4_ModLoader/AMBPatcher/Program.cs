@@ -842,7 +842,7 @@ namespace AMBPatcher
                                 , before_name, 0, before_name.Length);
 
                     //Copyting the part after file data and before the file name
-                    byte[] after_name = new byte[raw_file.Length - prev_name_pointer + file_index * 0x20];
+                    byte[] after_name = new byte[raw_file.Length - (prev_name_pointer + (file_index + 1) * 0x20)];
                     Array.Copy(raw_file, prev_name_pointer + (file_index + 1) * 0x20
                                 , after_name, 0, after_name.Length);
 
