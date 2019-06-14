@@ -489,8 +489,8 @@ namespace Sonic4ModManager
                             }
                         }
 
-                        if (Directory.Exists("ModLoader_licenses"))
-                        { Directory.Delete("ModLoader_licenses", true); }
+                        if (Directory.Exists("Mod Loader - licenses"))
+                        { Directory.Delete("Mod Loader - licenses", true); }
 
                         //Sonic4ModManager.exe
                         //The only (easy and fast) way to delete an open program is to create a .bat file

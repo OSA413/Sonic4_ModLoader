@@ -59,8 +59,8 @@ namespace Sonic4ModManager
         
         private void ReadLicense(string program)
         {
-            string files = "ModLoader_licenses/";
-            string license = "ModLoader_licenses/";
+            string files = "Mod Loader - licenses/";
+            string license = "Mod Loader - licenses/";
 
             switch (program)
             {
