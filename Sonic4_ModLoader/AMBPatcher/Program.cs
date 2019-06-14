@@ -567,7 +567,7 @@ namespace AMBPatcher
                 //Add empty file and patch it.
 
                 //Some empty files from S4E1 are "broken", it's better to use a new empty file.
-                if (BitConverter.ToInt32(raw_file, 0x10) == 0)
+                if (AMB.Read(raw_file).Count == 0)
                 {
                    raw_file = AMB.Create();
                 }
