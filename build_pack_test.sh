@@ -1,4 +1,5 @@
 #!/bin/bash
+cd "$(dirname "$0")"
 
 msbuild ./Sonic4_ModLoader/Sonic4_ModLoader.sln /p:Configuration=Release
 
