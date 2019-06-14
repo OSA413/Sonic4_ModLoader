@@ -562,8 +562,15 @@ namespace AMBPatcher
 
             public static byte[] Add(byte[] raw_file, string OrigFileName, string ModFileName, string ModFilePath)
             {
+                if (!AMB.IsAMB(raw_file)) {return raw_file;}
                 //Okay, I've got a great plan:
                 //Add empty file and patch it.
+
+                //Some empty files from S4E1 are "broken", it's better to use a new empty file.
+                if (BitConverter.ToInt32(raw_file, 0x10) == 0)
+                {
+                   raw_file = AMB.Create();
+                }
 
                 var InternalThings = AMB.GetInternalThings(raw_file, OrigFileName, ModFileName);
 
@@ -853,6 +860,12 @@ namespace AMBPatcher
 
                 //Endianness identifier (at least for AMBPatcher)
                 Array.Copy(BitConverter.GetBytes(0x1304), 0, raw_file, 0x04, 4);
+                //List pointer
+                Array.Copy(BitConverter.GetBytes(0x20), 0, raw_file, 0x14, 4);
+                //Data pointer
+                Array.Copy(BitConverter.GetBytes(0x20), 0, raw_file, 0x18, 4);
+                //Name pointer
+                Array.Copy(BitConverter.GetBytes(0x20), 0, raw_file, 0x1C, 4);
 
                 return raw_file;
             }
