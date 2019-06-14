@@ -840,6 +840,31 @@ namespace AMBPatcher
                 File.WriteAllBytes(file_name,
                                     AMB.Delete(File.ReadAllBytes(file_name), file_name_to_delete));
             }
+
+            /////////////////////////
+            //Create empty AMB file//
+            /////////////////////////
+
+            public static byte[] Create()
+            {
+                byte[] raw_file = new byte[0x20];
+
+                //The header
+                raw_file[0x00] = (byte) '#';
+                raw_file[0x01] = (byte) 'A';
+                raw_file[0x02] = (byte) 'M';
+                raw_file[0x03] = (byte) 'B';
+
+                //Endianness identifier (at least for AMBPatcher)
+                Array.Copy(BitConverter.GetBytes(0x1304), 0, raw_file, 0x04, 4);
+
+                return raw_file;
+            }
+
+            public static void Create(string file_name)
+            {
+                File.WriteAllBytes(file_name, AMB.Create());
+            }
         }
 
         static void PatchAll(string file_name, List<string> mod_files, List<string> mod_paths)
@@ -1055,6 +1080,7 @@ namespace AMBPatcher
             Console.WriteLine("\tAMBPatcher.exe endianness [AMB] - Print endianness of [AMB].");
             Console.WriteLine("\tAMBPatcher.exe swap_endianness [AMB] - Swaps endianness of pointers and lengths of [AMB].");
             Console.WriteLine("\tAMBPatcher.exe delete [AMB] [file] - Delete [file] from [AMB].");
+            Console.WriteLine("\tAMBPatcher.exe create [name] - Creates an empty AMB file with [name].");
             Console.WriteLine("\tAMBPatcher.exe -h and");
             Console.WriteLine("\tAMBPatcher.exe --help - Show this message.");
         }
@@ -1257,6 +1283,12 @@ namespace AMBPatcher
                     if (AMB.IsLittleEndian(args[1]))
                     { Console.WriteLine("Little endian!"); }
                     else { Console.WriteLine("Big endian!"); }
+                }
+                else if (args[0] == "create")
+                {
+                    if (Path.GetDirectoryName(args[1]) != "")
+                    { Directory.CreateDirectory(Path.GetDirectoryName(args[1])); }
+                    AMB.Create(args[1]);
                 }
                 else { ShowHelpMessage(); }
             }
