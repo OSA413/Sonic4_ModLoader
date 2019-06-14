@@ -274,11 +274,7 @@ namespace AMBPatcher
                 List<string> files_names = new List<string>();
                 int files_counter = 0;
 
-                //Identifying that the file is an AMB file
-                if (raw_file[0] == 0x23 &&  //#
-                    raw_file[1] == 0x41 &&  //A
-                    raw_file[2] == 0x4D &&  //M
-                    raw_file[3] == 0x42)    //B
+                if (AMB.IsAMB(raw_file))
                 {
                     files_counter = BitConverter.ToInt32(raw_file, 0x10);
                     int list_pointer = BitConverter.ToInt32(raw_file, 0x14);
@@ -865,6 +861,22 @@ namespace AMBPatcher
             {
                 File.WriteAllBytes(file_name, AMB.Create());
             }
+
+            ////////////////////////////////////
+            //Check if file is AMB (by header)//
+            ////////////////////////////////////
+
+            public static bool IsAMB(byte[] raw_file)
+            {
+                if (raw_file[0] == '#' &&
+                    raw_file[1] == 'A' &&
+                    raw_file[2] == 'M' &&
+                    raw_file[3] == 'B')
+                    {return true;}
+
+                return false;
+            }
+                                
         }
 
         static void PatchAll(string file_name, List<string> mod_files, List<string> mod_paths)
