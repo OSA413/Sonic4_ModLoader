@@ -814,9 +814,12 @@ namespace AMBPatcher
                     {
                         int file_pointer = BitConverter.ToInt32(raw_file, list_pointer + 0x10 * i);
 
-                        if (enum_pointer_of_file_to_delete != -1 && file_pointer != 0)
+                        if (file_pointer != 0)
                         {
-                            Array.Copy(BitConverter.GetBytes(file_pointer - len_of_file_to_delete)
+                            int tmp = len_of_file_to_delete;
+                            if (enum_pointer_of_file_to_delete == -1) {tmp = 0;}
+
+                            Array.Copy(BitConverter.GetBytes(file_pointer - tmp - 0x10)
                                         , 0, raw_file, list_pointer + 0x10 * i, 4);
                         }
 
@@ -832,7 +835,7 @@ namespace AMBPatcher
                     Array.Copy(raw_file, 0, before_enum, 0, before_enum.Length);
 
                     //Copyting the part after the pointer in the list and before the file data
-                    byte[] before_data = new byte[prev_data_pointer - (enum_pointer_of_file_to_delete + 0x10)];
+                    byte[] before_data = new byte[pointer_of_file_to_delete - (enum_pointer_of_file_to_delete + 0x10)];
                     Array.Copy(raw_file, enum_pointer_of_file_to_delete + 0x10
                                 , before_data, 0, before_data.Length);
 
