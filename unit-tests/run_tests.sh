@@ -1,7 +1,12 @@
 #!/bin/bash
 cd "$(dirname "$0")"
 
+echo
 echo "Running unit tests..."
 
-python3 "actual-tests/AMBPatcher/update_from_release.py"
-python3 "actual-tests/AMBPatcher/unit_test.py"
+for dir in $(ls ./actual-tests); do
+    echo
+    echo "$dir"
+    python3 "actual-tests/$dir/update_from_release.py"
+    python3 "actual-tests/$dir/unit_test.py"
+done

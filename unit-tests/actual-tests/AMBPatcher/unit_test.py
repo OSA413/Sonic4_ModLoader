@@ -53,17 +53,18 @@ def sha256(x):
     if type(x) == str:
         if os.path.isfile(x):
             with open(x, "rb") as f:
-                x = f.read()
+                x = f.read()                
 
     return hashlib.sha256(x).hexdigest()
     
 def dir_sha(path):
     all_shas = []
     
-    walking_down_the_dir = [os.path.abspath(x) for x in glob.glob("./" + path + "/**", recursive = True)]
-    
+    walking_down_the_dir = [x for x in glob.glob("./" + path + "/**", recursive = True)]
+    walking_down_the_dir.sort()
+
     for i in walking_down_the_dir:
-        all_shas.append(i)
+        all_shas.append(i.replace("\\", "/"))
         if os.path.isfile(i):
             all_shas.append(sha256(i))
     
@@ -161,7 +162,7 @@ def run_test(test_name, orig_file=ORIG_FILE_NAME, mono_or_wine=mono_or_wine(), E
     if real_sha == expecting_sha:
             test_result = "✔ OK"
 
-    #print(real_sha)                
+    print(real_sha)                
 
     return test_result
 
