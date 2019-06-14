@@ -479,89 +479,68 @@ namespace AMBPatcher
                         InternalIndex = ParentIndex;
                     }
 
-                    //If the mod file's length is smaller or equal to the original one
-                    //The original file will be replaced
-                    if (raw_mod_file.Length <= files[InternalIndex].Item3)
+                    Log.Write("AMB.Patch: replacing original file with" + ModFileName);
+                    //Splitting the AMB file into three parts
+                    //Before the file data
+                    byte[] part_one = new byte[files[InternalIndex].Item2];
+                    Array.Copy(raw_file, 0, part_one, 0, files[InternalIndex].Item2);
+
+                    //After the file data
+                    byte[] part_thr;
+
+                    int name_pointer = BitConverter.ToInt32(part_one, 0x1C);
+
+                    int len_dif;
+                    //If this is the last file, start copying from names
+                    if (InternalIndex + 1 == files.Count)
                     {
-                        Log.Write("AMB.Patch: " + ModFileName + " 's length is OK, replacing...");
-                        for (int i = 0; i < files[InternalIndex].Item3; i++)
-                        {
-                            if (raw_mod_file.Length - 1 >= i)
-                            {
-                                raw_file[files[InternalIndex].Item2 + i] = raw_mod_file[i];
-                            }
-                            else
-                            {
-                                raw_file[files[InternalIndex].Item2 + i] = 0;
-                            }
-                        }
+                        len_dif = name_pointer - files[InternalIndex].Item2;
+                        int tmp_len = raw_file.Length - name_pointer;
+                        part_thr = new byte[tmp_len];
+                        Array.Copy(raw_file, name_pointer, part_thr, 0, tmp_len);
                     }
-                    //Else the AMB file will be expanded
                     else
                     {
-                        Log.Write("AMB.Patch: " + ModFileName + " 's length is bigger than the original length, expanding...");
-                        //Splitting the AMB file into three parts
-                        //Before the file data
-                        byte[] part_one = new byte[files[InternalIndex].Item2];
-                        Array.Copy(raw_file, 0, part_one, 0, files[InternalIndex].Item2);
-
-                        //After the file data
-                        byte[] part_thr;
-
-                        int name_pointer = BitConverter.ToInt32(part_one, 0x1C);
-
-                        int len_dif;
-                        //If this is the last file, start copying from names
-                        if (InternalIndex + 1 == files.Count)
-                        {
-                            len_dif = name_pointer - files[InternalIndex].Item2;
-                            int tmp_len = raw_file.Length - name_pointer;
-                            part_thr = new byte[tmp_len];
-                            Array.Copy(raw_file, name_pointer, part_thr, 0, tmp_len);
-                        }
-                        else
-                        {
-                            len_dif = files[InternalIndex + 1].Item2 - files[InternalIndex].Item2;
-                            int tmp_len = raw_file.Length - files[InternalIndex + 1].Item2;
-                            part_thr = new byte[tmp_len];
-                            Array.Copy(raw_file, files[InternalIndex + 1].Item2, part_thr, 0, tmp_len);
-                        }
-
-                        //The mod file
-                        int part_two_len;
-
-                        //This simply adds 0x00 at the the of the file
-                        part_two_len = raw_mod_file.Length + (16 - raw_mod_file.Length % 16) % 16;
-
-                        byte[] part_two = new byte[part_two_len];
-                        Array.Copy(raw_mod_file, 0, part_two, 0, raw_mod_file.Length);
-
-                        //The difference between the length of the mod file and the original one.
-                        //Or "how much bytes the program has added"
-                        len_dif = part_two_len - len_dif;
-
-                        //Changing Name Pointer
-                        name_pointer += len_dif;
-                        Array.Copy(BitConverter.GetBytes(name_pointer), 0, part_one, 0x1C, 4);
-
-                        //Changing File Length
-                        Array.Copy(BitConverter.GetBytes(raw_mod_file.Length), 0, part_one, 0x24 + InternalIndex * 0x10, 4);
-                        
-                        //Changing Files Pointers
-                        for (int i = InternalIndex + 1; i < files.Count; i++)
-                        {
-                            //Reading the original pointer
-                            int tmp_pointer = BitConverter.ToInt32(part_one, 0x20 + i * 0x10);
-
-                            //Writing the new pointer
-                            tmp_pointer += len_dif;
-
-                            Array.Copy(BitConverter.GetBytes(tmp_pointer), 0, part_one, 0x20 + i * 0x10, 4);
-                        }
-
-                        //Combining the parts into one file                        
-                        raw_file = part_one.Join(part_two.Join(part_thr));
+                        len_dif = files[InternalIndex + 1].Item2 - files[InternalIndex].Item2;
+                        int tmp_len = raw_file.Length - files[InternalIndex + 1].Item2;
+                        part_thr = new byte[tmp_len];
+                        Array.Copy(raw_file, files[InternalIndex + 1].Item2, part_thr, 0, tmp_len);
                     }
+
+                    //The mod file
+                    int part_two_len;
+
+                    //This simply adds 0x00 at the the of the file
+                    part_two_len = raw_mod_file.Length + (16 - raw_mod_file.Length % 16) % 16;
+
+                    byte[] part_two = new byte[part_two_len];
+                    Array.Copy(raw_mod_file, 0, part_two, 0, raw_mod_file.Length);
+
+                    //The difference between the length of the mod file and the original one.
+                    //Or "how much bytes the program has added"
+                    len_dif = part_two_len - len_dif;
+
+                    //Changing Name Pointer
+                    name_pointer += len_dif;
+                    Array.Copy(BitConverter.GetBytes(name_pointer), 0, part_one, 0x1C, 4);
+
+                    //Changing File Length
+                    Array.Copy(BitConverter.GetBytes(raw_mod_file.Length), 0, part_one, 0x24 + InternalIndex * 0x10, 4);
+                        
+                    //Changing Files Pointers
+                    for (int i = InternalIndex + 1; i < files.Count; i++)
+                    {
+                        //Reading the original pointer
+                        int tmp_pointer = BitConverter.ToInt32(part_one, 0x20 + i * 0x10);
+
+                        //Writing the new pointer
+                        tmp_pointer += len_dif;
+
+                        Array.Copy(BitConverter.GetBytes(tmp_pointer), 0, part_one, 0x20 + i * 0x10, 4);
+                    }
+
+                    //Combining the parts into one file                        
+                    raw_file = part_one.Join(part_two.Join(part_thr));
                 }
                 else
                 {
