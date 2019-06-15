@@ -15,6 +15,7 @@ cp "./Sonic4_ModLoader/AMBPatcher/bin/Release/AMBPatcher.exe" "./dist/Sonic4ModL
 cp "./Sonic4_ModLoader/ManagerLauncher/bin/Release/ManagerLauncher.exe" "./dist/Sonic4ModLoader/ManagerLauncher.exe"
 cp "./Sonic4_ModLoader/PatchLauncher/bin/Release/PatchLauncher.exe" "./dist/Sonic4ModLoader/PatchLauncher.exe"
 cp "./Sonic4_ModLoader/Sonic4ModManager/bin/Release/Sonic4ModManager.exe" "./dist/Sonic4ModLoader/Sonic4ModManager.exe"
+cp "./Sonic4_ModLoader/OneClickModInstaller/bin/Release/OneClickModInstaller.exe" "./dist/Sonic4ModLoader/OneClickModInstaller.exe"
 #READMEs
 cp "./docs/README.rtf" "./dist/Sonic4ModLoader/README.rtf"
 cp "./docs/README.txt" "./dist/Sonic4ModLoader/README.txt"
