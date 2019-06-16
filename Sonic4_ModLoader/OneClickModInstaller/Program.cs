@@ -175,6 +175,12 @@ namespace OneClickModInstaller
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
+            //This will fix problems when you launch 1CMI from terminal
+            if (!Application.ExecutablePath.Contains(Path.Combine("bin", "Debug")))
+            {
+                Environment.CurrentDirectory = Path.GetDirectoryName(Application.ExecutablePath);
+            }
+
             if (args.Length == 1)
             {
                 if (args[0].StartsWith("sonic4mmep1:") ||

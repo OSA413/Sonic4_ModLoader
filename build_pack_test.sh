@@ -1,4 +1,5 @@
 #!/bin/bash
+#please, keep all sh scripts in Unix new line (LF)
 cd "$(dirname "$0")"
 
 msbuild ./Sonic4_ModLoader/Sonic4_ModLoader.sln /p:Configuration=Release

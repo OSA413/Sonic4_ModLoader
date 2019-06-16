@@ -21,7 +21,7 @@ ORIG_FILE_NAME = "CPIT_MAIN.AMB"
 HASH_LIST = {
     "ep1": {
         "original_file":            "2c53ec1661bae68f1897f3b917d3546b4c1f6cf01c4fc9a97d020075b5ac8c03",
-        "extracted_dir":            "f8f34eba2f5aca37a86446b513cdf5e9f3455bdf8a7376c10d22a7dc37e49366",
+        "extracted_dir":            "2acf01ecf20c068702fd03d3a73c590d8320b226ef07fb9871643476099cb3ad",
         "orig_endianness_swapped":  "cbf8d5a08b574a327e78a3e165105e15370ad274c7a26b8f703829ba39bd0582",
         "added_small":              "1b9ab25052045b2d5f45838496d4a1c2324d5f4d15223bb7fd0348ea07a6aeff",
         "added_big":                "d525d12a7542f6dfd73bdc789c9b4e00edd1ad03b182632a12ab61e72a49ee5d",
@@ -35,7 +35,7 @@ HASH_LIST = {
     },
     "ep2": {
         "original_file":            "1dd32285b0157f4dd96e4b9efcffd8f3403662a1fde9736392723248c5a77fde",
-        "extracted_dir":            "475e73817779ee02ff66c5d83a316cdac6ac492a1c15fe0d508590c4ad0de99a",
+        "extracted_dir":            "defac85303fd01b43475cb0de36606c76fc0b4a8d369f43df31803680d7f296d",
         "orig_endianness_swapped":  "9c2dd9458354613be3f87a30eb26f5d5f17603745760cb918406a06612a1d011",
         "added_small":              "b7f7aebd5ac29b21798885cb110a053b54e6e26cba4824cbc7779f417cb472d7",
         "added_big":                "9c84b90ab16f589fdb39ef73bec4ae1e7dea123e75be2805878c8bec5dc1812c",
@@ -162,7 +162,7 @@ def run_test(test_name, orig_file=ORIG_FILE_NAME, mono_or_wine=mono_or_wine(), E
     if real_sha == expecting_sha:
             test_result = "✔ OK"
 
-    print(real_sha)                
+    #print(real_sha)                
 
     return test_result
 
