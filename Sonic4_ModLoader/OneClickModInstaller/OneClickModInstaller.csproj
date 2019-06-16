@@ -88,6 +88,12 @@
     <Compile Include="TooManyMods.Designer.cs">
       <DependentUpon>TooManyMods.cs</DependentUpon>
     </Compile>
+    <Compile Include="UltimateWinForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UltimateWinForm.Designer.cs">
+      <DependentUpon>UltimateWinForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="WrongWorkingDirectory.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -118,6 +124,9 @@
     <EmbeddedResource Include="TooManyMods.resx">
       <DependentUpon>TooManyMods.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UltimateWinForm.resx">
+      <DependentUpon>UltimateWinForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="WrongWorkingDirectory.resx">
       <DependentUpon>WrongWorkingDirectory.cs</DependentUpon>
     </EmbeddedResource>
@@ -136,6 +145,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="ocmi_logo.png" />
     <Content Include="icon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
