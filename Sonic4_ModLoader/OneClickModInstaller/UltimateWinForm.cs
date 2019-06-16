@@ -12,11 +12,20 @@ namespace OneClickModInstaller
             //Dealing with arguments
             if (args.Length == 1)
             {
-                switch (args[0])
+                //If this is not a 1-click installation call
+                if (!(args[0].StartsWith("sonic4mmep1:") ||
+                    args[0].StartsWith("sonic4mmep2:")))
                 {
-                    case "--install":   Reg.Install();   tabControl1.SelectTab(tabInstallation); break;
-                    case "--uninstall": Reg.Uninstall(); tabControl1.SelectTab(tabInstallation); break;
-                    case "--fix":       Reg.FixPath();   tabControl1.SelectTab(tabInstallation); break;
+                    switch (args[0])
+                    {
+                        case "--install":   Reg.Install();   tabControl1.SelectTab(tabInstallation); break;
+                        case "--uninstall": Reg.Uninstall(); tabControl1.SelectTab(tabInstallation); break;
+                        case "--fix":       Reg.FixPath();   tabControl1.SelectTab(tabInstallation); break;
+                    }
+                }
+                else
+                {
+                    lURL.Text = args[0].Substring(12).Split(',')[0];
                 }
             }
 

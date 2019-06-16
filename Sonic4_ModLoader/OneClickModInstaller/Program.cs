@@ -181,6 +181,8 @@ namespace OneClickModInstaller
                 Environment.CurrentDirectory = Path.GetDirectoryName(Application.ExecutablePath);
             }
 
+            Application.Run(new UltimateWinForm(args));
+
             if (args.Length == 1)
             {
                 if (args[0].StartsWith("sonic4mmep1:") ||

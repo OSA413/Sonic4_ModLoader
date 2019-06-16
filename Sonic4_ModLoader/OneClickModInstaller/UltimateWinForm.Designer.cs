@@ -206,7 +206,7 @@
             this.lURL.Name = "lURL";
             this.lURL.Size = new System.Drawing.Size(364, 26);
             this.lURL.TabIndex = 16;
-            this.lURL.Text = "Unknown\r\nsadsa\r\ndsadsa";
+            this.lURL.Text = "Unknown";
             // 
             // label5
             // 
@@ -220,7 +220,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(59, 12);
+            this.label6.Location = new System.Drawing.Point(6, 13);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(104, 26);
             this.label6.TabIndex = 14;
