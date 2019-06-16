@@ -7,8 +7,10 @@ Build the solution.
 
 2. To get necessary dependencies, follow instructions in the [`dependencies/readme.md`](/dependencies/readme.md) file.
 
-3. Run the `pack_win.bat` file in the root directory.
+3. Run the `build_pack_test.sh` file in the root directory.¹
 
 4. You will get an archive and a folder named `Sonic4ModLoader` with the program.
 
 That's all.
+
+¹ - to run this `sh` script, you need to install Linux on Windows through [WSL](https://aka.ms/wslinstall), or find a bash for Windows if you only need to pack the files.
