@@ -401,6 +401,7 @@ namespace AMBPatcher
             public static void Extract(string file_name, string output)
             {
                 byte[] raw_file = File.ReadAllBytes(file_name);
+                if (!AMB.IsAMB(raw_file)) { return; }
 
                 Directory.CreateDirectory(output);
                 
@@ -423,6 +424,32 @@ namespace AMBPatcher
 
                     //And writing that byte array into a file
                     File.WriteAllBytes(output_file, file_bytes);
+                }
+            }
+
+            ///////////////
+            //Extract all//
+            ///////////////
+
+            public static void ExtractAll(string path)
+            {
+                if (File.Exists(path))
+                {
+                    AMB.Extract(path, path + "_e");
+
+                    if (Directory.Exists(path + "_e"))
+                    {
+                        File.Delete(path);
+                        Directory.Move(path + "_e", path);
+                        AMB.ExtractAll(path);
+                    }
+                }
+                else if (Directory.Exists(path))
+                {
+                    foreach (string sub_path in Directory.GetFileSystemEntries(path))
+                    {
+                        AMB.ExtractAll(sub_path);
+                    }
                 }
             }
 
@@ -1106,6 +1133,7 @@ namespace AMBPatcher
             Console.WriteLine("\tAMBPatcher.exe swap_endianness [AMB] - Swaps endianness of pointers and lengths of [AMB].");
             Console.WriteLine("\tAMBPatcher.exe delete [AMB] [file] - Delete [file] from [AMB].");
             Console.WriteLine("\tAMBPatcher.exe create [name] - Creates an empty AMB file with [name].");
+            Console.WriteLine("\tAMBPatcher.exe extract_all [path] - Extract all files from [path] (can be a file or directory) to be Mod Loader compatible (note: this removes original files!).");
             Console.WriteLine("\tAMBPatcher.exe -h and");
             Console.WriteLine("\tAMBPatcher.exe --help - Show this message.");
         }
@@ -1314,6 +1342,10 @@ namespace AMBPatcher
                     if (Path.GetDirectoryName(args[1]) != "")
                     { Directory.CreateDirectory(Path.GetDirectoryName(args[1])); }
                     AMB.Create(args[1]);
+                }
+                else if (args[0] == "extract_all")
+                {
+                    AMB.ExtractAll(args[1]);
                 }
                 else { ShowHelpMessage(); }
             }
