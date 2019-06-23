@@ -414,7 +414,7 @@ namespace AMBPatcher
 
                 for (int i = 0; i < files.Count; i++)
                 {
-                    string output_file = Path.Combine(output, files[i].Item1);
+                    string output_file = Path.Combine(output, files[i].Item1.Replace('\\', Path.DirectorySeparatorChar));
 
                     //Copying raw file from the archive into a byte array.
                     byte[] file_bytes = new byte[files[i].Item3];
