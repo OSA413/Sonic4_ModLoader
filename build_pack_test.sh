@@ -38,6 +38,10 @@ done
 cp "./dependencies/7-Zip/License.txt"       "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-7-Zip"
 cp "./dependencies/SonicAudioTools/LICENSE" "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-SonicAudioTools"
 
+cd dist
+find * -type f -exec sha256sum {} \; >> "SHA256SUMS"
+cd ..
+
 #Archiving
 7z a "./dist/Sonic4ModLoader.7z" ./dist/* -mx=9
 
