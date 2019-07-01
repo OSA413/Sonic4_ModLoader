@@ -504,6 +504,7 @@ namespace Sonic4ModManager
                         File.WriteAllLines("tmp.bat", bat);
 
                         Process.Start("tmp.bat");
+                        Environment.Exit(0);
                     }
                 }
             }

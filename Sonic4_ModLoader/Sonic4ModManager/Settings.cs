@@ -19,7 +19,8 @@ namespace Sonic4ModManager
         {
             int status = MainForm.GetInstallationStatus();
 
-            bInstall.Enabled =
+            bInstall.Enabled = true;
+            
             label5.Enabled =
             rb_rename.Enabled =
             rb_delete.Enabled =
@@ -30,7 +31,7 @@ namespace Sonic4ModManager
             {
                 label_Installation_status.Text = "Installed";
                 bInstall.Text = "Uninstall";
-                
+
                 label5.Enabled =
                 rb_rename.Enabled =
                 rb_delete.Enabled =
@@ -45,6 +46,7 @@ namespace Sonic4ModManager
                 if (status == -2)
                 {
                     label_Installation_status.Text = "Current directory is not the game directory";
+                    bInstall.Enabled = false;
                 }
                 else
                 {
