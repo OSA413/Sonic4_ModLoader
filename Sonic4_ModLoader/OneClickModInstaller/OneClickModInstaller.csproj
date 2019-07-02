@@ -62,23 +62,11 @@
     <Compile Include="DFtEM.Designer.cs">
       <DependentUpon>DFtEM.cs</DependentUpon>
     </Compile>
-    <Compile Include="DownloadForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="DownloadForm.Designer.cs">
-      <DependentUpon>DownloadForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="Suspicious.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Suspicious.Designer.cs">
       <DependentUpon>Suspicious.cs</DependentUpon>
-    </Compile>
-    <Compile Include="InstallationForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="InstallationForm.Designer.cs">
-      <DependentUpon>InstallationForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -103,23 +91,18 @@
     <EmbeddedResource Include="DFtEM.resx">
       <DependentUpon>DFtEM.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DownloadForm.resx">
-      <DependentUpon>DownloadForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Suspicious.resx">
       <DependentUpon>Suspicious.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="InstallationForm.resx">
-      <DependentUpon>InstallationForm.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
     <EmbeddedResource Include="TooManyMods.resx">
       <DependentUpon>TooManyMods.cs</DependentUpon>
@@ -147,6 +130,7 @@
   <ItemGroup>
     <Content Include="ocmi_logo.png" />
     <Content Include="icon.ico" />
+    <None Include="root-shield.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

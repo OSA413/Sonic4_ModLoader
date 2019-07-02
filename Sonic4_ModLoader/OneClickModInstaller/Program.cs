@@ -2,8 +2,11 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Security.Principal;
 using System.Windows.Forms;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace OneClickModInstaller
 {
@@ -163,6 +166,174 @@ namespace OneClickModInstaller
         }
     }
 
+    public static class URL
+    {
+        public static string GetRedirect(string url)
+        {
+            var t = WebRequest.Create(url);
+            var r = t.GetResponse();
+            var y = r.ResponseUri;
+            r.Close();
+            return y.ToString();
+        }
+    }
+
+    public static class MyFile
+    {
+        public static void DeleteAnyway(string file)
+        {
+            //Program crashes if it tries to delete a read-only file
+            File.SetAttributes(file, FileAttributes.Normal);
+            File.Delete(file);
+        }
+    }
+
+    public static class MyDirectory
+    {
+        //Same reason as for MyFile.DeleteAnyway
+        public static void DeleteRecursively(string dir)
+        {
+            foreach (string dirr in Directory.GetDirectories(dir))
+            {
+                MyDirectory.DeleteRecursively(dirr);
+            }
+
+            foreach (string file in Directory.GetFiles(dir))
+            {
+                MyFile.DeleteAnyway(file);
+            }
+
+            Directory.Delete(dir);
+        }
+    }
+
+    public static class ModArchive
+    {
+        public static bool IsFSCS()
+        {
+            //This checks if file system is case-sensitive
+            bool res;
+
+            File.WriteAllText("case_sensitivity_test", "");
+            res = File.Exists("CASE_SENSITIVITY_TEST");
+            File.Delete("case_sensitivity_test");
+            return res;
+        }
+
+        public static void Extract(string file)
+        {
+            //Need 7-zip to work
+            if (!File.Exists("7z.exe")) { return; }
+
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                FileName = "7z.exe",
+                Arguments = "x \"" + file + "\" -o\"" + file + "_extracted" + "\""
+            };
+            Process.Start(startInfo).WaitForExit();
+        }
+
+        public static int CheckFiles(string dir_name)
+        {
+            string[] good_formats = "TXT,INI,DDS,TXB,AMA,AME,ZNO,ZNM,ZNV,DC,EV,RG,MD,MP,AT,DF,DI,PSH,VSH,LTS,XNM,MFS,SSS,GPB,MSG,AYK,ADX,AMB,CPK,CSB,PNG".Split(',');
+
+            string[] all_files = Directory.GetFiles(dir_name, "*", SearchOption.AllDirectories);
+            List<string> suspicious_files = new List<string>();
+
+            foreach (string file in all_files)
+            {
+                if (int.TryParse(Path.GetFileName(file), out int n) && file.Contains("DEMO\\WORLDMAP\\WORLDMAP.AMB"))
+                {
+                    continue;
+                }
+
+                int extension_len = Path.GetExtension(file).Length;
+                if (extension_len != 0) { extension_len = 1; }
+
+                if (good_formats.Contains(Path.GetExtension(file).Substring(extension_len), StringComparer.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                suspicious_files.Add(file);
+            }
+
+
+            int cont = 1;
+            if (suspicious_files.Count != 0)
+            {
+                cont = 0;
+                Suspicious SuspiciousDialog = new Suspicious(suspicious_files.ToArray());
+
+                DialogResult result = SuspiciousDialog.ShowDialog();
+
+                //Continue
+                if (result == DialogResult.Yes)
+                {
+                    cont = 1;
+                }
+            }
+            return cont;
+        }
+
+        public static Tuple<string[], string> FindRoot(string dir_name)
+        {
+            string platform = "???";
+            string[] platforms = new string[2] { "pc", "dolphin" };
+
+            List<string> mod_roots = new List<string>();
+            string[] game_folders_array = new string[2] { "CUTSCENE,DEMO,G_COM,G_SS,G_EP1COM,G_EP1ZONE2,G_EP1ZONE3,G_EP1ZONE4,G_ZONE1,G_ZONE2,G_ZONE3,G_ZONE4,G_ZONEF,MSG,NNSTDSHADER,SOUND"
+                                                  , "WSNE8P,WSNP8P,WSNJ8P"};
+
+            for (int i = 0; i < platforms.Length; i++)
+            {
+                string[] game_folders = game_folders_array[i].Split(',');
+
+                foreach (string folder in game_folders)
+                {
+                    foreach (string mod_folder in Directory.GetDirectories(dir_name, folder, SearchOption.AllDirectories))
+                    {
+                        string tmp_root = Path.GetDirectoryName(mod_folder);
+                        if (!mod_roots.Contains(tmp_root))
+                        {
+                            mod_roots.Add(tmp_root);
+                        }
+                    }
+                }
+
+                if (mod_roots.Count > 0)
+                {
+                    platform = platforms[i];
+                    break;
+                }
+            }
+
+            return Tuple.Create(mod_roots.ToArray(), platform);
+        }
+
+        public static void CopyAll(string source, string destination)
+        {
+            if (ModArchive.IsFSCS())
+            { if (source == destination) { return; } }
+            else { { if (source.ToLower() == destination.ToLower()) { return; } } }
+
+            Directory.CreateDirectory(destination);
+
+            foreach (string file in Directory.GetFiles(source))
+            {
+                File.Copy(file, Path.Combine(destination, Path.GetFileName(file)), true);
+                File.SetAttributes(file, FileAttributes.Normal);
+            }
+
+            foreach (string dir in Directory.GetDirectories(source))
+            {
+                string dir_name = Path.GetFileName(dir);
+                Directory.CreateDirectory(Path.Combine(destination, dir_name));
+                ModArchive.CopyAll(Path.Combine(source, dir_name), Path.Combine(destination, dir_name));
+            }
+        }
+    }
+
     static class Program
     {
         /// <summary>
@@ -182,23 +353,6 @@ namespace OneClickModInstaller
             }
 
             Application.Run(new UltimateWinForm(args));
-
-            if (args.Length == 1)
-            {
-                if (args[0].StartsWith("sonic4mmep1:") ||
-                    args[0].StartsWith("sonic4mmep2:"))
-                {
-                    Application.Run(new DownloadForm(args));
-                }
-                else if (File.Exists(args[0]))
-                {
-                    Application.Run(new DownloadForm(new string[] { "--local", args[0] }));
-                }
-                else
-                { Application.Run(new InstallationForm(args)); }
-            }
-            else
-            { Application.Run(new InstallationForm(args)); }
         }
     }
 }

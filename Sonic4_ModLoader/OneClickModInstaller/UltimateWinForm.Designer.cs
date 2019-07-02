@@ -33,19 +33,19 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabInstallation = new System.Windows.Forms.TabPage();
             this.lGameName = new System.Windows.Forms.Label();
-            this.label4 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
+            this.lInstallGame = new System.Windows.Forms.Label();
+            this.lInstallAdmin = new System.Windows.Forms.Label();
             this.bUninstall = new System.Windows.Forms.Button();
             this.bInstall = new System.Windows.Forms.Button();
             this.lInstallationStatus = new System.Windows.Forms.Label();
-            this.label1 = new System.Windows.Forms.Label();
+            this.lInstallStatus = new System.Windows.Forms.Label();
             this.tabDownload = new System.Windows.Forms.TabPage();
             this.lType = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
+            this.lDownloadType = new System.Windows.Forms.Label();
             this.lURL = new System.Windows.Forms.Label();
-            this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
+            this.lDownloadLink = new System.Windows.Forms.Label();
+            this.lDownloadTrying = new System.Windows.Forms.Label();
+            this.lDownloadID = new System.Windows.Forms.Label();
             this.lModID = new System.Windows.Forms.Label();
             this.bDownload = new System.Windows.Forms.Button();
             this.tabSettings = new System.Windows.Forms.TabPage();
@@ -62,7 +62,7 @@
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Image = ((System.Drawing.Image)(resources.GetObject("pictureBox1.Image")));
+            this.pictureBox1.Image = global::OneClickModInstaller.Properties.Resources.ocmi_logo;
             this.pictureBox1.Location = new System.Drawing.Point(12, 12);
             this.pictureBox1.Name = "pictureBox1";
             this.pictureBox1.Size = new System.Drawing.Size(402, 84);
@@ -84,12 +84,12 @@
             // tabInstallation
             // 
             this.tabInstallation.Controls.Add(this.lGameName);
-            this.tabInstallation.Controls.Add(this.label4);
-            this.tabInstallation.Controls.Add(this.label3);
+            this.tabInstallation.Controls.Add(this.lInstallGame);
+            this.tabInstallation.Controls.Add(this.lInstallAdmin);
             this.tabInstallation.Controls.Add(this.bUninstall);
             this.tabInstallation.Controls.Add(this.bInstall);
             this.tabInstallation.Controls.Add(this.lInstallationStatus);
-            this.tabInstallation.Controls.Add(this.label1);
+            this.tabInstallation.Controls.Add(this.lInstallStatus);
             this.tabInstallation.Location = new System.Drawing.Point(4, 22);
             this.tabInstallation.Name = "tabInstallation";
             this.tabInstallation.Padding = new System.Windows.Forms.Padding(3);
@@ -107,40 +107,47 @@
             this.lGameName.TabIndex = 14;
             this.lGameName.Text = "//Game name goes here";
             // 
-            // label4
+            // lInstallGame
             // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(70, 23);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(41, 13);
-            this.label4.TabIndex = 13;
-            this.label4.Text = "Game: ";
+            this.lInstallGame.AutoSize = true;
+            this.lInstallGame.Location = new System.Drawing.Point(70, 23);
+            this.lInstallGame.Name = "lInstallGame";
+            this.lInstallGame.Size = new System.Drawing.Size(41, 13);
+            this.lInstallGame.TabIndex = 13;
+            this.lInstallGame.Text = "Game: ";
             // 
-            // label3
+            // lInstallAdmin
             // 
-            this.label3.Location = new System.Drawing.Point(70, 59);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(256, 23);
-            this.label3.TabIndex = 12;
-            this.label3.Text = "Installation requires administrator privileges.";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.lInstallAdmin.Location = new System.Drawing.Point(70, 59);
+            this.lInstallAdmin.Name = "lInstallAdmin";
+            this.lInstallAdmin.Size = new System.Drawing.Size(256, 23);
+            this.lInstallAdmin.TabIndex = 12;
+            this.lInstallAdmin.Text = "Installation requires administrator privileges.";
+            this.lInstallAdmin.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // bUninstall
             // 
+            this.bUninstall.Image = global::OneClickModInstaller.Properties.Resources.root_shield;
+            this.bUninstall.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.bUninstall.Location = new System.Drawing.Point(70, 123);
             this.bUninstall.Name = "bUninstall";
             this.bUninstall.Size = new System.Drawing.Size(256, 32);
             this.bUninstall.TabIndex = 11;
             this.bUninstall.Text = "Uninstall";
+            this.bUninstall.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.bUninstall.UseVisualStyleBackColor = true;
+            this.bUninstall.Click += new System.EventHandler(this.bUninstall_Click);
             // 
             // bInstall
             // 
+            this.bInstall.Image = global::OneClickModInstaller.Properties.Resources.root_shield;
+            this.bInstall.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.bInstall.Location = new System.Drawing.Point(70, 85);
             this.bInstall.Name = "bInstall";
             this.bInstall.Size = new System.Drawing.Size(256, 32);
             this.bInstall.TabIndex = 10;
             this.bInstall.Text = "Install/Fix";
+            this.bInstall.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.bInstall.UseVisualStyleBackColor = true;
             this.bInstall.Click += new System.EventHandler(this.bInstall_Click);
             // 
@@ -153,23 +160,23 @@
             this.lInstallationStatus.TabIndex = 9;
             this.lInstallationStatus.Text = "//Installation status goes here";
             // 
-            // label1
+            // lInstallStatus
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(70, 36);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(94, 13);
-            this.label1.TabIndex = 8;
-            this.label1.Text = "Installation status: ";
+            this.lInstallStatus.AutoSize = true;
+            this.lInstallStatus.Location = new System.Drawing.Point(70, 36);
+            this.lInstallStatus.Name = "lInstallStatus";
+            this.lInstallStatus.Size = new System.Drawing.Size(94, 13);
+            this.lInstallStatus.TabIndex = 8;
+            this.lInstallStatus.Text = "Installation status: ";
             // 
             // tabDownload
             // 
             this.tabDownload.Controls.Add(this.lType);
-            this.tabDownload.Controls.Add(this.label2);
+            this.tabDownload.Controls.Add(this.lDownloadType);
             this.tabDownload.Controls.Add(this.lURL);
-            this.tabDownload.Controls.Add(this.label5);
-            this.tabDownload.Controls.Add(this.label6);
-            this.tabDownload.Controls.Add(this.label7);
+            this.tabDownload.Controls.Add(this.lDownloadLink);
+            this.tabDownload.Controls.Add(this.lDownloadTrying);
+            this.tabDownload.Controls.Add(this.lDownloadID);
             this.tabDownload.Controls.Add(this.lModID);
             this.tabDownload.Controls.Add(this.bDownload);
             this.tabDownload.Location = new System.Drawing.Point(4, 22);
@@ -189,14 +196,14 @@
             this.lType.TabIndex = 18;
             this.lType.Text = "???";
             // 
-            // label2
+            // lDownloadType
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(56, 109);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(54, 13);
-            this.label2.TabIndex = 17;
-            this.label2.Text = "Mod type:";
+            this.lDownloadType.AutoSize = true;
+            this.lDownloadType.Location = new System.Drawing.Point(56, 109);
+            this.lDownloadType.Name = "lDownloadType";
+            this.lDownloadType.Size = new System.Drawing.Size(54, 13);
+            this.lDownloadType.TabIndex = 17;
+            this.lDownloadType.Text = "Mod type:";
             // 
             // lURL
             // 
@@ -208,32 +215,32 @@
             this.lURL.TabIndex = 16;
             this.lURL.Text = "Unknown";
             // 
-            // label5
+            // lDownloadLink
             // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 48);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(77, 13);
-            this.label5.TabIndex = 15;
-            this.label5.Text = "Download link:";
+            this.lDownloadLink.AutoSize = true;
+            this.lDownloadLink.Location = new System.Drawing.Point(6, 48);
+            this.lDownloadLink.Name = "lDownloadLink";
+            this.lDownloadLink.Size = new System.Drawing.Size(77, 13);
+            this.lDownloadLink.TabIndex = 15;
+            this.lDownloadLink.Text = "Download link:";
             // 
-            // label6
+            // lDownloadTrying
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 13);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(104, 26);
-            this.label6.TabIndex = 14;
-            this.label6.Text = "You are trying to {0}.\r\nAren\'t you?";
+            this.lDownloadTrying.AutoSize = true;
+            this.lDownloadTrying.Location = new System.Drawing.Point(6, 13);
+            this.lDownloadTrying.Name = "lDownloadTrying";
+            this.lDownloadTrying.Size = new System.Drawing.Size(104, 26);
+            this.lDownloadTrying.TabIndex = 14;
+            this.lDownloadTrying.Text = "You are trying to {0}.\r\nAren\'t you?";
             // 
-            // label7
+            // lDownloadID
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(135, 109);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(45, 13);
-            this.label7.TabIndex = 13;
-            this.label7.Text = "Mod ID:";
+            this.lDownloadID.AutoSize = true;
+            this.lDownloadID.Location = new System.Drawing.Point(135, 109);
+            this.lDownloadID.Name = "lDownloadID";
+            this.lDownloadID.Size = new System.Drawing.Size(45, 13);
+            this.lDownloadID.TabIndex = 13;
+            this.lDownloadID.Text = "Mod ID:";
             // 
             // lModID
             // 
@@ -252,6 +259,7 @@
             this.bDownload.TabIndex = 11;
             this.bDownload.Text = "Download";
             this.bDownload.UseVisualStyleBackColor = true;
+            this.bDownload.Click += new System.EventHandler(this.bDownload_Click);
             // 
             // tabSettings
             // 
@@ -286,8 +294,8 @@
             // toolStripStatusLabel1
             // 
             this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(151, 17);
-            this.toolStripStatusLabel1.Text = "A wild {0} button appeared!";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(103, 17);
+            this.toolStripStatusLabel1.Text = "This is a status bar";
             // 
             // progressBar
             // 
@@ -333,20 +341,20 @@
         private System.Windows.Forms.TabPage tabSettings;
         private System.Windows.Forms.TabPage tabAbout;
         private System.Windows.Forms.Label lGameName;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label lInstallGame;
+        private System.Windows.Forms.Label lInstallAdmin;
         private System.Windows.Forms.Button bUninstall;
         private System.Windows.Forms.Button bInstall;
         private System.Windows.Forms.Label lInstallationStatus;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lInstallStatus;
         private System.Windows.Forms.StatusStrip statusBar;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.Label lType;
-        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label lDownloadType;
         public System.Windows.Forms.Label lURL;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label lDownloadLink;
+        private System.Windows.Forms.Label lDownloadTrying;
+        private System.Windows.Forms.Label lDownloadID;
         internal System.Windows.Forms.Label lModID;
         private System.Windows.Forms.Button bDownload;
         private System.Windows.Forms.ProgressBar progressBar;
