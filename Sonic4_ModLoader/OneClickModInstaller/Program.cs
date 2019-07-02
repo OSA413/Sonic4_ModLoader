@@ -215,7 +215,7 @@ namespace OneClickModInstaller
             bool res;
 
             File.WriteAllText("case_sensitivity_test", "");
-            res = File.Exists("CASE_SENSITIVITY_TEST");
+            res = !File.Exists("CASE_SENSITIVITY_TEST");
             File.Delete("case_sensitivity_test");
             return res;
         }
