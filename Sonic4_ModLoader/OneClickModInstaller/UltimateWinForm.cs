@@ -3,6 +3,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Net;
 using System.ComponentModel;
+using System.Threading.Tasks;
 
 namespace OneClickModInstaller
 {
@@ -93,7 +94,7 @@ namespace OneClickModInstaller
         
         private void UpdateWindow()
         {
-            int status = Reg.InstallationStatus();
+            int status = Reg.InstallationStatus()[GetGame.Short()];
 
             bInstall.Enabled =
             bUninstall.Enabled = true;
@@ -123,7 +124,7 @@ namespace OneClickModInstaller
         
         private void bInstall_Click(object sender, EventArgs e)
         {
-            switch (Reg.InstallationStatus())
+            switch (Reg.InstallationStatus()[GetGame.Short()])
             {
                 case 2:  Reg.FixPath(); break;
                 default: Reg.Install(); break;
@@ -192,82 +193,81 @@ namespace OneClickModInstaller
             DoTheRest();
         }
 
-        public void DoTheRest()
+        async public void DoTheRest()
         {
-            toolStripStatusLabel1.Text = "Extracting downloaded archive...";
-            Refresh();
-
-            archive_dir = archive_name + "_extracted";
-
-            if (File.Exists(archive_name))
+            await Task.Run(() =>
             {
-                if (Directory.Exists(archive_name + "_extracted"))
-                { MyDirectory.DeleteRecursively(archive_name + "_extracted"); }
+                toolStripStatusLabel1.Text = "Extracting downloaded archive...";
 
-                ModArchive.Extract(archive_name);
-            }
-            else if (Directory.Exists(archive_name))
-            {
-                //This means that mod will be installed from a directory
-                archive_dir = archive_name;
-            }
+                archive_dir = archive_name + "_extracted";
 
-            toolStripStatusLabel1.Text = "Checking extracted files...";
-            Refresh();
-            int cont = ModArchive.CheckFiles(archive_dir);
+                if (File.Exists(archive_name))
+                {
+                    if (Directory.Exists(archive_name + "_extracted"))
+                    { MyDirectory.DeleteRecursively(archive_name + "_extracted"); }
 
-            if (cont != 1)
-            {
-                MyDirectory.DeleteRecursively(archive_dir);
+                    ModArchive.Extract(archive_name);
+                }
+                else if (Directory.Exists(archive_name))
+                {
+                    //This means that mod will be installed from a directory
+                    archive_dir = archive_name;
+                }
+
+                toolStripStatusLabel1.Text = "Checking extracted files...";
+                int cont = ModArchive.CheckFiles(archive_dir);
+
+                if (cont != 1)
+                {
+                    MyDirectory.DeleteRecursively(archive_dir);
+                    Environment.Exit(0);
+                }
+
+                toolStripStatusLabel1.Text = "Finding root directories...";
+
+                var FoundRootDirs = ModArchive.FindRoot(archive_dir);
+                string[] mod_roots = FoundRootDirs.Item1;
+                string platform = FoundRootDirs.Item2;
+
+                if (mod_roots.Length > 1)
+                {
+                    TooManyMods tmm_form = new TooManyMods(mod_roots);
+                    tmm_form.ShowDialog();
+
+                    mod_roots = tmm_form.mods;
+                }
+                else if (mod_roots.Length == 0)
+                {
+                    MessageBox.Show("1-Click Mod Installer couldn't find any root directories of the mod. The mod won't be installed. Try to install the mod manually or try to contact the mod creator or the creator of the Mod Loader.");
+                    Environment.Exit(0);
+                }
+
+                last_mod = Path.GetFileName(mod_roots[0]);
+
+                toolStripStatusLabel1.Text = "Installing downloaded mod...";
+
+                foreach (string mod in mod_roots)
+                {
+                    string dest;
+                    if (platform == "pc")
+                    { dest = Path.Combine("mods", Path.GetFileName(mod)); }
+                    else
+                    { dest = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Dolphin Emulator", "Load", "Textures"); }
+
+                    if (Directory.Exists(dest) && platform == "pc") { MyDirectory.DeleteRecursively(dest); }
+                    ModArchive.CopyAll(mod, dest);
+                }
+
+                DFtEM enable_mod = new DFtEM();
+                enable_mod.ShowDialog();
+
+                if (archive_name != archive_dir)
+                { MyDirectory.DeleteRecursively(archive_dir); }
+                if (File.Exists(archive_name))
+                { File.Delete(archive_name); }
+
                 Environment.Exit(0);
-            }
-
-            toolStripStatusLabel1.Text = "Finding root directories...";
-            Refresh();
-
-            var FoundRootDirs = ModArchive.FindRoot(archive_dir);
-            string[] mod_roots = FoundRootDirs.Item1;
-            string platform = FoundRootDirs.Item2;
-
-            if (mod_roots.Length > 1)
-            {
-                TooManyMods tmm_form = new TooManyMods(mod_roots);
-                tmm_form.ShowDialog();
-
-                mod_roots = tmm_form.mods;
-            }
-            else if (mod_roots.Length == 0)
-            {
-                MessageBox.Show("1-Click Mod Installer couldn't find any root directories of the mod. The mod won't be installed. Try to install the mod manually or try to contact the mod creator or the creator of the Mod Loader.");
-                Environment.Exit(0);
-            }
-
-            last_mod = Path.GetFileName(mod_roots[0]);
-
-            toolStripStatusLabel1.Text = "Installing downloaded mod...";
-            Refresh();
-
-            foreach (string mod in mod_roots)
-            {
-                string dest;
-                if (platform == "pc")
-                { dest = Path.Combine("mods", Path.GetFileName(mod)); }
-                else
-                { dest = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Dolphin Emulator", "Load", "Textures"); }
-
-                if (Directory.Exists(dest) && platform == "pc") { MyDirectory.DeleteRecursively(dest); }
-                ModArchive.CopyAll(mod, dest);
-            }
-
-            DFtEM enable_mod = new DFtEM();
-            enable_mod.ShowDialog();
-
-            if (archive_name != archive_dir)
-            { MyDirectory.DeleteRecursively(archive_dir); }
-            if (File.Exists(archive_name))
-            { File.Delete(archive_name); }
-
-            Environment.Exit(0);
+            });
         }
 
         void wc_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)

@@ -127,7 +127,7 @@ namespace OneClickModInstaller
             }
         }
 
-        public static int InstallationStatus()
+        public static Dictionary<string, int> InstallationStatus()
         {
             /* status description
              * 0    = Not installed
@@ -136,12 +136,13 @@ namespace OneClickModInstaller
              * 2    = Another installation present (different path in registry)
              */
 
-            int status = 0;
+            Dictionary<string, int> statuses = new Dictionary<string, int> { };
 
-            string game = GetGame.Short();
+            string[] games = { "ep1", "ep2", "dunno" };
 
-            if (game != "dunno")
+            foreach (string game in games)
             {
+                int status = 0;
                 string root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
 
                 if ((string)Registry.GetValue(root_key, "", null) == "URL:Sonic 4 Mod Loader's 1-Click Installer protocol")
@@ -160,9 +161,11 @@ namespace OneClickModInstaller
                     }
                     else { status = -1; }
                 }
-            }
 
-            return status;
+                statuses.Add(game, status);
+            }
+            
+            return statuses;
         }
     }
 
