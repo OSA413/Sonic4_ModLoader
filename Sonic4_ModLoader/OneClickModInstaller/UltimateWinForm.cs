@@ -94,12 +94,69 @@ namespace OneClickModInstaller
         
         private void UpdateWindow()
         {
-            int status = Reg.InstallationStatus()[GetGame.Short()];
+            ////////////////
+            //Installation//
+            ////////////////
 
-            bInstall.Enabled =
+            ///////////
+            //Overall//
+            ///////////
+
+            var statuses  = Reg.InstallationStatus();
+            var locations = Reg.InstallationLocation();
+
+            foreach (string key in statuses.Keys)
+            {
+                Label  lStatus;
+                Label  lPath;
+                Button bUninstall;
+                Button bVisit;
+
+                switch (key)
+                {
+                    case "ep1":
+                        lStatus    = lIOEp1Stat;
+                        lPath      = lIOEp1Path;
+                        bUninstall = bIOEp1Uninstall;
+                        bVisit     = bIOEp1Visit;
+                        break;
+                    case "ep2":
+                        lStatus    = lIOEp2Stat;
+                        lPath      = lIOEp2Path;
+                        bUninstall = bIOEp2Uninstall;
+                        bVisit     = bIOEp2Visit;
+                        break;
+                    default: continue;
+                }
+
+                if (statuses[key] > 0)
+                {
+                    lStatus.Text = "Installed";
+                    lPath.Text   = ("Path: " + locations[key]).Replace(' ', '\u2007');
+                    bUninstall.Enabled =
+                    bVisit.Enabled     = true;
+
+                    if (Admin.AmI()) { bUninstall.Image = null; }
+                }
+                else
+                {
+                    lStatus.Text = "Not installed";
+                    lPath.Text   = "";
+                    bUninstall.Enabled =
+                    bVisit.Enabled     = false;
+                }
+            }
+            
+            ///////////
+            //Current//
+            ///////////
+
+            int current_status = statuses[GetGame.Short()];
+
+            bInstall.Enabled   =
             bUninstall.Enabled = true;
 
-            switch(status)
+            switch(current_status)
             {
                 case 0:
                     lInstallationStatus.Text = "Not installed";
@@ -293,6 +350,18 @@ namespace OneClickModInstaller
             {
                 toolStripStatusLabel1.Text = "Downloading... (" + e.BytesReceived / divider + unit + " / " + e.TotalBytesToReceive / divider + unit + ")";
             }
+        }
+
+        private void bIOEp1Visit_Click(object sender, EventArgs e)
+        {
+            if (Reg.InstallationStatus()["ep1"] < 1) { return; }
+            MyDirectory.OpenExplorer(Reg.InstallationLocation()["ep1"]);
+        }
+
+        private void bIOEp2Visit_Click(object sender, EventArgs e)
+        {
+            if (Reg.InstallationStatus()["ep2"] < 1) { return; }
+            MyDirectory.OpenExplorer(Reg.InstallationLocation()["ep2"]);
         }
     }
 }

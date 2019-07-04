@@ -136,9 +136,9 @@ namespace OneClickModInstaller
              * 2    = Another installation present (different path in registry)
              */
 
-            Dictionary<string, int> statuses = new Dictionary<string, int> { };
+            var statuses = new Dictionary<string, int> { { "dunno", 0 } };
 
-            string[] games = { "ep1", "ep2", "dunno" };
+            string[] games = { "ep1", "ep2"};
 
             foreach (string game in games)
             {
@@ -166,6 +166,27 @@ namespace OneClickModInstaller
             }
             
             return statuses;
+        }
+
+        public static Dictionary<string, string> InstallationLocation()
+        {
+            var locations = new Dictionary<string, string> { { "dunno", "" } };
+
+            string[] games = { "ep1", "ep2" };
+
+            foreach (string game in games)
+            {
+                string root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
+                string location = (string)Registry.GetValue(root_key + "\\Shell\\Open\\Command", "", "");
+
+                if (location != "")
+                {
+                    location = location.Substring(1, location.Length - 7);
+                }
+                locations.Add(game, location);
+            }
+
+            return locations;
         }
     }
 
@@ -207,6 +228,24 @@ namespace OneClickModInstaller
             }
 
             Directory.Delete(dir);
+        }
+
+        public static void OpenExplorer(string path)
+        {
+            if (File.Exists(path)) { path = Path.GetDirectoryName(path); }
+
+            string local_explorer = "";
+            switch ((int)Environment.OSVersion.Platform)
+            {
+                //Windows
+                case 2: local_explorer = "explorer"; break;
+                //Linux (with xdg)
+                case 4: local_explorer = "xdg-open"; break;
+                //MacOS (not tested)
+                case 6: local_explorer = "open"; break;
+            }
+
+            Process.Start(local_explorer, path);
         }
     }
 
