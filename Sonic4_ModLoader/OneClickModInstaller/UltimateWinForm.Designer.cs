@@ -29,9 +29,9 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UltimateWinForm));
-            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tcMain = new System.Windows.Forms.TabControl();
             this.tabInstallation = new System.Windows.Forms.TabPage();
-            this.tabControl2 = new System.Windows.Forms.TabControl();
+            this.tcInstallation = new System.Windows.Forms.TabControl();
             this.tabCurrent = new System.Windows.Forms.TabPage();
             this.lGameName = new System.Windows.Forms.Label();
             this.lInstallGame = new System.Windows.Forms.Label();
@@ -41,6 +41,9 @@
             this.lInstallationStatus = new System.Windows.Forms.Label();
             this.lInstallStatus = new System.Windows.Forms.Label();
             this.tabOverall = new System.Windows.Forms.TabPage();
+            this.lIOEp2Path = new System.Windows.Forms.Label();
+            this.lIOEp2Stat = new System.Windows.Forms.Label();
+            this.lIOEp1Path = new System.Windows.Forms.Label();
             this.bIOEp2Visit = new System.Windows.Forms.Button();
             this.bIOEp2Uninstall = new System.Windows.Forms.Button();
             this.bIOEp1Visit = new System.Windows.Forms.Button();
@@ -63,12 +66,9 @@
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.lIOEp1Path = new System.Windows.Forms.Label();
-            this.lIOEp2Stat = new System.Windows.Forms.Label();
-            this.lIOEp2Path = new System.Windows.Forms.Label();
-            this.tabControl1.SuspendLayout();
+            this.tcMain.SuspendLayout();
             this.tabInstallation.SuspendLayout();
-            this.tabControl2.SuspendLayout();
+            this.tcInstallation.SuspendLayout();
             this.tabCurrent.SuspendLayout();
             this.tabOverall.SuspendLayout();
             this.tabDownload.SuspendLayout();
@@ -76,21 +76,22 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
-            // tabControl1
+            // tcMain
             // 
-            this.tabControl1.Controls.Add(this.tabInstallation);
-            this.tabControl1.Controls.Add(this.tabDownload);
-            this.tabControl1.Controls.Add(this.tabSettings);
-            this.tabControl1.Controls.Add(this.tabAbout);
-            this.tabControl1.Location = new System.Drawing.Point(12, 102);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(402, 200);
-            this.tabControl1.TabIndex = 1;
+            this.tcMain.Controls.Add(this.tabInstallation);
+            this.tcMain.Controls.Add(this.tabDownload);
+            this.tcMain.Controls.Add(this.tabSettings);
+            this.tcMain.Controls.Add(this.tabAbout);
+            this.tcMain.Location = new System.Drawing.Point(12, 102);
+            this.tcMain.Name = "tcMain";
+            this.tcMain.SelectedIndex = 0;
+            this.tcMain.Size = new System.Drawing.Size(402, 200);
+            this.tcMain.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
+            this.tcMain.TabIndex = 1;
             // 
             // tabInstallation
             // 
-            this.tabInstallation.Controls.Add(this.tabControl2);
+            this.tabInstallation.Controls.Add(this.tcInstallation);
             this.tabInstallation.Location = new System.Drawing.Point(4, 22);
             this.tabInstallation.Name = "tabInstallation";
             this.tabInstallation.Padding = new System.Windows.Forms.Padding(3);
@@ -99,15 +100,16 @@
             this.tabInstallation.Text = "Installation";
             this.tabInstallation.UseVisualStyleBackColor = true;
             // 
-            // tabControl2
+            // tcInstallation
             // 
-            this.tabControl2.Controls.Add(this.tabCurrent);
-            this.tabControl2.Controls.Add(this.tabOverall);
-            this.tabControl2.Location = new System.Drawing.Point(0, 0);
-            this.tabControl2.Name = "tabControl2";
-            this.tabControl2.SelectedIndex = 0;
-            this.tabControl2.Size = new System.Drawing.Size(394, 174);
-            this.tabControl2.TabIndex = 15;
+            this.tcInstallation.Controls.Add(this.tabCurrent);
+            this.tcInstallation.Controls.Add(this.tabOverall);
+            this.tcInstallation.Location = new System.Drawing.Point(0, 0);
+            this.tcInstallation.Name = "tcInstallation";
+            this.tcInstallation.SelectedIndex = 0;
+            this.tcInstallation.Size = new System.Drawing.Size(394, 174);
+            this.tcInstallation.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
+            this.tcInstallation.TabIndex = 15;
             // 
             // tabCurrent
             // 
@@ -214,6 +216,31 @@
             this.tabOverall.TabIndex = 1;
             this.tabOverall.Text = "Overall";
             this.tabOverall.UseVisualStyleBackColor = true;
+            // 
+            // lIOEp2Path
+            // 
+            this.lIOEp2Path.Location = new System.Drawing.Point(8, 112);
+            this.lIOEp2Path.Name = "lIOEp2Path";
+            this.lIOEp2Path.Size = new System.Drawing.Size(372, 26);
+            this.lIOEp2Path.TabIndex = 18;
+            this.lIOEp2Path.Text = "Path:";
+            // 
+            // lIOEp2Stat
+            // 
+            this.lIOEp2Stat.Location = new System.Drawing.Point(128, 88);
+            this.lIOEp2Stat.Name = "lIOEp2Stat";
+            this.lIOEp2Stat.Size = new System.Drawing.Size(64, 13);
+            this.lIOEp2Stat.TabIndex = 17;
+            this.lIOEp2Stat.Text = "Installed";
+            this.lIOEp2Stat.TextAlign = System.Drawing.ContentAlignment.TopCenter;
+            // 
+            // lIOEp1Path
+            // 
+            this.lIOEp1Path.Location = new System.Drawing.Point(8, 42);
+            this.lIOEp1Path.Name = "lIOEp1Path";
+            this.lIOEp1Path.Size = new System.Drawing.Size(372, 26);
+            this.lIOEp1Path.TabIndex = 16;
+            this.lIOEp1Path.Text = "Path:";
             // 
             // bIOEp2Visit
             // 
@@ -432,47 +459,22 @@
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             // 
-            // lIOEp1Path
-            // 
-            this.lIOEp1Path.Location = new System.Drawing.Point(8, 42);
-            this.lIOEp1Path.Name = "lIOEp1Path";
-            this.lIOEp1Path.Size = new System.Drawing.Size(372, 26);
-            this.lIOEp1Path.TabIndex = 16;
-            this.lIOEp1Path.Text = "Path:";
-            // 
-            // lIOEp2Stat
-            // 
-            this.lIOEp2Stat.Location = new System.Drawing.Point(128, 88);
-            this.lIOEp2Stat.Name = "lIOEp2Stat";
-            this.lIOEp2Stat.Size = new System.Drawing.Size(64, 13);
-            this.lIOEp2Stat.TabIndex = 17;
-            this.lIOEp2Stat.Text = "Installed";
-            this.lIOEp2Stat.TextAlign = System.Drawing.ContentAlignment.TopCenter;
-            // 
-            // lIOEp2Path
-            // 
-            this.lIOEp2Path.Location = new System.Drawing.Point(8, 112);
-            this.lIOEp2Path.Name = "lIOEp2Path";
-            this.lIOEp2Path.Size = new System.Drawing.Size(372, 26);
-            this.lIOEp2Path.TabIndex = 18;
-            this.lIOEp2Path.Text = "Path:";
-            // 
             // UltimateWinForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(426, 347);
             this.Controls.Add(this.statusBar);
-            this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.tcMain);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.progressBar);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "UltimateWinForm";
             this.Text = "One-Click Mod Installer";
-            this.tabControl1.ResumeLayout(false);
+            this.tcMain.ResumeLayout(false);
             this.tabInstallation.ResumeLayout(false);
-            this.tabControl2.ResumeLayout(false);
+            this.tcInstallation.ResumeLayout(false);
             this.tabCurrent.ResumeLayout(false);
             this.tabCurrent.PerformLayout();
             this.tabOverall.ResumeLayout(false);
@@ -490,7 +492,7 @@
         #endregion
 
         private System.Windows.Forms.PictureBox pictureBox1;
-        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabControl tcMain;
         private System.Windows.Forms.TabPage tabInstallation;
         private System.Windows.Forms.TabPage tabDownload;
         private System.Windows.Forms.TabPage tabSettings;
@@ -506,7 +508,7 @@
         internal System.Windows.Forms.Label lModID;
         private System.Windows.Forms.Button bDownload;
         private System.Windows.Forms.ProgressBar progressBar;
-        private System.Windows.Forms.TabControl tabControl2;
+        private System.Windows.Forms.TabControl tcInstallation;
         private System.Windows.Forms.TabPage tabCurrent;
         private System.Windows.Forms.Label lGameName;
         private System.Windows.Forms.Label lInstallGame;

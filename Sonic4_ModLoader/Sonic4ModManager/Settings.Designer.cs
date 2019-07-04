@@ -47,14 +47,14 @@
             this.cb_AMBPatcher_generate_log = new System.Windows.Forms.CheckBox();
             this.cb_AMBPatcher_progress_bar = new System.Windows.Forms.CheckBox();
             this.tabAbout = new System.Windows.Forms.TabPage();
+            this.bRL_7z = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.link7z = new System.Windows.Forms.LinkLabel();
             this.bRL_SAT = new System.Windows.Forms.Button();
             this.bRL_S4ML = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.bOK = new System.Windows.Forms.Button();
             this.bCancel = new System.Windows.Forms.Button();
-            this.bRL_7z = new System.Windows.Forms.Button();
-            this.label4 = new System.Windows.Forms.Label();
-            this.link7z = new System.Windows.Forms.LinkLabel();
             this.tabControl1.SuspendLayout();
             this.tabInstallation.SuspendLayout();
             this.tabAMBPatcher.SuspendLayout();
@@ -101,6 +101,7 @@
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(366, 218);
+            this.tabControl1.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.tabControl1.TabIndex = 0;
             // 
             // tabInstallation
@@ -267,6 +268,35 @@
             this.tabAbout.Text = "About";
             this.tabAbout.UseVisualStyleBackColor = true;
             // 
+            // bRL_7z
+            // 
+            this.bRL_7z.Location = new System.Drawing.Point(261, 163);
+            this.bRL_7z.Name = "bRL_7z";
+            this.bRL_7z.Size = new System.Drawing.Size(91, 23);
+            this.bRL_7z.TabIndex = 7;
+            this.bRL_7z.Text = "Read License";
+            this.bRL_7z.UseVisualStyleBackColor = true;
+            this.bRL_7z.Click += new System.EventHandler(this.bRL_7z_Click);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(6, 134);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(205, 13);
+            this.label4.TabIndex = 5;
+            this.label4.Text = "7-Zip Copyright (C) 1999-2018 Igor Pavlov";
+            // 
+            // link7z
+            // 
+            this.link7z.AutoSize = true;
+            this.link7z.Location = new System.Drawing.Point(22, 147);
+            this.link7z.Name = "link7z";
+            this.link7z.Size = new System.Drawing.Size(115, 13);
+            this.link7z.TabIndex = 6;
+            this.link7z.TabStop = true;
+            this.link7z.Text = "https://www.7-zip.org/";
+            // 
             // bRL_SAT
             // 
             this.bRL_SAT.Location = new System.Drawing.Point(261, 99);
@@ -315,35 +345,6 @@
             this.bCancel.Text = "Cancel";
             this.bCancel.UseVisualStyleBackColor = true;
             this.bCancel.Click += new System.EventHandler(this.bCancel_Click);
-            // 
-            // bRL_7z
-            // 
-            this.bRL_7z.Location = new System.Drawing.Point(261, 163);
-            this.bRL_7z.Name = "bRL_7z";
-            this.bRL_7z.Size = new System.Drawing.Size(91, 23);
-            this.bRL_7z.TabIndex = 7;
-            this.bRL_7z.Text = "Read License";
-            this.bRL_7z.UseVisualStyleBackColor = true;
-            this.bRL_7z.Click += new System.EventHandler(this.bRL_7z_Click);
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 134);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(205, 13);
-            this.label4.TabIndex = 5;
-            this.label4.Text = "7-Zip Copyright (C) 1999-2018 Igor Pavlov";
-            // 
-            // link7z
-            // 
-            this.link7z.AutoSize = true;
-            this.link7z.Location = new System.Drawing.Point(22, 147);
-            this.link7z.Name = "link7z";
-            this.link7z.Size = new System.Drawing.Size(115, 13);
-            this.link7z.TabIndex = 6;
-            this.link7z.TabStop = true;
-            this.link7z.Text = "https://www.7-zip.org/";
             // 
             // Settings
             // 

@@ -28,9 +28,9 @@ namespace OneClickModInstaller
                     //1CMI installation things
                     switch (args[0])
                     {
-                        case "--install":   Reg.Install();   tabControl1.SelectTab(tabInstallation); break;
-                        case "--uninstall": Reg.Uninstall(); tabControl1.SelectTab(tabInstallation); break;
-                        case "--fix":       Reg.FixPath();   tabControl1.SelectTab(tabInstallation); break;
+                        case "--install":   Reg.Install();   tcMain.SelectTab(tabInstallation); break;
+                        case "--uninstall": Reg.Uninstall(); tcMain.SelectTab(tabInstallation); break;
+                        case "--fix":       Reg.FixPath();   tcMain.SelectTab(tabInstallation); break;
                     }
 
                     //Drag&Drop mod installation
@@ -43,14 +43,14 @@ namespace OneClickModInstaller
                         lType.Text = lModID.Text = lDownloadType.Text = lDownloadID.Text = null;
 
                         lDownloadLink.Text = "Path to the mod:";
-                        tabControl1.SelectTab(tabDownload);
+                        tcMain.SelectTab(tabDownload);
                     }
                 }
                 else
                 {
                     //a 1-lick installation call
                     //sonic4mmepx:url,mod_type,mod_id
-                    tabControl1.SelectTab(tabDownload);
+                    tcMain.SelectTab(tabDownload);
                     var tmp_args = args[0].Substring(12).Split(',');
                     lURL.Text = tmp_args[0];
 
