@@ -19,20 +19,12 @@ namespace OneClickModInstaller
             InitializeComponent();
 
             //Dealing with arguments
-            if (args.Length == 1)
+            if (args.Length > 0)
             {
                 //If this is not a 1-click installation call
                 if (!(args[0].StartsWith("sonic4mmep1:") ||
                     args[0].StartsWith("sonic4mmep2:")))
                 {
-                    //1CMI installation things
-                    switch (args[0])
-                    {
-                        case "--install":   Reg.Install();   tcMain.SelectTab(tabInstallation); break;
-                        case "--uninstall": Reg.Uninstall(); tcMain.SelectTab(tabInstallation); break;
-                        case "--fix":       Reg.FixPath();   tcMain.SelectTab(tabInstallation); break;
-                    }
-
                     //Drag&Drop mod installation
                     if (File.Exists(args[0]) || Directory.Exists(args[0]))
                     {
@@ -362,6 +354,18 @@ namespace OneClickModInstaller
         {
             if (Reg.InstallationStatus()["ep2"] < 1) { return; }
             MyDirectory.OpenExplorer(Reg.InstallationLocation()["ep2"]);
+        }
+
+        private void bIOEp1Uninstall_Click(object sender, EventArgs e)
+        {
+            Reg.Uninstall("ep1");
+            UpdateWindow();
+        }
+
+        private void bIOEp2Uninstall_Click(object sender, EventArgs e)
+        {
+            Reg.Uninstall("ep2");
+            UpdateWindow();
         }
     }
 }

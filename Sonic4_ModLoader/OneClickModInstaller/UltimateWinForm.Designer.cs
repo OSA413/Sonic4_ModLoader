@@ -229,9 +229,9 @@
             // 
             this.lIOEp2Stat.Location = new System.Drawing.Point(128, 88);
             this.lIOEp2Stat.Name = "lIOEp2Stat";
-            this.lIOEp2Stat.Size = new System.Drawing.Size(64, 13);
+            this.lIOEp2Stat.Size = new System.Drawing.Size(65, 13);
             this.lIOEp2Stat.TabIndex = 17;
-            this.lIOEp2Stat.Text = "Installed";
+            this.lIOEp2Stat.Text = "Not installed";
             this.lIOEp2Stat.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // lIOEp1Path
@@ -263,6 +263,7 @@
             this.bIOEp2Uninstall.Text = "Uninstall";
             this.bIOEp2Uninstall.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.bIOEp2Uninstall.UseVisualStyleBackColor = true;
+            this.bIOEp2Uninstall.Click += new System.EventHandler(this.bIOEp2Uninstall_Click);
             // 
             // bIOEp1Visit
             // 
@@ -285,6 +286,7 @@
             this.bIOEp1Uninstall.Text = "Uninstall";
             this.bIOEp1Uninstall.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.bIOEp1Uninstall.UseVisualStyleBackColor = true;
+            this.bIOEp1Uninstall.Click += new System.EventHandler(this.bIOEp1Uninstall_Click);
             // 
             // lIOEp2Deco
             // 
@@ -299,9 +301,9 @@
             // 
             this.lIOEp1Stat.Location = new System.Drawing.Point(128, 18);
             this.lIOEp1Stat.Name = "lIOEp1Stat";
-            this.lIOEp1Stat.Size = new System.Drawing.Size(64, 13);
+            this.lIOEp1Stat.Size = new System.Drawing.Size(65, 13);
             this.lIOEp1Stat.TabIndex = 9;
-            this.lIOEp1Stat.Text = "Installed";
+            this.lIOEp1Stat.Text = "Not installed";
             this.lIOEp1Stat.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // lIOEp1Deco

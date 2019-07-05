@@ -23,7 +23,7 @@ namespace OneClickModInstaller
             return principal.IsInRole(WindowsBuiltInRole.Administrator);
         }
 
-        public static void RestartAs(string args)
+        public static void RunAs(string args)
         {
             ProcessStartInfo startInfo = new ProcessStartInfo
             {
@@ -31,9 +31,8 @@ namespace OneClickModInstaller
                 Arguments = args,
                 Verb = "runas"
             };
-
-            Process.Start(startInfo);
-            Application.Exit();
+            
+            Process.Start(startInfo).WaitForExit();
         }
     }
 
@@ -64,11 +63,11 @@ namespace OneClickModInstaller
 
     public static class Reg
     {
-        public static void FixPath()
+        public static void FixPath(string game = null)
         {
             if (Admin.AmI())
             {
-                string game = GetGame.Short();
+                if (game == null) { game = GetGame.Short(); }
 
                 if (game != "dunno")
                 {
@@ -79,17 +78,18 @@ namespace OneClickModInstaller
             }
             else
             {
-                Admin.RestartAs("--fix");
+                string extra_arg = "";
+                if (game != null) { extra_arg = " " + game; }
+
+                Admin.RunAs("--fix " + extra_arg);
             }
-
-
         }
 
-        public static void Install()
+        public static void Install(string game = null)
         {
             if (Admin.AmI())
             {
-                string game = GetGame.Short();
+                if (game == null) { game = GetGame.Short(); }
 
                 if (game != "dunno")
                 {
@@ -103,15 +103,18 @@ namespace OneClickModInstaller
             }
             else
             {
-                Admin.RestartAs("--install");
+                string extra_arg = "";
+                if (game != null) { extra_arg = " " + game; }
+
+                Admin.RunAs("--install " + extra_arg);
             }
         }
 
-        public static void Uninstall()
+        public static void Uninstall(string game = null)
         {
             if (Admin.AmI())
             {
-                string game = GetGame.Short();
+                if (game == null) { game = GetGame.Short(); }
 
                 if (game != "dunno")
                 {
@@ -123,7 +126,10 @@ namespace OneClickModInstaller
             }
             else
             {
-                Admin.RestartAs("--uninstall");
+                string extra_arg = "";
+                if (game != null) { extra_arg = " " + game; }
+
+                Admin.RunAs("--uninstall " + extra_arg);
             }
         }
 
@@ -177,9 +183,9 @@ namespace OneClickModInstaller
             foreach (string game in games)
             {
                 string root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
-                string location = (string)Registry.GetValue(root_key + "\\Shell\\Open\\Command", "", "");
+                string location = (string)Registry.GetValue(root_key + "\\Shell\\Open\\Command", "", null);
 
-                if (location != "")
+                if (location != null)
                 {
                     location = location.Substring(1, location.Length - 7);
                 }
@@ -387,6 +393,20 @@ namespace OneClickModInstaller
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+
+            //Now the 1CMI installation thing will be here
+            if (args.Length > 0)
+            {
+                string extra_arg = null;
+                if (args.Length > 1) { extra_arg = args[1]; }
+
+                switch (args[0])
+                {
+                    case "--install":   Reg.Install(extra_arg);   Environment.Exit(0); break;
+                    case "--uninstall": Reg.Uninstall(extra_arg); Environment.Exit(0); break;
+                    case "--fix":       Reg.FixPath(extra_arg);   Environment.Exit(0); break;
+                }
+            }
 
             //This will fix problems when you launch 1CMI from terminal
             if (!Application.ExecutablePath.Contains(Path.Combine("bin", "Debug")))
