@@ -10,10 +10,6 @@ using System.Linq;
 
 namespace OneClickModInstaller
 {
-    ///////////////////////
-    //Installation things//
-    ///////////////////////
-
     public static class Admin
     {
         public static bool AmI()

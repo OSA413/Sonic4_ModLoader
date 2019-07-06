@@ -166,6 +166,7 @@
             this.bUninstall.Text = "Uninstall";
             this.bUninstall.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.bUninstall.UseVisualStyleBackColor = true;
+            this.bUninstall.Click += new System.EventHandler(this.bUninstall_Click);
             // 
             // bInstall
             // 
@@ -178,6 +179,7 @@
             this.bInstall.Text = "Install/Fix";
             this.bInstall.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
             this.bInstall.UseVisualStyleBackColor = true;
+            this.bInstall.Click += new System.EventHandler(this.bInstall_Click);
             // 
             // lInstallationStatus
             // 

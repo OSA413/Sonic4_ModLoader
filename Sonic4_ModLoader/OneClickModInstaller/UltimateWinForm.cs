@@ -99,6 +99,7 @@ namespace OneClickModInstaller
 
             foreach (string key in statuses.Keys)
             {
+                Console.WriteLine(key + " " + statuses[key]);
                 Label  lStatus;
                 Label  lPath;
                 Button bUninstall;
@@ -138,36 +139,51 @@ namespace OneClickModInstaller
                     bVisit.Enabled     = false;
                 }
             }
-            
+
             ///////////
             //Current//
             ///////////
 
-            int current_status = statuses[GetGame.Short()];
+            string current_game = GetGame.Short();
 
-            bInstall.Enabled   =
-            bUninstall.Enabled = true;
-
-            switch(current_status)
+            if (current_game == "dunno")
             {
-                case 0:
-                    lInstallationStatus.Text = "Not installed";
-                    bInstall.Text = "Install";
-                    bUninstall.Enabled = false;
-                    break;
-                case 1:
-                    lInstallationStatus.Text = "Installed";
-                    bInstall.Enabled = false;
-                    bInstall.Text = "Install";
-                    break;
-                case 2:
-                    lInstallationStatus.Text = "Another installation present";
-                    bInstall.Text = "Fix registry path";
-                    break;
-                case -1:
-                    lInstallationStatus.Text = "Requires reinstallation";
-                    bInstall.Text = "Install";
-                    break;
+                switch (statuses["ep1"])
+                {
+                    case 0:
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else
+            {
+                int current_status = statuses[current_game];
+
+                bInstall.Enabled   =
+                bUninstall.Enabled = true;
+
+                switch (current_status)
+                {
+                    case 0:
+                        lInstallationStatus.Text = "Not installed";
+                        bInstall.Text = "Install";
+                        bUninstall.Enabled = false;
+                        break;
+                    case 1:
+                        lInstallationStatus.Text = "Installed";
+                        bInstall.Enabled = false;
+                        bInstall.Text = "Install";
+                        break;
+                    case 2:
+                        lInstallationStatus.Text = "Another installation present";
+                        bInstall.Text = "Fix registry path";
+                        break;
+                    case -1:
+                        lInstallationStatus.Text = "Requires reinstallation";
+                        bInstall.Text = "Install";
+                        break;
+                }
             }
         }
         
