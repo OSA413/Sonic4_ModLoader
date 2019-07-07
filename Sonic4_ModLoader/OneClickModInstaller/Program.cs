@@ -7,6 +7,7 @@ using System.Security.Principal;
 using System.Windows.Forms;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace OneClickModInstaller
 {
@@ -63,14 +64,12 @@ namespace OneClickModInstaller
         {
             if (Admin.AmI())
             {
-                if (game == null) { game = GetGame.Short(); }
+                if (game == null)    { game = GetGame.Short(); }
+                if (game == "dunno") { return; }
 
-                if (game != "dunno")
-                {
-                    string root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
+                string root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
 
-                    Registry.SetValue(root_key + "\\Shell\\Open\\Command", "", "\"" + System.Reflection.Assembly.GetEntryAssembly().Location + "\" \"%1\"");
-                }
+                Registry.SetValue(root_key + "\\Shell\\Open\\Command", "", "\"" + Assembly.GetEntryAssembly().Location + "\" \"%1\"");
             }
             else
             {
@@ -85,17 +84,16 @@ namespace OneClickModInstaller
         {
             if (Admin.AmI())
             {
-                if (game == null) { game = GetGame.Short(); }
+                if (game == null)    { game = GetGame.Short(); }
+                if (game == "dunno") { return; }
 
-                if (game != "dunno")
-                {
-                    string root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
+                string root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
 
-                    Registry.SetValue(root_key, "", "URL:Sonic 4 Mod Loader's 1-Click Installer protocol");
-                    Registry.SetValue(root_key, "URL Protocol", "");
-                    Registry.SetValue(root_key + "\\DefaultIcon", "", "OneClickModInstaller.exe");
-                    Registry.SetValue(root_key + "\\Shell\\Open\\Command", "", "\"" + System.Reflection.Assembly.GetEntryAssembly().Location + "\" \"%1\"");
-                }
+                Registry.SetValue(root_key, "", "URL:Sonic 4 Mod Loader's 1-Click Installer protocol");
+                Registry.SetValue(root_key, "URL Protocol", "");
+                Registry.SetValue(root_key + "\\DefaultIcon", "", "OneClickModInstaller.exe");
+                Registry.SetValue(root_key + "\\Shell\\Open\\Command", "", "\"" + Assembly.GetEntryAssembly().Location + "\" \"%1\"");
+
             }
             else
             {
@@ -110,15 +108,13 @@ namespace OneClickModInstaller
         {
             if (Admin.AmI())
             {
-                if (game == null) { game = GetGame.Short(); }
+                if (game == null)    { game = GetGame.Short(); }
+                if (game == "dunno") { return; }
 
-                if (game != "dunno")
-                {
-                    string root_key = "sonic4mm" + game;
+                string root_key = "sonic4mm" + game;
 
-                    if (Registry.ClassesRoot.OpenSubKey(root_key) != null)
-                    { Registry.ClassesRoot.DeleteSubKeyTree(root_key); }
-                }
+                if (Registry.ClassesRoot.OpenSubKey(root_key) != null)
+                { Registry.ClassesRoot.DeleteSubKeyTree(root_key); }
             }
             else
             {

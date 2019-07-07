@@ -68,18 +68,6 @@ namespace OneClickModInstaller
                     }
                 }
             }
-
-            ////////////////////
-            //Installation tab//
-            ////////////////////
-
-            lGameName.Text = "Sonic 4: " + GetGame.Full();
-            if (Admin.AmI())
-            {
-                lInstallAdmin.Text = "";
-                bInstall.Image = null;
-                bUninstall.Image = null;
-            }
             
             UpdateWindow();
         }
@@ -100,43 +88,43 @@ namespace OneClickModInstaller
             foreach (string key in statuses.Keys)
             {
                 Console.WriteLine(key + " " + statuses[key]);
-                Label  lStatus;
-                Label  lPath;
-                Button bUninstall;
-                Button bVisit;
+                Label  lIOStatus;
+                Label  lIOPath;
+                Button bIOUninstall;
+                Button bIOVisit;
 
                 switch (key)
                 {
                     case "ep1":
-                        lStatus    = lIOEp1Stat;
-                        lPath      = lIOEp1Path;
-                        bUninstall = bIOEp1Uninstall;
-                        bVisit     = bIOEp1Visit;
+                        lIOStatus    = lIOEp1Stat;
+                        lIOPath      = lIOEp1Path;
+                        bIOUninstall = bIOEp1Uninstall;
+                        bIOVisit     = bIOEp1Visit;
                         break;
                     case "ep2":
-                        lStatus    = lIOEp2Stat;
-                        lPath      = lIOEp2Path;
-                        bUninstall = bIOEp2Uninstall;
-                        bVisit     = bIOEp2Visit;
+                        lIOStatus    = lIOEp2Stat;
+                        lIOPath      = lIOEp2Path;
+                        bIOUninstall = bIOEp2Uninstall;
+                        bIOVisit     = bIOEp2Visit;
                         break;
                     default: continue;
                 }
 
                 if (statuses[key] > 0)
                 {
-                    lStatus.Text = "Installed";
-                    lPath.Text   = ("Path: " + locations[key]).Replace(' ', '\u2007');
-                    bUninstall.Enabled =
-                    bVisit.Enabled     = true;
+                    lIOStatus.Text = "Installed";
+                    lIOPath.Text   = ("Path: " + locations[key]).Replace(' ', '\u2007');
+                    bIOUninstall.Enabled =
+                    bIOVisit.Enabled     = true;
 
                     if (Admin.AmI()) { bUninstall.Image = null; }
                 }
                 else
                 {
-                    lStatus.Text = "Not installed";
-                    lPath.Text   = "";
-                    bUninstall.Enabled =
-                    bVisit.Enabled     = false;
+                    lIOStatus.Text = "Not installed";
+                    lIOPath.Text   = "";
+                    bIOUninstall.Enabled =
+                    bIOVisit.Enabled     = false;
                 }
             }
 
@@ -146,18 +134,36 @@ namespace OneClickModInstaller
 
             string current_game = GetGame.Short();
 
+            if (Admin.AmI())
+            {
+                lInstallAdmin.Text = "";
+                bInstall.Image = null;
+                bUninstall.Image = null;
+            }
+
             if (current_game == "dunno")
             {
+                lGameName.Text           = "Not found";
+                lInstallationStatus.Text = "None";
+                bInstall.Text      = "Install as fake Episode 1";
+                bUninstall.Text    = "Uninstall fake Episode 1";
+                bInstall.Enabled   =
+                bUninstall.Enabled = false;
+
                 switch (statuses["ep1"])
                 {
                     case 0:
+                        bInstall.Enabled = true;
                         break;
-                    default:
+                    case 1:
+                        lInstallationStatus.Text = "Installed as fake Episode 1 here";
+                        bUninstall.Enabled = true;
                         break;
                 }
             }
             else
             {
+                lGameName.Text = "Sonic 4: " + GetGame.Full();
                 int current_status = statuses[current_game];
 
                 bInstall.Enabled   =
@@ -189,10 +195,18 @@ namespace OneClickModInstaller
         
         private void bInstall_Click(object sender, EventArgs e)
         {
-            switch (Reg.InstallationStatus()[GetGame.Short()])
+            if (GetGame.Short() == "dunno")
             {
-                case 2:  Reg.FixPath(); break;
-                default: Reg.Install(); break;
+                if (Reg.InstallationStatus()["ep1"] == 0)
+                { Reg.Install("ep1"); }
+            }
+            else
+            {
+                switch (Reg.InstallationStatus()[GetGame.Short()])
+                {
+                    case 2: Reg.FixPath(); break;
+                    default: Reg.Install(); break;
+                }
             }
 
             UpdateWindow();
@@ -200,7 +214,13 @@ namespace OneClickModInstaller
 
         private void bUninstall_Click(object sender, EventArgs e)
         {
-            Reg.Uninstall();
+            if (GetGame.Short() == "dunno")
+            {
+                if (Reg.InstallationStatus()["ep1"] == 1)
+                { Reg.Uninstall("ep1"); }
+            }
+            else { Reg.Uninstall(); }
+
             UpdateWindow();
         }
 
