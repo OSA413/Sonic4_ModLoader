@@ -319,11 +319,11 @@ namespace OneClickModInstaller
         public static Tuple<string[], string> FindRoot(string dir_name)
         {
             string platform = "???";
-            string[] platforms = new string[2] { "pc", "dolphin" };
-
             List<string> mod_roots = new List<string>();
+
+            string[] platforms = new string[2] { "pc", "dolphin" };
             string[] game_folders_array = new string[2] { "CUTSCENE,DEMO,G_COM,G_SS,G_EP1COM,G_EP1ZONE2,G_EP1ZONE3,G_EP1ZONE4,G_ZONE1,G_ZONE2,G_ZONE3,G_ZONE4,G_ZONEF,MSG,NNSTDSHADER,SOUND"
-                                                  , "WSNE8P,WSNP8P,WSNJ8P"};
+                                                        , "WSNE8P,WSNP8P,WSNJ8P"};
 
             for (int i = 0; i < platforms.Length; i++)
             {
@@ -349,6 +349,40 @@ namespace OneClickModInstaller
             }
 
             return Tuple.Create(mod_roots.ToArray(), platform);
+        }
+
+        public static Tuple<string[], string> FindFiles(string dir_name)
+        {
+            List<string> file_roots = new List<string>();
+            string type = "???";
+
+            string[] types      = new string[1] { "Cheat Tables" };
+            string[] extensions = new string[1] { "ct" };
+
+            for (int i = 0; i < types.Length; i++)
+            {
+                if (type == "mixed") { break; }
+                string[] extensions_to_find = extensions[i].Split(',');
+
+                foreach (string extension in extensions_to_find)
+                {
+                    if (type == "mixed") { break; }
+                    foreach (string mod_file in Directory.GetFiles(dir_name, "*." + extension, SearchOption.AllDirectories))
+                    {
+                        if (type == "???")    { type = types[i]; }
+                        if (type != types[i]) { type = "mixed"; break; }
+
+                        string tmp_root = Path.GetDirectoryName(mod_file);
+                        if (!file_roots.Contains(tmp_root))
+                        {
+                            file_roots.Add(tmp_root);
+                        }
+                    }
+                }
+            }
+            if (type == "mixed") { file_roots.RemoveRange(0, file_roots.Count); }
+
+            return Tuple.Create(file_roots.ToArray(), type);
         }
 
         public static void CopyAll(string source, string destination)
