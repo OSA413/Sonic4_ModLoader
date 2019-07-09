@@ -908,11 +908,12 @@ namespace AMBPatcher
 
             public static bool IsAMB(byte[] raw_file)
             {
-                if (raw_file[0] == '#' &&
-                    raw_file[1] == 'A' &&
-                    raw_file[2] == 'M' &&
-                    raw_file[3] == 'B')
-                    {return true;}
+                if (raw_file.Length >= 4)
+                {if (raw_file[0] == '#' &&
+                     raw_file[1] == 'A' &&
+                     raw_file[2] == 'M' &&
+                     raw_file[3] == 'B')
+                    {return true;}}
 
                 return false;
             }
