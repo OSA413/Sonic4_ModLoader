@@ -40,9 +40,9 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(12, 9);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(316, 13);
+            this.label1.Size = new System.Drawing.Size(305, 13);
             this.label1.TabIndex = 0;
-            this.label1.Text = "There are several mods found. Which of them you want to install?";
+            this.label1.Text = "There are several {0} found. Which of them you want to install?";
             // 
             // bContinue
             // 

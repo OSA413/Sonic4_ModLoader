@@ -356,7 +356,7 @@ namespace OneClickModInstaller
             List<string> file_roots = new List<string>();
             string type = "???";
 
-            string[] types      = new string[1] { "Cheat Tables" };
+            string[] types      = new string[1] { "ct" };
             string[] extensions = new string[1] { "ct" };
 
             for (int i = 0; i < types.Length; i++)

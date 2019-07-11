@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace OneClickModInstaller
 {
@@ -13,6 +14,43 @@ namespace OneClickModInstaller
         public static string archive_name { set; get; }
         public static string archive_dir  { set; get; }
         public static string last_mod     { set; get; }
+        
+        public static class Settings
+        {
+            public static Dictionary<string, string> Paths { set; get; }
+
+            public static void Load()
+            {
+                Settings.Paths.Add("CheatTables", "");
+
+                if (File.Exists("OneClickModInstaller.cfg"))
+                {
+                    string[] cfg_file = File.ReadAllLines("OneClickModInstaller.cfg");
+
+                    foreach (string line in cfg_file)
+                    {
+                        if (!line.Contains("=")) { continue; }
+                        string formatted_line = line.Substring(line.IndexOf("=") + 1);
+
+                        if (line.StartsWith("CheatTables="))
+                        { Settings.Paths["CheatTables"] = formatted_line.Replace("\\", "/"); }
+                    }
+                }
+            }
+
+            public static void Save()
+            {
+                var text = new List<string> { };
+
+                text.Add("[Paths]");
+                foreach (string path in Settings.Paths.Keys)
+                {
+                    text.Add(path + "=" + Settings.Paths[path]);
+                }
+
+                File.WriteAllLines("OneClickModInstaller.cfg", text);
+            }
+        }
 
         public UltimateWinForm(string[] args)
         {
@@ -68,7 +106,8 @@ namespace OneClickModInstaller
                     }
                 }
             }
-            
+
+            Settings.Load();
             UpdateWindow();
         }
         
@@ -316,15 +355,49 @@ namespace OneClickModInstaller
 
                 if (mod_roots.Length > 1)
                 {
-                    TooManyMods tmm_form = new TooManyMods(mod_roots);
+                    TooManyMods tmm_form = new TooManyMods(mod_roots, platform);
                     tmm_form.ShowDialog();
 
                     mod_roots = tmm_form.mods;
                 }
                 else if (mod_roots.Length == 0)
                 {
-                    MessageBox.Show("1-Click Mod Installer couldn't find any root directories of the mod. The mod won't be installed. Try to install the mod manually or try to contact the mod creator or the creator of the Mod Loader.");
-                    Environment.Exit(0);
+                    var FoundFiles = ModArchive.FindFiles(archive_dir);
+                    string type = FoundFiles.Item2;
+                    string[] file_roots = FoundFiles.Item1;
+
+                    if (type == "???")
+                    {
+                        MessageBox.Show("One-Click Mod Installer couldn't find any root directories of the mod. The mod won't be installed. Try to install the mod manually or try to contact the mod creator or the creator of the Mod Loader."
+                                      , "Couldn't install the mod"
+                                      , MessageBoxButtons.OK
+                                      , MessageBoxIcon.Asterisk);
+                        Environment.Exit(0);
+                    }
+                    else if (type == "mixed")
+                    {
+                        //TODO: think up a better explanation
+                        MessageBox.Show("Looks like this thing is complicated, try to install it manually. bye"
+                                      , "Couldn't install the mod"
+                                      , MessageBoxButtons.OK
+                                      , MessageBoxIcon.Exclamation);
+                        Environment.Exit(0);
+                    }
+                    else
+                    {
+                        if (file_roots.Length > 1)
+                        {
+                            TooManyMods tmm_form = new TooManyMods(file_roots, type);
+                            tmm_form.ShowDialog();
+
+                            mod_roots = tmm_form.mods;
+                        }
+
+                        if (Settings.Paths["CheatTables"] == "")
+                        {
+                            //TODO
+                        }
+                    }
                 }
 
                 last_mod = Path.GetFileName(mod_roots[0]);
@@ -362,9 +435,9 @@ namespace OneClickModInstaller
             string unit;
             int divider;
 
-            if (e.TotalBytesToReceive > 1024 * 1024 * 5)
+            if (e.TotalBytesToReceive > 1024 * 1024 * 16)
             { unit = "MBs"; divider = 1024 * 1024; }
-            else if (e.TotalBytesToReceive > 1024 * 5)
+            else if (e.TotalBytesToReceive > 1024 * 16)
             { unit = "KBs"; divider = 1024; }
             else
             { unit = "Bytes"; divider = 1; }
@@ -376,7 +449,7 @@ namespace OneClickModInstaller
             }
             else
             {
-                toolStripStatusLabel1.Text = "Downloading... (" + e.BytesReceived / divider + unit + " / " + e.TotalBytesToReceive / divider + unit + ")";
+                toolStripStatusLabel1.Text = "Downloading... (" + e.BytesReceived / divider + " / " + e.TotalBytesToReceive / divider + unit + ")";
             }
         }
 
