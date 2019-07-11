@@ -131,7 +131,7 @@ namespace Sonic4ModManager
             {
                 Directory.CreateDirectory("mods");
             }
-            File.WriteAllLines(@"mods\mods.ini", checked_mods.ToArray());
+            File.WriteAllLines(Path.Combine("mods","mods.ini"), checked_mods.ToArray());
         }
 
         static bool Play()
