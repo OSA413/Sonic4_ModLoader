@@ -275,7 +275,7 @@ namespace OneClickModInstaller
 
         public static int CheckFiles(string dir_name)
         {
-            string[] good_formats = "TXT,INI,DDS,TXB,AMA,AME,ZNO,ZNM,ZNV,DC,EV,RG,MD,MP,AT,DF,DI,PSH,VSH,LTS,XNM,MFS,SSS,GPB,MSG,AYK,ADX,AMB,CPK,CSB,PNG".Split(',');
+            string[] good_formats = "TXT,INI,DDS,TXB,AMA,AME,ZNO,ZNM,ZNV,DC,EV,RG,MD,MP,AT,DF,DI,PSH,VSH,LTS,XNM,MFS,SSS,GPB,MSG,AYK,ADX,AMB,CPK,CSB,PNG,CT".Split(',');
 
             string[] all_files = Directory.GetFiles(dir_name, "*", SearchOption.AllDirectories);
             List<string> suspicious_files = new List<string>();
@@ -356,7 +356,7 @@ namespace OneClickModInstaller
             List<string> file_roots = new List<string>();
             string type = "???";
 
-            string[] types      = new string[1] { "ct" };
+            string[] types      = new string[1] { "CheatTables" };
             string[] extensions = new string[1] { "ct" };
 
             for (int i = 0; i < types.Length; i++)

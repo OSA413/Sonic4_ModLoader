@@ -10,7 +10,7 @@ namespace OneClickModInstaller
             InitializeComponent();
             foreach (string file in args)
             {
-                listView1.Items.Add(file.Substring(UltimateWinForm.archive_dir.Length));
+                listView1.Items.Add(file.Substring(UltimateWinForm.Installation.ArchiveDir.Length));
             }
             listView1.Columns[0].Width = -2;
         }

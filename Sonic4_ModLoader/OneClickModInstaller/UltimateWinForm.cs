@@ -10,10 +10,17 @@ namespace OneClickModInstaller
 {
     public partial class UltimateWinForm:Form
     {
-        public static string server_host  { set; get; }
-        public static string archive_name { set; get; }
-        public static string archive_dir  { set; get; }
-        public static string last_mod     { set; get; }
+        //This class stores variables related to mod installation
+        public static class Installation
+        {
+            public static string ServerHost  { set; get; }
+            public static string ArchiveName { set; get; }
+            public static string ArchiveDir  { set; get; }
+            public static string LastMod     { set; get; }
+            public static string[] ModRoots  { set; get; }
+            public static string Type        { set; get; }
+            public static string Status      { set; get; }
+        }
         
         public static class Settings
         {
@@ -51,7 +58,7 @@ namespace OneClickModInstaller
                 File.WriteAllLines("OneClickModInstaller.cfg", text);
             }
         }
-
+    
         public UltimateWinForm(string[] args)
         {
             InitializeComponent();
@@ -92,22 +99,23 @@ namespace OneClickModInstaller
                     if (lURL.Text.Contains("gamebanana.com"))
                     {
                         lDownloadTrying.Text = lDownloadTrying.Text.Replace("{1}", "GameBanana");
-                        server_host = "gamebanana";
+                        Installation.ServerHost = "gamebanana";
                     }
                     else if (lURL.Text.Contains("github.com"))
                     {
                         lDownloadTrying.Text = lDownloadTrying.Text.Replace("{1}", "GitHub");
-                        server_host = "github";
+                        Installation.ServerHost = "github";
                     }
                     else
                     {
                         lDownloadTrying.Text = lDownloadTrying.Text.Replace("{1}", "the Internet");
-                        server_host = "else";
+                        Installation.ServerHost = "else";
                     }
                 }
             }
 
             Settings.Load();
+            Installation.Status = "Idle";
             UpdateWindow();
         }
         
@@ -265,50 +273,58 @@ namespace OneClickModInstaller
 
         private void bDownload_Click(object sender, EventArgs e)
         {
-            string archive_url = lURL.Text;
-            if (File.Exists(archive_url) || Directory.Exists(archive_url))
+            if (Installation.Status == "Idle")
             {
-                archive_name = archive_url;
-                DoTheRest();
-            }
-            else
-            {
-                using (WebClient wc = new WebClient())
+                string archive_url = lURL.Text;
+                if (File.Exists(archive_url) || Directory.Exists(archive_url))
                 {
-                    toolStripStatusLabel1.Text = "Connecting to the server...";
-                    bDownload.Enabled = false;
-                    wc.DownloadFileCompleted += new AsyncCompletedEventHandler(fake_DoTheRest);
-                    wc.DownloadProgressChanged += wc_DownloadProgressChanged;
-
-                    //Download link goes here
-                    string url = URL.GetRedirect(archive_url);
-
-                    //Getting file name of the archive
-                    if (server_host == "github")
-                    {
-                        //GitHub's redirect link is something like a request rather than a file "path" on a server
-                        archive_name = archive_url.Split('/')[archive_url.Split('/').Length - 1];
-                    }
-                    else
-                    {
-                        archive_name = url.Split('/')[url.Split('/').Length - 1];
-                    }
-
-                    if (server_host == "gamebanana")
-                    {
-                        //Well, it seems that GB's counter doesn't increase if you download
-                        //the file directly from the redirect url. But I'm not sure that
-                        //this works, too. And this is slower as well.
-                        url = archive_url;
-                    }
-
-                    if (File.Exists(archive_name))
-                    {
-                        File.Delete(archive_name);
-                    }
-
-                    wc.DownloadFileAsync(new Uri(url), archive_name);
+                    Installation.ArchiveName = archive_url;
+                    DoTheRest();
                 }
+                else
+                {
+                    using (WebClient wc = new WebClient())
+                    {
+                        toolStripStatusLabel1.Text = "Connecting to the server...";
+                        bDownload.Enabled = false;
+                        wc.DownloadFileCompleted += new AsyncCompletedEventHandler(fake_DoTheRest);
+                        wc.DownloadProgressChanged += wc_DownloadProgressChanged;
+
+                        //Download link goes here
+                        string url = URL.GetRedirect(archive_url);
+
+                        //Getting file name of the archive
+                        if (Installation.ServerHost == "github")
+                        {
+                            //GitHub's redirect link is something like a request rather than a file "path" on a server
+                            Installation.ArchiveName = archive_url.Split('/')[archive_url.Split('/').Length - 1];
+                        }
+                        else
+                        {
+                            Installation.ArchiveName = url.Split('/')[url.Split('/').Length - 1];
+                        }
+
+                        if (Installation.ServerHost == "gamebanana")
+                        {
+                            //Well, it seems that GB's counter doesn't increase if you download
+                            //the file directly from the redirect url. But I'm not sure that
+                            //this works, too. And this is slower as well.
+                            url = archive_url;
+                        }
+
+                        if (File.Exists(Installation.ArchiveName))
+                        {
+                            File.Delete(Installation.ArchiveName);
+                        }
+
+                        wc.DownloadFileAsync(new Uri(url), Installation.ArchiveName);
+                    }
+                }
+            }
+            else if (Installation.Status == "Waiting for path")
+            {
+                if (Settings.Paths[Installation.Type] != "")
+                { FinishInstallation(); }
             }
         }
 
@@ -323,46 +339,47 @@ namespace OneClickModInstaller
             {
                 toolStripStatusLabel1.Text = "Extracting downloaded archive...";
 
-                archive_dir = archive_name + "_extracted";
+                Installation.ArchiveDir = Installation.ArchiveName + "_extracted";
 
-                if (File.Exists(archive_name))
+                if (File.Exists(Installation.ArchiveName))
                 {
-                    if (Directory.Exists(archive_name + "_extracted"))
-                    { MyDirectory.DeleteRecursively(archive_name + "_extracted"); }
+                    if (Directory.Exists(Installation.ArchiveName + "_extracted"))
+                    { MyDirectory.DeleteRecursively(Installation.ArchiveName + "_extracted"); }
 
-                    ModArchive.Extract(archive_name);
+                    ModArchive.Extract(Installation.ArchiveName);
                 }
-                else if (Directory.Exists(archive_name))
+                else if (Directory.Exists(Installation.ArchiveName))
                 {
                     //This means that mod will be installed from a directory
-                    archive_dir = archive_name;
+                    Installation.ArchiveDir = Installation.ArchiveName;
                 }
 
                 toolStripStatusLabel1.Text = "Checking extracted files...";
-                int cont = ModArchive.CheckFiles(archive_dir);
+                int cont = ModArchive.CheckFiles(Installation.ArchiveDir);
 
                 if (cont != 1)
                 {
-                    MyDirectory.DeleteRecursively(archive_dir);
+                    MyDirectory.DeleteRecursively(Installation.ArchiveDir);
                     Environment.Exit(0);
                 }
 
                 toolStripStatusLabel1.Text = "Finding root directories...";
 
-                var FoundRootDirs = ModArchive.FindRoot(archive_dir);
-                string[] mod_roots = FoundRootDirs.Item1;
-                string platform = FoundRootDirs.Item2;
+                var FoundRootDirs = ModArchive.FindRoot(Installation.ArchiveDir);
+                Installation.ModRoots = FoundRootDirs.Item1;
+                Installation.Type = FoundRootDirs.Item2;
+                Installation.Status = "Ready to install";
 
-                if (mod_roots.Length > 1)
+                if (Installation.ModRoots.Length > 1)
                 {
-                    TooManyMods tmm_form = new TooManyMods(mod_roots, platform);
+                    TooManyMods tmm_form = new TooManyMods(Installation.ModRoots, Installation.Type);
                     tmm_form.ShowDialog();
 
-                    mod_roots = tmm_form.mods;
+                    Installation.ModRoots = tmm_form.mods;
                 }
-                else if (mod_roots.Length == 0)
+                else if (Installation.ModRoots.Length == 0)
                 {
-                    var FoundFiles = ModArchive.FindFiles(archive_dir);
+                    var FoundFiles = ModArchive.FindFiles(Installation.ArchiveDir);
                     string type = FoundFiles.Item2;
                     string[] file_roots = FoundFiles.Item1;
 
@@ -390,39 +407,58 @@ namespace OneClickModInstaller
                             TooManyMods tmm_form = new TooManyMods(file_roots, type);
                             tmm_form.ShowDialog();
 
-                            mod_roots = tmm_form.mods;
+                            Installation.ModRoots = tmm_form.mods;
                         }
 
-                        if (Settings.Paths["CheatTables"] == "")
+                        if (Settings.Paths[type] == "")
                         {
-                            //TODO
+                            tcMain.SelectTab(tabSettings);
+                            MessageBox.Show("Looks like the mod you installed requires a special path to be installed to.\nPlease, specify "
+                                          + type + "\nand then press the \"Continue Installation\" button in the \"Download\" tab."
+                                          , "Please specify a path"
+                                          , MessageBoxButtons.OK
+                                          , MessageBoxIcon.Information);
+                            Installation.Status = "Waiting for path";
                         }
                     }
                 }
 
-                last_mod = Path.GetFileName(mod_roots[0]);
+                Installation.LastMod = Path.GetFileName(Installation.ModRoots[0]);
 
+                if (Installation.Status == "Ready to install")
+                { FinishInstallation(); }
+                UpdateWindow();
+            });
+        }
+
+        async public void FinishInstallation()
+        {
+            await Task.Run(() =>
+            {
                 toolStripStatusLabel1.Text = "Installing downloaded mod...";
 
-                foreach (string mod in mod_roots)
+                foreach (string mod in Installation.ModRoots)
                 {
                     string dest;
-                    if (platform == "pc")
+                    if (Installation.Type == "pc")
                     { dest = Path.Combine("mods", Path.GetFileName(mod)); }
-                    else
+                    else if (Installation.Type == "dolphin")
                     { dest = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Dolphin Emulator", "Load", "Textures"); }
+                    else
+                    { dest = Settings.Paths[Installation.Type]; }
 
-                    if (Directory.Exists(dest) && platform == "pc") { MyDirectory.DeleteRecursively(dest); }
+                    if (Directory.Exists(dest) && Installation.Type == "pc") { MyDirectory.DeleteRecursively(dest); }
                     ModArchive.CopyAll(mod, dest);
                 }
 
                 DFtEM enable_mod = new DFtEM();
                 enable_mod.ShowDialog();
 
-                if (archive_name != archive_dir)
-                { MyDirectory.DeleteRecursively(archive_dir); }
-                if (File.Exists(archive_name))
-                { File.Delete(archive_name); }
+                if (Installation.ArchiveName != Installation.ArchiveDir)
+                { MyDirectory.DeleteRecursively(Installation.ArchiveDir); }
+
+                if (File.Exists(Installation.ArchiveName))
+                { File.Delete(Installation.ArchiveName); }
 
                 Environment.Exit(0);
             });
