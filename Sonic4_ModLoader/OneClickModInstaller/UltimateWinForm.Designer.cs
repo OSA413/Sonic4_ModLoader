@@ -61,19 +61,20 @@
             this.lModID = new System.Windows.Forms.Label();
             this.bDownload = new System.Windows.Forms.Button();
             this.tabSettings = new System.Windows.Forms.TabPage();
-            this.gbPaths = new System.Windows.Forms.GroupBox();
+            this.tcSettings = new System.Windows.Forms.TabControl();
+            this.tPaths = new System.Windows.Forms.TabPage();
             this.bPathCheatTables = new System.Windows.Forms.Button();
+            this.cbUseLocal7zip = new System.Windows.Forms.CheckBox();
             this.bPath7z = new System.Windows.Forms.Button();
+            this.tbPath7z = new System.Windows.Forms.TextBox();
             this.tbPathCheatTables = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.tbPath7z = new System.Windows.Forms.TextBox();
-            this.cbUseLocal7zip = new System.Windows.Forms.CheckBox();
+            this.tOther = new System.Windows.Forms.TabPage();
             this.tabAbout = new System.Windows.Forms.TabPage();
             this.statusBar = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.bSettingsSave = new System.Windows.Forms.Button();
             this.tcMain.SuspendLayout();
             this.tabInstallation.SuspendLayout();
             this.tcInstallation.SuspendLayout();
@@ -81,7 +82,8 @@
             this.tabOverall.SuspendLayout();
             this.tabDownload.SuspendLayout();
             this.tabSettings.SuspendLayout();
-            this.gbPaths.SuspendLayout();
+            this.tcSettings.SuspendLayout();
+            this.tPaths.SuspendLayout();
             this.statusBar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -421,8 +423,7 @@
             // 
             // tabSettings
             // 
-            this.tabSettings.Controls.Add(this.bSettingsSave);
-            this.tabSettings.Controls.Add(this.gbPaths);
+            this.tabSettings.Controls.Add(this.tcSettings);
             this.tabSettings.Location = new System.Drawing.Point(4, 22);
             this.tabSettings.Name = "tabSettings";
             this.tabSettings.Padding = new System.Windows.Forms.Padding(3);
@@ -431,24 +432,36 @@
             this.tabSettings.Text = "Settings";
             this.tabSettings.UseVisualStyleBackColor = true;
             // 
-            // gbPaths
+            // tcSettings
             // 
-            this.gbPaths.Controls.Add(this.bPathCheatTables);
-            this.gbPaths.Controls.Add(this.bPath7z);
-            this.gbPaths.Controls.Add(this.tbPathCheatTables);
-            this.gbPaths.Controls.Add(this.label1);
-            this.gbPaths.Controls.Add(this.tbPath7z);
-            this.gbPaths.Controls.Add(this.cbUseLocal7zip);
-            this.gbPaths.Location = new System.Drawing.Point(6, 6);
-            this.gbPaths.Name = "gbPaths";
-            this.gbPaths.Size = new System.Drawing.Size(382, 107);
-            this.gbPaths.TabIndex = 1;
-            this.gbPaths.TabStop = false;
-            this.gbPaths.Text = "Paths";
+            this.tcSettings.Controls.Add(this.tPaths);
+            this.tcSettings.Controls.Add(this.tOther);
+            this.tcSettings.Location = new System.Drawing.Point(0, 0);
+            this.tcSettings.Name = "tcSettings";
+            this.tcSettings.SelectedIndex = 0;
+            this.tcSettings.Size = new System.Drawing.Size(394, 174);
+            this.tcSettings.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
+            this.tcSettings.TabIndex = 3;
+            // 
+            // tPaths
+            // 
+            this.tPaths.Controls.Add(this.bPathCheatTables);
+            this.tPaths.Controls.Add(this.cbUseLocal7zip);
+            this.tPaths.Controls.Add(this.bPath7z);
+            this.tPaths.Controls.Add(this.tbPath7z);
+            this.tPaths.Controls.Add(this.tbPathCheatTables);
+            this.tPaths.Controls.Add(this.label1);
+            this.tPaths.Location = new System.Drawing.Point(4, 22);
+            this.tPaths.Name = "tPaths";
+            this.tPaths.Padding = new System.Windows.Forms.Padding(3);
+            this.tPaths.Size = new System.Drawing.Size(386, 148);
+            this.tPaths.TabIndex = 0;
+            this.tPaths.Text = "Paths";
+            this.tPaths.UseVisualStyleBackColor = true;
             // 
             // bPathCheatTables
             // 
-            this.bPathCheatTables.Location = new System.Drawing.Point(344, 78);
+            this.bPathCheatTables.Location = new System.Drawing.Point(344, 65);
             this.bPathCheatTables.Name = "bPathCheatTables";
             this.bPathCheatTables.Size = new System.Drawing.Size(32, 23);
             this.bPathCheatTables.TabIndex = 8;
@@ -456,9 +469,22 @@
             this.bPathCheatTables.UseVisualStyleBackColor = true;
             this.bPathCheatTables.Click += new System.EventHandler(this.bPathCheatTables_Click);
             // 
+            // cbUseLocal7zip
+            // 
+            this.cbUseLocal7zip.AutoSize = true;
+            this.cbUseLocal7zip.Location = new System.Drawing.Point(6, 6);
+            this.cbUseLocal7zip.Name = "cbUseLocal7zip";
+            this.cbUseLocal7zip.Size = new System.Drawing.Size(208, 17);
+            this.cbUseLocal7zip.TabIndex = 0;
+            this.cbUseLocal7zip.Text = "Use a copy of 7-Zip from this computer";
+            this.cbUseLocal7zip.UseVisualStyleBackColor = true;
+            this.cbUseLocal7zip.CheckedChanged += new System.EventHandler(this.cbUseLocal7zip_CheckedChanged);
+            this.cbUseLocal7zip.CheckedChanged += new System.EventHandler(this.fake_SettingsSave);
+            // 
             // bPath7z
             // 
-            this.bPath7z.Location = new System.Drawing.Point(344, 39);
+            this.bPath7z.Enabled = false;
+            this.bPath7z.Location = new System.Drawing.Point(344, 26);
             this.bPath7z.Name = "bPath7z";
             this.bPath7z.Size = new System.Drawing.Size(32, 23);
             this.bPath7z.TabIndex = 7;
@@ -466,39 +492,43 @@
             this.bPath7z.UseVisualStyleBackColor = true;
             this.bPath7z.Click += new System.EventHandler(this.bPath7z_Click);
             // 
+            // tbPath7z
+            // 
+            this.tbPath7z.AllowDrop = true;
+            this.tbPath7z.Enabled = false;
+            this.tbPath7z.Location = new System.Drawing.Point(6, 29);
+            this.tbPath7z.Name = "tbPath7z";
+            this.tbPath7z.Size = new System.Drawing.Size(332, 20);
+            this.tbPath7z.TabIndex = 1;
+            this.tbPath7z.TextChanged += new System.EventHandler(this.fake_SettingsSave);
+            // 
             // tbPathCheatTables
             // 
-            this.tbPathCheatTables.Location = new System.Drawing.Point(6, 81);
+            this.tbPathCheatTables.AllowDrop = true;
+            this.tbPathCheatTables.Location = new System.Drawing.Point(6, 68);
             this.tbPathCheatTables.Name = "tbPathCheatTables";
             this.tbPathCheatTables.Size = new System.Drawing.Size(332, 20);
             this.tbPathCheatTables.TabIndex = 3;
+            this.tbPathCheatTables.TextChanged += new System.EventHandler(this.fake_SettingsSave);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 65);
+            this.label1.Location = new System.Drawing.Point(6, 52);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(70, 13);
             this.label1.TabIndex = 2;
             this.label1.Text = "Cheat Tables";
             // 
-            // tbPath7z
+            // tOther
             // 
-            this.tbPath7z.Location = new System.Drawing.Point(6, 42);
-            this.tbPath7z.Name = "tbPath7z";
-            this.tbPath7z.Size = new System.Drawing.Size(332, 20);
-            this.tbPath7z.TabIndex = 1;
-            // 
-            // cbUseLocal7zip
-            // 
-            this.cbUseLocal7zip.AutoSize = true;
-            this.cbUseLocal7zip.Location = new System.Drawing.Point(6, 19);
-            this.cbUseLocal7zip.Name = "cbUseLocal7zip";
-            this.cbUseLocal7zip.Size = new System.Drawing.Size(208, 17);
-            this.cbUseLocal7zip.TabIndex = 0;
-            this.cbUseLocal7zip.Text = "Use a copy of 7-Zip from this computer";
-            this.cbUseLocal7zip.UseVisualStyleBackColor = true;
-            this.cbUseLocal7zip.CheckedChanged += new System.EventHandler(this.cbUseLocal7zip_CheckedChanged);
+            this.tOther.Location = new System.Drawing.Point(4, 22);
+            this.tOther.Name = "tOther";
+            this.tOther.Padding = new System.Windows.Forms.Padding(3);
+            this.tOther.Size = new System.Drawing.Size(386, 148);
+            this.tOther.TabIndex = 1;
+            this.tOther.Text = "Other";
+            this.tOther.UseVisualStyleBackColor = true;
             // 
             // tabAbout
             // 
@@ -544,16 +574,6 @@
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             // 
-            // bSettingsSave
-            // 
-            this.bSettingsSave.Location = new System.Drawing.Point(307, 145);
-            this.bSettingsSave.Name = "bSettingsSave";
-            this.bSettingsSave.Size = new System.Drawing.Size(75, 23);
-            this.bSettingsSave.TabIndex = 2;
-            this.bSettingsSave.Text = "Save";
-            this.bSettingsSave.UseVisualStyleBackColor = true;
-            this.bSettingsSave.Click += new System.EventHandler(this.bSettingsSave_Click);
-            // 
             // UltimateWinForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -577,8 +597,9 @@
             this.tabDownload.ResumeLayout(false);
             this.tabDownload.PerformLayout();
             this.tabSettings.ResumeLayout(false);
-            this.gbPaths.ResumeLayout(false);
-            this.gbPaths.PerformLayout();
+            this.tcSettings.ResumeLayout(false);
+            this.tPaths.ResumeLayout(false);
+            this.tPaths.PerformLayout();
             this.statusBar.ResumeLayout(false);
             this.statusBar.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
@@ -626,13 +647,14 @@
         private System.Windows.Forms.Label lIOEp1Path;
         private System.Windows.Forms.Label lIOEp2Stat;
         private System.Windows.Forms.Label lIOEp2Path;
-        private System.Windows.Forms.GroupBox gbPaths;
-        private System.Windows.Forms.CheckBox cbUseLocal7zip;
+        private System.Windows.Forms.TabControl tcSettings;
+        private System.Windows.Forms.TabPage tPaths;
+        private System.Windows.Forms.TabPage tOther;
+        private System.Windows.Forms.Button bPathCheatTables;
+        private System.Windows.Forms.Button bPath7z;
         private System.Windows.Forms.TextBox tbPathCheatTables;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox tbPath7z;
-        private System.Windows.Forms.Button bPathCheatTables;
-        private System.Windows.Forms.Button bPath7z;
-        private System.Windows.Forms.Button bSettingsSave;
+        private System.Windows.Forms.CheckBox cbUseLocal7zip;
     }
 }

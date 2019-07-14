@@ -22,7 +22,7 @@ namespace OneClickModInstaller
             public static string Type        { set; get; }
             public static string Status      { set; get; }
         }
-        
+
         public static class Settings
         {
             public static bool UseLocal7zip { set; get; }
@@ -31,7 +31,7 @@ namespace OneClickModInstaller
 
             public static void Load()
             {
-                Settings.Paths = new Dictionary<string, string> ();
+                Settings.Paths = new Dictionary<string, string>();
                 Settings.Paths.Add("CheatTables", "");
                 Settings.Paths.Add("7-Zip", "");
 
@@ -62,7 +62,7 @@ namespace OneClickModInstaller
                 var text = new List<string> { };
 
                 text.Add("UseLocal7zip=" + Convert.ToInt32(Settings.UseLocal7zip));
-                
+
                 text.Add("[Paths]");
                 foreach (string path in Settings.Paths.Keys)
                 {
@@ -72,7 +72,7 @@ namespace OneClickModInstaller
                 File.WriteAllLines("OneClickModInstaller.cfg", text);
             }
         }
-    
+
         public UltimateWinForm(string[] args)
         {
             InitializeComponent();
@@ -109,7 +109,7 @@ namespace OneClickModInstaller
 
                     lDownloadTrying.Text = lDownloadTrying.Text.Replace("{0}", "download a mod from {1}");
 
-                    if (tmp_args.Length > 1) { lType.Text  = tmp_args[1]; }
+                    if (tmp_args.Length > 1) { lType.Text = tmp_args[1]; }
                     if (tmp_args.Length > 2) { lModID.Text = tmp_args[2]; }
 
                     if (Installation.Link.Contains("gamebanana.com"))
@@ -130,11 +130,11 @@ namespace OneClickModInstaller
                 }
             }
 
-            Settings.Load();
+            fake_SettingsLoad();
             Installation.Status = "Idle";
             UpdateWindow();
         }
-        
+
         private void UpdateWindow()
         {
             ////////////////
@@ -200,7 +200,7 @@ namespace OneClickModInstaller
             if (Admin.AmI())
             {
                 lInstallAdmin.Text = "";
-                bInstall.Image = null;
+                bInstall.Image   =
                 bUninstall.Image = null;
             }
 
@@ -208,8 +208,8 @@ namespace OneClickModInstaller
             {
                 lGameName.Text           = "Not found";
                 lInstallationStatus.Text = "None";
-                bInstall.Text      = "Install as fake Episode 1";
-                bUninstall.Text    = "Uninstall fake Episode 1";
+                bInstall.Text            = "Install as fake Episode 1";
+                bUninstall.Text          = "Uninstall fake Episode 1";
                 bInstall.Enabled   =
                 bUninstall.Enabled = false;
 
@@ -229,7 +229,7 @@ namespace OneClickModInstaller
                 lGameName.Text = "Sonic 4: " + GetGame.Full();
                 int current_status = statuses[current_game];
 
-                bInstall.Enabled   =
+                bInstall.Enabled =
                 bUninstall.Enabled = true;
 
                 switch (current_status)
@@ -255,7 +255,7 @@ namespace OneClickModInstaller
                 }
             }
         }
-        
+
         private void bInstall_Click(object sender, EventArgs e)
         {
             if (GetGame.Short() == "dunno")
@@ -339,9 +339,8 @@ namespace OneClickModInstaller
             }
             else if (Installation.Status == "Waiting for path")
             {
-                if (tbPathCheatTables.Text != "")
+                if (Settings.Paths[Installation.Type] != "")
                 {
-                    Settings.Save();
                     FinishInstallation();
                 }
                 else { tcMain.SelectTab(tabSettings); }
@@ -429,7 +428,7 @@ namespace OneClickModInstaller
 
                             Installation.ModRoots = tmm_form.mods;
                         }
-                        
+
                         if (Settings.Paths[Installation.Type] == "")
                         {
                             //Oh, some hacky code over here
@@ -475,7 +474,7 @@ namespace OneClickModInstaller
                     { dest = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Dolphin Emulator", "Load", "Textures"); }
                     else
                     { dest = Settings.Paths[Installation.Type]; }
-                    
+
                     if (Directory.Exists(dest) && Installation.Type == "pc") { MyDirectory.DeleteRecursively(dest); }
                     ModArchive.CopyAll(mod, dest);
                 }
@@ -544,7 +543,8 @@ namespace OneClickModInstaller
 
         private void cbUseLocal7zip_CheckedChanged(object sender, EventArgs e)
         {
-            tbPath7z.Enabled = cbUseLocal7zip.Checked;
+            tbPath7z.Enabled =
+            bPath7z.Enabled  = cbUseLocal7zip.Checked;
         }
 
         private void bPath7z_Click(object sender, EventArgs e)
@@ -561,11 +561,23 @@ namespace OneClickModInstaller
             { tbPathCheatTables.Text = path; }
         }
 
-        private void bSettingsSave_Click(object sender, EventArgs e)
+        private void fake_SettingsSave(object sender, EventArgs e)
         {
+            //I don't like this method, but I can't think up something better now
+            Settings.UseLocal7zip         = cbUseLocal7zip.Checked;
             Settings.Paths["7-Zip"]       = tbPath7z.Text;
             Settings.Paths["CheatTables"] = tbPathCheatTables.Text;
+
             Settings.Save();
+        }
+
+        private void fake_SettingsLoad()
+        {
+            Settings.Load();
+
+            cbUseLocal7zip.Checked = Settings.UseLocal7zip;
+            tbPath7z.Text          = Settings.Paths["7-Zip"];
+            tbPathCheatTables.Text = Settings.Paths["CheatTables"];
         }
     }
 }
