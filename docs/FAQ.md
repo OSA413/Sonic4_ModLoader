@@ -20,10 +20,18 @@ Yes!
 
 ## What is `mods_sha` folder for?
 
-This folder stores file hashes of enabled mods. This is used to track every file change in mods (e.g. when you enable or disable mods or you install a newer version of it). If any file is changed, it will patch/repack original file. If no files were changed, it will do nothing (this saves time when you launch the game).
+This folder stores file hashes of enabled mods (you can select which SHA algorithm to use, default is SHA-1). This is used to track every file change in mods (e.g. when you enable or disable mods or you install a newer version of it). If any file is changed, it will patch/repack original file. If no files were changed, it will do nothing (this saves time when you launch the game).
+
+## What modding tools exist?
+
+Check the [Description of file extensions](https://github.com/OSA413/Sonic4_Tools/blob/master/docs/File%20description.md) page.
 
 ## Linux?
 
 Linux! At this moment you can use AMBPatcher and other programs written by me through Mono (except for One-Click Mod Installer, because of [Mono's implementation of Windows Forms](https://www.mono-project.com/docs/faq/winforms/#my-multithreaded-application-crashes-or-locks-up), I'll try to do something with this). You can also use Wine/Proton to run them.
 
 Here's a guide to make Episode 1 to work on Linux: https://steamcommunity.com/sharedfiles/filedetails/?id=1726034225
+
+## Roadmap?
+
+Check [Project page on GitHub](https://github.com/OSA413/Sonic4_ModLoader/projects). Sometimes I create a TODO list for the next stable version.
