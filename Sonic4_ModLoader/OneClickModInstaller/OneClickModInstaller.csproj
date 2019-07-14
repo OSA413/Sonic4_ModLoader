@@ -82,12 +82,6 @@
     <Compile Include="UltimateWinForm.Designer.cs">
       <DependentUpon>UltimateWinForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="WrongWorkingDirectory.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="WrongWorkingDirectory.Designer.cs">
-      <DependentUpon>WrongWorkingDirectory.cs</DependentUpon>
-    </Compile>
     <EmbeddedResource Include="DFtEM.resx">
       <DependentUpon>DFtEM.cs</DependentUpon>
     </EmbeddedResource>
@@ -109,9 +103,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UltimateWinForm.resx">
       <DependentUpon>UltimateWinForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="WrongWorkingDirectory.resx">
-      <DependentUpon>WrongWorkingDirectory.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.manifest" />
     <None Include="Properties\Settings.settings">

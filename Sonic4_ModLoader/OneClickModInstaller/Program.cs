@@ -245,6 +245,24 @@ namespace OneClickModInstaller
 
             Process.Start(local_explorer, path);
         }
+
+        public static string SelectionDialog(string path_to = "directory")
+        {
+            using (var ofd = new OpenFileDialog())
+            {
+                ofd.ValidateNames = false;
+                ofd.CheckFileExists = false;
+                ofd.CheckPathExists = true;
+                ofd.FileName = "[DIRECTORY]";
+                ofd.Title = "Select path to " + path_to;
+
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    return Path.GetDirectoryName(ofd.FileName);
+                }
+            }
+            return null;
+        }
     }
 
     public static class ModArchive
