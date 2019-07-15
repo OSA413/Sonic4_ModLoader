@@ -77,8 +77,8 @@
             this.label1 = new System.Windows.Forms.Label();
             this.tOther = new System.Windows.Forms.TabPage();
             this.tabAbout = new System.Windows.Forms.TabPage();
-            this.statusBar = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.statusBar = new System.Windows.Forms.ToolStripStatusLabel();
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tcMain.SuspendLayout();
@@ -90,7 +90,7 @@
             this.tabSettings.SuspendLayout();
             this.tcSettings.SuspendLayout();
             this.tPaths.SuspendLayout();
-            this.statusBar.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -610,21 +610,21 @@
             this.tabAbout.Text = "About";
             this.tabAbout.UseVisualStyleBackColor = true;
             // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.statusBar});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 325);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(426, 22);
+            this.statusStrip1.TabIndex = 3;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
             // statusBar
             // 
-            this.statusBar.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1});
-            this.statusBar.Location = new System.Drawing.Point(0, 325);
             this.statusBar.Name = "statusBar";
-            this.statusBar.Size = new System.Drawing.Size(426, 22);
-            this.statusBar.TabIndex = 3;
-            this.statusBar.Text = "statusStrip1";
-            // 
-            // toolStripStatusLabel1
-            // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(103, 17);
-            this.toolStripStatusLabel1.Text = "This is a status bar";
+            this.statusBar.Size = new System.Drawing.Size(103, 17);
+            this.statusBar.Text = "This is a status bar";
             // 
             // progressBar
             // 
@@ -649,7 +649,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(426, 347);
-            this.Controls.Add(this.statusBar);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.tcMain);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.progressBar);
@@ -670,8 +670,8 @@
             this.tcSettings.ResumeLayout(false);
             this.tPaths.ResumeLayout(false);
             this.tPaths.PerformLayout();
-            this.statusBar.ResumeLayout(false);
-            this.statusBar.PerformLayout();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -686,8 +686,8 @@
         private System.Windows.Forms.TabPage tabModInst;
         private System.Windows.Forms.TabPage tabSettings;
         private System.Windows.Forms.TabPage tabAbout;
-        private System.Windows.Forms.StatusStrip statusBar;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel statusBar;
         private System.Windows.Forms.Label lType;
         private System.Windows.Forms.Label lDownloadType;
         private System.Windows.Forms.Label lDownloadLink;

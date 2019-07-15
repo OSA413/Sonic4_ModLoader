@@ -98,8 +98,8 @@ namespace OneClickModInstaller
             Settings.Load();
             fake_SettingsLoad();
             Installation.Status = "Idle";
-            Installation.Local = false;
-            Installation.FromArgs  = false;
+            Installation.Local      =
+            Installation.FromArgs   = false;
 
             //Dealing with arguments
             if (args.Length > 0)
@@ -323,9 +323,9 @@ namespace OneClickModInstaller
                 }
                 else
                 {
+                    statusBar.Text = "Connecting to the server...";
                     using (WebClient wc = new WebClient())
                     {
-                        toolStripStatusLabel1.Text = "Connecting to the server...";
                         bModInstall.Enabled = false;
                         wc.DownloadFileCompleted += new AsyncCompletedEventHandler(fake_DoTheRest);
                         wc.DownloadProgressChanged += wc_DownloadProgressChanged;
@@ -348,7 +348,7 @@ namespace OneClickModInstaller
                         {
                             //Well, it seems that GB's counter doesn't increase if you download
                             //the file directly from the redirect url. But I'm not sure that
-                            //this works, too. And this is slower as well.
+                            //this works, too.
                             url = archive_url;
                         }
 
@@ -380,7 +380,7 @@ namespace OneClickModInstaller
         {
             await Task.Run(() =>
             {
-                toolStripStatusLabel1.Text = "Extracting downloaded archive...";
+                statusBar.Text = "Extracting downloaded archive...";
 
                 Installation.ArchiveDir = Installation.ArchiveName + "_extracted";
 
@@ -397,7 +397,7 @@ namespace OneClickModInstaller
                     Installation.ArchiveDir = Installation.ArchiveName;
                 }
 
-                toolStripStatusLabel1.Text = "Checking extracted files...";
+                statusBar.Text = "Checking extracted files...";
                 int cont = ModArchive.CheckFiles(Installation.ArchiveDir);
 
                 if (cont != 1)
@@ -406,7 +406,7 @@ namespace OneClickModInstaller
                     Environment.Exit(0);
                 }
 
-                toolStripStatusLabel1.Text = "Finding root directories...";
+                statusBar.Text = "Finding root directories...";
 
                 var FoundRootDirs = ModArchive.FindRoot(Installation.ArchiveDir);
                 Installation.ModRoots = FoundRootDirs.Item1;
@@ -487,7 +487,7 @@ namespace OneClickModInstaller
         {
             await Task.Run(() =>
             {
-                toolStripStatusLabel1.Text = "Installing downloaded mod...";
+                statusBar.Text = "Installing downloaded mod...";
 
                 foreach (string mod in Installation.ModRoots)
                 {
@@ -510,8 +510,16 @@ namespace OneClickModInstaller
                     { MyDirectory.DeleteRecursively(Installation.ArchiveDir); }
 
                     if (File.Exists(Installation.ArchiveName))
-                    { 
-                        File.Delete(Installation.ArchiveName);
+                    {
+                        if (Settings.SaveDownloadedArchives)
+                        {
+                            Directory.CreateDirectory(Settings.Paths["DownloadedArhives"]);
+                            File.Move(Installation.ArchiveName, Path.Combine(Settings.Paths["DownloadedArhives"], Installation.ArchiveName));
+                        }
+                        else
+                        {
+                            File.Delete(Installation.ArchiveName);
+                        }
                     }
                 }
 
@@ -520,6 +528,9 @@ namespace OneClickModInstaller
                     Process.Start("Sonic4ModManager.exe", "\"" + UltimateWinForm.Installation.LastMod + "\"");
                     Environment.Exit(0);
                 }
+
+                statusBar.Text = "Mod installation complete!";
+                progressBar.Value = 0;
             });
         }
 
@@ -540,11 +551,11 @@ namespace OneClickModInstaller
             //Yep, sometimes TotalBytesToReceive equals -1
             if (e.TotalBytesToReceive == -1)
             {
-                toolStripStatusLabel1.Text = "Downloading... (" + e.BytesReceived / divider + unit + ")";
+                statusBar.Text = "Downloading... (" + e.BytesReceived / divider + unit + ")";
             }
             else
             {
-                toolStripStatusLabel1.Text = "Downloading... (" + e.BytesReceived / divider + " / " + e.TotalBytesToReceive / divider + unit + ")";
+                statusBar.Text = "Downloading... (" + e.BytesReceived / divider + " / " + e.TotalBytesToReceive / divider + unit + ")";
             }
         }
 
@@ -631,14 +642,11 @@ namespace OneClickModInstaller
                 || Directory.Exists(tbModURL.Text)
                 || tbModURL.Text.StartsWith("https://"))
             {
+                bModInstall.Enabled = true;
                 if (Installation.FromArgs)
                 {
                     tbModURL.Enabled =
                     bModPath.Enabled = false;
-                }
-                else
-                {
-                    bModInstall.Enabled = true;
                 }
             }
             else
