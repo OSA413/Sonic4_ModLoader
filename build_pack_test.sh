@@ -2,11 +2,14 @@
 #please, keep all sh scripts in Unix new line (LF)
 cd "$(dirname "$0")"
 
+echo "Compiling..."
 msbuild ./Sonic4_ModLoader/Sonic4_ModLoader.sln /p:Configuration=Release
 
+echo "Removing old distribution package..."
 rm -r "./dist"
 mkdir -p "./dist/Sonic4ModLoader/Mod Loader - licenses"
 
+echo "Copying new distribution files..."
 #Sonic4ModLoader
 #License
 cp "LICENSE" "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-Sonic4_ModLoader"
@@ -43,7 +46,7 @@ cd dist
 find * -type f -exec sha256sum {} \; >> "SHA256SUMS"
 cd ..
 
-#Archiving
+echo "Archiving..."
 7z a "./dist/Sonic4ModLoader.7z" ./dist/* -mx=9
 
 #Unit-testing

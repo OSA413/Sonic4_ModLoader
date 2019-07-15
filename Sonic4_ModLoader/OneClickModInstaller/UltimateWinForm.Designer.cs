@@ -380,7 +380,6 @@
             // 
             // bModPath
             // 
-            this.bModPath.Enabled = false;
             this.bModPath.Location = new System.Drawing.Point(356, 62);
             this.bModPath.Name = "bModPath";
             this.bModPath.Size = new System.Drawing.Size(32, 23);
@@ -391,7 +390,6 @@
             // 
             // tbModURL
             // 
-            this.tbModURL.Enabled = false;
             this.tbModURL.Location = new System.Drawing.Point(9, 64);
             this.tbModURL.Name = "tbModURL";
             this.tbModURL.Size = new System.Drawing.Size(341, 20);
@@ -454,6 +452,7 @@
             // 
             // bModInstall
             // 
+            this.bModInstall.Enabled = false;
             this.bModInstall.Location = new System.Drawing.Point(234, 125);
             this.bModInstall.Name = "bModInstall";
             this.bModInstall.Size = new System.Drawing.Size(128, 32);

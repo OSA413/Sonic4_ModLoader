@@ -5,6 +5,7 @@ using System.Net;
 using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace OneClickModInstaller
 {
@@ -22,6 +23,7 @@ namespace OneClickModInstaller
             public static string[]  ModRoots    { set; get; }
             public static string    Platform    { set; get; }
             public static string    Status      { set; get; }
+            public static bool      FromArgs    { set; get; }
         }
 
         public static class Settings
@@ -97,6 +99,7 @@ namespace OneClickModInstaller
             fake_SettingsLoad();
             Installation.Status = "Idle";
             Installation.Local = false;
+            Installation.FromArgs  = false;
 
             //Dealing with arguments
             if (args.Length > 0)
@@ -108,6 +111,7 @@ namespace OneClickModInstaller
                     //Drag&Drop mod installation
                     if (File.Exists(args[0]) || Directory.Exists(args[0]))
                     {
+                        Installation.FromArgs = true;
                         bModInstall.Text = "Install";
                         lDownloadTrying.Text = lDownloadTrying.Text.Replace("{0}", "install a mod from hard drive");
                         tbModURL.Text     =
@@ -122,6 +126,7 @@ namespace OneClickModInstaller
                 }
                 else
                 {
+                    Installation.FromArgs = true;
                     //a 1-lick installation call
                     //sonic4mmepx:url,mod_type,mod_id
                     tcMain.SelectTab(tabModInst);
@@ -498,9 +503,6 @@ namespace OneClickModInstaller
                     ModArchive.CopyAll(mod, dest);
                 }
 
-                DFtEM enable_mod = new DFtEM();
-                enable_mod.ShowDialog();
-
                 if (!Installation.Local)
                 {
                     //TODO: do I need this?
@@ -508,10 +510,16 @@ namespace OneClickModInstaller
                     { MyDirectory.DeleteRecursively(Installation.ArchiveDir); }
 
                     if (File.Exists(Installation.ArchiveName))
-                    { File.Delete(Installation.ArchiveName); }
+                    { 
+                        File.Delete(Installation.ArchiveName);
+                    }
                 }
 
-                Environment.Exit(0);
+                if (Settings.ExitLaunchManager)
+                {
+                    Process.Start("Sonic4ModManager.exe", "\"" + UltimateWinForm.Installation.LastMod + "\"");
+                    Environment.Exit(0);
+                }
             });
         }
 
@@ -619,7 +627,24 @@ namespace OneClickModInstaller
         
         private void tbModURL_TextChanged(object sender, EventArgs e)
         {
-
+            if (File.Exists(tbModURL.Text)
+                || Directory.Exists(tbModURL.Text)
+                || tbModURL.Text.StartsWith("https://"))
+            {
+                if (Installation.FromArgs)
+                {
+                    tbModURL.Enabled =
+                    bModPath.Enabled = false;
+                }
+                else
+                {
+                    bModInstall.Enabled = true;
+                }
+            }
+            else
+            {
+                bModInstall.Enabled = false;
+            }
         }
 
         private void bModPath_Click(object sender, EventArgs e)
