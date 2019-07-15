@@ -246,14 +246,30 @@ namespace OneClickModInstaller
             Process.Start(local_explorer, path);
         }
 
-        public static string SelectionDialog(string path_to = "directory")
+        public static string Select(string path_to, string type)
         {
             using (var ofd = new OpenFileDialog())
             {
+                ofd.CheckPathExists = true;
+                switch (type)
+                {
+                    case "dir":
+                        ofd.ValidateNames = false;
+                        ofd.CheckFileExists = false;
+                        ofd.FileName = "[DIRECTORY]";
+                        break;
+                    case "file":
+                        ofd.Filter = "All files (*.*)|*.*";
+                        break;
+                    case "dir/file":
+                    case "file/dir":
+                        ofd.Filter = "All files (*.*)|*.*";
+                        ofd.FileName = "Select a file or type \"?\" to select a folder";
+                        ofd.ValidateNames = false;
+                        break;
+                }
                 ofd.ValidateNames = false;
                 ofd.CheckFileExists = false;
-                ofd.CheckPathExists = true;
-                ofd.FileName = "[DIRECTORY]";
                 ofd.Title = "Select path to " + path_to;
 
                 if (ofd.ShowDialog() == DialogResult.OK)

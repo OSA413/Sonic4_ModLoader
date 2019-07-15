@@ -30,7 +30,7 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UltimateWinForm));
             this.tcMain = new System.Windows.Forms.TabControl();
-            this.tabInstallation = new System.Windows.Forms.TabPage();
+            this.tabInstaller = new System.Windows.Forms.TabPage();
             this.tcInstallation = new System.Windows.Forms.TabControl();
             this.tabCurrent = new System.Windows.Forms.TabPage();
             this.lGameName = new System.Windows.Forms.Label();
@@ -51,18 +51,24 @@
             this.lIOEp2Deco = new System.Windows.Forms.Label();
             this.lIOEp1Stat = new System.Windows.Forms.Label();
             this.lIOEp1Deco = new System.Windows.Forms.Label();
-            this.tabDownload = new System.Windows.Forms.TabPage();
+            this.tabModInst = new System.Windows.Forms.TabPage();
+            this.chSaveDownloadedArchives = new System.Windows.Forms.CheckBox();
+            this.cbExitLaunchManager = new System.Windows.Forms.CheckBox();
+            this.bModPath = new System.Windows.Forms.Button();
+            this.tbModURL = new System.Windows.Forms.TextBox();
             this.lType = new System.Windows.Forms.Label();
             this.lDownloadType = new System.Windows.Forms.Label();
-            this.lURL = new System.Windows.Forms.Label();
             this.lDownloadLink = new System.Windows.Forms.Label();
             this.lDownloadTrying = new System.Windows.Forms.Label();
             this.lDownloadID = new System.Windows.Forms.Label();
             this.lModID = new System.Windows.Forms.Label();
-            this.bDownload = new System.Windows.Forms.Button();
+            this.bModInstall = new System.Windows.Forms.Button();
             this.tabSettings = new System.Windows.Forms.TabPage();
             this.tcSettings = new System.Windows.Forms.TabControl();
             this.tPaths = new System.Windows.Forms.TabPage();
+            this.bPathDownloadedArchives = new System.Windows.Forms.Button();
+            this.tbDownloadedArchiveLocation = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.bPathCheatTables = new System.Windows.Forms.Button();
             this.cbUseLocal7zip = new System.Windows.Forms.CheckBox();
             this.bPath7z = new System.Windows.Forms.Button();
@@ -76,11 +82,11 @@
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tcMain.SuspendLayout();
-            this.tabInstallation.SuspendLayout();
+            this.tabInstaller.SuspendLayout();
             this.tcInstallation.SuspendLayout();
             this.tabCurrent.SuspendLayout();
             this.tabOverall.SuspendLayout();
-            this.tabDownload.SuspendLayout();
+            this.tabModInst.SuspendLayout();
             this.tabSettings.SuspendLayout();
             this.tcSettings.SuspendLayout();
             this.tPaths.SuspendLayout();
@@ -90,8 +96,8 @@
             // 
             // tcMain
             // 
-            this.tcMain.Controls.Add(this.tabInstallation);
-            this.tcMain.Controls.Add(this.tabDownload);
+            this.tcMain.Controls.Add(this.tabInstaller);
+            this.tcMain.Controls.Add(this.tabModInst);
             this.tcMain.Controls.Add(this.tabSettings);
             this.tcMain.Controls.Add(this.tabAbout);
             this.tcMain.Location = new System.Drawing.Point(12, 102);
@@ -101,16 +107,16 @@
             this.tcMain.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.tcMain.TabIndex = 1;
             // 
-            // tabInstallation
+            // tabInstaller
             // 
-            this.tabInstallation.Controls.Add(this.tcInstallation);
-            this.tabInstallation.Location = new System.Drawing.Point(4, 22);
-            this.tabInstallation.Name = "tabInstallation";
-            this.tabInstallation.Padding = new System.Windows.Forms.Padding(3);
-            this.tabInstallation.Size = new System.Drawing.Size(394, 174);
-            this.tabInstallation.TabIndex = 0;
-            this.tabInstallation.Text = "Installation";
-            this.tabInstallation.UseVisualStyleBackColor = true;
+            this.tabInstaller.Controls.Add(this.tcInstallation);
+            this.tabInstaller.Location = new System.Drawing.Point(4, 22);
+            this.tabInstaller.Name = "tabInstaller";
+            this.tabInstaller.Padding = new System.Windows.Forms.Padding(3);
+            this.tabInstaller.Size = new System.Drawing.Size(394, 174);
+            this.tabInstaller.TabIndex = 0;
+            this.tabInstaller.Text = "Installer";
+            this.tabInstaller.UseVisualStyleBackColor = true;
             // 
             // tcInstallation
             // 
@@ -137,7 +143,7 @@
             this.tabCurrent.Padding = new System.Windows.Forms.Padding(3);
             this.tabCurrent.Size = new System.Drawing.Size(386, 148);
             this.tabCurrent.TabIndex = 0;
-            this.tabCurrent.Text = "Current";
+            this.tabCurrent.Text = "Current installation";
             this.tabCurrent.UseVisualStyleBackColor = true;
             // 
             // lGameName
@@ -329,28 +335,73 @@
             this.lIOEp1Deco.TabIndex = 8;
             this.lIOEp1Deco.Text = "Sonic 4: Episode 1";
             // 
-            // tabDownload
+            // tabModInst
             // 
-            this.tabDownload.Controls.Add(this.lType);
-            this.tabDownload.Controls.Add(this.lDownloadType);
-            this.tabDownload.Controls.Add(this.lURL);
-            this.tabDownload.Controls.Add(this.lDownloadLink);
-            this.tabDownload.Controls.Add(this.lDownloadTrying);
-            this.tabDownload.Controls.Add(this.lDownloadID);
-            this.tabDownload.Controls.Add(this.lModID);
-            this.tabDownload.Controls.Add(this.bDownload);
-            this.tabDownload.Location = new System.Drawing.Point(4, 22);
-            this.tabDownload.Name = "tabDownload";
-            this.tabDownload.Padding = new System.Windows.Forms.Padding(3);
-            this.tabDownload.Size = new System.Drawing.Size(394, 174);
-            this.tabDownload.TabIndex = 1;
-            this.tabDownload.Text = "Download";
-            this.tabDownload.UseVisualStyleBackColor = true;
+            this.tabModInst.Controls.Add(this.chSaveDownloadedArchives);
+            this.tabModInst.Controls.Add(this.cbExitLaunchManager);
+            this.tabModInst.Controls.Add(this.bModPath);
+            this.tabModInst.Controls.Add(this.tbModURL);
+            this.tabModInst.Controls.Add(this.lType);
+            this.tabModInst.Controls.Add(this.lDownloadType);
+            this.tabModInst.Controls.Add(this.lDownloadLink);
+            this.tabModInst.Controls.Add(this.lDownloadTrying);
+            this.tabModInst.Controls.Add(this.lDownloadID);
+            this.tabModInst.Controls.Add(this.lModID);
+            this.tabModInst.Controls.Add(this.bModInstall);
+            this.tabModInst.Location = new System.Drawing.Point(4, 22);
+            this.tabModInst.Name = "tabModInst";
+            this.tabModInst.Padding = new System.Windows.Forms.Padding(3);
+            this.tabModInst.Size = new System.Drawing.Size(394, 174);
+            this.tabModInst.TabIndex = 1;
+            this.tabModInst.Text = "Install mod";
+            this.tabModInst.UseVisualStyleBackColor = true;
+            // 
+            // chSaveDownloadedArchives
+            // 
+            this.chSaveDownloadedArchives.AutoSize = true;
+            this.chSaveDownloadedArchives.Location = new System.Drawing.Point(9, 115);
+            this.chSaveDownloadedArchives.Name = "chSaveDownloadedArchives";
+            this.chSaveDownloadedArchives.Size = new System.Drawing.Size(155, 17);
+            this.chSaveDownloadedArchives.TabIndex = 22;
+            this.chSaveDownloadedArchives.Text = "Save downloaded archives";
+            this.chSaveDownloadedArchives.UseVisualStyleBackColor = true;
+            this.chSaveDownloadedArchives.CheckedChanged += new System.EventHandler(this.fake_SettingsSave);
+            // 
+            // cbExitLaunchManager
+            // 
+            this.cbExitLaunchManager.AutoSize = true;
+            this.cbExitLaunchManager.Location = new System.Drawing.Point(9, 138);
+            this.cbExitLaunchManager.Name = "cbExitLaunchManager";
+            this.cbExitLaunchManager.Size = new System.Drawing.Size(185, 30);
+            this.cbExitLaunchManager.TabIndex = 21;
+            this.cbExitLaunchManager.Text = "Launch Mod Manager (if PC mod)\r\nand Exit after installation";
+            this.cbExitLaunchManager.UseVisualStyleBackColor = true;
+            this.cbExitLaunchManager.CheckedChanged += new System.EventHandler(this.fake_SettingsSave);
+            // 
+            // bModPath
+            // 
+            this.bModPath.Enabled = false;
+            this.bModPath.Location = new System.Drawing.Point(356, 62);
+            this.bModPath.Name = "bModPath";
+            this.bModPath.Size = new System.Drawing.Size(32, 23);
+            this.bModPath.TabIndex = 20;
+            this.bModPath.Text = "...";
+            this.bModPath.UseVisualStyleBackColor = true;
+            this.bModPath.Click += new System.EventHandler(this.bModPath_Click);
+            // 
+            // tbModURL
+            // 
+            this.tbModURL.Enabled = false;
+            this.tbModURL.Location = new System.Drawing.Point(9, 64);
+            this.tbModURL.Name = "tbModURL";
+            this.tbModURL.Size = new System.Drawing.Size(341, 20);
+            this.tbModURL.TabIndex = 19;
+            this.tbModURL.TextChanged += new System.EventHandler(this.tbModURL_TextChanged);
             // 
             // lType
             // 
             this.lType.AutoSize = true;
-            this.lType.Location = new System.Drawing.Point(70, 122);
+            this.lType.Location = new System.Drawing.Point(245, 26);
             this.lType.Name = "lType";
             this.lType.Size = new System.Drawing.Size(25, 13);
             this.lType.TabIndex = 18;
@@ -359,21 +410,11 @@
             // lDownloadType
             // 
             this.lDownloadType.AutoSize = true;
-            this.lDownloadType.Location = new System.Drawing.Point(56, 109);
+            this.lDownloadType.Location = new System.Drawing.Point(231, 13);
             this.lDownloadType.Name = "lDownloadType";
             this.lDownloadType.Size = new System.Drawing.Size(54, 13);
             this.lDownloadType.TabIndex = 17;
             this.lDownloadType.Text = "Mod type:";
-            // 
-            // lURL
-            // 
-            this.lURL.AutoEllipsis = true;
-            this.lURL.Location = new System.Drawing.Point(24, 61);
-            this.lURL.MaximumSize = new System.Drawing.Size(364, 26);
-            this.lURL.Name = "lURL";
-            this.lURL.Size = new System.Drawing.Size(364, 26);
-            this.lURL.TabIndex = 16;
-            this.lURL.Text = "Unknown";
             // 
             // lDownloadLink
             // 
@@ -396,7 +437,7 @@
             // lDownloadID
             // 
             this.lDownloadID.AutoSize = true;
-            this.lDownloadID.Location = new System.Drawing.Point(135, 109);
+            this.lDownloadID.Location = new System.Drawing.Point(310, 13);
             this.lDownloadID.Name = "lDownloadID";
             this.lDownloadID.Size = new System.Drawing.Size(45, 13);
             this.lDownloadID.TabIndex = 13;
@@ -405,21 +446,21 @@
             // lModID
             // 
             this.lModID.AutoSize = true;
-            this.lModID.Location = new System.Drawing.Point(149, 122);
+            this.lModID.Location = new System.Drawing.Point(324, 26);
             this.lModID.Name = "lModID";
             this.lModID.Size = new System.Drawing.Size(25, 13);
             this.lModID.TabIndex = 12;
             this.lModID.Text = "???";
             // 
-            // bDownload
+            // bModInstall
             // 
-            this.bDownload.Location = new System.Drawing.Point(211, 109);
-            this.bDownload.Name = "bDownload";
-            this.bDownload.Size = new System.Drawing.Size(128, 32);
-            this.bDownload.TabIndex = 11;
-            this.bDownload.Text = "Download";
-            this.bDownload.UseVisualStyleBackColor = true;
-            this.bDownload.Click += new System.EventHandler(this.bDownload_Click);
+            this.bModInstall.Location = new System.Drawing.Point(234, 125);
+            this.bModInstall.Name = "bModInstall";
+            this.bModInstall.Size = new System.Drawing.Size(128, 32);
+            this.bModInstall.TabIndex = 11;
+            this.bModInstall.Text = "Install";
+            this.bModInstall.UseVisualStyleBackColor = true;
+            this.bModInstall.Click += new System.EventHandler(this.bDownload_Click);
             // 
             // tabSettings
             // 
@@ -445,6 +486,9 @@
             // 
             // tPaths
             // 
+            this.tPaths.Controls.Add(this.bPathDownloadedArchives);
+            this.tPaths.Controls.Add(this.tbDownloadedArchiveLocation);
+            this.tPaths.Controls.Add(this.label2);
             this.tPaths.Controls.Add(this.bPathCheatTables);
             this.tPaths.Controls.Add(this.cbUseLocal7zip);
             this.tPaths.Controls.Add(this.bPath7z);
@@ -459,9 +503,37 @@
             this.tPaths.Text = "Paths";
             this.tPaths.UseVisualStyleBackColor = true;
             // 
+            // bPathDownloadedArchives
+            // 
+            this.bPathDownloadedArchives.Location = new System.Drawing.Point(344, 105);
+            this.bPathDownloadedArchives.Name = "bPathDownloadedArchives";
+            this.bPathDownloadedArchives.Size = new System.Drawing.Size(32, 23);
+            this.bPathDownloadedArchives.TabIndex = 11;
+            this.bPathDownloadedArchives.Text = "...";
+            this.bPathDownloadedArchives.UseVisualStyleBackColor = true;
+            this.bPathDownloadedArchives.Click += new System.EventHandler(this.bPathDownloadedArchives_Click);
+            // 
+            // tbDownloadedArchiveLocation
+            // 
+            this.tbDownloadedArchiveLocation.AllowDrop = true;
+            this.tbDownloadedArchiveLocation.Location = new System.Drawing.Point(6, 107);
+            this.tbDownloadedArchiveLocation.Name = "tbDownloadedArchiveLocation";
+            this.tbDownloadedArchiveLocation.Size = new System.Drawing.Size(332, 20);
+            this.tbDownloadedArchiveLocation.TabIndex = 10;
+            this.tbDownloadedArchiveLocation.TextChanged += new System.EventHandler(this.fake_SettingsSave);
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(6, 91);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(171, 13);
+            this.label2.TabIndex = 9;
+            this.label2.Text = "Downloaded archive save location";
+            // 
             // bPathCheatTables
             // 
-            this.bPathCheatTables.Location = new System.Drawing.Point(344, 65);
+            this.bPathCheatTables.Location = new System.Drawing.Point(344, 66);
             this.bPathCheatTables.Name = "bPathCheatTables";
             this.bPathCheatTables.Size = new System.Drawing.Size(32, 23);
             this.bPathCheatTables.TabIndex = 8;
@@ -478,13 +550,12 @@
             this.cbUseLocal7zip.TabIndex = 0;
             this.cbUseLocal7zip.Text = "Use a copy of 7-Zip from this computer";
             this.cbUseLocal7zip.UseVisualStyleBackColor = true;
-            this.cbUseLocal7zip.CheckedChanged += new System.EventHandler(this.cbUseLocal7zip_CheckedChanged);
             this.cbUseLocal7zip.CheckedChanged += new System.EventHandler(this.fake_SettingsSave);
             // 
             // bPath7z
             // 
             this.bPath7z.Enabled = false;
-            this.bPath7z.Location = new System.Drawing.Point(344, 26);
+            this.bPath7z.Location = new System.Drawing.Point(344, 27);
             this.bPath7z.Name = "bPath7z";
             this.bPath7z.Size = new System.Drawing.Size(32, 23);
             this.bPath7z.TabIndex = 7;
@@ -588,14 +659,14 @@
             this.Name = "UltimateWinForm";
             this.Text = "One-Click Mod Installer";
             this.tcMain.ResumeLayout(false);
-            this.tabInstallation.ResumeLayout(false);
+            this.tabInstaller.ResumeLayout(false);
             this.tcInstallation.ResumeLayout(false);
             this.tabCurrent.ResumeLayout(false);
             this.tabCurrent.PerformLayout();
             this.tabOverall.ResumeLayout(false);
             this.tabOverall.PerformLayout();
-            this.tabDownload.ResumeLayout(false);
-            this.tabDownload.PerformLayout();
+            this.tabModInst.ResumeLayout(false);
+            this.tabModInst.PerformLayout();
             this.tabSettings.ResumeLayout(false);
             this.tcSettings.ResumeLayout(false);
             this.tPaths.ResumeLayout(false);
@@ -612,20 +683,19 @@
 
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.TabControl tcMain;
-        private System.Windows.Forms.TabPage tabInstallation;
-        private System.Windows.Forms.TabPage tabDownload;
+        private System.Windows.Forms.TabPage tabInstaller;
+        private System.Windows.Forms.TabPage tabModInst;
         private System.Windows.Forms.TabPage tabSettings;
         private System.Windows.Forms.TabPage tabAbout;
         private System.Windows.Forms.StatusStrip statusBar;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.Label lType;
         private System.Windows.Forms.Label lDownloadType;
-        public System.Windows.Forms.Label lURL;
         private System.Windows.Forms.Label lDownloadLink;
         private System.Windows.Forms.Label lDownloadTrying;
         private System.Windows.Forms.Label lDownloadID;
         internal System.Windows.Forms.Label lModID;
-        private System.Windows.Forms.Button bDownload;
+        private System.Windows.Forms.Button bModInstall;
         private System.Windows.Forms.ProgressBar progressBar;
         private System.Windows.Forms.TabControl tcInstallation;
         private System.Windows.Forms.TabPage tabCurrent;
@@ -656,5 +726,12 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox tbPath7z;
         private System.Windows.Forms.CheckBox cbUseLocal7zip;
+        private System.Windows.Forms.Button bModPath;
+        private System.Windows.Forms.TextBox tbModURL;
+        private System.Windows.Forms.CheckBox chSaveDownloadedArchives;
+        private System.Windows.Forms.CheckBox cbExitLaunchManager;
+        private System.Windows.Forms.Button bPathDownloadedArchives;
+        private System.Windows.Forms.TextBox tbDownloadedArchiveLocation;
+        private System.Windows.Forms.Label label2;
     }
 }

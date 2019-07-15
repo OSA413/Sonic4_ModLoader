@@ -13,27 +13,36 @@ namespace OneClickModInstaller
         //This class stores variables related to mod installation
         public static class Installation
         {
-            public static string Link        { set; get; }
-            public static string ServerHost  { set; get; }
-            public static string ArchiveName { set; get; }
-            public static string ArchiveDir  { set; get; }
-            public static string LastMod     { set; get; }
-            public static string[] ModRoots  { set; get; }
-            public static string Type        { set; get; }
-            public static string Status      { set; get; }
+            public static string    Link        { set; get; }
+            public static string    ServerHost  { set; get; }
+            public static string    ArchiveName { set; get; }
+            public static string    ArchiveDir  { set; get; }
+            public static bool      Local       { set; get; }
+            public static string    LastMod     { set; get; }
+            public static string[]  ModRoots    { set; get; }
+            public static string    Platform    { set; get; }
+            public static string    Status      { set; get; }
         }
 
         public static class Settings
         {
-            public static bool UseLocal7zip { set; get; }
+            public static bool UseLocal7zip             { set; get; }
+            public static bool SaveDownloadedArchives   { set; get; }
+            public static bool ExitLaunchManager        { set; get; }
 
             public static Dictionary<string, string> Paths { set; get; }
 
             public static void Load()
             {
+                //Defaults
+                Settings.UseLocal7zip           = false;
+                Settings.SaveDownloadedArchives = false;
+                Settings.ExitLaunchManager      = true;
+
                 Settings.Paths = new Dictionary<string, string>();
                 Settings.Paths.Add("CheatTables", "");
                 Settings.Paths.Add("7-Zip", "");
+                Settings.Paths.Add("DownloadedArhives", "mods_downloaded");
 
                 if (File.Exists("OneClickModInstaller.cfg"))
                 {
@@ -42,17 +51,22 @@ namespace OneClickModInstaller
                     foreach (string line in cfg_file)
                     {
                         if (!line.Contains("=")) { continue; }
-                        string formatted_line = line.Substring(line.IndexOf("=") + 1);
+                        string key   = line.Substring(0, line.IndexOf("="));
+                        string value = line.Substring(line.IndexOf("=") + 1);
 
-                        if (line.StartsWith("UseLocal7zip="))
-                        { Settings.UseLocal7zip = Convert.ToBoolean(Convert.ToInt32(formatted_line)); }
+                        //Paths
+                        if (Settings.Paths.ContainsKey(key))
+                        { Settings.Paths[key] = value.Replace("\\", "/"); }
 
-                        else if (line.StartsWith("CheatTables="))
-                        { Settings.Paths["CheatTables"] = formatted_line.Replace("\\", "/"); }
+                        //Booleans
+                        else if (key == "UseLocal7zip")
+                        { Settings.UseLocal7zip = Convert.ToBoolean(Convert.ToInt32(value)); }
 
-                        else if (line.StartsWith("7-Zip="))
-                        { Settings.Paths["7-Zip"] = formatted_line.Replace("\\", "/"); }
+                        else if (key == "SaveDownloadedArchives")
+                        { Settings.SaveDownloadedArchives = Convert.ToBoolean(Convert.ToInt32(value)); }
 
+                        else if (key == "ExitLaunchManager")
+                        { Settings.ExitLaunchManager = Convert.ToBoolean(Convert.ToInt32(value)); }
                     }
                 }
             }
@@ -61,7 +75,9 @@ namespace OneClickModInstaller
             {
                 var text = new List<string> { };
 
-                text.Add("UseLocal7zip=" + Convert.ToInt32(Settings.UseLocal7zip));
+                text.Add("UseLocal7zip="           + Convert.ToInt32(Settings.UseLocal7zip));
+                text.Add("SaveDownloadedArchives=" + Convert.ToInt32(Settings.SaveDownloadedArchives));
+                text.Add("ExitLaunchManager="      + Convert.ToInt32(Settings.ExitLaunchManager));
 
                 text.Add("[Paths]");
                 foreach (string path in Settings.Paths.Keys)
@@ -77,6 +93,11 @@ namespace OneClickModInstaller
         {
             InitializeComponent();
 
+            Settings.Load();
+            fake_SettingsLoad();
+            Installation.Status = "Idle";
+            Installation.Local = false;
+
             //Dealing with arguments
             if (args.Length > 0)
             {
@@ -87,24 +108,25 @@ namespace OneClickModInstaller
                     //Drag&Drop mod installation
                     if (File.Exists(args[0]) || Directory.Exists(args[0]))
                     {
-                        bDownload.Text = "Install";
+                        bModInstall.Text = "Install";
                         lDownloadTrying.Text = lDownloadTrying.Text.Replace("{0}", "install a mod from hard drive");
+                        tbModURL.Text     =
                         Installation.Link = args[0];
-                        lURL.Text = args[0].Replace(' ', '\u2007');
+                        Installation.Local = true;
 
                         lType.Text = lModID.Text = lDownloadType.Text = lDownloadID.Text = null;
 
                         lDownloadLink.Text = "Path to the mod:";
-                        tcMain.SelectTab(tabDownload);
+                        tcMain.SelectTab(tabModInst);
                     }
                 }
                 else
                 {
                     //a 1-lick installation call
                     //sonic4mmepx:url,mod_type,mod_id
-                    tcMain.SelectTab(tabDownload);
+                    tcMain.SelectTab(tabModInst);
                     var tmp_args = args[0].Substring(12).Split(',');
-                    lURL.Text = tmp_args[0];
+                    tbModURL.Text = tmp_args[0];
                     Installation.Link = tmp_args[0];
 
                     lDownloadTrying.Text = lDownloadTrying.Text.Replace("{0}", "download a mod from {1}");
@@ -130,8 +152,6 @@ namespace OneClickModInstaller
                 }
             }
 
-            fake_SettingsLoad();
-            Installation.Status = "Idle";
             UpdateWindow();
         }
 
@@ -150,7 +170,6 @@ namespace OneClickModInstaller
 
             foreach (string key in statuses.Keys)
             {
-                Console.WriteLine(key + " " + statuses[key]);
                 Label  lIOStatus;
                 Label  lIOPath;
                 Button bIOUninstall;
@@ -267,7 +286,7 @@ namespace OneClickModInstaller
             {
                 switch (Reg.InstallationStatus()[GetGame.Short()])
                 {
-                    case 2:  Reg.FixPath(); break;
+                    case 2: Reg.FixPath(); break;
                     default: Reg.Install(); break;
                 }
             }
@@ -302,7 +321,7 @@ namespace OneClickModInstaller
                     using (WebClient wc = new WebClient())
                     {
                         toolStripStatusLabel1.Text = "Connecting to the server...";
-                        bDownload.Enabled = false;
+                        bModInstall.Enabled = false;
                         wc.DownloadFileCompleted += new AsyncCompletedEventHandler(fake_DoTheRest);
                         wc.DownloadProgressChanged += wc_DownloadProgressChanged;
 
@@ -339,7 +358,7 @@ namespace OneClickModInstaller
             }
             else if (Installation.Status == "Waiting for path")
             {
-                if (Settings.Paths[Installation.Type] != "")
+                if (Settings.Paths[Installation.Platform] != "")
                 {
                     FinishInstallation();
                 }
@@ -386,12 +405,12 @@ namespace OneClickModInstaller
 
                 var FoundRootDirs = ModArchive.FindRoot(Installation.ArchiveDir);
                 Installation.ModRoots = FoundRootDirs.Item1;
-                Installation.Type = FoundRootDirs.Item2;
+                Installation.Platform = FoundRootDirs.Item2;
                 Installation.Status = "Ready to install";
 
                 if (Installation.ModRoots.Length > 1)
                 {
-                    TooManyMods tmm_form = new TooManyMods(Installation.ModRoots, Installation.Type);
+                    TooManyMods tmm_form = new TooManyMods(Installation.ModRoots, Installation.Platform);
                     tmm_form.ShowDialog();
 
                     Installation.ModRoots = tmm_form.mods;
@@ -399,10 +418,10 @@ namespace OneClickModInstaller
                 else if (Installation.ModRoots.Length == 0)
                 {
                     var FoundFiles = ModArchive.FindFiles(Installation.ArchiveDir);
-                    Installation.Type = FoundFiles.Item2;
+                    Installation.Platform = FoundFiles.Item2;
                     Installation.ModRoots = FoundFiles.Item1;
 
-                    if (Installation.Type == "???")
+                    if (Installation.Platform == "???")
                     {
                         MessageBox.Show("One-Click Mod Installer couldn't find any root directories of the mod. The mod won't be installed. Try to install the mod manually or try to contact the mod creator or the creator of the Mod Loader."
                                       , "Couldn't install the mod"
@@ -410,7 +429,7 @@ namespace OneClickModInstaller
                                       , MessageBoxIcon.Asterisk);
                         Environment.Exit(0);
                     }
-                    else if (Installation.Type == "mixed")
+                    else if (Installation.Platform == "mixed")
                     {
                         //TODO: think up a better explanation
                         MessageBox.Show("Looks like this thing is complicated, try to install it manually. bye"
@@ -423,13 +442,13 @@ namespace OneClickModInstaller
                     {
                         if (Installation.ModRoots.Length > 1)
                         {
-                            TooManyMods tmm_form = new TooManyMods(Installation.ModRoots, Installation.Type);
+                            TooManyMods tmm_form = new TooManyMods(Installation.ModRoots, Installation.Platform);
                             tmm_form.ShowDialog();
 
                             Installation.ModRoots = tmm_form.mods;
                         }
 
-                        if (Settings.Paths[Installation.Type] == "")
+                        if (Settings.Paths[Installation.Platform] == "")
                         {
                             //Oh, some hacky code over here
                             if (tcMain.InvokeRequired)
@@ -437,12 +456,12 @@ namespace OneClickModInstaller
                                 tcMain.Invoke(new MethodInvoker(delegate {
                                     //Code goes here
                                     tcMain.SelectTab(tabSettings);
-                                    bDownload.Text = "Continue Installation";
-                                ; }));
+                                    bModInstall.Text = "Continue Installation";
+                                    ; }));
                             }
 
                             MessageBox.Show("Looks like the mod you installed requires a special path to be installed to.\nPlease, specify "
-                                          + Installation.Type + "\nand then press the \"Continue Installation\" button in the \"Download\" tab."
+                                          + Installation.Platform + "\nand then press the \"Continue Installation\" button in the \"Download\" tab."
                                           , "Please specify a path"
                                           , MessageBoxButtons.OK
                                           , MessageBoxIcon.Information);
@@ -468,25 +487,29 @@ namespace OneClickModInstaller
                 foreach (string mod in Installation.ModRoots)
                 {
                     string dest;
-                    if (Installation.Type == "pc")
+                    if (Installation.Platform == "pc")
                     { dest = Path.Combine("mods", Path.GetFileName(mod)); }
-                    else if (Installation.Type == "dolphin")
+                    else if (Installation.Platform == "dolphin")
                     { dest = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Dolphin Emulator", "Load", "Textures"); }
                     else
-                    { dest = Settings.Paths[Installation.Type]; }
+                    { dest = Settings.Paths[Installation.Platform]; }
 
-                    if (Directory.Exists(dest) && Installation.Type == "pc") { MyDirectory.DeleteRecursively(dest); }
+                    if (Directory.Exists(dest) && Installation.Platform == "pc") { MyDirectory.DeleteRecursively(dest); }
                     ModArchive.CopyAll(mod, dest);
                 }
 
                 DFtEM enable_mod = new DFtEM();
                 enable_mod.ShowDialog();
 
-                if (Installation.ArchiveName != Installation.ArchiveDir)
-                { MyDirectory.DeleteRecursively(Installation.ArchiveDir); }
+                if (!Installation.Local)
+                {
+                    //TODO: do I need this?
+                    if (Installation.ArchiveName != Installation.ArchiveDir)
+                    { MyDirectory.DeleteRecursively(Installation.ArchiveDir); }
 
-                if (File.Exists(Installation.ArchiveName))
-                { File.Delete(Installation.ArchiveName); }
+                    if (File.Exists(Installation.ArchiveName))
+                    { File.Delete(Installation.ArchiveName); }
+                }
 
                 Environment.Exit(0);
             });
@@ -549,35 +572,59 @@ namespace OneClickModInstaller
 
         private void bPath7z_Click(object sender, EventArgs e)
         {
-            string path = MyDirectory.SelectionDialog("7-Zip");
+            string path = MyDirectory.Select("7-Zip", "file/dir");
             if (path != null)
             { tbPath7z.Text = path; }
         }
 
         private void bPathCheatTables_Click(object sender, EventArgs e)
         {
-            string path = MyDirectory.SelectionDialog("Cheat Tables");
+            string path = MyDirectory.Select("Cheat Tables", "dir");
             if (path != null)
             { tbPathCheatTables.Text = path; }
         }
 
-        private void fake_SettingsSave(object sender, EventArgs e)
+        private void bPathDownloadedArchives_Click(object sender, EventArgs e)
         {
-            //I don't like this method, but I can't think up something better now
-            Settings.UseLocal7zip         = cbUseLocal7zip.Checked;
-            Settings.Paths["7-Zip"]       = tbPath7z.Text;
-            Settings.Paths["CheatTables"] = tbPathCheatTables.Text;
-
-            Settings.Save();
+            string path = MyDirectory.Select("directory where you want to save downloaded archives", "dir");
+            if (path != null)
+            { tbDownloadedArchiveLocation.Text = path; }
         }
 
         private void fake_SettingsLoad()
         {
             Settings.Load();
 
-            cbUseLocal7zip.Checked = Settings.UseLocal7zip;
-            tbPath7z.Text          = Settings.Paths["7-Zip"];
-            tbPathCheatTables.Text = Settings.Paths["CheatTables"];
+            cbUseLocal7zip.Checked           = Settings.UseLocal7zip;
+            chSaveDownloadedArchives.Checked = Settings.SaveDownloadedArchives;
+            cbExitLaunchManager.Checked      = Settings.ExitLaunchManager;
+            tbPath7z.Text                    = Settings.Paths["7-Zip"];
+            tbPathCheatTables.Text           = Settings.Paths["CheatTables"];
+            tbDownloadedArchiveLocation.Text = Settings.Paths["DownloadedArhives"];
+        }
+
+        private void fake_SettingsSave(object sender, EventArgs e)
+        {
+            switch (((Control)sender).Name)
+            {
+                case "cbUseLocal7zip":              Settings.UseLocal7zip               = cbUseLocal7zip.Checked;           break;
+                case "chSaveDownloadedArchives":    Settings.SaveDownloadedArchives     = chSaveDownloadedArchives.Checked; break;
+                case "cbExitLaunchManager":         Settings.ExitLaunchManager          = cbExitLaunchManager.Checked;      break;
+                case "tbPath7z":                    Settings.Paths["7-Zip"]             = tbPath7z.Text;                    break;
+                case "tbPathCheatTables":           Settings.Paths["CheatTables"]       = tbPathCheatTables.Text;           break;
+                case "tbDownloadedArchiveLocation": Settings.Paths["DownloadedArhives"] = tbDownloadedArchiveLocation.Text; break;
+            }
+            Settings.Save();
+        }
+        
+        private void tbModURL_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void bModPath_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
