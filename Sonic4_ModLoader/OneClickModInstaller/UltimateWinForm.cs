@@ -311,9 +311,32 @@ namespace OneClickModInstaller
             UpdateWindow();
         }
 
-        private void bDownload_Click(object sender, EventArgs e)
+        private void bModInstall_Click(object sender, EventArgs e)
         {
             if (Installation.Status == "Idle")
+            {
+                bModInstall.Enabled = false;
+                StartInstallation();
+            }
+            else if (Installation.Status == "Waiting for path")
+            {
+                if (Settings.Paths[Installation.Platform] != "")
+                {
+                    bModInstall.Enabled = false;
+                    FinishInstallation();
+                }
+                else { tcMain.SelectTab(tabSettings); }
+            }
+        }
+
+        public void fake_DoTheRest(object sender, AsyncCompletedEventArgs e)
+        {
+            DoTheRest();
+        }
+
+        async public void StartInstallation()
+        {
+            await Task.Run(() =>
             {
                 string archive_url = Installation.Link;
                 if (File.Exists(archive_url) || Directory.Exists(archive_url))
@@ -360,20 +383,7 @@ namespace OneClickModInstaller
                         wc.DownloadFileAsync(new Uri(url), Installation.ArchiveName);
                     }
                 }
-            }
-            else if (Installation.Status == "Waiting for path")
-            {
-                if (Settings.Paths[Installation.Platform] != "")
-                {
-                    FinishInstallation();
-                }
-                else { tcMain.SelectTab(tabSettings); }
-            }
-        }
-
-        public void fake_DoTheRest(object sender, AsyncCompletedEventArgs e)
-        {
-            DoTheRest();
+            });
         }
 
         async public void DoTheRest()
@@ -462,6 +472,7 @@ namespace OneClickModInstaller
                                     //Code goes here
                                     tcMain.SelectTab(tabSettings);
                                     bModInstall.Text = "Continue Installation";
+                                    bModInstall.Enabled = true;
                                     ; }));
                             }
 
@@ -492,18 +503,32 @@ namespace OneClickModInstaller
                 foreach (string mod in Installation.ModRoots)
                 {
                     string dest;
-                    if (Installation.Platform == "pc")
-                    { dest = Path.Combine("mods", Path.GetFileName(mod)); }
-                    else if (Installation.Platform == "dolphin")
-                    { dest = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Dolphin Emulator", "Load", "Textures"); }
-                    else
-                    { dest = Settings.Paths[Installation.Platform]; }
 
-                    if (Directory.Exists(dest) && Installation.Platform == "pc") { MyDirectory.DeleteRecursively(dest); }
+                    switch (Installation.Platform)
+                    {
+                        case "pc":      dest = Path.Combine("mods", Path.GetFileName(mod)); break;
+                        case "dolphin": dest = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Dolphin Emulator", "Load", "Textures"); break;
+                        default:        dest = Settings.Paths[Installation.Platform]; break;
+                    }
+
+                    if (Directory.Exists(dest) && Installation.Platform == "pc")
+                    { MyDirectory.DeleteRecursively(dest); }
+
                     ModArchive.CopyAll(mod, dest);
                 }
 
-                if (!Installation.Local)
+                if (Installation.Local)
+                {
+                    if (tcMain.InvokeRequired)
+                    {
+                        tcMain.Invoke(new MethodInvoker(delegate {
+                            //Code goes here
+                            bModInstall.Enabled = true;
+                            ;
+                        }));
+                    }
+                }
+                else
                 {
                     //TODO: do I need this?
                     if (Installation.ArchiveName != Installation.ArchiveDir)
@@ -525,11 +550,15 @@ namespace OneClickModInstaller
 
                 if (Settings.ExitLaunchManager)
                 {
-                    Process.Start("Sonic4ModManager.exe", "\"" + UltimateWinForm.Installation.LastMod + "\"");
+                    if (Installation.Platform == "pc" && File.Exists("Sonic4ModManager.exe"))
+                    {
+                        Process.Start("Sonic4ModManager.exe", "\"" + UltimateWinForm.Installation.LastMod + "\"");
+                    }
                     Environment.Exit(0);
                 }
 
                 statusBar.Text = "Mod installation complete!";
+                Installation.Status = "Idle";
                 progressBar.Value = 0;
             });
         }

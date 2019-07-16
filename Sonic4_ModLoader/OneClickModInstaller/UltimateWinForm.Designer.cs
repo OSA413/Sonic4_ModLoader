@@ -459,7 +459,7 @@
             this.bModInstall.TabIndex = 11;
             this.bModInstall.Text = "Install";
             this.bModInstall.UseVisualStyleBackColor = true;
-            this.bModInstall.Click += new System.EventHandler(this.bDownload_Click);
+            this.bModInstall.Click += new System.EventHandler(this.bModInstall_Click);
             // 
             // tabSettings
             // 
