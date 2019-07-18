@@ -22,9 +22,13 @@ Yes!
 
 This folder stores file hashes of enabled mods (you can select which SHA algorithm to use, default is SHA-1). This is used to track every file change in mods (e.g. when you enable or disable mods or you install a newer version of it). If any file is changed, it will patch/repack original file. If no files were changed, it will do nothing (this saves time when you launch the game).
 
-## What modding tools exist?
+## I want to create a mod! Where should I start?
 
-Check the [Description of file extensions](https://github.com/OSA413/Sonic4_Tools/blob/master/docs/File%20description.md) page.
+[Mod Loader installation](https://github.com/OSA413/Sonic4_ModLoader/blob/master/docs/FAQ.md#how-do-i-install-mod-loader)
+
+[Description of file extensions](https://github.com/OSA413/Sonic4_Tools/blob/master/docs/File%20description.md)
+
+[Mod Examples](https://github.com/OSA413/Sonic4_ModLoader_examples)
 
 ## Linux?
 
