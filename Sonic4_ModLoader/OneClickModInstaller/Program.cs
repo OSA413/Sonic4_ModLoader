@@ -225,6 +225,7 @@ namespace OneClickModInstaller
                 MyFile.DeleteAnyway(file);
             }
 
+            //If Explorer locks the folder, it will throw "UnauthorizedAccess" instead of "Directory not empty"
             Directory.Delete(dir);
         }
 
@@ -316,20 +317,22 @@ namespace OneClickModInstaller
 
             foreach (string file in all_files)
             {
-                if (int.TryParse(Path.GetFileName(file), out int n) && file.Contains("DEMO\\WORLDMAP\\WORLDMAP.AMB"))
+                string file_short = file.Substring(dir_name.Length + 1);
+
+                if (int.TryParse(Path.GetFileName(file_short), out int n) && file_short.Contains(Path.Combine("DEMO", "WORLDMAP", "WORLDMAP.AMB")))
                 {
                     continue;
                 }
 
-                int extension_len = Path.GetExtension(file).Length;
+                int extension_len = Path.GetExtension(file_short).Length;
                 if (extension_len != 0) { extension_len = 1; }
 
-                if (good_formats.Contains(Path.GetExtension(file).Substring(extension_len), StringComparer.OrdinalIgnoreCase))
+                if (good_formats.Contains(Path.GetExtension(file_short).Substring(extension_len), StringComparer.OrdinalIgnoreCase))
                 {
                     continue;
                 }
 
-                suspicious_files.Add(file);
+                suspicious_files.Add(file_short);
             }
 
 
@@ -342,9 +345,17 @@ namespace OneClickModInstaller
                 DialogResult result = SuspiciousDialog.ShowDialog();
 
                 //Continue
-                if (result == DialogResult.Yes)
+                if (result != DialogResult.Cancel)
                 {
                     cont = 1;
+                }
+
+                if (result == DialogResult.Yes)
+                {
+                    foreach (string file in suspicious_files)
+                    {
+                        MyFile.DeleteAnyway(Path.Combine(dir_name, file));
+                    }
                 }
             }
             return cont;

@@ -413,83 +413,95 @@ namespace OneClickModInstaller
                 if (cont != 1)
                 {
                     MyDirectory.DeleteRecursively(Installation.ArchiveDir);
-                    Environment.Exit(0);
-                }
-
-                statusBar.Text = "Finding root directories...";
-
-                var FoundRootDirs = ModArchive.FindRoot(Installation.ArchiveDir);
-                Installation.ModRoots = FoundRootDirs.Item1;
-                Installation.Platform = FoundRootDirs.Item2;
-                Installation.Status = "Ready to install";
-
-                if (Installation.ModRoots.Length > 1)
-                {
-                    TooManyMods tmm_form = new TooManyMods(Installation.ModRoots, Installation.Platform);
-                    tmm_form.ShowDialog();
-
-                    Installation.ModRoots = tmm_form.mods;
-                }
-                else if (Installation.ModRoots.Length == 0)
-                {
-                    var FoundFiles = ModArchive.FindFiles(Installation.ArchiveDir);
-                    Installation.Platform = FoundFiles.Item2;
-                    Installation.ModRoots = FoundFiles.Item1;
-
-                    if (Installation.Platform == "???")
+                    statusBar.Text = "Installation was cancelled";
+                    if (tcMain.InvokeRequired)
                     {
-                        MessageBox.Show("One-Click Mod Installer couldn't find any root directories of the mod. The mod won't be installed. Try to install the mod manually or try to contact the mod creator or the creator of the Mod Loader."
-                                      , "Couldn't install the mod"
-                                      , MessageBoxButtons.OK
-                                      , MessageBoxIcon.Asterisk);
-                        Environment.Exit(0);
-                    }
-                    else if (Installation.Platform == "mixed")
-                    {
-                        //TODO: think up a better explanation
-                        MessageBox.Show("Looks like this thing is complicated, try to install it manually. bye"
-                                      , "Couldn't install the mod"
-                                      , MessageBoxButtons.OK
-                                      , MessageBoxIcon.Exclamation);
-                        Environment.Exit(0);
-                    }
-                    else
-                    {
-                        if (Installation.ModRoots.Length > 1)
+                        tcMain.Invoke(new MethodInvoker(delegate
                         {
-                            TooManyMods tmm_form = new TooManyMods(Installation.ModRoots, Installation.Platform);
-                            tmm_form.ShowDialog();
+                            //Code goes here
+                            bModInstall.Enabled = true;
+                        }));
+                    }
+                }
+                else
+                {
+                    statusBar.Text = "Finding root directories...";
 
-                            Installation.ModRoots = tmm_form.mods;
+                    var FoundRootDirs = ModArchive.FindRoot(Installation.ArchiveDir);
+                    Installation.ModRoots = FoundRootDirs.Item1;
+                    Installation.Platform = FoundRootDirs.Item2;
+                    Installation.Status = "Ready to install";
+
+                    if (Installation.ModRoots.Length > 1)
+                    {
+                        TooManyMods tmm_form = new TooManyMods(Installation.ModRoots, Installation.Platform);
+                        tmm_form.ShowDialog();
+
+                        Installation.ModRoots = tmm_form.mods;
+                    }
+                    else if (Installation.ModRoots.Length == 0)
+                    {
+                        var FoundFiles = ModArchive.FindFiles(Installation.ArchiveDir);
+                        Installation.Platform = FoundFiles.Item2;
+                        Installation.ModRoots = FoundFiles.Item1;
+
+                        if (Installation.Platform == "???")
+                        {
+                            MessageBox.Show("One-Click Mod Installer couldn't find any root directories of the mod. The mod won't be installed. Try to install the mod manually or try to contact the mod creator or the creator of the Mod Loader."
+                                          , "Couldn't install the mod"
+                                          , MessageBoxButtons.OK
+                                          , MessageBoxIcon.Asterisk);
+                            Environment.Exit(0);
                         }
-
-                        if (Settings.Paths[Installation.Platform] == "")
+                        else if (Installation.Platform == "mixed")
                         {
-                            //Oh, some hacky code over here
-                            if (tcMain.InvokeRequired)
+                            //TODO: think up a better explanation
+                            MessageBox.Show("Looks like this thing is complicated, try to install it manually. bye"
+                                          , "Couldn't install the mod"
+                                          , MessageBoxButtons.OK
+                                          , MessageBoxIcon.Exclamation);
+                            Environment.Exit(0);
+                        }
+                        else
+                        {
+                            if (Installation.ModRoots.Length > 1)
                             {
-                                tcMain.Invoke(new MethodInvoker(delegate {
-                                    //Code goes here
-                                    tcMain.SelectTab(tabSettings);
-                                    bModInstall.Text = "Continue Installation";
-                                    bModInstall.Enabled = true;
-                                    ; }));
+                                TooManyMods tmm_form = new TooManyMods(Installation.ModRoots, Installation.Platform);
+                                tmm_form.ShowDialog();
+
+                                Installation.ModRoots = tmm_form.mods;
                             }
 
-                            MessageBox.Show("Looks like the mod you installed requires a special path to be installed to.\nPlease, specify "
-                                          + Installation.Platform + "\nand then press the \"Continue Installation\" button in the \"Download\" tab."
-                                          , "Please specify a path"
-                                          , MessageBoxButtons.OK
-                                          , MessageBoxIcon.Information);
-                            Installation.Status = "Waiting for path";
+                            if (Settings.Paths[Installation.Platform] == "")
+                            {
+                                //Oh, some hacky code over here
+                                if (tcMain.InvokeRequired)
+                                {
+                                    tcMain.Invoke(new MethodInvoker(delegate
+                                    {
+                                        //Code goes here
+                                        tcMain.SelectTab(tabSettings);
+                                        bModInstall.Text = "Continue Installation";
+                                        bModInstall.Enabled = true;
+                                        ;
+                                    }));
+                                }
+
+                                MessageBox.Show("Looks like the mod you installed requires a special path to be installed to.\nPlease, specify "
+                                              + Installation.Platform + "\nand then press the \"Continue Installation\" button in the \"Download\" tab."
+                                              , "Please specify a path"
+                                              , MessageBoxButtons.OK
+                                              , MessageBoxIcon.Information);
+                                Installation.Status = "Waiting for path";
+                            }
                         }
                     }
+
+                    Installation.LastMod = Path.GetFileName(Installation.ModRoots[0]);
+
+                    if (Installation.Status == "Ready to install")
+                    { FinishInstallation(); }
                 }
-
-                Installation.LastMod = Path.GetFileName(Installation.ModRoots[0]);
-
-                if (Installation.Status == "Ready to install")
-                { FinishInstallation(); }
                 UpdateWindow();
             });
         }
@@ -506,7 +518,7 @@ namespace OneClickModInstaller
 
                     switch (Installation.Platform)
                     {
-                        case "pc":      dest = Path.Combine("mods", Path.GetFileName(mod)); break;
+                        case "pc":      dest = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "mods", Path.GetFileName(mod)); break;
                         case "dolphin": dest = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Dolphin Emulator", "Load", "Textures"); break;
                         default:        dest = Settings.Paths[Installation.Platform]; break;
                     }

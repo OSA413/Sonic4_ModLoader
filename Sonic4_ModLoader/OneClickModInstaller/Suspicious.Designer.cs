@@ -34,6 +34,7 @@
             this.bCancelAndExit = new System.Windows.Forms.Button();
             this.listView1 = new System.Windows.Forms.ListView();
             this.clFileNames = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.bDeleteContinue = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -47,23 +48,22 @@
             // 
             // bContinue
             // 
-            this.bContinue.DialogResult = System.Windows.Forms.DialogResult.Yes;
-            this.bContinue.Location = new System.Drawing.Point(64, 165);
+            this.bContinue.DialogResult = System.Windows.Forms.DialogResult.Ignore;
+            this.bContinue.Location = new System.Drawing.Point(32, 229);
             this.bContinue.Name = "bContinue";
             this.bContinue.Size = new System.Drawing.Size(128, 40);
             this.bContinue.TabIndex = 2;
             this.bContinue.Text = "Continue";
             this.bContinue.UseVisualStyleBackColor = true;
-            this.bContinue.Click += new System.EventHandler(this.bContinue_Click);
             // 
             // bCancelAndExit
             // 
-            this.bCancelAndExit.DialogResult = System.Windows.Forms.DialogResult.Abort;
-            this.bCancelAndExit.Location = new System.Drawing.Point(320, 165);
+            this.bCancelAndExit.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.bCancelAndExit.Location = new System.Drawing.Point(354, 229);
             this.bCancelAndExit.Name = "bCancelAndExit";
             this.bCancelAndExit.Size = new System.Drawing.Size(128, 40);
             this.bCancelAndExit.TabIndex = 3;
-            this.bCancelAndExit.Text = "Exit";
+            this.bCancelAndExit.Text = "Cancel";
             this.bCancelAndExit.UseVisualStyleBackColor = true;
             // 
             // listView1
@@ -72,8 +72,8 @@
             this.clFileNames});
             this.listView1.Location = new System.Drawing.Point(15, 32);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(469, 124);
-            this.listView1.TabIndex = 1;
+            this.listView1.Size = new System.Drawing.Size(469, 188);
+            this.listView1.TabIndex = 0;
             this.listView1.UseCompatibleStateImageBehavior = false;
             this.listView1.View = System.Windows.Forms.View.Details;
             // 
@@ -82,12 +82,23 @@
             this.clFileNames.Text = "Files";
             this.clFileNames.Width = 440;
             // 
+            // bDeleteContinue
+            // 
+            this.bDeleteContinue.DialogResult = System.Windows.Forms.DialogResult.Yes;
+            this.bDeleteContinue.Location = new System.Drawing.Point(192, 229);
+            this.bDeleteContinue.Name = "bDeleteContinue";
+            this.bDeleteContinue.Size = new System.Drawing.Size(128, 40);
+            this.bDeleteContinue.TabIndex = 4;
+            this.bDeleteContinue.Text = "Delete files and Continue";
+            this.bDeleteContinue.UseVisualStyleBackColor = true;
+            // 
             // Suspicious
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(496, 217);
+            this.ClientSize = new System.Drawing.Size(496, 281);
             this.ControlBox = false;
+            this.Controls.Add(this.bDeleteContinue);
             this.Controls.Add(this.listView1);
             this.Controls.Add(this.bCancelAndExit);
             this.Controls.Add(this.bContinue);
@@ -95,6 +106,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Suspicious";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Suspicious Dialog";
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -108,5 +120,6 @@
         private System.Windows.Forms.Button bCancelAndExit;
         private System.Windows.Forms.ColumnHeader clFileNames;
         private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.Button bDeleteContinue;
     }
 }
