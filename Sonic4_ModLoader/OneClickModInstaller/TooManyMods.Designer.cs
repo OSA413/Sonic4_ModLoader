@@ -47,7 +47,7 @@
             // bContinue
             // 
             this.bContinue.DialogResult = System.Windows.Forms.DialogResult.Yes;
-            this.bContinue.Location = new System.Drawing.Point(192, 165);
+            this.bContinue.Location = new System.Drawing.Point(192, 229);
             this.bContinue.Name = "bContinue";
             this.bContinue.Size = new System.Drawing.Size(128, 40);
             this.bContinue.TabIndex = 2;
@@ -65,14 +65,14 @@
             this.checkedListBox1.FormattingEnabled = true;
             this.checkedListBox1.Location = new System.Drawing.Point(15, 32);
             this.checkedListBox1.Name = "checkedListBox1";
-            this.checkedListBox1.Size = new System.Drawing.Size(469, 124);
-            this.checkedListBox1.TabIndex = 4;
+            this.checkedListBox1.Size = new System.Drawing.Size(469, 184);
+            this.checkedListBox1.TabIndex = 0;
             // 
             // TooManyMods
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(496, 217);
+            this.ClientSize = new System.Drawing.Size(496, 281);
             this.ControlBox = false;
             this.Controls.Add(this.checkedListBox1);
             this.Controls.Add(this.bContinue);

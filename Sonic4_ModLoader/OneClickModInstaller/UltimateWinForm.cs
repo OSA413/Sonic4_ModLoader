@@ -447,6 +447,10 @@ namespace OneClickModInstaller
 
                         if (Installation.Platform == "???")
                         {
+                            var test = new SelectRoots(Installation.ArchiveDir);
+
+                            test.ShowDialog();
+
                             MessageBox.Show("One-Click Mod Installer couldn't find any root directories of the mod. The mod won't be installed. Try to install the mod manually or try to contact the mod creator or the creator of the Mod Loader."
                                           , "Couldn't install the mod"
                                           , MessageBoxButtons.OK

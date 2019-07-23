@@ -56,6 +56,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SelectRoots.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SelectRoots.Designer.cs">
+      <DependentUpon>SelectRoots.cs</DependentUpon>
+    </Compile>
     <Compile Include="Suspicious.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -76,6 +82,9 @@
     <Compile Include="UltimateWinForm.Designer.cs">
       <DependentUpon>UltimateWinForm.cs</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="SelectRoots.resx">
+      <DependentUpon>SelectRoots.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Suspicious.resx">
       <DependentUpon>Suspicious.cs</DependentUpon>
     </EmbeddedResource>
@@ -110,9 +119,18 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="icons\application-x-executable.png" />
+    <None Include="icons\audio-x-generic.png" />
+    <None Include="icons\folder.png" />
+    <None Include="icons\image-missing.png" />
+    <None Include="icons\image-x-generic.png" />
+    <None Include="icons\package-x-generic.png" />
+    <None Include="icons\text-x-generic.png" />
+    <None Include="icons\text-x-script.png" />
+    <None Include="icons\user-home.png" />
     <Content Include="ocmi_logo.png" />
     <Content Include="icon.ico" />
-    <None Include="root-shield.png" />
+    <None Include="icons\root-shield.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
