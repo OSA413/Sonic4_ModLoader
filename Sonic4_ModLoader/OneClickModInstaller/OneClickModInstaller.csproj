@@ -127,7 +127,6 @@
     <None Include="icons\package-x-generic.png" />
     <None Include="icons\text-x-generic.png" />
     <None Include="icons\text-x-script.png" />
-    <None Include="icons\user-home.png" />
     <Content Include="ocmi_logo.png" />
     <Content Include="icon.ico" />
     <None Include="icons\root-shield.png" />

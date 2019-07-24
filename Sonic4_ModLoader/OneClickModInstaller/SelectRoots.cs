@@ -1,20 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using System.Windows.Forms;
 using System.IO;
+using System.Collections.Generic;
+using System;
 
 namespace OneClickModInstaller
 {
     public partial class SelectRoots:Form
     {
+        public static List<string> output { set; get; }
+
         public SelectRoots(string dir_name)
         {
+            output = new List<string> { };
             InitializeComponent();
             treeView1.PathSeparator = Path.PathSeparator.ToString();
             treeView1.ImageList = ilIcons;
@@ -23,7 +21,7 @@ namespace OneClickModInstaller
             {
                 string[] short_file_parts = file.Substring(dir_name.Length + 1).Split(Path.DirectorySeparatorChar);
                 TreeNodeCollection test = treeView1.Nodes;
-                
+
                 for (int i = 0; i < short_file_parts.Length; i++)
                 {
                     string file_part = short_file_parts[i];
@@ -38,7 +36,7 @@ namespace OneClickModInstaller
                             switch (Path.GetExtension(file_part.ToUpper()).Substring(1))
                             {
                                 //https://github.com/OSA413/Sonic4_Tools/blob/master/docs/File%20description.md
-                                
+
                                 //Images
                                 case "PNG":
                                 case "DDS":
@@ -95,6 +93,44 @@ namespace OneClickModInstaller
                     test = test[file_part].Nodes;
                 }
             }
+        }
+
+        private void bContinue_Click(object sender, EventArgs e)
+        {
+            output.Sort();
+            output.Reverse();
+
+            foreach (string path in output.ToArray())
+            {
+                if (output.Contains(Path.GetDirectoryName(path)))
+                {
+                    output.Remove(path);
+                }
+            }
+
+            output.Reverse();
+
+            foreach (string test in output)
+                Console.WriteLine(test);
+        }
+
+        private void treeView1_AfterCheck(object sender, EventArgs e)
+        {
+            TreeNode tn = ((TreeViewEventArgs)e).Node;
+            string full_path = tn.Name;
+            bool check_state = tn.Checked;
+            int orig_level = tn.Level; //This is needed because it changes in the for loop
+
+            for (int i = 0; i < orig_level; i++)
+            {
+                tn = tn.Parent;
+                full_path = Path.Combine(tn.Name, full_path);
+            }
+
+            if (check_state)
+                output.Add(full_path);
+            else
+                output.Remove(full_path);
         }
     }
 }

@@ -45,15 +45,17 @@
             this.bContinue.TabIndex = 5;
             this.bContinue.Text = "Confirm";
             this.bContinue.UseVisualStyleBackColor = true;
+            this.bContinue.Click += new System.EventHandler(this.bContinue_Click);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(12, 10);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(305, 13);
+            this.label1.Size = new System.Drawing.Size(441, 13);
             this.label1.TabIndex = 4;
-            this.label1.Text = "There are several {0} found. Which of them you want to install?";
+            this.label1.Text = "Installer couldn\'t find any root directories to install. Please, select any or co" +
+    "ntact mod creator.";
             // 
             // treeView1
             // 
@@ -62,6 +64,7 @@
             this.treeView1.Name = "treeView1";
             this.treeView1.Size = new System.Drawing.Size(469, 184);
             this.treeView1.TabIndex = 6;
+            this.treeView1.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(treeView1_AfterCheck);
             // 
             // ilIcons
             // 
