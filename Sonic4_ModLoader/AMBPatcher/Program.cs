@@ -372,7 +372,7 @@ namespace AMBPatcher
                                     //Turns out there's a double dot directory in file names
                                     if (files_names[i].StartsWith("..\\")) { files_names[i] = files_names[i].Substring(1); }
                                     files_names[i] = files_names[i].Substring(2);
-                                    if (files_names[i].StartsWith(".\\"))
+                                    if (files_names[i].StartsWith(".\\") || files_names[i].StartsWith("..\\"))
                                     {
                                         starts_with_dot = true;
                                     }
