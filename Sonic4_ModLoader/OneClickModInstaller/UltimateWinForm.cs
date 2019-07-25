@@ -447,15 +447,36 @@ namespace OneClickModInstaller
 
                         if (Installation.Platform == "???")
                         {
-                            var test = new SelectRoots(Installation.ArchiveDir);
+                            //Status description
+                            /*  1 - start (open SelectRoots window)
+                             *  2 - continue (choose destination directory)
+                             *  0 - ok (user selected destination directory)
+                             *  -1 - break (user cancelled SelectRoots window)
+                             */
+                            int status = 1;
+                            var sr = new SelectRoots(Installation.ArchiveDir);
 
-                            test.ShowDialog();
-
-                            MessageBox.Show("One-Click Mod Installer couldn't find any root directories of the mod. The mod won't be installed. Try to install the mod manually or try to contact the mod creator or the creator of the Mod Loader."
-                                          , "Couldn't install the mod"
-                                          , MessageBoxButtons.OK
-                                          , MessageBoxIcon.Asterisk);
-                            Environment.Exit(0);
+                            while (status > 0)
+                            {
+                                if (status == 1)
+                                {
+                                    status = -1;
+                                    if (sr.ShowDialog() == DialogResult.Yes)
+                                    {
+                                        status = 2;
+                                        Installation.ModRoots = sr.output.ToArray();
+                                    }
+                                }
+                                else if (status == 2)
+                                {
+                                    status = 1;
+                                    string path = MyDirectory.Select("test", "dir");
+                                    if (path != null)
+                                    {
+                                        status = 0;
+                                    }
+                                }
+                            }
                         }
                         else if (Installation.Platform == "mixed")
                         {

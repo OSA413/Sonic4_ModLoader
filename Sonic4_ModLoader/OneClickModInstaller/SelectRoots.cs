@@ -8,7 +8,7 @@ namespace OneClickModInstaller
 {
     public partial class SelectRoots:Form
     {
-        public static List<string> output { set; get; }
+        public List<string> output { set; get; }
 
         public SelectRoots(string dir_name)
         {
@@ -106,12 +106,7 @@ namespace OneClickModInstaller
                 {
                     output.Remove(path);
                 }
-            }
-
-            output.Reverse();
-
-            foreach (string test in output)
-                Console.WriteLine(test);
+            }            
         }
 
         private void treeView1_AfterCheck(object sender, EventArgs e)
@@ -131,6 +126,11 @@ namespace OneClickModInstaller
                 output.Add(full_path);
             else
                 output.Remove(full_path);
+        }
+
+        private void bCancel_Click(object sender, EventArgs e)
+        {
+            output.Clear();
         }
     }
 }
