@@ -530,6 +530,7 @@ namespace Sonic4ModManager
                 "29.02", //Leap year day
                 "15.05", //Sonic 4:2's release day
                 "23.06", //Sonic's BD
+                "18.08", //Initial release of Mod Loader
                 "31.12"  //New Year
             }.Contains(today))
             { bRandom.Text = "I'm Feeling Lucky"; }
