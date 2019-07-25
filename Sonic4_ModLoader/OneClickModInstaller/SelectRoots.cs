@@ -8,13 +8,15 @@ namespace OneClickModInstaller
 {
     public partial class SelectRoots:Form
     {
-        public List<string> output { set; get; }
+        public List<string>  output     { set; get; }
+        public static string start_path { set; get; }
 
         public SelectRoots(string dir_name)
         {
+            start_path = dir_name;
             output = new List<string> { };
             InitializeComponent();
-            treeView1.PathSeparator = Path.PathSeparator.ToString();
+            treeView1.PathSeparator = Path.DirectorySeparatorChar.ToString();
             treeView1.ImageList = ilIcons;
 
             foreach (string file in Directory.GetFileSystemEntries(dir_name, "*", SearchOption.AllDirectories))
@@ -106,7 +108,10 @@ namespace OneClickModInstaller
                 {
                     output.Remove(path);
                 }
-            }            
+            }
+
+            for (int i = 0; i < output.Count; i++)
+                output[i] = Path.Combine(start_path, output[i]);
         }
 
         private void treeView1_AfterCheck(object sender, EventArgs e)
@@ -114,18 +119,11 @@ namespace OneClickModInstaller
             TreeNode tn = ((TreeViewEventArgs)e).Node;
             string full_path = tn.Name;
             bool check_state = tn.Checked;
-            int orig_level = tn.Level; //This is needed because it changes in the for loop
-
-            for (int i = 0; i < orig_level; i++)
-            {
-                tn = tn.Parent;
-                full_path = Path.Combine(tn.Name, full_path);
-            }
-
+            
             if (check_state)
-                output.Add(full_path);
+                output.Add(tn.FullPath);
             else
-                output.Remove(full_path);
+                output.Remove(tn.FullPath);
         }
 
         private void bCancel_Click(object sender, EventArgs e)
