@@ -430,6 +430,7 @@ namespace OneClickModInstaller
             return Tuple.Create(file_roots.ToArray(), type);
         }
 
+        //Copies everything from source to dest
         public static void CopyAll(string source, string destination)
         {
             if (ModArchive.IsFSCS())

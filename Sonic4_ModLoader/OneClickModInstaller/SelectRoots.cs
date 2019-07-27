@@ -104,9 +104,12 @@ namespace OneClickModInstaller
 
             foreach (string path in output.ToArray())
             {
-                if (output.Contains(Path.GetDirectoryName(path)))
+                var path_parts = path.Split(Path.DirectorySeparatorChar);
+                for (int i = 1; i < path_parts.Length - 1; i++)
+                if (output.Contains(Path.Combine(path_parts.Take(i).ToArray())))
                 {
                     output.Remove(path);
+                    break;
                 }
             }
 

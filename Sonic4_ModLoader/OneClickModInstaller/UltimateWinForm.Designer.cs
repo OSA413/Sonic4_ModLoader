@@ -625,7 +625,6 @@
             this.statusBar.Name = "statusBar";
             this.statusBar.Size = new System.Drawing.Size(103, 17);
             this.statusBar.Text = "This is a status bar";
-            this.statusBar.TextChanged += new System.EventHandler(statusBar_TextChanged);
             // 
             // progressBar
             // 
