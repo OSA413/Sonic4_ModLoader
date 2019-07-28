@@ -391,6 +391,7 @@
             // tbModURL
             // 
             this.tbModURL.Location = new System.Drawing.Point(9, 64);
+            this.tbModURL.MaxLength = 512;
             this.tbModURL.Name = "tbModURL";
             this.tbModURL.Size = new System.Drawing.Size(341, 20);
             this.tbModURL.TabIndex = 19;
@@ -419,18 +420,18 @@
             this.lDownloadLink.AutoSize = true;
             this.lDownloadLink.Location = new System.Drawing.Point(6, 48);
             this.lDownloadLink.Name = "lDownloadLink";
-            this.lDownloadLink.Size = new System.Drawing.Size(77, 13);
+            this.lDownloadLink.Size = new System.Drawing.Size(85, 13);
             this.lDownloadLink.TabIndex = 15;
-            this.lDownloadLink.Text = "Download link:";
+            this.lDownloadLink.Text = "Path to the mod:";
             // 
             // lDownloadTrying
             // 
             this.lDownloadTrying.AutoSize = true;
             this.lDownloadTrying.Location = new System.Drawing.Point(6, 13);
             this.lDownloadTrying.Name = "lDownloadTrying";
-            this.lDownloadTrying.Size = new System.Drawing.Size(104, 26);
+            this.lDownloadTrying.Size = new System.Drawing.Size(140, 13);
             this.lDownloadTrying.TabIndex = 14;
-            this.lDownloadTrying.Text = "You are trying to {0}.\r\nAren\'t you?";
+            this.lDownloadTrying.Text = "Enter a path or URL to mod.";
             // 
             // lDownloadID
             // 
@@ -516,6 +517,7 @@
             // 
             this.tbDownloadedArchiveLocation.AllowDrop = true;
             this.tbDownloadedArchiveLocation.Location = new System.Drawing.Point(6, 107);
+            this.tbDownloadedArchiveLocation.MaxLength = 512;
             this.tbDownloadedArchiveLocation.Name = "tbDownloadedArchiveLocation";
             this.tbDownloadedArchiveLocation.Size = new System.Drawing.Size(332, 20);
             this.tbDownloadedArchiveLocation.TabIndex = 10;
@@ -549,7 +551,7 @@
             this.cbUseLocal7zip.TabIndex = 0;
             this.cbUseLocal7zip.Text = "Use a copy of 7-Zip from this computer";
             this.cbUseLocal7zip.UseVisualStyleBackColor = true;
-            this.cbUseLocal7zip.CheckedChanged += new System.EventHandler(this.fake_SettingsSave);
+            this.cbUseLocal7zip.CheckedChanged += new System.EventHandler(this.cbUseLocal7zip_CheckedChanged);
             // 
             // bPath7z
             // 
@@ -567,6 +569,7 @@
             this.tbPath7z.AllowDrop = true;
             this.tbPath7z.Enabled = false;
             this.tbPath7z.Location = new System.Drawing.Point(6, 29);
+            this.tbPath7z.MaxLength = 512;
             this.tbPath7z.Name = "tbPath7z";
             this.tbPath7z.Size = new System.Drawing.Size(332, 20);
             this.tbPath7z.TabIndex = 1;
@@ -576,6 +579,7 @@
             // 
             this.tbPathCheatTables.AllowDrop = true;
             this.tbPathCheatTables.Location = new System.Drawing.Point(6, 68);
+            this.tbPathCheatTables.MaxLength = 512;
             this.tbPathCheatTables.Name = "tbPathCheatTables";
             this.tbPathCheatTables.Size = new System.Drawing.Size(332, 20);
             this.tbPathCheatTables.TabIndex = 3;

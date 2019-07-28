@@ -102,6 +102,8 @@ namespace OneClickModInstaller
             Installation.Local      =
             Installation.FromArgs   = false;
 
+            lType.Text = lModID.Text = lDownloadType.Text = lDownloadID.Text = null;
+
             //Dealing with arguments
             if (args.Length > 0)
             {
@@ -113,16 +115,12 @@ namespace OneClickModInstaller
                     if (File.Exists(args[0]) || Directory.Exists(args[0]))
                     {
                         Installation.FromArgs = true;
-                        bModInstall.Text = "Install";
-                        lDownloadTrying.Text = lDownloadTrying.Text.Replace("{0}", "install a mod from hard drive");
                         tbModURL.Text     =
                         Installation.Link = args[0];
                         Installation.Local = true;
-
-                        lType.Text = lModID.Text = lDownloadType.Text = lDownloadID.Text = null;
-
-                        lDownloadLink.Text = "Path to the mod:";
                         tcMain.SelectTab(tabModInst);
+
+                        PrepareInstallation();
                     }
                 }
                 else
@@ -132,33 +130,47 @@ namespace OneClickModInstaller
                     //sonic4mmepx:url,mod_type,mod_id
                     tcMain.SelectTab(tabModInst);
                     var tmp_args = args[0].Substring(12).Split(',');
-                    tbModURL.Text = tmp_args[0];
-                    Installation.Link = tmp_args[0];
+                    Installation.Link   = 
+                    tbModURL.Text       = tmp_args[0];
+                    if (tmp_args.Length > 1) { lDownloadType.Text = "Mod type:"; lType.Text  = tmp_args[1]; }
+                    if (tmp_args.Length > 2) { lDownloadID.Text   = "Mod ID:";   lModID.Text = tmp_args[2]; }
 
-                    lDownloadTrying.Text = lDownloadTrying.Text.Replace("{0}", "download a mod from {1}");
-
-                    if (tmp_args.Length > 1) { lType.Text = tmp_args[1]; }
-                    if (tmp_args.Length > 2) { lModID.Text = tmp_args[2]; }
-
-                    if (Installation.Link.Contains("gamebanana.com"))
-                    {
-                        lDownloadTrying.Text = lDownloadTrying.Text.Replace("{1}", "GameBanana");
-                        Installation.ServerHost = "gamebanana";
-                    }
-                    else if (Installation.Link.Contains("github.com"))
-                    {
-                        lDownloadTrying.Text = lDownloadTrying.Text.Replace("{1}", "GitHub");
-                        Installation.ServerHost = "github";
-                    }
-                    else
-                    {
-                        lDownloadTrying.Text = lDownloadTrying.Text.Replace("{1}", "the Internet");
-                        Installation.ServerHost = "else";
-                    }
+                    PrepareInstallation();
                 }
             }
-
             UpdateWindow();
+        }
+
+        private void PrepareInstallation()
+        {
+            if (File.Exists(tbModURL.Text) || Directory.Exists(tbModURL.Text))
+            {
+                lDownloadTrying.Text = lDownloadTrying.Text = "You are trying to install a mod from hard drive." + Environment.NewLine + "Aren't you?";
+                lDownloadLink.Text = "Path to the mod:";
+                Installation.Link   = tbModURL.Text;
+            }
+            else if (tbModURL.Text.StartsWith("https://"))
+            {
+                lDownloadTrying.Text = lDownloadTrying.Text = "You are trying to download a mod from {1}." + Environment.NewLine + "Aren't you?";
+                lDownloadLink.Text  = "Download link:";
+                Installation.Link   = tbModURL.Text;
+
+                if (Installation.Link.Contains("gamebanana.com"))
+                {
+                    lDownloadTrying.Text = lDownloadTrying.Text.Replace("{1}", "GameBanana");
+                    Installation.ServerHost = "gamebanana";
+                }
+                else if (Installation.Link.Contains("github.com"))
+                {
+                    lDownloadTrying.Text = lDownloadTrying.Text.Replace("{1}", "GitHub");
+                    Installation.ServerHost = "github";
+                }
+                else
+                {
+                    lDownloadTrying.Text = lDownloadTrying.Text.Replace("{1}", "the Internet");
+                    Installation.ServerHost = "else";
+                }
+            }
         }
 
         private void UpdateWindow()
@@ -280,9 +292,9 @@ namespace OneClickModInstaller
                 }
             }
 
-            ///////////////////
-            //ModInstallation//
-            ///////////////////
+            ////////////////////
+            //Mod Installation//
+            ////////////////////
 
             tbModURL.ReadOnly   = true;
             bModPath.Enabled    = 
@@ -293,11 +305,8 @@ namespace OneClickModInstaller
             {
                 case "Idle":
                 case "Cancelled":
-                    if (!Installation.FromArgs)
-                    {
-                        tbModURL.ReadOnly   = true;
-                        bModPath.Enabled    = true;
-                    }
+                    tbModURL.ReadOnly   = Installation.FromArgs;
+                    bModPath.Enabled    =
                     tbModURL.Enabled    =
                     bModInstall.Enabled = true;
                     break;
@@ -659,12 +668,12 @@ namespace OneClickModInstaller
 
                 statusBar.Text = "Mod installation complete!";
                 Installation.Status = "Installed";
-                progressBar.Value = 0;
-
+                
                 if (tcMain.InvokeRequired)
                 {
                     tcMain.Invoke(new MethodInvoker(delegate {
                         //Code goes here
+                        progressBar.Value = 0;
                         UpdateWindow();
                         ;
                     }));
@@ -674,8 +683,6 @@ namespace OneClickModInstaller
 
         void wc_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
-            progressBar.Value = e.ProgressPercentage;
-
             string unit;
             int divider;
 
@@ -686,15 +693,16 @@ namespace OneClickModInstaller
             else
             { unit = "Bytes"; divider = 1; }
 
-            //Yep, sometimes TotalBytesToReceive equals -1
-            if (e.TotalBytesToReceive == -1)
-            {
-                statusBar.Text = "Downloading... (" + e.BytesReceived / divider + unit + ")";
-            }
-            else
-            {
-                statusBar.Text = "Downloading... (" + e.BytesReceived / divider + " / " + e.TotalBytesToReceive / divider + unit + ")";
-            }
+            //Sometimes invoke is required, sometimes itn't.
+            tcMain.Invoke(new MethodInvoker(delegate {
+                //Yep, sometimes TotalBytesToReceive equals -1
+                if (e.TotalBytesToReceive == -1)
+                    statusBar.Text = "Downloading... (" + e.BytesReceived / divider + unit + ")";
+                else
+                    statusBar.Text = "Downloading... (" + e.BytesReceived / divider + " / " + e.TotalBytesToReceive / divider + unit + ")";
+                progressBar.Value = e.ProgressPercentage;
+                ;
+            }));
         }
 
         private void bIOEp1Visit_Click(object sender, EventArgs e)
@@ -725,11 +733,12 @@ namespace OneClickModInstaller
         {
             tbPath7z.Enabled =
             bPath7z.Enabled  = cbUseLocal7zip.Checked;
+            fake_SettingsSave(sender, e);
         }
 
         private void bPath7z_Click(object sender, EventArgs e)
         {
-            string path = MyDirectory.Select("7-Zip", "file/dir");
+            string path = MyDirectory.Select("7z.exe", "7z");
             if (path != null)
             { tbPath7z.Text = path; }
         }
@@ -791,6 +800,7 @@ namespace OneClickModInstaller
             {
                 bModInstall.Enabled = false;
             }
+            PrepareInstallation();
         }
 
         private void bModPath_Click(object sender, EventArgs e)

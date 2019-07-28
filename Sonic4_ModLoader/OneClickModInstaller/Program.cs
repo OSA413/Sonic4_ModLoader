@@ -262,6 +262,9 @@ namespace OneClickModInstaller
                     case "file":
                         ofd.Filter = "All files (*.*)|*.*";
                         break;
+                    case "7z":
+                        ofd.Filter = "7z.exe|7z.exe|All files (*.*)|*.*";
+                        break;
                     case "dir/file":
                     case "file/dir":
                         ofd.Filter = "All files (*.*)|*.*";
