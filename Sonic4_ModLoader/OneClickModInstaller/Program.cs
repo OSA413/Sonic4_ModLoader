@@ -192,11 +192,11 @@ namespace OneClickModInstaller
     {
         public static string GetRedirect(string url)
         {
-            var t = WebRequest.Create(url);
-            var r = t.GetResponse();
-            var y = r.ResponseUri;
-            r.Close();
-            return y.ToString();
+            var reqiest = WebRequest.Create(url);
+            var response = reqiest.GetResponse();
+            var redir = response.ResponseUri;
+            response.Close();
+            return redir.ToString();
         }
     }
 
@@ -252,11 +252,13 @@ namespace OneClickModInstaller
             using (var ofd = new OpenFileDialog())
             {
                 ofd.CheckPathExists = true;
+                ofd.Title = "Select path to " + path_to;
+
                 switch (type)
                 {
                     case "dir":
-                        ofd.ValidateNames = false;
-                        ofd.CheckFileExists = false;
+                        ofd.CheckFileExists =
+                        ofd.ValidateNames   = false;
                         ofd.FileName = "[DIRECTORY]";
                         break;
                     case "file":
@@ -265,20 +267,27 @@ namespace OneClickModInstaller
                     case "7z":
                         ofd.Filter = "7z.exe|7z.exe|All files (*.*)|*.*";
                         break;
-                    case "dir/file":
-                    case "file/dir":
-                        ofd.Filter = "All files (*.*)|*.*";
-                        ofd.FileName = "Select a file or type \"?\" to select a folder";
-                        ofd.ValidateNames = false;
+                    case "arc/dir":
+                        ofd.Filter = "Supported archives|*.7z;*.zip;*.rar|All files (*.*)|*.*";
+                        ofd.Title += " (Enter - to select current directory)";
+                        ofd.CheckFileExists =
+                        ofd.ValidateNames   = false;
                         break;
                 }
-                ofd.ValidateNames = false;
-                ofd.CheckFileExists = false;
-                ofd.Title = "Select path to " + path_to;
-
+                
                 if (ofd.ShowDialog() == DialogResult.OK)
                 {
-                    return Path.GetDirectoryName(ofd.FileName);
+                    switch (type)
+                    {
+                        case "dir":
+                            return Path.GetDirectoryName(ofd.FileName);
+                        case "arc/dir":
+                            if (ofd.FileName == "-" || !File.Exists(ofd.FileName))
+                                return Path.GetDirectoryName(ofd.FileName);
+                            return ofd.FileName;
+                        default:
+                            return ofd.FileName;
+                    }
                 }
             }
             return null;

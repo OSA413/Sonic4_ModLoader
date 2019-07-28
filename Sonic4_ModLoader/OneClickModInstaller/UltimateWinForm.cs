@@ -810,7 +810,9 @@ namespace OneClickModInstaller
 
         private void bModPath_Click(object sender, EventArgs e)
         {
-
+            string path = MyDirectory.Select("mod", "arc/dir");
+            if (path != null)
+            { tbModURL.Text = path; }
         }
     }
 }
