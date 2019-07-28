@@ -226,7 +226,7 @@ namespace OneClickModInstaller
             }
 
             //If Explorer locks the folder, it will throw "UnauthorizedAccess" instead of "Directory not empty"
-            Directory.Delete(dir);
+            Directory.Delete(dir, true);
         }
 
         public static void OpenExplorer(string path)

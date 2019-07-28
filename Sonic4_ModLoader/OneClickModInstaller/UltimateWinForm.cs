@@ -115,9 +115,7 @@ namespace OneClickModInstaller
                     if (File.Exists(args[0]) || Directory.Exists(args[0]))
                     {
                         Installation.FromArgs = true;
-                        tbModURL.Text     =
-                        Installation.Link = args[0];
-                        Installation.Local = true;
+                        tbModURL.Text     = args[0];
                         tcMain.SelectTab(tabModInst);
 
                         PrepareInstallation();
@@ -130,7 +128,6 @@ namespace OneClickModInstaller
                     //sonic4mmepx:url,mod_type,mod_id
                     tcMain.SelectTab(tabModInst);
                     var tmp_args = args[0].Substring(12).Split(',');
-                    Installation.Link   = 
                     tbModURL.Text       = tmp_args[0];
                     if (tmp_args.Length > 1) { lDownloadType.Text = "Mod type:"; lType.Text  = tmp_args[1]; }
                     if (tmp_args.Length > 2) { lDownloadID.Text   = "Mod ID:";   lModID.Text = tmp_args[2]; }
@@ -148,12 +145,14 @@ namespace OneClickModInstaller
                 lDownloadTrying.Text = lDownloadTrying.Text = "You are trying to install a mod from hard drive." + Environment.NewLine + "Aren't you?";
                 lDownloadLink.Text = "Path to the mod:";
                 Installation.Link   = tbModURL.Text;
+                Installation.Local  = true;
             }
-            else if (tbModURL.Text.StartsWith("https://"))
+            else if (tbModURL.Text.StartsWith("https://") || tbModURL.Text.StartsWith("http://"))
             {
                 lDownloadTrying.Text = lDownloadTrying.Text = "You are trying to download a mod from {1}." + Environment.NewLine + "Aren't you?";
                 lDownloadLink.Text  = "Download link:";
                 Installation.Link   = tbModURL.Text;
+                Installation.Local  = false;
 
                 if (Installation.Link.Contains("gamebanana.com"))
                 {
@@ -322,8 +321,10 @@ namespace OneClickModInstaller
                 case "Installed":
                     if (!Installation.FromArgs)
                     {
+                        tbModURL.Enabled    =
                         bModPath.Enabled    =
                         bModInstall.Enabled = true;
+                        tbModURL.ReadOnly   = false;
                     }
                     else if (Installation.Local)
                         bModInstall.Enabled = true;
@@ -374,6 +375,8 @@ namespace OneClickModInstaller
                 || Installation.Status == "Cancelled"
                 || Installation.Status == "Installed")
             {
+                tbModURL.ReadOnly   = true;
+                bModPath.Enabled    =
                 bModInstall.Enabled = false;
                 StartInstallation();
             }
@@ -398,6 +401,8 @@ namespace OneClickModInstaller
             await Task.Run(() =>
             {
                 string archive_url = Installation.Link;
+                if (Installation.Link.EndsWith("/")) { Installation.Link = Installation.Link.Substring(Installation.Link.Length - 1); }
+
                 if (File.Exists(archive_url) || Directory.Exists(archive_url))
                 {
                     Installation.ArchiveName = archive_url;
@@ -410,10 +415,12 @@ namespace OneClickModInstaller
                     {
                         bModInstall.Enabled = false;
                         wc.DownloadFileCompleted += new AsyncCompletedEventHandler(fake_DoTheRest);
-                        wc.DownloadProgressChanged += wc_DownloadProgressChanged;
+                        wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
 
                         //Download link goes here
                         string url = URL.GetRedirect(archive_url);
+
+
 
                         //Getting file name of the archive
                         if (Installation.ServerHost == "github")
@@ -495,24 +502,18 @@ namespace OneClickModInstaller
 
                     Installation.Status = "Ready to install";
 
-                    if (tcMain.InvokeRequired)
-                    {
-                        tcMain.Invoke(new MethodInvoker(delegate
-                        {
-                            //Code goes here
-                            ContinueInstallation();
-                            ;
-                        }));
-                    }
-                }
-                if (tcMain.InvokeRequired)
-                {
+                    
                     tcMain.Invoke(new MethodInvoker(delegate
                     {
-                        UpdateWindow();
+                        ContinueInstallation();
                         ;
                     }));
                 }
+                tcMain.Invoke(new MethodInvoker(delegate
+                {
+                    UpdateWindow();
+                    ;
+                }));
             });
         }
 
@@ -637,13 +638,13 @@ namespace OneClickModInstaller
                     }
                 }
 
-                if (!Installation.Local)
+                if (!Installation.FromArgs)
                 {
                     //TODO: do I need this?
                     if (Installation.ArchiveName != Installation.ArchiveDir)
                     { MyDirectory.DeleteRecursively(Installation.ArchiveDir); }
 
-                    if (File.Exists(Installation.ArchiveName))
+                    if (File.Exists(Installation.ArchiveName) && !Installation.Local)
                     {
                         if (Settings.SaveDownloadedArchives)
                         {
@@ -669,15 +670,11 @@ namespace OneClickModInstaller
                 statusBar.Text = "Mod installation complete!";
                 Installation.Status = "Installed";
                 
-                if (tcMain.InvokeRequired)
-                {
-                    tcMain.Invoke(new MethodInvoker(delegate {
-                        //Code goes here
-                        progressBar.Value = 0;
-                        UpdateWindow();
-                        ;
-                    }));
-                }
+                tcMain.Invoke(new MethodInvoker(delegate {
+                    progressBar.Value = 0;
+                    UpdateWindow();
+                    ;
+                }));
             });
         }
 
@@ -685,10 +682,15 @@ namespace OneClickModInstaller
         {
             string unit;
             int divider;
+            long total;
+            
+            total = e.TotalBytesToReceive;
+            if (e.TotalBytesToReceive == -1)
+                total = e.BytesReceived;
 
-            if (e.TotalBytesToReceive > 1024 * 1024 * 16)
+            if (total > 1024 * 1024 * 16)
             { unit = "MBs"; divider = 1024 * 1024; }
-            else if (e.TotalBytesToReceive > 1024 * 16)
+            else if (total > 1024 * 16)
             { unit = "KBs"; divider = 1024; }
             else
             { unit = "Bytes"; divider = 1; }
@@ -699,8 +701,10 @@ namespace OneClickModInstaller
                 if (e.TotalBytesToReceive == -1)
                     statusBar.Text = "Downloading... (" + e.BytesReceived / divider + unit + ")";
                 else
+                {
                     statusBar.Text = "Downloading... (" + e.BytesReceived / divider + " / " + e.TotalBytesToReceive / divider + unit + ")";
-                progressBar.Value = e.ProgressPercentage;
+                    progressBar.Value = (int)(1000 * e.BytesReceived / e.TotalBytesToReceive);
+                }
                 ;
             }));
         }
@@ -787,7 +791,8 @@ namespace OneClickModInstaller
         {
             if (File.Exists(tbModURL.Text)
                 || Directory.Exists(tbModURL.Text)
-                || tbModURL.Text.StartsWith("https://"))
+                || tbModURL.Text.StartsWith("https://")
+                || tbModURL.Text.StartsWith("http://"))
             {
                 bModInstall.Enabled = true;
                 if (Installation.FromArgs)

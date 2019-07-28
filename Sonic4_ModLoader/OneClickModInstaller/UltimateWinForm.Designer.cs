@@ -634,6 +634,7 @@
             // 
             this.progressBar.Location = new System.Drawing.Point(12, 306);
             this.progressBar.MarqueeAnimationSpeed = 0;
+            this.progressBar.Maximum = 1000;
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(402, 16);
             this.progressBar.Step = 1;
