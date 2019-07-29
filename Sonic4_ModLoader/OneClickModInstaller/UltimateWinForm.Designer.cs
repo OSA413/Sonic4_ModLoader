@@ -81,6 +81,15 @@
             this.statusBar = new System.Windows.Forms.ToolStripStatusLabel();
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.link7z = new System.Windows.Forms.LinkLabel();
+            this.linkMain = new System.Windows.Forms.LinkLabel();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+            this.label8 = new System.Windows.Forms.Label();
             this.tcMain.SuspendLayout();
             this.tabInstaller.SuspendLayout();
             this.tcInstallation.SuspendLayout();
@@ -90,6 +99,8 @@
             this.tabSettings.SuspendLayout();
             this.tcSettings.SuspendLayout();
             this.tPaths.SuspendLayout();
+            this.tOther.SuspendLayout();
+            this.tabAbout.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
@@ -596,6 +607,8 @@
             // 
             // tOther
             // 
+            this.tOther.Controls.Add(this.label3);
+            this.tOther.Controls.Add(this.label4);
             this.tOther.Location = new System.Drawing.Point(4, 22);
             this.tOther.Name = "tOther";
             this.tOther.Padding = new System.Windows.Forms.Padding(3);
@@ -606,6 +619,13 @@
             // 
             // tabAbout
             // 
+            this.tabAbout.Controls.Add(this.label8);
+            this.tabAbout.Controls.Add(this.label7);
+            this.tabAbout.Controls.Add(this.linkLabel1);
+            this.tabAbout.Controls.Add(this.label5);
+            this.tabAbout.Controls.Add(this.link7z);
+            this.tabAbout.Controls.Add(this.linkMain);
+            this.tabAbout.Controls.Add(this.label6);
             this.tabAbout.Location = new System.Drawing.Point(4, 22);
             this.tabAbout.Name = "tabAbout";
             this.tabAbout.Padding = new System.Windows.Forms.Padding(3);
@@ -649,6 +669,104 @@
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             // 
+            // label3
+            // 
+            this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(165, 99);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(36, 13);
+            this.label3.TabIndex = 0;
+            this.label3.Text = "i hope";
+            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label4
+            // 
+            this.label4.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 32.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label4.Location = new System.Drawing.Point(121, 48);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(152, 51);
+            this.label4.TabIndex = 0;
+            this.label4.Text = "Soon™";
+            this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(126, 49);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(151, 13);
+            this.label5.TabIndex = 9;
+            this.label5.Text = "7-Zip Copyright (C) Igor Pavlov";
+            // 
+            // link7z
+            // 
+            this.link7z.AutoSize = true;
+            this.link7z.Location = new System.Drawing.Point(144, 62);
+            this.link7z.Name = "link7z";
+            this.link7z.Size = new System.Drawing.Size(115, 13);
+            this.link7z.TabIndex = 10;
+            this.link7z.TabStop = true;
+            this.link7z.Text = "https://www.7-zip.org/";
+            this.link7z.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel_LinkClicked);
+            // 
+            // linkMain
+            // 
+            this.linkMain.AutoSize = true;
+            this.linkMain.Location = new System.Drawing.Point(82, 27);
+            this.linkMain.Name = "linkMain";
+            this.linkMain.Size = new System.Drawing.Size(238, 13);
+            this.linkMain.TabIndex = 8;
+            this.linkMain.TabStop = true;
+            this.linkMain.Text = "https://github.com/OSA413/Sonic4_ModLoader";
+            this.linkMain.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel_LinkClicked);
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(60, 14);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(283, 13);
+            this.label6.TabIndex = 7;
+            this.label6.Text = "One-Click Mod Installer by OSA413 under the MIT License";
+            // 
+            // label7
+            // 
+            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label7.Location = new System.Drawing.Point(6, 122);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(382, 26);
+            this.label7.TabIndex = 11;
+            this.label7.Text = "Special thanks to the Tango Desktop Project developers for their icons dedicated " +
+    "to the Public Domain";
+            this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // linkLabel1
+            // 
+            this.linkLabel1.AutoSize = true;
+            this.linkLabel1.Location = new System.Drawing.Point(126, 148);
+            this.linkLabel1.Name = "linkLabel1";
+            this.linkLabel1.Size = new System.Drawing.Size(142, 13);
+            this.linkLabel1.TabIndex = 12;
+            this.linkLabel1.TabStop = true;
+            this.linkLabel1.Text = "http://tango.freedesktop.org";
+            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel_LinkClicked);
+            // 
+            // label8
+            // 
+            this.label8.Location = new System.Drawing.Point(70, 86);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(262, 30);
+            this.label8.TabIndex = 13;
+            this.label8.Text = "Use Mod Manager to read licenses or view them in \"Mod Loader - licenses\" folder.";
+            this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
             // UltimateWinForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -675,6 +793,10 @@
             this.tcSettings.ResumeLayout(false);
             this.tPaths.ResumeLayout(false);
             this.tPaths.PerformLayout();
+            this.tOther.ResumeLayout(false);
+            this.tOther.PerformLayout();
+            this.tabAbout.ResumeLayout(false);
+            this.tabAbout.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
@@ -737,5 +859,14 @@
         private System.Windows.Forms.Button bPathDownloadedArchives;
         private System.Windows.Forms.TextBox tbDownloadedArchiveLocation;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.LinkLabel link7z;
+        private System.Windows.Forms.LinkLabel linkMain;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.LinkLabel linkLabel1;
+        private System.Windows.Forms.Label label8;
     }
 }

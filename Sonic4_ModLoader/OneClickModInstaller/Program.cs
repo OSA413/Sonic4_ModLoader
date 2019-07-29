@@ -40,9 +40,9 @@ namespace OneClickModInstaller
             string where = "dunno";
 
             if (File.Exists("Sonic_vis.exe") && File.Exists("SonicLauncher.exe"))
-            { where = "Episode 1"; }
+                where = "Episode 1";
             else if (File.Exists("Sonic.exe") && File.Exists("Launcher.exe"))
-            { where = "Episode 2"; }
+                where = "Episode 2";
 
             return where;
         }
@@ -114,7 +114,7 @@ namespace OneClickModInstaller
                 string root_key = "sonic4mm" + game;
 
                 if (Registry.ClassesRoot.OpenSubKey(root_key) != null)
-                { Registry.ClassesRoot.DeleteSubKeyTree(root_key); }
+                    Registry.ClassesRoot.DeleteSubKeyTree(root_key);
             }
             else
             {
@@ -153,11 +153,11 @@ namespace OneClickModInstaller
                             {
                                 status = 1;
                             }
-                            else { status = 2; }
+                            else status = 2;
                         }
-                        else { status = -1; }
+                        else status = -1;
                     }
-                    else { status = -1; }
+                    else status = -1;
                 }
 
                 statuses.Add(game, status);
@@ -231,7 +231,8 @@ namespace OneClickModInstaller
 
         public static void OpenExplorer(string path)
         {
-            if (File.Exists(path)) { path = Path.GetDirectoryName(path); }
+            if (File.Exists(path))
+                path = Path.GetDirectoryName(path);
 
             string local_explorer = "";
             switch ((int)Environment.OSVersion.Platform)
@@ -307,14 +308,21 @@ namespace OneClickModInstaller
             return res;
         }
 
-        public static void Extract(string file)
+        public static void Extract(string file, string path_to_7z = "7z.exe")
         {
             //Need 7-zip to work
-            if (!File.Exists("7z.exe")) { return; }
+            if (!File.Exists(path_to_7z))
+            {
+                //Try to use bundled copy if local not found
+                if (File.Exists("7z.exe"))
+                    path_to_7z = "7z.exe";
+                else
+                    return;
+            }
 
             ProcessStartInfo startInfo = new ProcessStartInfo
             {
-                FileName = "7z.exe",
+                FileName = path_to_7z,
                 Arguments = "x \"" + file + "\" -o\"" + file + "_extracted" + "\""
             };
             Process.Start(startInfo).WaitForExit();
@@ -337,7 +345,7 @@ namespace OneClickModInstaller
                 }
 
                 int extension_len = Path.GetExtension(file_short).Length;
-                if (extension_len != 0) { extension_len = 1; }
+                if (extension_len != 0) extension_len = 1;
 
                 if (good_formats.Contains(Path.GetExtension(file_short).Substring(extension_len), StringComparer.OrdinalIgnoreCase))
                 {
@@ -418,12 +426,12 @@ namespace OneClickModInstaller
 
             for (int i = 0; i < types.Length; i++)
             {
-                if (type == "mixed") { break; }
+                if (type == "mixed") break;
                 string[] extensions_to_find = extensions[i].Split(',');
 
                 foreach (string extension in extensions_to_find)
                 {
-                    if (type == "mixed") { break; }
+                    if (type == "mixed") break;
                     foreach (string mod_file in Directory.GetFiles(dir_name, "*." + extension, SearchOption.AllDirectories))
                     {
                         if (type == "???")    { type = types[i]; }
@@ -437,7 +445,8 @@ namespace OneClickModInstaller
                     }
                 }
             }
-            if (type == "mixed") { file_roots.RemoveRange(0, file_roots.Count); }
+            if (type == "mixed")
+                file_roots.RemoveRange(0, file_roots.Count);
 
             return Tuple.Create(file_roots.ToArray(), type);
         }
@@ -446,8 +455,9 @@ namespace OneClickModInstaller
         public static void CopyAll(string source, string destination)
         {
             if (ModArchive.IsFSCS())
-            { if (source == destination) { return; } }
-            else { { if (source.ToLower() == destination.ToLower()) { return; } } }
+                if (source == destination) return;
+            else
+                if (source.ToLower() == destination.ToLower()) return;
 
             Directory.CreateDirectory(destination);
 
@@ -482,7 +492,7 @@ namespace OneClickModInstaller
             if (args.Length > 0)
             {
                 string extra_arg = null;
-                if (args.Length > 1) { extra_arg = args[1]; }
+                if (args.Length > 1) extra_arg = args[1];
 
                 switch (args[0])
                 {

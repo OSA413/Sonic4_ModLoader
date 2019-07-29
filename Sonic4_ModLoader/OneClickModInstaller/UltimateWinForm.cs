@@ -54,23 +54,23 @@ namespace OneClickModInstaller
 
                     foreach (string line in cfg_file)
                     {
-                        if (!line.Contains("=")) { continue; }
+                        if (!line.Contains("=")) continue;
                         string key   = line.Substring(0, line.IndexOf("="));
                         string value = line.Substring(line.IndexOf("=") + 1);
 
                         //Paths
                         if (Settings.Paths.ContainsKey(key))
-                        { Settings.Paths[key] = value.Replace("\\", "/"); }
+                            Settings.Paths[key] = value.Replace("\\", "/");
 
                         //Booleans
                         else if (key == "UseLocal7zip")
-                        { Settings.UseLocal7zip = Convert.ToBoolean(Convert.ToInt32(value)); }
+                            Settings.UseLocal7zip = Convert.ToBoolean(Convert.ToInt32(value));
 
                         else if (key == "SaveDownloadedArchives")
-                        { Settings.SaveDownloadedArchives = Convert.ToBoolean(Convert.ToInt32(value)); }
+                            Settings.SaveDownloadedArchives = Convert.ToBoolean(Convert.ToInt32(value));
 
                         else if (key == "ExitLaunchManager")
-                        { Settings.ExitLaunchManager = Convert.ToBoolean(Convert.ToInt32(value)); }
+                            Settings.ExitLaunchManager = Convert.ToBoolean(Convert.ToInt32(value));
                     }
                 }
             }
@@ -222,7 +222,7 @@ namespace OneClickModInstaller
                     bIOUninstall.Enabled =
                     bIOVisit.Enabled     = true;
 
-                    if (Admin.AmI()) { bUninstall.Image = null; }
+                    if (Admin.AmI()) bUninstall.Image = null;
                 }
                 else
                 {
@@ -349,7 +349,7 @@ namespace OneClickModInstaller
             if (GetGame.Short() == "dunno")
             {
                 if (Reg.InstallationStatus()["ep1"] == 0)
-                { Reg.Install("ep1"); }
+                    Reg.Install("ep1");
             }
             else
             {
@@ -368,9 +368,9 @@ namespace OneClickModInstaller
             if (GetGame.Short() == "dunno")
             {
                 if (Reg.InstallationStatus()["ep1"] == 1)
-                { Reg.Uninstall("ep1"); }
+                    Reg.Uninstall("ep1");
             }
-            else { Reg.Uninstall(); }
+            else Reg.Uninstall();
 
             UpdateWindow();
         }
@@ -393,7 +393,7 @@ namespace OneClickModInstaller
                     bModInstall.Enabled = false;
                     FinishInstallation();
                 }
-                else { tcMain.SelectTab(tabSettings); }
+                else tcMain.SelectTab(tabSettings);
             }
         }
 
@@ -407,7 +407,7 @@ namespace OneClickModInstaller
             await Task.Run(() =>
             {
                 string archive_url = Installation.Link;
-                if (Installation.Link.EndsWith("/")) { Installation.Link = Installation.Link.Substring(Installation.Link.Length - 1); }
+                if (Installation.Link.EndsWith("/")) Installation.Link = Installation.Link.Substring(Installation.Link.Length - 1);
 
                 if (File.Exists(archive_url) || Directory.Exists(archive_url))
                 {
@@ -472,9 +472,12 @@ namespace OneClickModInstaller
                     if (File.Exists(Installation.ArchiveName))
                     {
                         if (Directory.Exists(Installation.ArchiveName + "_extracted"))
-                        { MyDirectory.DeleteRecursively(Installation.ArchiveName + "_extracted"); }
+                            MyDirectory.DeleteRecursively(Installation.ArchiveName + "_extracted");
 
-                        ModArchive.Extract(Installation.ArchiveName);
+                        if (Settings.UseLocal7zip)
+                            ModArchive.Extract(Installation.ArchiveName, Settings.Paths["7-Zip"]);
+                        else
+                            ModArchive.Extract(Installation.ArchiveName);
                     }
                 }
 
@@ -607,7 +610,7 @@ namespace OneClickModInstaller
                 Installation.LastMod = Path.GetFileName(Installation.ModRoots[0]);
 
             if (Installation.Status == "Ready to install")
-            { FinishInstallation(); }
+                FinishInstallation();
         }
 
         async public void FinishInstallation()
@@ -629,7 +632,7 @@ namespace OneClickModInstaller
                     }
 
                     if (Directory.Exists(dest) && Installation.Platform == "pc")
-                    { MyDirectory.DeleteRecursively(dest); }
+                        MyDirectory.DeleteRecursively(dest);
 
                     if (Installation.Platform != "???")
                         ModArchive.CopyAll(mod, dest);
@@ -646,7 +649,7 @@ namespace OneClickModInstaller
                 {
                     //TODO: do I need this?
                     if (Installation.ArchiveName != Installation.ArchiveDir)
-                    { MyDirectory.DeleteRecursively(Installation.ArchiveDir); }
+                        MyDirectory.DeleteRecursively(Installation.ArchiveDir);
 
                     if (File.Exists(Installation.ArchiveName) && !Installation.Local)
                     {
@@ -706,7 +709,7 @@ namespace OneClickModInstaller
                     statusBar.Text = "Downloading... (" + e.BytesReceived / divider + unit + ")";
                 else
                 {
-                    statusBar.Text = "Downloading... (" + e.BytesReceived / divider + " / " + e.TotalBytesToReceive / divider + unit + ")";
+                    statusBar.Text = "Downloading... (" + e.BytesReceived / divider + " / " + e.TotalBytesToReceive / divider + " " + unit + ")";
                     progressBar.Value = (int)(1000 * e.BytesReceived / e.TotalBytesToReceive);
                 }
                 ;
@@ -715,13 +718,13 @@ namespace OneClickModInstaller
 
         private void bIOEp1Visit_Click(object sender, EventArgs e)
         {
-            if (Reg.InstallationStatus()["ep1"] < 1) { return; }
+            if (Reg.InstallationStatus()["ep1"] < 1) return;
             MyDirectory.OpenExplorer(Reg.InstallationLocation()["ep1"]);
         }
 
         private void bIOEp2Visit_Click(object sender, EventArgs e)
         {
-            if (Reg.InstallationStatus()["ep2"] < 1) { return; }
+            if (Reg.InstallationStatus()["ep2"] < 1) return;
             MyDirectory.OpenExplorer(Reg.InstallationLocation()["ep2"]);
         }
 
@@ -748,21 +751,21 @@ namespace OneClickModInstaller
         {
             string path = MyDirectory.Select("7z.exe", "7z");
             if (path != null)
-            { tbPath7z.Text = path; }
+                tbPath7z.Text = path;
         }
 
         private void bPathCheatTables_Click(object sender, EventArgs e)
         {
             string path = MyDirectory.Select("Cheat Tables", "dir");
             if (path != null)
-            { tbPathCheatTables.Text = path; }
+                tbPathCheatTables.Text = path;
         }
 
         private void bPathDownloadedArchives_Click(object sender, EventArgs e)
         {
             string path = MyDirectory.Select("directory where you want to save downloaded archives", "dir");
             if (path != null)
-            { tbDownloadedArchiveLocation.Text = path; }
+                tbDownloadedArchiveLocation.Text = path;
         }
 
         private void fake_SettingsLoad()
@@ -816,7 +819,12 @@ namespace OneClickModInstaller
         {
             string path = MyDirectory.Select("mod", "arc/dir");
             if (path != null)
-            { tbModURL.Text = path; }
+                tbModURL.Text = path;
+        }
+
+        private void linkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start(((Control)sender).Text);
         }
     }
 }
