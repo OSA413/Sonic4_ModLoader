@@ -25,6 +25,7 @@ namespace OneClickModInstaller
             public static string    Status      { set; get; }
             public static bool      FromArgs    { set; get; }
             public static string    CustomPath  { set; get; }
+            public static bool      FromDir     { set; get; }
         }
 
         public static class Settings
@@ -100,6 +101,7 @@ namespace OneClickModInstaller
             fake_SettingsLoad();
             Installation.Status = "Idle";
             Installation.Local      =
+            Installation.FromDir    =
             Installation.FromArgs   = false;
 
             lType.Text = lModID.Text = lDownloadType.Text = lDownloadID.Text = null;
@@ -146,6 +148,9 @@ namespace OneClickModInstaller
                 lDownloadLink.Text = "Path to the mod:";
                 Installation.Link   = tbModURL.Text;
                 Installation.Local  = true;
+                Installation.FromDir= false;
+                if (Directory.Exists(tbModURL.Text))
+                    Installation.FromDir  = true;
             }
             else if (tbModURL.Text.StartsWith("https://") || tbModURL.Text.StartsWith("http://"))
             {
@@ -153,6 +158,7 @@ namespace OneClickModInstaller
                 lDownloadLink.Text  = "Download link:";
                 Installation.Link   = tbModURL.Text;
                 Installation.Local  = false;
+                Installation.FromDir= false;
 
                 if (Installation.Link.Contains("gamebanana.com"))
                 {
@@ -405,7 +411,10 @@ namespace OneClickModInstaller
 
                 if (File.Exists(archive_url) || Directory.Exists(archive_url))
                 {
-                    Installation.ArchiveName = archive_url;
+                    if (Installation.FromDir)
+                        Installation.ArchiveDir = archive_url;
+                    else
+                        Installation.ArchiveName = archive_url;
                     DoTheRest();
                 }
                 else
@@ -419,9 +428,7 @@ namespace OneClickModInstaller
 
                         //Download link goes here
                         string url = URL.GetRedirect(archive_url);
-
-
-
+                        
                         //Getting file name of the archive
                         if (Installation.ServerHost == "github")
                         {
@@ -456,21 +463,19 @@ namespace OneClickModInstaller
         {
             await Task.Run(() =>
             {
-                statusBar.Text = "Extracting downloaded archive...";
-
-                Installation.ArchiveDir = Installation.ArchiveName + "_extracted";
-
-                if (File.Exists(Installation.ArchiveName))
+                if (!Installation.FromDir)
                 {
-                    if (Directory.Exists(Installation.ArchiveName + "_extracted"))
-                    { MyDirectory.DeleteRecursively(Installation.ArchiveName + "_extracted"); }
+                    statusBar.Text = "Extracting downloaded archive...";
 
-                    ModArchive.Extract(Installation.ArchiveName);
-                }
-                else if (Directory.Exists(Installation.ArchiveName))
-                {
-                    //This means that mod will be installed from a directory
-                    Installation.ArchiveDir = Installation.ArchiveName;
+                    Installation.ArchiveDir = Installation.ArchiveName + "_extracted";
+
+                    if (File.Exists(Installation.ArchiveName))
+                    {
+                        if (Directory.Exists(Installation.ArchiveName + "_extracted"))
+                        { MyDirectory.DeleteRecursively(Installation.ArchiveName + "_extracted"); }
+
+                        ModArchive.Extract(Installation.ArchiveName);
+                    }
                 }
 
                 statusBar.Text = "Checking extracted files...";
@@ -502,7 +507,6 @@ namespace OneClickModInstaller
 
                     Installation.Status = "Ready to install";
 
-                    
                     tcMain.Invoke(new MethodInvoker(delegate
                     {
                         ContinueInstallation();
