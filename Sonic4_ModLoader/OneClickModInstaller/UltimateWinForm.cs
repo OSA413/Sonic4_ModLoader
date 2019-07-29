@@ -26,6 +26,10 @@ namespace OneClickModInstaller
             public static bool      FromArgs    { set; get; }
             public static string    CustomPath  { set; get; }
             public static bool      FromDir     { set; get; }
+            //Sometimes server may break connection when file is not fully downloaded
+            //User will be offered to redownload it
+            public static long      Recieved    { set; get; }
+            public static long      Total       { set; get; }
         }
 
         public static class Settings
@@ -178,8 +182,15 @@ namespace OneClickModInstaller
             }
         }
 
-        private void UpdateWindow()
+        private void UpdateWindow(bool begin = true)
         {
+            if (begin)
+                if (tcMain.InvokeRequired)
+                    tcMain.Invoke(new MethodInvoker(delegate { UpdateWindow(false); ; }));
+                else UpdateWindow(false);
+
+            if (begin) return;
+
             ////////////////
             //Installaller//
             ////////////////
@@ -302,17 +313,16 @@ namespace OneClickModInstaller
             ////////////////////
 
             tbModURL.ReadOnly   = true;
-            bModPath.Enabled    = 
+            bModPath.Enabled    =
             bModInstall.Enabled = false;
             bModInstall.Text    = "Install";
-            
+
             switch (Installation.Status)
             {
                 case "Idle":
                 case "Cancelled":
                     tbModURL.ReadOnly   = Installation.FromArgs;
-                    bModPath.Enabled    =
-                    tbModURL.Enabled    =
+                    bModPath.Enabled    = !Installation.FromArgs;
                     bModInstall.Enabled = true;
                     break;
                 case "Waiting for path":
@@ -334,6 +344,12 @@ namespace OneClickModInstaller
                     }
                     else if (Installation.Local)
                         bModInstall.Enabled = true;
+                    break;
+                case "Server error":
+                    bModInstall.Text    = "Retry";
+                    bModInstall.Enabled = true;
+                    tbModURL.ReadOnly   = Installation.FromArgs;
+                    bModPath.Enabled    = !Installation.FromArgs;
                     break;
             }
 
@@ -379,7 +395,8 @@ namespace OneClickModInstaller
         {
             if (Installation.Status == "Idle"
                 || Installation.Status == "Cancelled"
-                || Installation.Status == "Installed")
+                || Installation.Status == "Installed"
+                || Installation.Status == "Server error")
             {
                 tbModURL.ReadOnly   = true;
                 bModPath.Enabled    =
@@ -399,7 +416,14 @@ namespace OneClickModInstaller
 
         public void fake_DoTheRest(object sender, AsyncCompletedEventArgs e)
         {
-            DoTheRest();
+            if (Installation.Total == -1 || Installation.Recieved == Installation.Total)
+                DoTheRest();
+            else
+            {
+                Installation.Status = "Server error";
+                statusBar.Text      = "Couldn't download full file (server error)";
+                UpdateWindow();
+            }
         }
 
         async public void StartInstallation()
@@ -516,11 +540,7 @@ namespace OneClickModInstaller
                         ;
                     }));
                 }
-                tcMain.Invoke(new MethodInvoker(delegate
-                {
-                    UpdateWindow();
-                    ;
-                }));
+                UpdateWindow();
             });
         }
 
@@ -690,6 +710,9 @@ namespace OneClickModInstaller
             string unit;
             int divider;
             long total;
+
+            Installation.Recieved   = e.BytesReceived;
+            Installation.Total      = e.TotalBytesToReceive;
             
             total = e.TotalBytesToReceive;
             if (e.TotalBytesToReceive == -1)
