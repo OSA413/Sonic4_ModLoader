@@ -23,14 +23,14 @@ namespace AMBPatcher
         {
             public static void Write(string Message)
             {
-                if (!GenerateLog) { return; }
+                if (!GenerateLog) return;
                 
                 File.AppendAllText("AMBPatcher.log", Message + Environment.NewLine);
             }
             
             public static void Reset()
             {
-                if (!GenerateLog) { return; }
+                if (!GenerateLog) return;
                 File.WriteAllText("AMBPatcher.log", "");
             }
         }
@@ -41,8 +41,8 @@ namespace AMBPatcher
             {
                 ProgressBar = true;
                 GenerateLog = false;
-                SHACheck = true;
-                SHAType = 1;
+                SHACheck    = true;
+                SHAType     = 1;
 
                 if (File.Exists("AMBPatcher.cfg"))
                 {
@@ -50,20 +50,20 @@ namespace AMBPatcher
                     
                     foreach (string line in cfg_file)
                     {
-                        if (!line.Contains("=")) {continue;}
+                        if (!line.Contains("=")) continue;
                         string formatted_line = line.Substring(line.IndexOf("=") + 1);
 
                         if (line.StartsWith("ProgressBar="))
-                        { ProgressBar = Convert.ToBoolean(Convert.ToInt32(formatted_line)); }
+                            ProgressBar = Convert.ToBoolean(Convert.ToInt32(formatted_line));
                         
                         else if (line.StartsWith("GenerateLog="))
-                        { GenerateLog = Convert.ToBoolean(Convert.ToInt32(formatted_line)); }
+                            GenerateLog = Convert.ToBoolean(Convert.ToInt32(formatted_line));
                         
                         else if (line.StartsWith("SHACheck="))
-                        { SHACheck = Convert.ToBoolean(Convert.ToInt32(formatted_line)); }
+                            SHACheck = Convert.ToBoolean(Convert.ToInt32(formatted_line));
                         
                         else if (line.StartsWith("SHAType="))
-                        { SHAType = Convert.ToInt32(formatted_line); }
+                            SHAType = Convert.ToInt32(formatted_line);
                     }
                 }
             }
@@ -72,15 +72,15 @@ namespace AMBPatcher
         static void ConsoleProgressBar(int i, int max_i, string title, int bar_len)
         {
             //To prevent crashes out of nowhere when progress bar is turned off
-            if (!ProgressBar) { return; }
+            if (!ProgressBar) return;
 
             Console.CursorTop -= 2;
             
             //What it is doing
             Console.Write(String.Concat(Enumerable.Repeat(" ", Console.WindowWidth-1)));
             Console.CursorLeft = 0;
-            if (i == max_i) {Console.WriteLine("Done!");}
-            else            {Console.WriteLine(title);}
+            if (i == max_i) Console.WriteLine("Done!");
+            else            Console.WriteLine(title);
             
             //Percentage
             Console.Write(String.Concat(Enumerable.Repeat(" ", Console.WindowWidth-1)));
@@ -102,7 +102,8 @@ namespace AMBPatcher
                 default:  hash = new SHA1CryptoServiceProvider().ComputeHash(file); break;
             }
             
-            foreach (byte b in hash) { str_hash += b.ToString("X"); }
+            foreach (byte b in hash)
+                str_hash += b.ToString("X");
 
             return str_hash;
         }
@@ -116,15 +117,13 @@ namespace AMBPatcher
                 var sha1_files = Directory.GetFiles(orig_file_sha_root, "*", SearchOption.AllDirectories);
 
                 foreach (string file in sha1_files)
-                {
                     File.Delete(file);
-                }
             }
         }
 
         static bool ShaChanged(string file_name, List<string> mod_files, List<string> mod_paths)
         {
-            if (!SHACheck) { return true; }
+            if (!SHACheck) return true;
 
             bool files_changed = false;
             
@@ -133,22 +132,18 @@ namespace AMBPatcher
             string orig_file_sha_root = Path.Combine("mods_sha", file_name);
 
             if (Directory.Exists(orig_file_sha_root))
-            {
                 sha_list = new List<string>(Directory.GetFiles(orig_file_sha_root, "*.txt", SearchOption.AllDirectories));
-            }
 
             //Checking SHA1s
             for (int i = 0; i < mod_files.Count; i++)
             {
                 if (files_changed) { break; }
 
-                string mod_file_full = Path.Combine("mods", mod_paths[i], mod_files[i] );
-                string mod_file_sha = Path.Combine("mods_sha", mod_files[i] + ".txt");
+                string mod_file_full    = Path.Combine("mods", mod_paths[i], mod_files[i] );
+                string mod_file_sha     = Path.Combine("mods_sha", mod_files[i] + ".txt");
 
                 if (sha_list.Contains(mod_file_sha))
-                {
                     sha_list.Remove(mod_file_sha);
-                }
                 else
                 {
                     files_changed = true;
@@ -160,7 +155,7 @@ namespace AMBPatcher
                     string sha_tmp = Sha(File.ReadAllBytes(mod_file_full));
                     if (sha_tmp != File.ReadAllText(mod_file_sha)) { files_changed = true; }
                 }
-                else { files_changed = true; }
+                else files_changed = true;
             }
 
             //Checking if there're removed files
@@ -170,9 +165,7 @@ namespace AMBPatcher
                 files_changed = true;
 
                 foreach (string file in sha_list)
-                {
                     File.Delete(file);
-                }
             }
 
             return files_changed;
@@ -225,14 +218,10 @@ namespace AMBPatcher
                 
                 //If it's inside, return the part after original file ends
                 if (index != -1)
-                {
                     InternalName = String.Join("\\", mod_file_parts.Skip(index + 1).ToArray());
-                }
                 //Else use file name
                 else
-                {
                     InternalName = mod_file_parts.Last();
-                }
 
                 //Find internal index
                 for (int i = 0; i < files.Count; i++)
@@ -343,6 +332,7 @@ namespace AMBPatcher
                             {
                                 if (files_names_raw[i] != "")
                                 {
+                                    //TODO: make this to not include > 32 char name files
                                     for (int j = 0; j < files_names_raw[i].Length / 32 + 1; j++)
                                     {
                                         files_names.Add(files_names_raw[i].Substring(32 * j, Math.Min(32, files_names_raw[i].Length - 32 * j)));
@@ -385,9 +375,8 @@ namespace AMBPatcher
 
                 var result = new List<Tuple<string, int, int>>();
                 for (int i = 0; i < files_counter; i++)
-                {
                     result.Add(Tuple.Create(files_names[i], files_pointers[i], files_lens[i]));
-                }
+
                 return result;
             }
             
@@ -408,9 +397,7 @@ namespace AMBPatcher
                 Directory.CreateDirectory(output);
                 
                 if (BitConverter.IsLittleEndian != AMB.IsLittleEndian(raw_file))
-                {
                     raw_file = AMB.SwapEndianness(raw_file);
-                }
 
                 var files = AMB.Read(raw_file);
 
@@ -449,9 +436,7 @@ namespace AMBPatcher
                 else if (Directory.Exists(path))
                 {
                     foreach (string sub_path in Directory.GetFileSystemEntries(path))
-                    {
                         AMB.ExtractAll(sub_path);
-                    }
                 }
             }
 
@@ -591,15 +576,13 @@ namespace AMBPatcher
 
             public static byte[] Add(byte[] raw_file, string OrigFileName, string ModFileName, string ModFilePath)
             {
-                if (!AMB.IsAMB(raw_file)) {return raw_file;}
+                if (!AMB.IsAMB(raw_file)) return raw_file;
                 //Okay, I've got a great plan:
                 //Add empty file and patch it.
 
                 //Some empty files from S4E1 are "broken", it's better to use a new empty file.
                 if (AMB.Read(raw_file).Count == 0)
-                {
                    raw_file = AMB.Create();
-                }
 
                 var InternalThings = AMB.GetInternalThings(raw_file, OrigFileName, ModFileName);
 
@@ -609,9 +592,7 @@ namespace AMBPatcher
                 int    ParentIndex   = InternalThings.Item4;
                 
                 if (InternalIndex != -1 || ParentIndex != -1)
-                {
                     return AMB.Patch(raw_file, OrigFileName, ModFileName, ModFilePath);
-                }
                 
                 int file_number  = BitConverter.ToInt32(raw_file, 0x10);
                 int enum_pointer = BitConverter.ToInt32(raw_file, 0x14);
@@ -717,9 +698,7 @@ namespace AMBPatcher
             {
                 bool FileIsLittleEndian = BitConverter.IsLittleEndian;
                 if (BitConverter.ToInt32(raw_file, 4) > 0xFFFF)
-                {
                     FileIsLittleEndian = !FileIsLittleEndian;
-                }
 
                 return FileIsLittleEndian;
             }
@@ -765,9 +744,7 @@ namespace AMBPatcher
                 }
                 
                 foreach (int pointer in PointerList)
-                {
                     Array.Reverse(raw_file, pointer, 4);
-                }
 
                 return raw_file;
             }
@@ -869,8 +846,8 @@ namespace AMBPatcher
 
             public static void Delete(string file_name, string file_name_to_delete)
             {
-                File.WriteAllBytes(file_name,
-                                    AMB.Delete(File.ReadAllBytes(file_name), file_name_to_delete));
+                File.WriteAllBytes(file_name
+                                    , AMB.Delete(File.ReadAllBytes(file_name), file_name_to_delete));
             }
 
             /////////////////////////
@@ -1002,17 +979,13 @@ namespace AMBPatcher
         static void Backup(string file_name)
         {
             if (!File.Exists(file_name + ".bkp"))
-            {
                 File.Copy(file_name, file_name + ".bkp");
-            }
         }
 
         static void Recover(string file_name)
         {
             if (File.Exists(file_name + ".bkp"))
-            {
                 File.Copy(file_name + ".bkp", file_name, true);
-            }
         }
 
         static List<Tuple<string, List<string>, List<string>>> GetModFiles()
@@ -1108,9 +1081,7 @@ namespace AMBPatcher
 
                 //Into a Tuple into a List
                 for (int i = 0; i < orig_files.Count; i++)
-                {
                     result.Add(Tuple.Create(orig_files[i], mod_files[i], mod_dirs[i]));
-                }
             }
             else { Log.Write("GetModFiles: \"mods/mods.ini\" file not found"); }
 
@@ -1148,6 +1119,12 @@ namespace AMBPatcher
 
             if (args.Length == 0)
             {
+                if (!File.Exists("mods/mods.ini"))
+                {
+                    ShowHelpMessage();
+                    return;
+                }
+
                 Log.Write("Getting list of enabled mods...");
                 var test = GetModFiles();
 
