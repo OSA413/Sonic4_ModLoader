@@ -366,17 +366,11 @@ namespace OneClickModInstaller
 
                 //Continue
                 if (result != DialogResult.Cancel)
-                {
                     cont = 1;
-                }
 
                 if (result == DialogResult.Yes)
-                {
                     foreach (string file in suspicious_files)
-                    {
                         MyFile.DeleteAnyway(Path.Combine(dir_name, file));
-                    }
-                }
             }
             return cont;
         }

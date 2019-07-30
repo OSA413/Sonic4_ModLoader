@@ -118,7 +118,10 @@ namespace OneClickModInstaller
                     args[0].StartsWith("sonic4mmep2:")))
                 {
                     //Drag&Drop mod installation
-                    if (File.Exists(args[0]) || Directory.Exists(args[0]))
+                    if (File.Exists(args[0])
+                        || Directory.Exists(args[0])
+                        || args[0].StartsWith("https://")
+                        || args[0].StartsWith("http://"))
                     {
                         Installation.FromArgs = true;
                         tbModURL.Text     = args[0];
@@ -311,36 +314,32 @@ namespace OneClickModInstaller
             ////////////////////
             //Mod Installation//
             ////////////////////
-
-            tbModURL.ReadOnly   = true;
+            
             bModPath.Enabled    =
             bModInstall.Enabled = false;
             bModInstall.Text    = "Install";
+            tbModURL.ReadOnly   = Installation.FromArgs;
 
             switch (Installation.Status)
             {
                 case "Idle":
                 case "Cancelled":
-                    tbModURL.ReadOnly   = Installation.FromArgs;
                     bModPath.Enabled    = !Installation.FromArgs;
                     bModInstall.Enabled = true;
                     break;
                 case "Waiting for path":
-                    tbModURL.Enabled    =
+                    tbModURL.ReadOnly   =
                     bModInstall.Enabled = true;
                     bModInstall.Text    = "Continue installation";
                     break;
                 case "Mod is complicated":
-                    tbModURL.Enabled    =
-                    bModPath.Enabled    = true;
+                    bModPath.Enabled    = !Installation.FromArgs;
                     break;
                 case "Installed":
                     if (!Installation.FromArgs)
                     {
-                        tbModURL.Enabled    =
                         bModPath.Enabled    =
                         bModInstall.Enabled = true;
-                        tbModURL.ReadOnly   = false;
                     }
                     else if (Installation.Local)
                         bModInstall.Enabled = true;
@@ -431,7 +430,8 @@ namespace OneClickModInstaller
             await Task.Run(() =>
             {
                 string archive_url = Installation.Link;
-                if (Installation.Link.EndsWith("/")) Installation.Link = Installation.Link.Substring(Installation.Link.Length - 1);
+                if (Installation.Link.EndsWith("/"))
+                    Installation.Link = Installation.Link.Substring(Installation.Link.Length - 1);
 
                 if (File.Exists(archive_url) || Directory.Exists(archive_url))
                 {
@@ -468,7 +468,7 @@ namespace OneClickModInstaller
                         {
                             //Well, it seems that GB's counter doesn't increase if you download
                             //the file directly from the redirect url. But I'm not sure that
-                            //this works, too.
+                            //this works as well
                             url = archive_url;
                         }
 
@@ -505,16 +505,34 @@ namespace OneClickModInstaller
                     }
                 }
 
-                statusBar.Text = "Checking extracted files...";
-                int cont = ModArchive.CheckFiles(Installation.ArchiveDir);
+                if (File.Exists(Installation.ArchiveDir))
+                {
+                    statusBar.Text = "Couldn't extract archive";
+                    Installation.Status = "Idle";
+                }
 
-                if (cont != 1)
+                int cont = -1;
+
+                if (!Directory.Exists(Installation.ArchiveDir))
+                {
+                    statusBar.Text = "Couldn't extract archive";
+                    Installation.Status = "Idle";
+                    if (!(File.Exists("7z.exe") || (File.Exists(Settings.Paths["7-Zip"]) && Settings.UseLocal7zip)))
+                        statusBar.Text += " (7-Zip not found)";
+                }
+                else
+                {
+                    statusBar.Text = "Checking extracted files...";
+                    cont = ModArchive.CheckFiles(Installation.ArchiveDir);
+                }
+                
+                if (cont == 0)
                 {
                     MyDirectory.DeleteRecursively(Installation.ArchiveDir);
                     statusBar.Text = "Installation was cancelled";
                     Installation.Status = "Cancelled";
                 }
-                else
+                else if (cont == 1)
                 {
                     statusBar.Text = "Finding root directories...";
 
@@ -667,8 +685,7 @@ namespace OneClickModInstaller
 
                 if (!Installation.FromArgs)
                 {
-                    //TODO: do I need this?
-                    if (Installation.ArchiveName != Installation.ArchiveDir)
+                    if (!Installation.FromDir)
                         MyDirectory.DeleteRecursively(Installation.ArchiveDir);
 
                     if (File.Exists(Installation.ArchiveName) && !Installation.Local)
@@ -827,8 +844,8 @@ namespace OneClickModInstaller
                 bModInstall.Enabled = true;
                 if (Installation.FromArgs)
                 {
-                    tbModURL.Enabled =
-                    bModPath.Enabled = false;
+                    tbModURL.ReadOnly   = true;
+                    bModPath.Enabled    = false;
                 }
             }
             else
