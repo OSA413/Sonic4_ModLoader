@@ -31,11 +31,13 @@ namespace OneClickModInstaller
                     if (!test.ContainsKey(file_part))
                     {
                         string imageKey = "image-missing";
+                        string extension = Path.GetExtension(file_part.ToUpper());
+
                         if (Directory.Exists(Path.Combine(dir_name, Path.Combine(short_file_parts.Take(i+1).ToArray()))))
-                        { imageKey = "folder"; }
-                        else
+                            imageKey = "folder";
+                        else if (extension.Length > 0)
                         {
-                            switch (Path.GetExtension(file_part.ToUpper()).Substring(1))
+                            switch (extension.Substring(1))
                             {
                                 //https://github.com/OSA413/Sonic4_Tools/blob/master/docs/File%20description.md
 

@@ -1107,7 +1107,7 @@ namespace AMBPatcher
             Console.WriteLine("\tAMBPatcher.exe swap_endianness [AMB] - Swaps endianness of pointers and lengths of [AMB].");
             Console.WriteLine("\tAMBPatcher.exe delete [AMB] [file] - Delete [file] from [AMB].");
             Console.WriteLine("\tAMBPatcher.exe create [name] - Creates an empty AMB file with [name].");
-            Console.WriteLine("\tAMBPatcher.exe extract_all [path] - Extract all files from [path] (can be a file or directory) to be Mod Loader compatible (note: this removes original files!).");
+            Console.WriteLine("\tAMBPatcher.exe extract_all [path] - Extract all files from [path] (can be a file or directory) to be Mod Loader compatible (note: this removes original AMB files!).");
             Console.WriteLine("\tAMBPatcher.exe -h and");
             Console.WriteLine("\tAMBPatcher.exe --help - Show this message.");
         }
