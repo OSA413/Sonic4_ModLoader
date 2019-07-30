@@ -660,7 +660,7 @@ namespace OneClickModInstaller
                 foreach (string mod in Installation.ModRoots)
                 {
                     string dest;
-
+                    
                     switch (Installation.Platform)
                     {
                         case "pc":      dest = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "mods", Path.GetFileName(mod)); break;
@@ -668,10 +668,10 @@ namespace OneClickModInstaller
                         case "???":     dest = Installation.CustomPath; break;
                         default:        dest = Settings.Paths[Installation.Platform]; break;
                     }
-
+                    
                     if (Directory.Exists(dest) && Installation.Platform == "pc")
                         MyDirectory.DeleteRecursively(dest);
-
+                    
                     if (Installation.Platform != "???")
                         ModArchive.CopyAll(mod, dest);
                     else
@@ -683,31 +683,26 @@ namespace OneClickModInstaller
                     }
                 }
 
-                if (!Installation.FromArgs)
-                {
-                    if (!Installation.FromDir)
-                        MyDirectory.DeleteRecursively(Installation.ArchiveDir);
+                if (!Installation.FromDir)
+                    MyDirectory.DeleteRecursively(Installation.ArchiveDir);
 
-                    if (File.Exists(Installation.ArchiveName) && !Installation.Local)
+                if (File.Exists(Installation.ArchiveName) && !Installation.Local)
+                {
+                    if (Settings.SaveDownloadedArchives)
                     {
-                        if (Settings.SaveDownloadedArchives)
-                        {
-                            Directory.CreateDirectory(Settings.Paths["DownloadedArhives"]);
-                            File.Move(Installation.ArchiveName, Path.Combine(Settings.Paths["DownloadedArhives"], Installation.ArchiveName));
-                        }
-                        else
-                        {
-                            File.Delete(Installation.ArchiveName);
-                        }
+                        Directory.CreateDirectory(Settings.Paths["DownloadedArhives"]);
+                        File.Move(Installation.ArchiveName, Path.Combine(Settings.Paths["DownloadedArhives"], Installation.ArchiveName));
+                    }
+                    else
+                    {
+                        File.Delete(Installation.ArchiveName);
                     }
                 }
 
                 if (Settings.ExitLaunchManager)
                 {
                     if (Installation.Platform == "pc" && File.Exists("Sonic4ModManager.exe"))
-                    {
                         Process.Start("Sonic4ModManager.exe", "\"" + UltimateWinForm.Installation.LastMod + "\"");
-                    }
                     Environment.Exit(0);
                 }
 

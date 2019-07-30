@@ -19,7 +19,19 @@ namespace OneClickModInstaller
             treeView1.PathSeparator = Path.DirectorySeparatorChar.ToString();
             treeView1.ImageList = ilIcons;
 
-            foreach (string file in Directory.GetFileSystemEntries(dir_name, "*", SearchOption.AllDirectories))
+            var files_n_dirs = Directory.GetFileSystemEntries(dir_name, "*", SearchOption.AllDirectories).ToList<string>();
+            int dir_num = 0;
+
+            foreach (string dir in files_n_dirs.ToArray())
+            {
+                if (Directory.Exists(dir))
+                {
+                    files_n_dirs.Remove(dir);
+                    files_n_dirs.Insert(dir_num++, dir);
+                }
+            }
+
+            foreach (string file in files_n_dirs)
             {
                 string[] short_file_parts = file.Substring(dir_name.Length + 1).Split(Path.DirectorySeparatorChar);
                 TreeNodeCollection test = treeView1.Nodes;
@@ -85,6 +97,7 @@ namespace OneClickModInstaller
 
                                 //Text
                                 case "TXT":
+                                case "RTF":
                                     imageKey = "text-x-generic"; break;
                             }
                         }
@@ -114,9 +127,6 @@ namespace OneClickModInstaller
                     break;
                 }
             }
-
-            for (int i = 0; i < output.Count; i++)
-                output[i] = Path.Combine(start_path, output[i]);
         }
 
         private void treeView1_AfterCheck(object sender, EventArgs e)
