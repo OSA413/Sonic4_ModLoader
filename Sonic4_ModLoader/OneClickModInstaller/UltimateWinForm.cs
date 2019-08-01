@@ -485,6 +485,13 @@ namespace OneClickModInstaller
 
         async public void DoTheRest()
         {
+            tcMain.Invoke(new MethodInvoker(delegate
+            {
+                progressBar.Style = ProgressBarStyle.Marquee;
+                progressBar.Value = 0;
+                ;
+            }));
+
             await Task.Run(() =>
             {
                 if (!Installation.FromDir)
@@ -710,7 +717,7 @@ namespace OneClickModInstaller
                 Installation.Status = "Installed";
                 
                 tcMain.Invoke(new MethodInvoker(delegate {
-                    progressBar.Value = 0;
+                    progressBar.Style = ProgressBarStyle.Blocks;
                     UpdateWindow();
                     ;
                 }));
@@ -741,10 +748,14 @@ namespace OneClickModInstaller
             tcMain.Invoke(new MethodInvoker(delegate {
                 //Yep, sometimes TotalBytesToReceive equals -1
                 if (e.TotalBytesToReceive == -1)
+                {
                     statusBar.Text = "Downloading... (" + e.BytesReceived / divider + unit + ")";
+                    progressBar.Style = ProgressBarStyle.Marquee;
+                }
                 else
                 {
                     statusBar.Text = "Downloading... (" + e.BytesReceived / divider + " / " + e.TotalBytesToReceive / divider + " " + unit + ")";
+                    progressBar.Style = ProgressBarStyle.Blocks;
                     progressBar.Value = (int)(1000 * e.BytesReceived / e.TotalBytesToReceive);
                 }
                 ;

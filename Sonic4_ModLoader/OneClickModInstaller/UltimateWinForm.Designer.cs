@@ -76,20 +76,20 @@
             this.tbPathCheatTables = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.tOther = new System.Windows.Forms.TabPage();
-            this.tabAbout = new System.Windows.Forms.TabPage();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.statusBar = new System.Windows.Forms.ToolStripStatusLabel();
-            this.progressBar = new System.Windows.Forms.ProgressBar();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
+            this.tabAbout = new System.Windows.Forms.TabPage();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.label5 = new System.Windows.Forms.Label();
             this.link7z = new System.Windows.Forms.LinkLabel();
             this.linkMain = new System.Windows.Forms.LinkLabel();
             this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
-            this.label8 = new System.Windows.Forms.Label();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.statusBar = new System.Windows.Forms.ToolStripStatusLabel();
+            this.progressBar = new System.Windows.Forms.ProgressBar();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.tcMain.SuspendLayout();
             this.tabInstaller.SuspendLayout();
             this.tcInstallation.SuspendLayout();
@@ -617,58 +617,6 @@
             this.tOther.Text = "Other";
             this.tOther.UseVisualStyleBackColor = true;
             // 
-            // tabAbout
-            // 
-            this.tabAbout.Controls.Add(this.label8);
-            this.tabAbout.Controls.Add(this.label7);
-            this.tabAbout.Controls.Add(this.linkLabel1);
-            this.tabAbout.Controls.Add(this.label5);
-            this.tabAbout.Controls.Add(this.link7z);
-            this.tabAbout.Controls.Add(this.linkMain);
-            this.tabAbout.Controls.Add(this.label6);
-            this.tabAbout.Location = new System.Drawing.Point(4, 22);
-            this.tabAbout.Name = "tabAbout";
-            this.tabAbout.Padding = new System.Windows.Forms.Padding(3);
-            this.tabAbout.Size = new System.Drawing.Size(394, 174);
-            this.tabAbout.TabIndex = 3;
-            this.tabAbout.Text = "About";
-            this.tabAbout.UseVisualStyleBackColor = true;
-            // 
-            // statusStrip1
-            // 
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.statusBar});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 325);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(426, 22);
-            this.statusStrip1.TabIndex = 3;
-            this.statusStrip1.Text = "statusStrip1";
-            // 
-            // statusBar
-            // 
-            this.statusBar.Name = "statusBar";
-            this.statusBar.Size = new System.Drawing.Size(103, 17);
-            this.statusBar.Text = "This is a status bar";
-            // 
-            // progressBar
-            // 
-            this.progressBar.Location = new System.Drawing.Point(12, 306);
-            this.progressBar.MarqueeAnimationSpeed = 0;
-            this.progressBar.Maximum = 1000;
-            this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(402, 16);
-            this.progressBar.Step = 1;
-            this.progressBar.TabIndex = 10;
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Image = global::OneClickModInstaller.Properties.Resources.ocmi_logo;
-            this.pictureBox1.Location = new System.Drawing.Point(12, 12);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(402, 84);
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
-            // 
             // label3
             // 
             this.label3.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -695,6 +643,54 @@
             this.label4.TabIndex = 0;
             this.label4.Text = "Soon™";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // tabAbout
+            // 
+            this.tabAbout.Controls.Add(this.label8);
+            this.tabAbout.Controls.Add(this.label7);
+            this.tabAbout.Controls.Add(this.linkLabel1);
+            this.tabAbout.Controls.Add(this.label5);
+            this.tabAbout.Controls.Add(this.link7z);
+            this.tabAbout.Controls.Add(this.linkMain);
+            this.tabAbout.Controls.Add(this.label6);
+            this.tabAbout.Location = new System.Drawing.Point(4, 22);
+            this.tabAbout.Name = "tabAbout";
+            this.tabAbout.Padding = new System.Windows.Forms.Padding(3);
+            this.tabAbout.Size = new System.Drawing.Size(394, 174);
+            this.tabAbout.TabIndex = 3;
+            this.tabAbout.Text = "About";
+            this.tabAbout.UseVisualStyleBackColor = true;
+            // 
+            // label8
+            // 
+            this.label8.Location = new System.Drawing.Point(70, 86);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(262, 30);
+            this.label8.TabIndex = 13;
+            this.label8.Text = "Use Mod Manager to read licenses or view them in \"Mod Loader - licenses\" folder.";
+            this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // label7
+            // 
+            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
+            this.label7.Location = new System.Drawing.Point(6, 122);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(382, 26);
+            this.label7.TabIndex = 11;
+            this.label7.Text = "Special thanks to the Tango Desktop Project developers for their icons dedicated " +
+    "to the Public Domain";
+            this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // linkLabel1
+            // 
+            this.linkLabel1.AutoSize = true;
+            this.linkLabel1.Location = new System.Drawing.Point(126, 148);
+            this.linkLabel1.Name = "linkLabel1";
+            this.linkLabel1.Size = new System.Drawing.Size(142, 13);
+            this.linkLabel1.TabIndex = 12;
+            this.linkLabel1.TabStop = true;
+            this.linkLabel1.Text = "http://tango.freedesktop.org";
+            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel_LinkClicked);
             // 
             // label5
             // 
@@ -736,36 +732,40 @@
             this.label6.TabIndex = 7;
             this.label6.Text = "One-Click Mod Installer by OSA413 under the MIT License";
             // 
-            // label7
+            // statusStrip1
             // 
-            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label7.Location = new System.Drawing.Point(6, 122);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(382, 26);
-            this.label7.TabIndex = 11;
-            this.label7.Text = "Special thanks to the Tango Desktop Project developers for their icons dedicated " +
-    "to the Public Domain";
-            this.label7.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.statusBar});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 325);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(426, 22);
+            this.statusStrip1.TabIndex = 3;
+            this.statusStrip1.Text = "statusStrip1";
             // 
-            // linkLabel1
+            // statusBar
             // 
-            this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(126, 148);
-            this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(142, 13);
-            this.linkLabel1.TabIndex = 12;
-            this.linkLabel1.TabStop = true;
-            this.linkLabel1.Text = "http://tango.freedesktop.org";
-            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel_LinkClicked);
+            this.statusBar.Name = "statusBar";
+            this.statusBar.Size = new System.Drawing.Size(103, 17);
+            this.statusBar.Text = "This is a status bar";
             // 
-            // label8
+            // progressBar
             // 
-            this.label8.Location = new System.Drawing.Point(70, 86);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(262, 30);
-            this.label8.TabIndex = 13;
-            this.label8.Text = "Use Mod Manager to read licenses or view them in \"Mod Loader - licenses\" folder.";
-            this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.progressBar.Location = new System.Drawing.Point(12, 306);
+            this.progressBar.MarqueeAnimationSpeed = 25;
+            this.progressBar.Maximum = 1000;
+            this.progressBar.Name = "progressBar";
+            this.progressBar.Size = new System.Drawing.Size(402, 16);
+            this.progressBar.Step = 1;
+            this.progressBar.TabIndex = 10;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Image = global::OneClickModInstaller.Properties.Resources.ocmi_logo;
+            this.pictureBox1.Location = new System.Drawing.Point(12, 12);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(402, 84);
+            this.pictureBox1.TabIndex = 0;
+            this.pictureBox1.TabStop = false;
             // 
             // UltimateWinForm
             // 
