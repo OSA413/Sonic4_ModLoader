@@ -144,6 +144,9 @@ namespace OneClickModInstaller
                     PrepareInstallation();
                 }
             }
+
+            if (Installation.FromArgs)
+                statusBar.Text = "A wild installation button appeared!";
             UpdateWindow();
         }
 
@@ -319,6 +322,7 @@ namespace OneClickModInstaller
             bModInstall.Enabled = false;
             bModInstall.Text    = "Install";
             tbModURL.ReadOnly   = Installation.FromArgs;
+            progressBar.Style   = ProgressBarStyle.Blocks;
 
             switch (Installation.Status)
             {
@@ -571,6 +575,7 @@ namespace OneClickModInstaller
 
         public void ContinueInstallation()
         {
+            progressBar.Style = ProgressBarStyle.Marquee;
             if (Installation.Platform == "???")
             {
                 //Status description
@@ -660,6 +665,7 @@ namespace OneClickModInstaller
 
         async public void FinishInstallation()
         {
+            progressBar.Style = ProgressBarStyle.Marquee;
             await Task.Run(() =>
             {
                 statusBar.Text = "Installing downloaded mod...";
@@ -717,7 +723,6 @@ namespace OneClickModInstaller
                 Installation.Status = "Installed";
                 
                 tcMain.Invoke(new MethodInvoker(delegate {
-                    progressBar.Style = ProgressBarStyle.Blocks;
                     UpdateWindow();
                     ;
                 }));
