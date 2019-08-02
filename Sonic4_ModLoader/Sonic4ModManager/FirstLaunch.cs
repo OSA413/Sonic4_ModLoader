@@ -9,24 +9,16 @@ namespace Sonic4ModManager
         public FirstLaunch()
         {
             InitializeComponent();
-            bIDUNNO.Select();
         }
 
         private void bYes_Click(object sender, EventArgs e)
         {
             MainForm.Install(1);
-            Close();
         }
 
         private void bNo_Click(object sender, EventArgs e)
         {
             File.WriteAllText("mod_manager.cfg", "0");
-            Close();
-        }
-
-        private void bIDUNNO_Click(object sender, EventArgs e)
-        {
-            Close();
         }
     }
 }

@@ -548,8 +548,8 @@ namespace Sonic4ModManager
             whats_new += "\n\nHome page: https://github.com/OSA413/Sonic4_ModLoader";
 
             rtb_mod_description.Text += whats_new;
-            
-            FormatDescription();
+
+            rtb_mod_description.Format();
 
             //The call after 1CMI installation
             if (args.Length == 1)
@@ -641,12 +641,10 @@ namespace Sonic4ModManager
                 Process.Start(local_explorer, "mods");
             }
             else
-            {
                 bOpenExplorer.Enabled = false;
-            }
         }
 
-        public static void LinkClicked(object sender, LinkClickedEventArgs e)
+        public void LinkClicked(object sender, LinkClickedEventArgs e)
         {
             try
             { Process.Start(e.LinkText); }
@@ -656,111 +654,11 @@ namespace Sonic4ModManager
                                 MessageBoxButtons.OK,
                                 MessageBoxIcon.Warning); }
         }
-
-        public void FormatDescription()
-        {
-            //Newline character
-            rtb_mod_description.Text = rtb_mod_description.Text.Replace("\\n", "\n");
-
-            //Tab character
-            rtb_mod_description.Text = rtb_mod_description.Text.Replace("\\t", "\t");
-
-            //Bullet character at the biginning of a line
-            rtb_mod_description.Text = rtb_mod_description.Text.Replace("\n* ", "\n • ");
-
-            //Description from mod.ini
-            foreach (string i in new string[] { "b", "i", "u", "strike" })
-            {
-                while (rtb_mod_description.Text.Contains("[" + i + "]"))
-                {
-                    //Getting the list of all [i] and [\i]
-                    int ind = 0;
-
-                    List<int> end_lst = new List<int> { };
-                    while (rtb_mod_description.Text.Substring(ind).Contains("[\\" + i + "]"))
-                    {
-                        end_lst.Add(rtb_mod_description.Text.Substring(ind).IndexOf("[\\" + i + "]") + ind);
-                        ind = end_lst[end_lst.Count - 1] + 1;
-                    }
-
-                    int start_ind = rtb_mod_description.Text.IndexOf("[" + i + "]");
-
-                    //Formating the original text
-                    if (end_lst.Count == 0)
-                    {
-                        end_lst.Add(rtb_mod_description.Text.Length);
-                    }
-                    foreach (int j in end_lst)
-                    {
-                        if (j > start_ind)
-                        {
-                            for (int k = 0; k < j - start_ind; k++)
-                            {
-                                rtb_mod_description.Select(start_ind + k, 1);
-
-                                FontStyle new_style = FontStyle.Regular;
-
-                                switch (i)
-                                {
-                                    case "b":      new_style =  FontStyle.Bold; break;
-                                    case "i":      new_style =  FontStyle.Italic; break;
-                                    case "u":      new_style =  FontStyle.Underline; break;
-                                    case "strike": new_style =  FontStyle.Strikeout; break;
-                                }
-
-                                rtb_mod_description.SelectionFont = new Font(rtb_mod_description.SelectionFont, new_style | rtb_mod_description.SelectionFont.Style);
-                            }
-
-                            //Remember folks, you can't delete any text if the richtextbox is ReadOnly
-                            rtb_mod_description.ReadOnly = false;
-                            rtb_mod_description.Select(j, 3 + i.Length);
-                            rtb_mod_description.SelectedText = "";
-                            rtb_mod_description.Select(start_ind, 2 + i.Length);
-                            rtb_mod_description.SelectedText = "";
-                            rtb_mod_description.ReadOnly = true;
-
-                            break;
-                        }
-                    }
-                }
-            }
-
-            //Text alignment
-            while (rtb_mod_description.Text.Contains("[l]") ||
-                   rtb_mod_description.Text.Contains("[c]") ||
-                   rtb_mod_description.Text.Contains("[r]"))
-            {
-                int ind_l = rtb_mod_description.Text.IndexOf("[l]");
-                if (ind_l == -1) { ind_l = rtb_mod_description.Text.Length; }
-                int ind_c = rtb_mod_description.Text.IndexOf("[c]");
-                if (ind_c == -1) { ind_c = rtb_mod_description.Text.Length; }
-                int ind_r = rtb_mod_description.Text.IndexOf("[r]");
-                if (ind_r == -1) { ind_r = rtb_mod_description.Text.Length; }
-
-                //Nearest tag
-                int ind = Math.Min(Math.Min(ind_l, ind_c), ind_r);
-                string tag = rtb_mod_description.Text[ind+1].ToString();
-
-
-                rtb_mod_description.Select(ind, 3);
-
-                if (tag == "c")
-                { rtb_mod_description.SelectionAlignment = HorizontalAlignment.Center; }
-                else if (tag == "r")
-                { rtb_mod_description.SelectionAlignment = HorizontalAlignment.Right; }
-                else
-                { rtb_mod_description.SelectionAlignment = HorizontalAlignment.Left; }
-
-                rtb_mod_description.ReadOnly = false;
-                rtb_mod_description.SelectedText = "";
-                rtb_mod_description.ReadOnly = true;
-            }
-        }
-
+        
         private void listMods_SelectedIndexChanged(object sender, EventArgs e)
         {
-            //Do nothing if nothing selected (it also deselects when changing)
-            if (listMods.SelectedItems.Count == 0) { return; }
+            //Do nothing if nothing is selected (it also automatically deselects when changing)
+            if (listMods.SelectedItems.Count == 0) return;
 
             //Updating description
             rtb_mod_description.Text = listMods.Items[listMods.SelectedIndices[0]].SubItems[4].Text;
@@ -771,22 +669,114 @@ namespace Sonic4ModManager
                 string description_file = Path.Combine("mods", listMods.Items[listMods.SelectedIndices[0]].SubItems[3].Text, rtb_mod_description.Text.Substring(5));
 
                 if (File.Exists(description_file))
-                {
                     if (description_file.EndsWith(".TXT", StringComparison.OrdinalIgnoreCase))
-                    {
                         rtb_mod_description.Text = File.ReadAllText(description_file);
-                    }
                     else
-                    {
                         rtb_mod_description.Text = "Error: unsupported format of \"" + description_file + "\" file.";
-                    }
-                }
                 else
-                {
                     rtb_mod_description.Text = "Error: \"" + description_file + "\" file not found.";
+            }
+            rtb_mod_description.Format();
+        }
+    }
+
+    public static class Extensions
+    {
+        //Formats Rich Text Box
+        //https://github.com/OSA413/Sonic4_ModLoader/blob/master/docs/Mod%20structure.md#description-formating
+        public static void Format(this RichTextBox rtb)
+        {
+            //Remember folks, you can't delete any text if the richtextbox is ReadOnly
+            rtb.ReadOnly = false;
+
+            //Newline character
+            rtb.Text = rtb.Text.Replace("\\n", "\n");
+
+            //Tab character
+            rtb.Text = rtb.Text.Replace("\\t", "\t");
+
+            //Bullet character at the biginning of a line
+            rtb.Text = rtb.Text.Replace("\n* ", "\n • ");
+
+            //Description from mod.ini
+            foreach (string i in new string[] { "b", "i", "u", "strike" })
+            {
+                while (rtb.Text.Contains("[" + i + "]"))
+                {
+                    //Getting the list of all [i] and [\i]
+                    int ind = 0;
+
+                    List<int> end_lst = new List<int> { };
+                    while (rtb.Text.Substring(ind).Contains("[\\" + i + "]"))
+                    {
+                        end_lst.Add(rtb.Text.Substring(ind).IndexOf("[\\" + i + "]") + ind);
+                        ind = end_lst[end_lst.Count - 1] + 1;
+                    }
+
+                    int start_ind = rtb.Text.IndexOf("[" + i + "]");
+
+                    //Formating the original text
+                    if (end_lst.Count == 0)
+                    {
+                        end_lst.Add(rtb.Text.Length);
+                    }
+                    foreach (int j in end_lst)
+                    {
+                        if (j > start_ind)
+                        {
+                            for (int k = 0; k < j - start_ind; k++)
+                            {
+                                rtb.Select(start_ind + k, 1);
+
+                                FontStyle new_style = FontStyle.Regular;
+                                switch (i)
+                                {
+                                    case "b": new_style         = FontStyle.Bold; break;
+                                    case "i": new_style         = FontStyle.Italic; break;
+                                    case "u": new_style         = FontStyle.Underline; break;
+                                    case "strike": new_style    = FontStyle.Strikeout; break;
+                                }
+
+                                rtb.SelectionFont = new Font(rtb.SelectionFont, new_style | rtb.SelectionFont.Style);
+                            }
+
+                            rtb.Select(j, 3 + i.Length);
+                            rtb.SelectedText = "";
+                            rtb.Select(start_ind, 2 + i.Length);
+                            rtb.SelectedText = "";
+                            
+                            break;
+                        }
+                    }
                 }
             }
-            FormatDescription();
+
+            //Text alignment
+            while (rtb.Text.Contains("[l]") ||
+                   rtb.Text.Contains("[c]") ||
+                   rtb.Text.Contains("[r]"))
+            {
+                int ind_l = rtb.Text.Contains("[l]") ? rtb.Text.IndexOf("[l]") : rtb.Text.Length;
+                int ind_c = rtb.Text.Contains("[c]") ? rtb.Text.IndexOf("[c]") : rtb.Text.Length;
+                int ind_r = rtb.Text.Contains("[r]") ? rtb.Text.IndexOf("[r]") : rtb.Text.Length;
+
+                //Nearest tag
+                int ind = Math.Min(Math.Min(ind_l, ind_c), ind_r);
+                string tag = rtb.Text[ind+1].ToString();
+
+                rtb.Select(ind, 3);
+
+                switch(tag)
+                {
+                    case "c": rtb.SelectionAlignment = HorizontalAlignment.Center;  break;
+                    case "r": rtb.SelectionAlignment = HorizontalAlignment.Right;   break;
+                    default:  rtb.SelectionAlignment = HorizontalAlignment.Left;    break;
+                }
+
+                rtb.SelectedText = "";
+            }
+
+            rtb.ReadOnly = true;
         }
     }
 }

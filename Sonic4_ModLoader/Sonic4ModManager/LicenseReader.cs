@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Windows.Forms;
 
 namespace Sonic4ModManager
@@ -26,7 +25,9 @@ namespace Sonic4ModManager
                 license = File.ReadAllText(args[1]);
             }
 
-            string text = "====================\n" + args[0] + "\n====================\n\n"
+            string text = "====================\n"
+                            + args[0]
+                            + "\n====================\n\n"
                             + files
                             + "\n\n====================\n"
                             + args[1]
@@ -34,11 +35,6 @@ namespace Sonic4ModManager
                             + license;
 
             richTextBox1.Text = text;
-        }
-        
-        private void button1_Click(object sender, EventArgs e)
-        {
-            Close();
         }
     }
 }

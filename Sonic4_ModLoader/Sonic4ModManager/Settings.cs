@@ -168,14 +168,9 @@ namespace Sonic4ModManager
         //About//
         /////////
 
-        private void linkMain_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        private void LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
-            Process.Start("https://github.com/OSA413/Sonic4_ModLoader");
-        }
-
-        private void linkSAT_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            Process.Start("https://github.com/blueskythlikesclouds/SonicAudioTools");
+            Process.Start(((Control)sender).Text);
         }
         
         private void bRL_S4ML_Click(object sender, EventArgs e)

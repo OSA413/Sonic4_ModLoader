@@ -79,7 +79,7 @@
             this.linkSAT.TabIndex = 3;
             this.linkSAT.TabStop = true;
             this.linkSAT.Text = "https://github.com/blueskythlikesclouds/SonicAudioTools";
-            this.linkSAT.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkSAT_LinkClicked);
+            this.linkSAT.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkClicked);
             // 
             // linkMain
             // 
@@ -90,7 +90,7 @@
             this.linkMain.TabIndex = 1;
             this.linkMain.TabStop = true;
             this.linkMain.Text = "https://github.com/OSA413/Sonic4_ModLoader";
-            this.linkMain.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkMain_LinkClicked);
+            this.linkMain.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkClicked);
             // 
             // tabControl1
             // 
@@ -296,6 +296,7 @@
             this.link7z.TabIndex = 6;
             this.link7z.TabStop = true;
             this.link7z.Text = "https://www.7-zip.org/";
+            this.link7z.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkClicked);
             // 
             // bRL_SAT
             // 

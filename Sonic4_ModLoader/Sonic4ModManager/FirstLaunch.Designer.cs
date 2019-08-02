@@ -38,10 +38,11 @@
             // bNo
             // 
             this.bNo.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(237)))), ((int)(((byte)(225)))), ((int)(((byte)(225)))));
+            this.bNo.DialogResult = System.Windows.Forms.DialogResult.No;
             this.bNo.Location = new System.Drawing.Point(316, 103);
             this.bNo.Name = "bNo";
             this.bNo.Size = new System.Drawing.Size(64, 32);
-            this.bNo.TabIndex = 2;
+            this.bNo.TabIndex = 1;
             this.bNo.Text = "No";
             this.bNo.UseVisualStyleBackColor = false;
             this.bNo.Click += new System.EventHandler(this.bNo_Click);
@@ -49,10 +50,11 @@
             // bYes
             // 
             this.bYes.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(225)))), ((int)(((byte)(225)))), ((int)(((byte)(237)))));
+            this.bYes.DialogResult = System.Windows.Forms.DialogResult.Yes;
             this.bYes.Location = new System.Drawing.Point(64, 103);
             this.bYes.Name = "bYes";
             this.bYes.Size = new System.Drawing.Size(64, 32);
-            this.bYes.TabIndex = 3;
+            this.bYes.TabIndex = 2;
             this.bYes.Text = "Yes";
             this.bYes.UseVisualStyleBackColor = false;
             this.bYes.Click += new System.EventHandler(this.bYes_Click);
@@ -68,13 +70,13 @@
             // bIDUNNO
             // 
             this.bIDUNNO.BackColor = System.Drawing.SystemColors.Control;
+            this.bIDUNNO.DialogResult = System.Windows.Forms.DialogResult.Ignore;
             this.bIDUNNO.Location = new System.Drawing.Point(192, 103);
             this.bIDUNNO.Name = "bIDUNNO";
             this.bIDUNNO.Size = new System.Drawing.Size(64, 32);
-            this.bIDUNNO.TabIndex = 1;
+            this.bIDUNNO.TabIndex = 0;
             this.bIDUNNO.Text = "Ask later";
             this.bIDUNNO.UseVisualStyleBackColor = false;
-            this.bIDUNNO.Click += new System.EventHandler(this.bIDUNNO_Click);
             // 
             // FirstLaunch
             // 

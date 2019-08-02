@@ -209,6 +209,7 @@
             this.rtb_mod_description.Size = new System.Drawing.Size(538, 90);
             this.rtb_mod_description.TabIndex = 6;
             this.rtb_mod_description.Text = "Select an item to see its description.";
+            this.rtb_mod_description.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.LinkClicked);
             // 
             // MainForm
             // 
