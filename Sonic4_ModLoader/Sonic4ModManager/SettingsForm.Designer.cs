@@ -46,6 +46,7 @@
             this.cb_AMBPatcher_sha_check = new System.Windows.Forms.CheckBox();
             this.cb_AMBPatcher_generate_log = new System.Windows.Forms.CheckBox();
             this.cb_AMBPatcher_progress_bar = new System.Windows.Forms.CheckBox();
+            this.tabCsbEditor = new System.Windows.Forms.TabPage();
             this.tabAbout = new System.Windows.Forms.TabPage();
             this.bRL_7z = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
@@ -55,11 +56,18 @@
             this.label2 = new System.Windows.Forms.Label();
             this.bOK = new System.Windows.Forms.Button();
             this.bCancel = new System.Windows.Forms.Button();
-            this.tabCsbEditor = new System.Windows.Forms.TabPage();
+            this.cb_CsbEditor_EnableThreading = new System.Windows.Forms.CheckBox();
+            this.num_CsbEditor_MaxThreads = new System.Windows.Forms.NumericUpDown();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.num_CsbEditor_BufferSize = new System.Windows.Forms.NumericUpDown();
             this.tabControl1.SuspendLayout();
             this.tabInstallation.SuspendLayout();
             this.tabAMBPatcher.SuspendLayout();
+            this.tabCsbEditor.SuspendLayout();
             this.tabAbout.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.num_CsbEditor_MaxThreads)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.num_CsbEditor_BufferSize)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -210,13 +218,14 @@
             // list_SHAType
             // 
             this.list_SHAType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.list_SHAType.Enabled = false;
             this.list_SHAType.ImeMode = System.Windows.Forms.ImeMode.Disable;
             this.list_SHAType.Items.AddRange(new object[] {
             "1",
             "256",
             "384",
             "512"});
-            this.list_SHAType.Location = new System.Drawing.Point(150, 75);
+            this.list_SHAType.Location = new System.Drawing.Point(150, 77);
             this.list_SHAType.Name = "list_SHAType";
             this.list_SHAType.Size = new System.Drawing.Size(47, 21);
             this.list_SHAType.TabIndex = 4;
@@ -224,7 +233,7 @@
             // cb_AMBPatcher_sha_check
             // 
             this.cb_AMBPatcher_sha_check.AutoSize = true;
-            this.cb_AMBPatcher_sha_check.Location = new System.Drawing.Point(6, 52);
+            this.cb_AMBPatcher_sha_check.Location = new System.Drawing.Point(6, 54);
             this.cb_AMBPatcher_sha_check.Name = "cb_AMBPatcher_sha_check";
             this.cb_AMBPatcher_sha_check.Size = new System.Drawing.Size(191, 17);
             this.cb_AMBPatcher_sha_check.TabIndex = 3;
@@ -235,7 +244,7 @@
             // cb_AMBPatcher_generate_log
             // 
             this.cb_AMBPatcher_generate_log.AutoSize = true;
-            this.cb_AMBPatcher_generate_log.Location = new System.Drawing.Point(7, 29);
+            this.cb_AMBPatcher_generate_log.Location = new System.Drawing.Point(6, 31);
             this.cb_AMBPatcher_generate_log.Name = "cb_AMBPatcher_generate_log";
             this.cb_AMBPatcher_generate_log.Size = new System.Drawing.Size(144, 17);
             this.cb_AMBPatcher_generate_log.TabIndex = 2;
@@ -245,12 +254,26 @@
             // cb_AMBPatcher_progress_bar
             // 
             this.cb_AMBPatcher_progress_bar.AutoSize = true;
-            this.cb_AMBPatcher_progress_bar.Location = new System.Drawing.Point(6, 6);
+            this.cb_AMBPatcher_progress_bar.Location = new System.Drawing.Point(6, 8);
             this.cb_AMBPatcher_progress_bar.Name = "cb_AMBPatcher_progress_bar";
             this.cb_AMBPatcher_progress_bar.Size = new System.Drawing.Size(86, 17);
             this.cb_AMBPatcher_progress_bar.TabIndex = 1;
             this.cb_AMBPatcher_progress_bar.Text = "Progress Bar";
             this.cb_AMBPatcher_progress_bar.UseVisualStyleBackColor = true;
+            // 
+            // tabCsbEditor
+            // 
+            this.tabCsbEditor.Controls.Add(this.label7);
+            this.tabCsbEditor.Controls.Add(this.num_CsbEditor_BufferSize);
+            this.tabCsbEditor.Controls.Add(this.label6);
+            this.tabCsbEditor.Controls.Add(this.num_CsbEditor_MaxThreads);
+            this.tabCsbEditor.Controls.Add(this.cb_CsbEditor_EnableThreading);
+            this.tabCsbEditor.Location = new System.Drawing.Point(4, 22);
+            this.tabCsbEditor.Name = "tabCsbEditor";
+            this.tabCsbEditor.Size = new System.Drawing.Size(358, 192);
+            this.tabCsbEditor.TabIndex = 3;
+            this.tabCsbEditor.Text = "CsbEditor";
+            this.tabCsbEditor.UseVisualStyleBackColor = true;
             // 
             // tabAbout
             // 
@@ -332,6 +355,7 @@
             // 
             // bOK
             // 
+            this.bOK.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.bOK.Location = new System.Drawing.Point(12, 236);
             this.bOK.Name = "bOK";
             this.bOK.Size = new System.Drawing.Size(180, 38);
@@ -342,22 +366,67 @@
             // 
             // bCancel
             // 
+            this.bCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.bCancel.Location = new System.Drawing.Point(198, 236);
             this.bCancel.Name = "bCancel";
             this.bCancel.Size = new System.Drawing.Size(180, 38);
             this.bCancel.TabIndex = 99;
             this.bCancel.Text = "Cancel";
             this.bCancel.UseVisualStyleBackColor = true;
-            this.bCancel.Click += new System.EventHandler(this.bCancel_Click);
             // 
-            // tabCsbEditor
+            // cb_CsbEditor_EnableThreading
             // 
-            this.tabCsbEditor.Location = new System.Drawing.Point(4, 22);
-            this.tabCsbEditor.Name = "tabCsbEditor";
-            this.tabCsbEditor.Size = new System.Drawing.Size(358, 192);
-            this.tabCsbEditor.TabIndex = 3;
-            this.tabCsbEditor.Text = "CsbEditor";
-            this.tabCsbEditor.UseVisualStyleBackColor = true;
+            this.cb_CsbEditor_EnableThreading.AutoSize = true;
+            this.cb_CsbEditor_EnableThreading.Location = new System.Drawing.Point(6, 31);
+            this.cb_CsbEditor_EnableThreading.Name = "cb_CsbEditor_EnableThreading";
+            this.cb_CsbEditor_EnableThreading.Size = new System.Drawing.Size(110, 17);
+            this.cb_CsbEditor_EnableThreading.TabIndex = 0;
+            this.cb_CsbEditor_EnableThreading.Text = "Enable Threading";
+            this.cb_CsbEditor_EnableThreading.UseVisualStyleBackColor = true;
+            this.cb_CsbEditor_EnableThreading.CheckedChanged += new System.EventHandler(this.cb_CsbEditor_EnableThreading_CheckedChanged);
+            // 
+            // num_CsbEditor_MaxThreads
+            // 
+            this.num_CsbEditor_MaxThreads.Enabled = false;
+            this.num_CsbEditor_MaxThreads.Location = new System.Drawing.Point(101, 52);
+            this.num_CsbEditor_MaxThreads.Maximum = new decimal(new int[] {
+            2147483647,
+            0,
+            0,
+            0});
+            this.num_CsbEditor_MaxThreads.Name = "num_CsbEditor_MaxThreads";
+            this.num_CsbEditor_MaxThreads.Size = new System.Drawing.Size(84, 20);
+            this.num_CsbEditor_MaxThreads.TabIndex = 1;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(26, 54);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(69, 13);
+            this.label6.TabIndex = 2;
+            this.label6.Text = "Max Threads";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 8);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(58, 13);
+            this.label7.TabIndex = 4;
+            this.label7.Text = "Buffer Size";
+            // 
+            // num_CsbEditor_BufferSize
+            // 
+            this.num_CsbEditor_BufferSize.Location = new System.Drawing.Point(101, 6);
+            this.num_CsbEditor_BufferSize.Maximum = new decimal(new int[] {
+            2147483647,
+            0,
+            0,
+            0});
+            this.num_CsbEditor_BufferSize.Name = "num_CsbEditor_BufferSize";
+            this.num_CsbEditor_BufferSize.Size = new System.Drawing.Size(84, 20);
+            this.num_CsbEditor_BufferSize.TabIndex = 3;
             // 
             // SettingsForm
             // 
@@ -376,8 +445,12 @@
             this.tabInstallation.PerformLayout();
             this.tabAMBPatcher.ResumeLayout(false);
             this.tabAMBPatcher.PerformLayout();
+            this.tabCsbEditor.ResumeLayout(false);
+            this.tabCsbEditor.PerformLayout();
             this.tabAbout.ResumeLayout(false);
             this.tabAbout.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.num_CsbEditor_MaxThreads)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.num_CsbEditor_BufferSize)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -411,5 +484,10 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.LinkLabel link7z;
         private System.Windows.Forms.TabPage tabCsbEditor;
+        private System.Windows.Forms.CheckBox cb_CsbEditor_EnableThreading;
+        private System.Windows.Forms.NumericUpDown num_CsbEditor_MaxThreads;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.NumericUpDown num_CsbEditor_BufferSize;
     }
 }

@@ -126,15 +126,47 @@ namespace Sonic4ModManager
                 xmlDoc.Save("CsbEditor.exe.config");
             }
         }
+
+        private void Settings_Load()
+        {
+            Settings.Load();
+
+            //AMBPatcher
+            cb_AMBPatcher_progress_bar.Checked = Settings.AMBPatcher.ProgressBar;
+            cb_AMBPatcher_generate_log.Checked = Settings.AMBPatcher.GenerateLog;
+            cb_AMBPatcher_sha_check.Checked    = Settings.AMBPatcher.SHACheck;
+            list_SHAType.SelectedIndex = 0;
+
+            if (new string[] { "1", "256", "384", "512" }.Contains(Settings.AMBPatcher.SHAType.ToString()))
+                list_SHAType.SelectedItem = Settings.AMBPatcher.SHAType;
+
+            //CsbEditor
+            num_CsbEditor_BufferSize.Value          = Settings.CsbEditor.BufferSize;
+            cb_CsbEditor_EnableThreading.Checked    = Settings.CsbEditor.EnableThreading;
+            num_CsbEditor_MaxThreads.Value          = Settings.CsbEditor.MaxThreads;
+        }
+
+        private void Settings_Save()
+        {
+            //AMBPatcher
+            Settings.AMBPatcher.ProgressBar = cb_AMBPatcher_progress_bar.Checked;
+            Settings.AMBPatcher.GenerateLog = cb_AMBPatcher_generate_log.Checked;
+            Settings.AMBPatcher.SHACheck    = cb_AMBPatcher_sha_check.Checked;
+            Settings.AMBPatcher.SHAType     = Convert.ToInt32(list_SHAType.SelectedItem);
+
+            //CsbEditor
+            Settings.CsbEditor.BufferSize       = (int)num_CsbEditor_BufferSize.Value;
+            Settings.CsbEditor.EnableThreading  = cb_CsbEditor_EnableThreading.Checked;
+            Settings.CsbEditor.MaxThreads       = (int)num_CsbEditor_MaxThreads.Value;
+
+            Settings.Save();
+        }
         
         public SettingsForm()
         {
             InitializeComponent();
-            Settings_Load();
             UpdateInstallationStatus();
-
-            Settings.Load();
-            Settings.Save();
+            Settings_Load();
         }
 
         private void UpdateInstallationStatus()
@@ -198,71 +230,17 @@ namespace Sonic4ModManager
                                 files   += "LICENSE-7-Zip_files"; break;
             }
 
-            if (files != "" && license != "")
+            if (files != "Mod Loader - licenses/" && license != "Mod Loader - licenses/")
                 new LicenseReader(new string[] { files, license }).ShowDialog();
         }
-
-        private void Settings_Save()
-        {
-            //AMBPatcher
-            string AMBPatcher_progress_bar = Convert.ToInt32(cb_AMBPatcher_progress_bar.Checked).ToString();
-            string AMBPatcher_generate_log = Convert.ToInt32(cb_AMBPatcher_generate_log.Checked).ToString();
-            string AMBPatcher_sha_check    = Convert.ToInt32(cb_AMBPatcher_sha_check.Checked).ToString();
-            string SHAType                 = list_SHAType.SelectedItem.ToString();
-
-            string[] text = new string[]
-            {
-                "ProgressBar=" + AMBPatcher_progress_bar,
-                "GenerateLog=" + AMBPatcher_generate_log,
-                "SHACheck="    + AMBPatcher_sha_check,
-                "SHAType="     + SHAType
-            };
-
-            File.WriteAllLines("AMBPatcher.cfg", text);
-        }
-
-        private void Settings_Load()
-        {
-            //AMBPatcher
-            cb_AMBPatcher_progress_bar.Checked = true;
-            cb_AMBPatcher_generate_log.Checked = false;
-            cb_AMBPatcher_sha_check.Checked    = true;
-            list_SHAType.SelectedIndex = 0;
-
-            if (File.Exists("AMBPatcher.cfg"))
-            {
-                string[] cfg_file = File.ReadAllLines("AMBPatcher.cfg");
-                    
-                foreach (string line in cfg_file)
-                {
-                    if (!line.Contains("=")) {continue;}
-                    string formatted_line = line.Substring(line.IndexOf("=") + 1);
-
-                    if (line.StartsWith("ProgressBar="))
-                    { cb_AMBPatcher_progress_bar.Checked = Convert.ToBoolean(Convert.ToInt32(formatted_line)); }
-                        
-                    else if (line.StartsWith("GenerateLog="))
-                    { cb_AMBPatcher_generate_log.Checked = Convert.ToBoolean(Convert.ToInt32(formatted_line)); }
-                        
-                    else if (line.StartsWith("SHACheck="))
-                    { cb_AMBPatcher_sha_check.Checked = Convert.ToBoolean(Convert.ToInt32(formatted_line)); }
-                        
-                    else if (line.StartsWith("SHAType="))
-                    { 
-                        if (new string[] {"256", "384", "512"}.Contains(formatted_line))
-                        { list_SHAType.SelectedItem = formatted_line; }
-                    }
-                }
-            }
-        }
-
+        
         ////////////////
         //Installation//
         ////////////////
 
         private void bInstall_Click(object sender, EventArgs e)
         {
-            //Pro tip: imagine the binary representation of the integer
+            //Pro tip: imagine the binary representation of this integer
             int options = 0;
 
             options += Convert.ToInt32(cb_recover_orig.Checked);
@@ -282,6 +260,20 @@ namespace Sonic4ModManager
         //////////////
         //AMBPatcher//
         //////////////
+
+        private void cb_AMBPatcher_sha_check_CheckedChanged(object sender, EventArgs e)
+        {
+            list_SHAType.Enabled = cb_AMBPatcher_sha_check.Checked;
+        }
+
+        /////////////
+        //CsbEditor//
+        /////////////
+
+        private void cb_CsbEditor_EnableThreading_CheckedChanged(object sender, EventArgs e)
+        {
+            num_CsbEditor_MaxThreads.Enabled = cb_CsbEditor_EnableThreading.Checked;
+        }
 
         /////////
         //About//
@@ -306,25 +298,10 @@ namespace Sonic4ModManager
         {
             ReadLicense("7z");
         }
-
-        ////////
-        //Main//
-        ////////
-
+        
         private void bOK_Click(object sender, System.EventArgs e)
         {
             Settings_Save();
-            Close();
-        }
-
-        private void bCancel_Click(object sender, System.EventArgs e)
-        {
-            Close();
-        }
-
-        private void cb_AMBPatcher_sha_check_CheckedChanged(object sender, EventArgs e)
-        {
-            list_SHAType.Enabled = cb_AMBPatcher_sha_check.Checked;
         }
     }
 }
