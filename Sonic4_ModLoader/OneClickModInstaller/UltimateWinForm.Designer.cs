@@ -111,6 +111,7 @@
             this.tcMain.Controls.Add(this.tabModInst);
             this.tcMain.Controls.Add(this.tabSettings);
             this.tcMain.Controls.Add(this.tabAbout);
+            this.tcMain.ItemSize = new System.Drawing.Size(99, 18);
             this.tcMain.Location = new System.Drawing.Point(12, 102);
             this.tcMain.Name = "tcMain";
             this.tcMain.SelectedIndex = 0;
@@ -133,6 +134,7 @@
             // 
             this.tcInstallation.Controls.Add(this.tabCurrent);
             this.tcInstallation.Controls.Add(this.tabOverall);
+            this.tcInstallation.ItemSize = new System.Drawing.Size(195, 18);
             this.tcInstallation.Location = new System.Drawing.Point(0, 0);
             this.tcInstallation.Name = "tcInstallation";
             this.tcInstallation.SelectedIndex = 0;
@@ -488,6 +490,7 @@
             // 
             this.tcSettings.Controls.Add(this.tPaths);
             this.tcSettings.Controls.Add(this.tOther);
+            this.tcSettings.ItemSize = new System.Drawing.Size(195, 18);
             this.tcSettings.Location = new System.Drawing.Point(0, 0);
             this.tcSettings.Name = "tcSettings";
             this.tcSettings.SelectedIndex = 0;

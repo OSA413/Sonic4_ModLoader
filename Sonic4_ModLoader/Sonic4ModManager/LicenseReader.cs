@@ -15,26 +15,22 @@ namespace Sonic4ModManager
             if (File.Exists(args[0]))
             {
                 files = "This license applies to the following files:";
+
                 foreach (string f in File.ReadLines(args[0]))
-                {
                     files += "\n • " + f;
-                }
             }
+
             if (File.Exists(args[1]))
-            {
                 license = File.ReadAllText(args[1]);
-            }
 
-            string text = "====================\n"
-                            + args[0]
-                            + "\n====================\n\n"
-                            + files
-                            + "\n\n====================\n"
-                            + args[1]
-                            + "\n====================\n\n"
-                            + license;
-
-            richTextBox1.Text = text;
+            richTextBox1.Text = "====================\n"
+                                + args[0]
+                                + "\n====================\n\n"
+                                + files
+                                + "\n\n====================\n"
+                                + args[1]
+                                + "\n====================\n\n"
+                                + license;
         }
     }
 }

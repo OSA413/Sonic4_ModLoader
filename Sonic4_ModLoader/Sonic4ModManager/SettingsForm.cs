@@ -3,16 +3,114 @@ using System.IO;
 using System.Diagnostics;
 using System.Windows.Forms;
 using System.Linq;
+using System.Collections.Generic;
+using System.Xml;
 
 namespace Sonic4ModManager
 {
-    public partial class Settings:Form
+    public partial class SettingsForm:Form
     {
-        public Settings()
+        public static class Settings
+        {
+            public static class AMBPatcher
+            {
+                public static bool ProgressBar  { set; get; }
+                public static bool GenerateLog  { set; get; }
+                public static bool SHACheck     { set; get; }
+                public static int  SHAType      { set; get; }
+            }
+
+            public static class CsbEditor
+            {
+                public static bool  EnableThreading { set; get; }
+                public static int   MaxThreads      { set; get; }
+                public static int   BufferSize      { set; get; }
+            }
+            
+            public static void Load()
+            {
+                //////////////
+                //AMBPatcher//
+                //////////////
+
+                //Defaults
+                Settings.AMBPatcher.ProgressBar = true;
+                Settings.AMBPatcher.GenerateLog = false;
+                Settings.AMBPatcher.SHACheck    = true;
+                Settings.AMBPatcher.SHAType     = 1;
+
+                if (File.Exists("AMBPatcher.cfg"))
+                {
+                    string[] cfg_file = File.ReadAllLines("AMBPatcher.cfg");
+
+                    foreach (string line in cfg_file)
+                    {
+                        if (!line.Contains("=")) continue;
+                        string key   = line.Substring(0, line.IndexOf("="));
+                        string value = line.Substring(line.IndexOf("=") + 1);
+                        
+                        switch (key)
+                        {
+                            case "ProgressBar": Settings.AMBPatcher.ProgressBar = Convert.ToBoolean(Convert.ToInt32(value)); break;
+                            case "GenerateLog": Settings.AMBPatcher.GenerateLog = Convert.ToBoolean(Convert.ToInt32(value)); break;
+                            case "SHACheck":    Settings.AMBPatcher.SHACheck    = Convert.ToBoolean(Convert.ToInt32(value)); break;
+                            case "SHAType":     Settings.AMBPatcher.SHAType     = Convert.ToInt32(value); break;
+                        }
+                    }
+                }
+
+                /////////////
+                //CsbEditor//
+                /////////////
+
+                //Default
+                Settings.CsbEditor.EnableThreading  = true;
+                Settings.CsbEditor.MaxThreads       = 4;
+                Settings.CsbEditor.BufferSize       = 4096;
+
+                if (File.Exists("CsbEditor.exe.config"))
+                {
+                    XmlDocument xmlDoc= new XmlDocument();
+                    xmlDoc.Load("CsbEditor.exe.config");
+                    
+                    XmlNodeList settings = xmlDoc.GetElementsByTagName("setting");
+                    for (int i = 0; i < settings.Count; i++)
+                    {
+                        string value = settings[i].InnerText;
+                        switch (settings[i].Attributes["name"].InnerText)
+                        {
+                            case "EnableThreading": Settings.CsbEditor.EnableThreading  = Boolean.Parse(value); break;
+                            case "MaxThreads":      Settings.CsbEditor.MaxThreads       = Convert.ToInt32(value); break;
+                            case "BufferSize":      Settings.CsbEditor.BufferSize       = Convert.ToInt32(value); break;
+                        }
+                    }
+                }
+            }
+
+            public static void Save()
+            {
+                //AMBPatcher
+                var text = new List<string> { };
+
+                text.Add("ProgressBar="            + Convert.ToInt32(Settings.AMBPatcher.ProgressBar));
+                text.Add("GenerateLog="            + Convert.ToInt32(Settings.AMBPatcher.GenerateLog));
+                text.Add("SHACheck="               + Convert.ToInt32(Settings.AMBPatcher.SHACheck));
+                text.Add("SHAType="                +                 Settings.AMBPatcher.SHAType);
+                
+                File.WriteAllLines("AMBPatcher.cfg", text);
+
+                //CsbEditor
+            }
+        }
+
+
+        public SettingsForm()
         {
             InitializeComponent();
             Settings_Load();
             UpdateInstallationStatus();
+
+            Settings.Load();
         }
 
         private void UpdateInstallationStatus()
@@ -77,10 +175,7 @@ namespace Sonic4ModManager
             }
 
             if (files != "" && license != "")
-            {
-                LicenseReader f = new LicenseReader(new string[] { files, license });
-                f.ShowDialog();
-            }
+                new LicenseReader(new string[] { files, license }).ShowDialog();
         }
 
         private void Settings_Save()

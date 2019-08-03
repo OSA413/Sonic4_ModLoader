@@ -604,8 +604,7 @@ namespace Sonic4ModManager
 
         private void bAbout_Click(object sender, EventArgs e)
         {
-            Settings f = new Settings();
-            f.ShowDialog();
+            new SettingsForm().ShowDialog();
         }
 
         private void bPriorityFirst_Click(object sender, EventArgs e)

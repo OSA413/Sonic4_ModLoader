@@ -1,6 +1,6 @@
 ﻿namespace Sonic4ModManager
 {
-    partial class Settings
+    partial class SettingsForm
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Settings));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsForm));
             this.label1 = new System.Windows.Forms.Label();
             this.linkSAT = new System.Windows.Forms.LinkLabel();
             this.linkMain = new System.Windows.Forms.LinkLabel();
@@ -55,6 +55,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.bOK = new System.Windows.Forms.Button();
             this.bCancel = new System.Windows.Forms.Button();
+            this.tabCsbEditor = new System.Windows.Forms.TabPage();
             this.tabControl1.SuspendLayout();
             this.tabInstallation.SuspendLayout();
             this.tabAMBPatcher.SuspendLayout();
@@ -96,7 +97,9 @@
             // 
             this.tabControl1.Controls.Add(this.tabInstallation);
             this.tabControl1.Controls.Add(this.tabAMBPatcher);
+            this.tabControl1.Controls.Add(this.tabCsbEditor);
             this.tabControl1.Controls.Add(this.tabAbout);
+            this.tabControl1.ItemSize = new System.Drawing.Size(90, 18);
             this.tabControl1.Location = new System.Drawing.Point(12, 12);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -347,7 +350,16 @@
             this.bCancel.UseVisualStyleBackColor = true;
             this.bCancel.Click += new System.EventHandler(this.bCancel_Click);
             // 
-            // Settings
+            // tabCsbEditor
+            // 
+            this.tabCsbEditor.Location = new System.Drawing.Point(4, 22);
+            this.tabCsbEditor.Name = "tabCsbEditor";
+            this.tabCsbEditor.Size = new System.Drawing.Size(358, 192);
+            this.tabCsbEditor.TabIndex = 3;
+            this.tabCsbEditor.Text = "CsbEditor";
+            this.tabCsbEditor.UseVisualStyleBackColor = true;
+            // 
+            // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -357,7 +369,7 @@
             this.Controls.Add(this.tabControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "Settings";
+            this.Name = "SettingsForm";
             this.Text = "Settings";
             this.tabControl1.ResumeLayout(false);
             this.tabInstallation.ResumeLayout(false);
@@ -398,5 +410,6 @@
         private System.Windows.Forms.Button bRL_7z;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.LinkLabel link7z;
+        private System.Windows.Forms.TabPage tabCsbEditor;
     }
 }
