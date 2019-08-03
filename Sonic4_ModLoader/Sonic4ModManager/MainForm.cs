@@ -213,19 +213,12 @@ namespace Sonic4ModManager
 
         static string GetGame()
         {
-            string game = WhereAmI();
-
             switch (WhereAmI())
             {
-                case "Episode 1":
-                    game = "ep1";
-                    break;
-                case "Episode 2":
-                    game = "ep2";
-                    break;
+                case "Episode 1":   return "ep1";
+                case "Episode 2":   return "ep2";
+                default:            return WhereAmI();
             }
-
-            return game;
         }
 
         public static int GetInstallationStatus()
@@ -244,40 +237,27 @@ namespace Sonic4ModManager
 
             if (game != "dunno")
             {
-                if (File.Exists("mod_manager.cfg"))
+                if (File.Exists("ModManager.cfg"))
                 {
-                    string tmp_status = File.ReadAllText("mod_manager.cfg");
+                    string tmp_status = File.ReadAllText("ModManager.cfg");
                     if (tmp_status != "")
-                    {
                         if (int.TryParse(tmp_status, out int n))
-                        {
                             status = Convert.ToInt32(tmp_status);
-                        }
-                    }
+
                     else
                     {
                         status = 0;
                         if (game == "ep1")
-                        {
                             if (File.Exists("Sonic_vis.orig.exe"))
-                            {
                                 status = 1;
-                            }
 
-                        }
                         else if (game == "ep2")
-                        {
                             if (File.Exists("Sonic.orig.exe"))
-                            {
                                 status = 1;
-                            }
-                        }
                     }
                 }
                 else
-                {
                     status = -1;
-                }
             }
             return status;
         }
@@ -313,9 +293,7 @@ namespace Sonic4ModManager
 
                         //Renaming save file if present
                         if (File.Exists("Sonic_vis_save.dat") && !File.Exists("Sonic_vis.orig_save.dat"))
-                        {
                             File.Move("Sonic_vis_save.dat", "Sonic_vis.orig_save.dat");
-                        }
                     }
                 }
 
@@ -339,9 +317,7 @@ namespace Sonic4ModManager
 
                         //Renaming save file if present
                         if (File.Exists("Sonic_save.dat") && !File.Exists("Sonic.orig_save.dat"))
-                        {
                             File.Move("Sonic_save.dat", "Sonic.orig_save.dat");
-                        }
                     }
                 }
             }
@@ -357,7 +333,7 @@ namespace Sonic4ModManager
                     {
                         //ManagerLauncher
                         if (File.Exists("ManagerLauncher.exe"))
-                           {File.Delete("ManagerLauncher.exe");}
+                            File.Delete("ManagerLauncher.exe");
                         File.Move("SonicLauncher.exe", "ManagerLauncher.exe");
                         
                         //Original launcher
@@ -365,7 +341,7 @@ namespace Sonic4ModManager
                         
                         //PatchLauncher
                         if (File.Exists("PatchLauncher.exe"))
-                           {File.Delete("PatchLauncher.exe");}
+                            File.Delete("PatchLauncher.exe");
                         File.Move("Sonic_vis.exe", "PatchLauncher.exe");
                         
                         //Original game file
@@ -376,9 +352,7 @@ namespace Sonic4ModManager
 
                         //Renaming save file if present
                         if (File.Exists("Sonic_vis.orig_save.dat") && !File.Exists("Sonic_vis_save.dat"))
-                        {
                             File.Move("Sonic_vis.orig_save.dat", "Sonic_vis_save.dat");
-                        }
                     }
                 }
 
@@ -390,7 +364,7 @@ namespace Sonic4ModManager
                     {
                         //ManagerLauncher
                         if (File.Exists("ManagerLauncher.exe"))
-                           {File.Delete("ManagerLauncher.exe");}
+                            File.Delete("ManagerLauncher.exe");
                         File.Move("Launcher.exe", "ManagerLauncher.exe");
                         
                         //Original launcher
@@ -398,7 +372,7 @@ namespace Sonic4ModManager
                         
                         //PatchLauncher
                         if (File.Exists("PatchLauncher.exe"))
-                           {File.Delete("PatchLauncher.exe");}
+                            File.Delete("PatchLauncher.exe");
                         File.Move("Sonic.exe", "PatchLauncher.exe");
                         
                         //Original game file
@@ -409,9 +383,7 @@ namespace Sonic4ModManager
 
                         //Renaming save file if present
                         if (File.Exists("Sonic.orig_save.dat") && !File.Exists("Sonic_save.dat"))
-                        {
                             File.Move("Sonic.orig_save.dat", "Sonic_save.dat");
-                        }
                     }
                 }
 
@@ -421,11 +393,10 @@ namespace Sonic4ModManager
                 if ((options & 1) == 1)
                 {
                     Process.Start("AMBPatcher.exe", "recover").WaitForExit();
+
                     if ((options & 2) == 2)
-                    {
                         if (Directory.Exists("mods_sha"))
-                        Directory.Delete("mods_sha", true);
-                    }
+                            Directory.Delete("mods_sha", true);
                 }
 
                 //Delete Mod Loader files
@@ -442,17 +413,15 @@ namespace Sonic4ModManager
                                                                 "README.rtf",
                                                                 "README.txt",
                                                                 "SonicAudioLib.dll",
-                                                                "mod_manager.cfg",
+                                                                "ModManager.cfg",
                                                                 "AMBPatcher.cfg"})
                         {
                             if (File.Exists(file))
-                            {
                                 File.Delete(file);
-                            }
                         }
 
                         if (Directory.Exists("Mod Loader - licenses"))
-                        { Directory.Delete("Mod Loader - licenses", true); }
+                            Directory.Delete("Mod Loader - licenses", true);
 
                         //Sonic4ModManager.exe
                         //The only (easy and fast) way to delete an open program is to create a .bat file
@@ -463,9 +432,9 @@ namespace Sonic4ModManager
                             "DEL Sonic4ModManager.exe",
                             "DEL tmp.bat"
                         };
-                        File.WriteAllLines("tmp.bat", bat);
+                        File.WriteAllLines("FinishInstallation.bat", bat);
 
-                        Process.Start("tmp.bat");
+                        Process.Start("FinishInstallation.bat");
                         Environment.Exit(0);
                     }
                 }
@@ -499,13 +468,9 @@ namespace Sonic4ModManager
 
             string whats_new = "\n\n[c][b][i]What's new:[\\i][\\b]\n";
             if (File.Exists("Mod Loader - Whats new.txt"))
-            {
                 whats_new += File.ReadAllText("Mod Loader - Whats new.txt");
-            }
             else
-            {
                 whats_new += "File \"Mod Loader - Whats new.txt\" not found.";
-            }
 
             whats_new += "\n\nHome page: https://github.com/OSA413/Sonic4_ModLoader";
 
