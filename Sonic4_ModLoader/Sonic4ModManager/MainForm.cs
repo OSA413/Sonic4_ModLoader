@@ -157,23 +157,22 @@ namespace Sonic4ModManager
         
         private void ChangePriority(int direction)
         {
-            if (listMods.SelectedIndices.Count > 0)
+            for (int i = 0; i < listMods.SelectedIndices.Count; i++)
             {
-                for (int i = 0; i < listMods.SelectedIndices.Count; i++)
-                {
-                    int ind = listMods.SelectedIndices[i];
+                int ind = listMods.SelectedIndices[i];
 
-                    switch (direction)
-                    {
-                        case -1: if (ind != 0) listMods.MoveItem(ind, ind - 1); break;
-                        case  1: if (ind != listMods.Items.Count - 1) listMods.MoveItem(ind, ind + 1); break;
-                        case -2: /**********************************/  listMods.MoveItem(ind, 0); break;
-                        case  2: /**********************************/  listMods.MoveItem(ind, listMods.Items.Count - 1); break;
-                    }
+                switch (direction)
+                {
+                    case -1: if (ind != 0) listMods.MoveItem(ind, ind - 1); break;
+                    case 1: if (ind != listMods.Items.Count - 1) listMods.MoveItem(ind, ind + 1); break;
+                    case -2: /**********************************/  listMods.MoveItem(ind, 0); break;
+                    case 2: /**********************************/  listMods.MoveItem(ind, listMods.Items.Count - 1); break;
                 }
             }
             listMods.Select();
-            listMods.EnsureVisible(listMods.SelectedIndices[0]);
+
+            if (listMods.Items.Count > 0)
+                listMods.EnsureVisible(listMods.SelectedIndices[0]);
         }
 
         public void RandomMods()

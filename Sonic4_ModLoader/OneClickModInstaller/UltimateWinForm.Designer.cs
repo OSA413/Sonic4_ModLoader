@@ -782,6 +782,7 @@
             this.Controls.Add(this.progressBar);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.Name = "UltimateWinForm";
             this.Text = "One-Click Mod Installer";
             this.tcMain.ResumeLayout(false);

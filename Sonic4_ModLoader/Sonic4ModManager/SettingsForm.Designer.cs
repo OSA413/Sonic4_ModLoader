@@ -47,6 +47,11 @@
             this.cb_AMBPatcher_generate_log = new System.Windows.Forms.CheckBox();
             this.cb_AMBPatcher_progress_bar = new System.Windows.Forms.CheckBox();
             this.tabCsbEditor = new System.Windows.Forms.TabPage();
+            this.label7 = new System.Windows.Forms.Label();
+            this.num_CsbEditor_BufferSize = new System.Windows.Forms.NumericUpDown();
+            this.label6 = new System.Windows.Forms.Label();
+            this.num_CsbEditor_MaxThreads = new System.Windows.Forms.NumericUpDown();
+            this.cb_CsbEditor_EnableThreading = new System.Windows.Forms.CheckBox();
             this.tabAbout = new System.Windows.Forms.TabPage();
             this.bRL_7z = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
@@ -56,18 +61,13 @@
             this.label2 = new System.Windows.Forms.Label();
             this.bOK = new System.Windows.Forms.Button();
             this.bCancel = new System.Windows.Forms.Button();
-            this.cb_CsbEditor_EnableThreading = new System.Windows.Forms.CheckBox();
-            this.num_CsbEditor_MaxThreads = new System.Windows.Forms.NumericUpDown();
-            this.label6 = new System.Windows.Forms.Label();
-            this.label7 = new System.Windows.Forms.Label();
-            this.num_CsbEditor_BufferSize = new System.Windows.Forms.NumericUpDown();
             this.tabControl1.SuspendLayout();
             this.tabInstallation.SuspendLayout();
             this.tabAMBPatcher.SuspendLayout();
             this.tabCsbEditor.SuspendLayout();
-            this.tabAbout.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.num_CsbEditor_MaxThreads)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.num_CsbEditor_BufferSize)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.num_CsbEditor_MaxThreads)).BeginInit();
+            this.tabAbout.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -275,6 +275,60 @@
             this.tabCsbEditor.Text = "CsbEditor";
             this.tabCsbEditor.UseVisualStyleBackColor = true;
             // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 8);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(58, 13);
+            this.label7.TabIndex = 4;
+            this.label7.Text = "Buffer Size";
+            // 
+            // num_CsbEditor_BufferSize
+            // 
+            this.num_CsbEditor_BufferSize.Location = new System.Drawing.Point(101, 6);
+            this.num_CsbEditor_BufferSize.Maximum = new decimal(new int[] {
+            2147483647,
+            0,
+            0,
+            0});
+            this.num_CsbEditor_BufferSize.Name = "num_CsbEditor_BufferSize";
+            this.num_CsbEditor_BufferSize.Size = new System.Drawing.Size(84, 20);
+            this.num_CsbEditor_BufferSize.TabIndex = 3;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(26, 54);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(69, 13);
+            this.label6.TabIndex = 2;
+            this.label6.Text = "Max Threads";
+            // 
+            // num_CsbEditor_MaxThreads
+            // 
+            this.num_CsbEditor_MaxThreads.Enabled = false;
+            this.num_CsbEditor_MaxThreads.Location = new System.Drawing.Point(101, 52);
+            this.num_CsbEditor_MaxThreads.Maximum = new decimal(new int[] {
+            2147483647,
+            0,
+            0,
+            0});
+            this.num_CsbEditor_MaxThreads.Name = "num_CsbEditor_MaxThreads";
+            this.num_CsbEditor_MaxThreads.Size = new System.Drawing.Size(84, 20);
+            this.num_CsbEditor_MaxThreads.TabIndex = 1;
+            // 
+            // cb_CsbEditor_EnableThreading
+            // 
+            this.cb_CsbEditor_EnableThreading.AutoSize = true;
+            this.cb_CsbEditor_EnableThreading.Location = new System.Drawing.Point(6, 31);
+            this.cb_CsbEditor_EnableThreading.Name = "cb_CsbEditor_EnableThreading";
+            this.cb_CsbEditor_EnableThreading.Size = new System.Drawing.Size(110, 17);
+            this.cb_CsbEditor_EnableThreading.TabIndex = 0;
+            this.cb_CsbEditor_EnableThreading.Text = "Enable Threading";
+            this.cb_CsbEditor_EnableThreading.UseVisualStyleBackColor = true;
+            this.cb_CsbEditor_EnableThreading.CheckedChanged += new System.EventHandler(this.cb_CsbEditor_EnableThreading_CheckedChanged);
+            // 
             // tabAbout
             // 
             this.tabAbout.Controls.Add(this.bRL_7z);
@@ -374,60 +428,6 @@
             this.bCancel.Text = "Cancel";
             this.bCancel.UseVisualStyleBackColor = true;
             // 
-            // cb_CsbEditor_EnableThreading
-            // 
-            this.cb_CsbEditor_EnableThreading.AutoSize = true;
-            this.cb_CsbEditor_EnableThreading.Location = new System.Drawing.Point(6, 31);
-            this.cb_CsbEditor_EnableThreading.Name = "cb_CsbEditor_EnableThreading";
-            this.cb_CsbEditor_EnableThreading.Size = new System.Drawing.Size(110, 17);
-            this.cb_CsbEditor_EnableThreading.TabIndex = 0;
-            this.cb_CsbEditor_EnableThreading.Text = "Enable Threading";
-            this.cb_CsbEditor_EnableThreading.UseVisualStyleBackColor = true;
-            this.cb_CsbEditor_EnableThreading.CheckedChanged += new System.EventHandler(this.cb_CsbEditor_EnableThreading_CheckedChanged);
-            // 
-            // num_CsbEditor_MaxThreads
-            // 
-            this.num_CsbEditor_MaxThreads.Enabled = false;
-            this.num_CsbEditor_MaxThreads.Location = new System.Drawing.Point(101, 52);
-            this.num_CsbEditor_MaxThreads.Maximum = new decimal(new int[] {
-            2147483647,
-            0,
-            0,
-            0});
-            this.num_CsbEditor_MaxThreads.Name = "num_CsbEditor_MaxThreads";
-            this.num_CsbEditor_MaxThreads.Size = new System.Drawing.Size(84, 20);
-            this.num_CsbEditor_MaxThreads.TabIndex = 1;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(26, 54);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(69, 13);
-            this.label6.TabIndex = 2;
-            this.label6.Text = "Max Threads";
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 8);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(58, 13);
-            this.label7.TabIndex = 4;
-            this.label7.Text = "Buffer Size";
-            // 
-            // num_CsbEditor_BufferSize
-            // 
-            this.num_CsbEditor_BufferSize.Location = new System.Drawing.Point(101, 6);
-            this.num_CsbEditor_BufferSize.Maximum = new decimal(new int[] {
-            2147483647,
-            0,
-            0,
-            0});
-            this.num_CsbEditor_BufferSize.Name = "num_CsbEditor_BufferSize";
-            this.num_CsbEditor_BufferSize.Size = new System.Drawing.Size(84, 20);
-            this.num_CsbEditor_BufferSize.TabIndex = 3;
-            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -438,6 +438,7 @@
             this.Controls.Add(this.tabControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximizeBox = false;
             this.Name = "SettingsForm";
             this.Text = "Settings";
             this.tabControl1.ResumeLayout(false);
@@ -447,10 +448,10 @@
             this.tabAMBPatcher.PerformLayout();
             this.tabCsbEditor.ResumeLayout(false);
             this.tabCsbEditor.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.num_CsbEditor_BufferSize)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.num_CsbEditor_MaxThreads)).EndInit();
             this.tabAbout.ResumeLayout(false);
             this.tabAbout.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.num_CsbEditor_MaxThreads)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.num_CsbEditor_BufferSize)).EndInit();
             this.ResumeLayout(false);
 
         }
