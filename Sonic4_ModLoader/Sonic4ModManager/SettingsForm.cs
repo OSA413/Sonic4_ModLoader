@@ -102,6 +102,12 @@ namespace Sonic4ModManager
 
                 //CsbEditor
                 XDocument xmlDoc = new XDocument(new XElement("configuration",
+                                                    new XElement("configSections",
+                                                        new XElement("sectionGroup",
+                                                            new XAttribute("name", "userSettings"),
+                                                            new XElement("section",
+                                                                new XAttribute("name", "CsbEditor.Properties.Settings"),
+                                                                new XAttribute("type", "System.Configuration.ClientSettingsSection")))),
                                                     new XElement("userSettings",
                                                         new XElement("CsbEditor.Properties.Settings",
                                                             new XElement("setting",
@@ -115,13 +121,12 @@ namespace Sonic4ModManager
                                                             new XElement("setting",
                                                                 new XAttribute("name", "BufferSize"),
                                                                 new XAttribute("serializeAs", "String"),
-                                                                new XElement("value", Settings.CsbEditor.BufferSize))
-                                                        ))));
+                                                                new XElement("value", Settings.CsbEditor.BufferSize))))));
+
                 xmlDoc.Save("CsbEditor.exe.config");
             }
         }
-
-
+        
         public SettingsForm()
         {
             InitializeComponent();
