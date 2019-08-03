@@ -294,5 +294,17 @@ namespace Sonic4ModManager
         {
             Settings_Save();
         }
+
+        private void bRecoverOriginalFiles_Click(object sender, EventArgs e)
+        {
+            if (File.Exists("AMBPatcher.exe"))
+                Process.Start("AMBPatcher.exe", "recover").WaitForExit();
+
+            if (File.Exists("mods/mods_prev"))
+                File.Delete("mods/mods_prev");
+
+            if (Directory.Exists("mods_sha"))
+                Directory.Delete("mods_sha", true);
+        }
     }
 }
