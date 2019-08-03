@@ -278,27 +278,21 @@ namespace Sonic4ModManager
         /////////
         //About//
         /////////
+        
+        private void ReadLicense_Click(object sender, EventArgs e)
+        {
+            ReadLicense(((Control)sender).Name.Substring(4));
+        }
+
+        //////////
+        //Common//
+        //////////
 
         private void LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
             Process.Start(((Control)sender).Text);
         }
-        
-        private void bRL_S4ML_Click(object sender, EventArgs e)
-        {
-            ReadLicense("S4ML");
-        }
 
-        private void bRL_SAT_Click(object sender, EventArgs e)
-        {
-            ReadLicense("SAT");
-        }
-
-        private void bRL_7z_Click(object sender, EventArgs e)
-        {
-            ReadLicense("7z");
-        }
-        
         private void bOK_Click(object sender, System.EventArgs e)
         {
             Settings_Save();

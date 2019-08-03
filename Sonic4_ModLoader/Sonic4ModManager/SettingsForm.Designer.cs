@@ -302,7 +302,7 @@
             this.bRL_7z.TabIndex = 7;
             this.bRL_7z.Text = "Read License";
             this.bRL_7z.UseVisualStyleBackColor = true;
-            this.bRL_7z.Click += new System.EventHandler(this.bRL_7z_Click);
+            this.bRL_7z.Click += new System.EventHandler(this.ReadLicense_Click);
             // 
             // label4
             // 
@@ -332,7 +332,7 @@
             this.bRL_SAT.TabIndex = 4;
             this.bRL_SAT.Text = "Read License";
             this.bRL_SAT.UseVisualStyleBackColor = true;
-            this.bRL_SAT.Click += new System.EventHandler(this.bRL_SAT_Click);
+            this.bRL_SAT.Click += new System.EventHandler(this.ReadLicense_Click);
             // 
             // bRL_S4ML
             // 
@@ -342,7 +342,7 @@
             this.bRL_S4ML.TabIndex = 2;
             this.bRL_S4ML.Text = "Read License";
             this.bRL_S4ML.UseVisualStyleBackColor = true;
-            this.bRL_S4ML.Click += new System.EventHandler(this.bRL_S4ML_Click);
+            this.bRL_S4ML.Click += new System.EventHandler(this.ReadLicense_Click);
             // 
             // label2
             // 
