@@ -247,13 +247,10 @@ namespace Sonic4ModManager
             options += Convert.ToInt32(rb_delete.Checked)*2;
 
             if (bInstall.Text == "Install")
-            {
                 MainForm.Install(1);
-            }
             else if (bInstall.Text == "Uninstall")
-            {
                 MainForm.Install(0, options);
-            }
+
             UpdateInstallationStatus();
         }
 

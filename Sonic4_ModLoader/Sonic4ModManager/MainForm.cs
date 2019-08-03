@@ -155,49 +155,25 @@ namespace Sonic4ModManager
             return IsThisStarted;
         }
         
-        private void ChangePriority(string direction)
+        private void ChangePriority(int direction)
         {
             if (listMods.SelectedIndices.Count > 0)
             {
-                int ind = listMods.SelectedIndices[0];
+                for (int i = 0; i < listMods.SelectedIndices.Count; i++)
+                {
+                    int ind = listMods.SelectedIndices[i];
 
-                //TODO: Write everything once
-                if (direction == "u")
-                {
-                    if (ind != 0)
+                    switch (direction)
                     {
-                        var tmp_item = listMods.Items[ind];
-                        listMods.Items.RemoveAt(ind);
-                        listMods.Items.Insert(ind - 1, tmp_item);
+                        case -1: if (ind != 0) listMods.MoveItem(ind, ind - 1); break;
+                        case  1: if (ind != listMods.Items.Count - 1) listMods.MoveItem(ind, ind + 1); break;
+                        case -2: /**********************************/  listMods.MoveItem(ind, 0); break;
+                        case  2: /**********************************/  listMods.MoveItem(ind, listMods.Items.Count - 1); break;
                     }
                 }
-                else if (direction == "d")
-                {
-                    var tmp_item = listMods.Items[ind];
-                    listMods.Items.RemoveAt(ind);
-                    if (ind == listMods.Items.Count)
-                    {
-                        listMods.Items.Add(tmp_item);
-                    }
-                    else
-                    {
-                        listMods.Items.Insert(ind + 1, tmp_item);
-                    }
-                }
-                else if (direction == "f")
-                {
-                    var tmp_item = listMods.Items[ind];
-                    listMods.Items.RemoveAt(ind);
-                    listMods.Items.Insert(0, tmp_item);
-                }
-                else if (direction == "l")
-                {
-                    var tmp_item = listMods.Items[ind];
-                    listMods.Items.RemoveAt(ind);
-                    listMods.Items.Add(tmp_item);
-                }
-                listMods.Select();
             }
+            listMods.Select();
+            listMods.EnsureVisible(listMods.SelectedIndices[0]);
         }
 
         public void RandomMods()
@@ -206,31 +182,22 @@ namespace Sonic4ModManager
             //Placement
             for (int i = 0; i < listMods.Items.Count; i++)
             {
-                var tmp = listMods.Items[rnd.Next(listMods.Items.Count)];
-                Thread.Sleep(1); //I know that using it is not the best solution
-                listMods.Items.Remove(tmp);
-                listMods.Items.Insert(rnd.Next(listMods.Items.Count), tmp);
-                Thread.Sleep(1); //But they are at least more random
+                //I know that using it is not the best solution but they are at least more random
+                Thread.Sleep(1);
+                listMods.MoveItem(i, rnd.Next(listMods.Items.Count));
             }
 
             //Enabling
             for (int i = 0; i < listMods.Items.Count; i++)
             {
-                //I would use Convert.ToBoolean(rnd.Next(2)), but I think it'll be slower
-                listMods.Items[i].Checked = rnd.Next(2) == 1;
                 Thread.Sleep(1);
+                listMods.Items[i].Checked = Convert.ToBoolean(rnd.Next(2));
             }
 
             //Final sort
             for (int i = 0; i < listMods.Items.Count; i++)
-            {
                 if (listMods.Items[i].Checked)
-                {
-                    var tmp_item = listMods.Items[i];
-                    listMods.Items.RemoveAt(i);
-                    listMods.Items.Insert(0, tmp_item);
-                }
-            }
+                    listMods.MoveItem(i, 0);
         }
 
         static string WhereAmI()
@@ -238,13 +205,9 @@ namespace Sonic4ModManager
             string where = "dunno";
 
             if (File.Exists("Sonic_vis.exe") && File.Exists("SonicLauncher.exe"))
-            {
                 where = "Episode 1";
-            }
             else if (File.Exists("Sonic.exe") && File.Exists("Launcher.exe"))
-            {
                 where = "Episode 2";
-            }
 
             return where;
         }
@@ -514,15 +477,15 @@ namespace Sonic4ModManager
         {
             if (GetInstallationStatus() == -1)
             {
-                FirstLaunch f = new FirstLaunch();
-                f.ShowDialog();
+                new FirstLaunch().ShowDialog();
             }
+
             InitializeComponent();
             RefreshMods();
             SetModPriority();
             
             //TOP SECRET EASTER EGG
-            string today = System.DateTime.Now.ToString("dd.MM");
+            string today = DateTime.Now.ToString("dd.MM");
             if (new string[] {
                 "01.01", //New Year
                 "13.01", //OSA413's BD
@@ -576,9 +539,7 @@ namespace Sonic4ModManager
         {
             Save();
             if (Play())
-            {
                 Application.Exit();
-            }
         }
 
         private void bRefresh_Click(object sender, EventArgs e)
@@ -594,29 +555,29 @@ namespace Sonic4ModManager
 
         private void bPriorityUp_Click(object sender, EventArgs e)
         {
-            ChangePriority("u");
+            ChangePriority(-1);
         }
 
         private void bPriorityDown_Click(object sender, EventArgs e)
         {
-            ChangePriority("d");
+            ChangePriority(1);
+        }
+
+        private void bPriorityFirst_Click(object sender, EventArgs e)
+        {
+            ChangePriority(-2);
+        }
+
+        private void bPriorityLast_Click(object sender, EventArgs e)
+        {
+            ChangePriority(2);
         }
 
         private void bAbout_Click(object sender, EventArgs e)
         {
             new SettingsForm().ShowDialog();
         }
-
-        private void bPriorityFirst_Click(object sender, EventArgs e)
-        {
-            ChangePriority("f");
-        }
-
-        private void bPriorityLast_Click(object sender, EventArgs e)
-        {
-            ChangePriority("l");
-        }
-
+        
         private void bRandom_Click(object sender, EventArgs e)
         {
             RandomMods();
@@ -777,5 +738,17 @@ namespace Sonic4ModManager
 
             rtb.ReadOnly = true;
         }
+
+        //Moves a line with [index] in ListView to [insert_to] index
+        public static void MoveItem(this ListView lv, int index, int insert_to)
+        {
+            var item = lv.Items[index];
+            lv.Items.RemoveAt(index);
+            if (insert_to >= lv.Items.Count)
+                lv.Items.Add(item);
+            else
+                lv.Items.Insert(insert_to, item);
+        }
+
     }
 }
