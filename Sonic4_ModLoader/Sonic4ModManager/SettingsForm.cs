@@ -5,6 +5,7 @@ using System.Windows.Forms;
 using System.Linq;
 using System.Collections.Generic;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace Sonic4ModManager
 {
@@ -63,7 +64,7 @@ namespace Sonic4ModManager
                 //CsbEditor//
                 /////////////
 
-                //Default
+                //Defaults
                 Settings.CsbEditor.EnableThreading  = true;
                 Settings.CsbEditor.MaxThreads       = 4;
                 Settings.CsbEditor.BufferSize       = 4096;
@@ -100,6 +101,23 @@ namespace Sonic4ModManager
                 File.WriteAllLines("AMBPatcher.cfg", text);
 
                 //CsbEditor
+                XDocument xmlDoc = new XDocument(new XElement("configuration",
+                                                    new XElement("userSettings",
+                                                        new XElement("CsbEditor.Properties.Settings",
+                                                            new XElement("setting",
+                                                                new XAttribute("name", "EnableThreading"),
+                                                                new XAttribute("serializeAs", "String"),
+                                                                new XElement("value", Settings.CsbEditor.EnableThreading)),
+                                                            new XElement("setting",
+                                                                new XAttribute("name", "MaxThreads"),
+                                                                new XAttribute("serializeAs", "String"),
+                                                                new XElement("value", Settings.CsbEditor.MaxThreads)),
+                                                            new XElement("setting",
+                                                                new XAttribute("name", "BufferSize"),
+                                                                new XAttribute("serializeAs", "String"),
+                                                                new XElement("value", Settings.CsbEditor.BufferSize))
+                                                        ))));
+                xmlDoc.Save("CsbEditor.exe.config");
             }
         }
 
@@ -111,6 +129,7 @@ namespace Sonic4ModManager
             UpdateInstallationStatus();
 
             Settings.Load();
+            Settings.Save();
         }
 
         private void UpdateInstallationStatus()
