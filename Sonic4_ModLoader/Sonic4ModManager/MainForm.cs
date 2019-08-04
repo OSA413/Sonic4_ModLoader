@@ -316,7 +316,7 @@ namespace Sonic4ModManager
                 //Options
 
                 //Recover original files
-                if ((options & 1) == 1)
+                if ((options & 1) != 0)
                 {
                     Process.Start("AMBPatcher.exe", "recover").WaitForExit();
 
@@ -325,8 +325,21 @@ namespace Sonic4ModManager
                             Directory.Delete("mods_sha", true);
                 }
 
+                //Uninstall and remove OCMI
+                if ((options & 4) != 0)
+                {
+                    if (File.Exists("OneClickModInstaller.exe"))
+                    {
+                        Process.Start("OneClickModInstaller.exe", "--uninstall").WaitForExit();
+                        File.Delete("OneClickModInstaller.exe");
+                    }
+
+                    if (File.Exists("OneClickModInstaller.cfg"))
+                        File.Delete("OneClickModInstaller.cfg");
+                }
+
                 //Delete Mod Loader files
-                if ((options & 2) == 2)
+                if ((options & 2) != 0)
                 {
                     foreach (string file in new string[] { "7z.exe",
                                                             "7z.dll",
@@ -364,6 +377,11 @@ namespace Sonic4ModManager
                     Environment.Exit(0);
                 }
             }
+        }
+
+        public static void Upgrade(string dir_to_new_version)
+        {
+            
         }
 
         public MainForm(string[] args)

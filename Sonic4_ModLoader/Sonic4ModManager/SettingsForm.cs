@@ -246,6 +246,7 @@ namespace Sonic4ModManager
 
             options += Convert.ToInt32(cb_recover_orig.Checked);
             options += Convert.ToInt32(rb_delete.Checked)*2;
+            options += Convert.ToInt32(cb_Uninstall_OCMI.Checked)*4 * (options & 2);
 
             if (bInstall.Text == "Install")
                 MainForm.Install(1);
