@@ -178,6 +178,7 @@ namespace Sonic4ModManager
             label5.Enabled =
             rb_rename.Enabled =
             rb_delete.Enabled =
+            cb_Uninstall_OCMI.Enabled =
             cb_recover_orig.Enabled = false;
             bInstall.Text = "Install";
 
@@ -298,13 +299,20 @@ namespace Sonic4ModManager
         private void bRecoverOriginalFiles_Click(object sender, EventArgs e)
         {
             if (File.Exists("AMBPatcher.exe"))
+            {
                 Process.Start("AMBPatcher.exe", "recover").WaitForExit();
 
-            if (File.Exists("mods/mods_prev"))
-                File.Delete("mods/mods_prev");
+                if (File.Exists("mods/mods_prev"))
+                    File.Delete("mods/mods_prev");
 
-            if (Directory.Exists("mods_sha"))
-                Directory.Delete("mods_sha", true);
+                if (Directory.Exists("mods_sha"))
+                    Directory.Delete("mods_sha", true);
+            }
+        }
+        
+        private void rb_delete_CheckedChanged(object sender, EventArgs e)
+        {
+            cb_Uninstall_OCMI.Enabled = rb_delete.Checked;
         }
     }
 }

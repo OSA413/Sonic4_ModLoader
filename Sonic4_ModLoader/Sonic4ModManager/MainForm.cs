@@ -164,9 +164,9 @@ namespace Sonic4ModManager
                 switch (direction)
                 {
                     case -1: if (ind != 0) listMods.MoveItem(ind, ind - 1); break;
-                    case 1: if (ind != listMods.Items.Count - 1) listMods.MoveItem(ind, ind + 1); break;
+                    case  1: if (ind != listMods.Items.Count - 1) listMods.MoveItem(ind, ind + 1); break;
                     case -2: /**********************************/  listMods.MoveItem(ind, 0); break;
-                    case 2: /**********************************/  listMods.MoveItem(ind, listMods.Items.Count - 1); break;
+                    case  2: /**********************************/  listMods.MoveItem(ind, listMods.Items.Count - 1); break;
                 }
             }
             listMods.Select();
@@ -269,123 +269,49 @@ namespace Sonic4ModManager
             int status = GetInstallationStatus();
             string game = GetGame();
 
+            var rename_list = new List<string[]> { };
+
+            string original_exe = "";
+            string original_launcher = "";
+            string save_file_orig = "";
+            string save_file_new = "";
+            string original_exe_bkp = "";
+            string original_launcher_bkp = "";
+            string patch_launcher = "PatchLauncher.exe";
+            string manager_launcher = "ManagerLauncher.exe";
+
+            switch (game)
+            {
+                case "ep1": original_exe = "Sonic_vis.exe"; original_launcher = "SonicLauncher"; break;
+                case "ep2": original_exe = "Sonic.exe"; original_launcher = "Launcher"; break;
+            }
+
+            save_file_orig = Path.GetFileNameWithoutExtension(original_exe) + "_save.dat";
+            save_file_new = Path.GetFileNameWithoutExtension(original_exe) + ".orig_save.dat";
+            original_exe_bkp = Path.GetFileNameWithoutExtension(original_exe) + ".orig.exe";
+            original_launcher_bkp = Path.GetFileNameWithoutExtension(original_launcher) + ".orig.exe";
+
+            rename_list.Add(new string[] { original_exe, original_exe_bkp });
+            rename_list.Add(new string[] { patch_launcher, original_exe });
+            rename_list.Add(new string[] { original_launcher, original_launcher_bkp });
+            rename_list.Add(new string[] { manager_launcher, original_launcher });
+            rename_list.Add(new string[] { save_file_orig, save_file_new });
+
             //Installation
             if ((status == 0 || status == -1) && whattodo == 1)
             {
-                //Episode 1
-                if (game == "ep1")
-                {
-                    //We need to make sure that all the file required are present before installation
-                    if (File.Exists("Sonic_vis.exe") && File.Exists("PatchLauncher.exe") &&
-                        File.Exists("SonicLauncher.exe") && File.Exists("ManagerLauncher.exe"))
-                    {
-                        //Original game file
-                        File.Move("Sonic_vis.exe", "Sonic_vis.orig.exe");
-                        //PatchLauncher
-                        File.Move("PatchLauncher.exe", "Sonic_vis.exe");
-                        //Original launcher
-                        File.Move("SonicLauncher.exe", "SonicLauncher.orig.exe");
-                        //ManagerLauncher
-                        File.Move("ManagerLauncher.exe", "SonicLauncher.exe");
-
-                        //Saving info that installation has been finished
-                        File.WriteAllText("mod_manager.cfg", "1");
-
-                        //Renaming save file if present
-                        if (File.Exists("Sonic_vis_save.dat") && !File.Exists("Sonic_vis.orig_save.dat"))
-                            File.Move("Sonic_vis_save.dat", "Sonic_vis.orig_save.dat");
-                    }
-                }
-
-                //Episode 2
-                else if (game == "ep2")
-                {
-                    if (File.Exists("Sonic.exe") && File.Exists("PatchLauncher.exe") &&
-                        File.Exists("Launcher.exe") && File.Exists("ManagerLauncher.exe"))
-                    {
-                        //Original game file
-                        File.Move("Sonic.exe", "Sonic.orig.exe");
-                        //PatchLauncher
-                        File.Move("PatchLauncher.exe", "Sonic.exe");
-                        //Original launcher
-                        File.Move("Launcher.exe", "Launcher.orig.exe");
-                        //ManagerLauncher
-                        File.Move("ManagerLauncher.exe", "Launcher.exe");
-
-                        //Saving info that installation has been finished
-                        File.WriteAllText("mod_manager.cfg", "1");
-
-                        //Renaming save file if present
-                        if (File.Exists("Sonic_save.dat") && !File.Exists("Sonic.orig_save.dat"))
-                            File.Move("Sonic_save.dat", "Sonic.orig_save.dat");
-                    }
-                }
+                for (int i = 0; i < rename_list.Count; i++)
+                    if (File.Exists(rename_list[i][0]) && !File.Exists(rename_list[i][1]))
+                        File.Move(rename_list[i][0], rename_list[i][1]);
             }
 
             //Uninstallation
             else if (status == 1 && whattodo == 0)
             {
-                //Episode 1
-                if (game == "ep1")
-                {
-                    if (File.Exists("Sonic_vis.exe") && File.Exists("Sonic_vis.orig.exe") &&
-                        File.Exists("SonicLauncher.exe") && File.Exists("SonicLauncher.orig.exe"))
-                    {
-                        //ManagerLauncher
-                        if (File.Exists("ManagerLauncher.exe"))
-                            File.Delete("ManagerLauncher.exe");
-                        File.Move("SonicLauncher.exe", "ManagerLauncher.exe");
-                        
-                        //Original launcher
-                        File.Move("SonicLauncher.orig.exe", "SonicLauncher.exe");
-                        
-                        //PatchLauncher
-                        if (File.Exists("PatchLauncher.exe"))
-                            File.Delete("PatchLauncher.exe");
-                        File.Move("Sonic_vis.exe", "PatchLauncher.exe");
-                        
-                        //Original game file
-                        File.Move("Sonic_vis.orig.exe", "Sonic_vis.exe");
-
-                        //Saving info that installation has been finished
-                        File.WriteAllText("mod_manager.cfg", "0");
-
-                        //Renaming save file if present
-                        if (File.Exists("Sonic_vis.orig_save.dat") && !File.Exists("Sonic_vis_save.dat"))
-                            File.Move("Sonic_vis.orig_save.dat", "Sonic_vis_save.dat");
-                    }
-                }
-
-                //Episode 2
-                else if (game == "ep2")
-                {
-                    if (File.Exists("Sonic.exe") && File.Exists("Sonic.orig.exe") &&
-                        File.Exists("Launcher.exe") && File.Exists("Launcher.orig.exe"))
-                    {
-                        //ManagerLauncher
-                        if (File.Exists("ManagerLauncher.exe"))
-                            File.Delete("ManagerLauncher.exe");
-                        File.Move("Launcher.exe", "ManagerLauncher.exe");
-                        
-                        //Original launcher
-                        File.Move("Launcher.orig.exe", "Launcher.exe");
-                        
-                        //PatchLauncher
-                        if (File.Exists("PatchLauncher.exe"))
-                            File.Delete("PatchLauncher.exe");
-                        File.Move("Sonic.exe", "PatchLauncher.exe");
-                        
-                        //Original game file
-                        File.Move("Sonic.orig.exe", "Sonic.exe");
-
-                        //Saving info that uninstallation has been finished
-                        File.WriteAllText("mod_manager.cfg", "0");
-
-                        //Renaming save file if present
-                        if (File.Exists("Sonic.orig_save.dat") && !File.Exists("Sonic_save.dat"))
-                            File.Move("Sonic.orig_save.dat", "Sonic_save.dat");
-                    }
-                }
+                rename_list.Reverse();
+                for (int i = 0; i < rename_list.Count; i++)
+                    if (File.Exists(rename_list[i][1]) && !File.Exists(rename_list[i][0]))
+                        File.Move(rename_list[i][1], rename_list[i][0]);
 
                 //Options
 
@@ -400,43 +326,42 @@ namespace Sonic4ModManager
                 }
 
                 //Delete Mod Loader files
+                if ((options & 2) == 2)
                 {
-                    if ((options & 2) == 2)
+                    foreach (string file in new string[] { "7z.exe",
+                                                            "7z.dll",
+                                                            "AMBPatcher.exe",
+                                                            "CsbEditor.exe",
+                                                            "CsbEditor.exe.config",
+                                                            "ManagerLauncher.exe",
+                                                            "Mod Loader - Whats new.txt",
+                                                            "PatchLauncher.exe",
+                                                            "README.rtf",
+                                                            "README.txt",
+                                                            "SonicAudioLib.dll",
+                                                            "ModManager.cfg",
+                                                            "AMBPatcher.cfg"})
                     {
-                        foreach (string file in new string[] { "7z.exe",
-                                                                "7z.dll",
-                                                                "AMBPatcher.exe",
-                                                                "CsbEditor.exe",
-                                                                "ManagerLauncher.exe",
-                                                                "Mod Loader - Whats new.txt",
-                                                                "PatchLauncher.exe",
-                                                                "README.rtf",
-                                                                "README.txt",
-                                                                "SonicAudioLib.dll",
-                                                                "ModManager.cfg",
-                                                                "AMBPatcher.cfg"})
+                        if (File.Exists(file))
+                            File.Delete(file);
+                    }
+
+                    if (Directory.Exists("Mod Loader - licenses"))
+                        Directory.Delete("Mod Loader - licenses", true);
+
+                    //Sonic4ModManager.exe
+                    //The only (easy and fast) way to delete an open program is to create a .bat file
+                    //that deletes the .exe file and itself.
+                    string[] bat =
                         {
-                            if (File.Exists(file))
-                                File.Delete(file);
-                        }
-
-                        if (Directory.Exists("Mod Loader - licenses"))
-                            Directory.Delete("Mod Loader - licenses", true);
-
-                        //Sonic4ModManager.exe
-                        //The only (easy and fast) way to delete an open program is to create a .bat file
-                        //that deletes the .exe file and itself.
-                        string[] bat = 
-                        {   
                             "taskkill /IM Sonic4ModManager.exe /F",
                             "DEL Sonic4ModManager.exe",
-                            "DEL tmp.bat"
+                            "DEL FinishInstallation.bat"
                         };
-                        File.WriteAllLines("FinishInstallation.bat", bat);
+                    File.WriteAllLines("FinishInstallation.bat", bat);
 
-                        Process.Start("FinishInstallation.bat");
-                        Environment.Exit(0);
-                    }
+                    Process.Start("FinishInstallation.bat");
+                    Environment.Exit(0);
                 }
             }
         }

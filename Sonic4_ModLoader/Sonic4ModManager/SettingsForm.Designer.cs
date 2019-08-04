@@ -34,6 +34,7 @@
             this.linkMain = new System.Windows.Forms.LinkLabel();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabInstallation = new System.Windows.Forms.TabPage();
+            this.cb_Uninstall_OCMI = new System.Windows.Forms.CheckBox();
             this.label5 = new System.Windows.Forms.Label();
             this.cb_recover_orig = new System.Windows.Forms.CheckBox();
             this.rb_delete = new System.Windows.Forms.RadioButton();
@@ -42,6 +43,7 @@
             this.label_Installation_status = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.tabAMBPatcher = new System.Windows.Forms.TabPage();
+            this.bRecoverOriginalFiles = new System.Windows.Forms.Button();
             this.list_SHAType = new System.Windows.Forms.ComboBox();
             this.cb_AMBPatcher_sha_check = new System.Windows.Forms.CheckBox();
             this.cb_AMBPatcher_generate_log = new System.Windows.Forms.CheckBox();
@@ -61,7 +63,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.bOK = new System.Windows.Forms.Button();
             this.bCancel = new System.Windows.Forms.Button();
-            this.bRecoverOriginalFiles = new System.Windows.Forms.Button();
             this.tabControl1.SuspendLayout();
             this.tabInstallation.SuspendLayout();
             this.tabAMBPatcher.SuspendLayout();
@@ -120,6 +121,7 @@
             // 
             this.tabInstallation.AutoScroll = true;
             this.tabInstallation.AutoScrollMargin = new System.Drawing.Size(0, 8);
+            this.tabInstallation.Controls.Add(this.cb_Uninstall_OCMI);
             this.tabInstallation.Controls.Add(this.label5);
             this.tabInstallation.Controls.Add(this.cb_recover_orig);
             this.tabInstallation.Controls.Add(this.rb_delete);
@@ -135,6 +137,16 @@
             this.tabInstallation.Text = "Installation";
             this.tabInstallation.UseVisualStyleBackColor = true;
             // 
+            // cb_Uninstall_OCMI
+            // 
+            this.cb_Uninstall_OCMI.AutoSize = true;
+            this.cb_Uninstall_OCMI.Location = new System.Drawing.Point(84, 130);
+            this.cb_Uninstall_OCMI.Name = "cb_Uninstall_OCMI";
+            this.cb_Uninstall_OCMI.Size = new System.Drawing.Size(231, 17);
+            this.cb_Uninstall_OCMI.TabIndex = 7;
+            this.cb_Uninstall_OCMI.Text = "Uninstall and delete One-Click Mod Installer";
+            this.cb_Uninstall_OCMI.UseVisualStyleBackColor = true;
+            // 
             // label5
             // 
             this.label5.AutoSize = true;
@@ -147,7 +159,7 @@
             // cb_recover_orig
             // 
             this.cb_recover_orig.AutoSize = true;
-            this.cb_recover_orig.Location = new System.Drawing.Point(68, 130);
+            this.cb_recover_orig.Location = new System.Drawing.Point(68, 153);
             this.cb_recover_orig.Name = "cb_recover_orig";
             this.cb_recover_orig.Size = new System.Drawing.Size(231, 17);
             this.cb_recover_orig.TabIndex = 4;
@@ -164,6 +176,7 @@
             this.rb_delete.TabStop = true;
             this.rb_delete.Text = "Delete all Mod Loader files";
             this.rb_delete.UseVisualStyleBackColor = true;
+            this.rb_delete.CheckedChanged += new System.EventHandler(this.rb_delete_CheckedChanged);
             // 
             // rb_rename
             // 
@@ -218,6 +231,16 @@
             this.tabAMBPatcher.TabIndex = 1;
             this.tabAMBPatcher.Text = "AMBPatcher";
             this.tabAMBPatcher.UseVisualStyleBackColor = true;
+            // 
+            // bRecoverOriginalFiles
+            // 
+            this.bRecoverOriginalFiles.Location = new System.Drawing.Point(115, 154);
+            this.bRecoverOriginalFiles.Name = "bRecoverOriginalFiles";
+            this.bRecoverOriginalFiles.Size = new System.Drawing.Size(128, 32);
+            this.bRecoverOriginalFiles.TabIndex = 8;
+            this.bRecoverOriginalFiles.Text = "Recover original files";
+            this.bRecoverOriginalFiles.UseVisualStyleBackColor = true;
+            this.bRecoverOriginalFiles.Click += new System.EventHandler(this.bRecoverOriginalFiles_Click);
             // 
             // list_SHAType
             // 
@@ -432,16 +455,6 @@
             this.bCancel.Text = "Cancel";
             this.bCancel.UseVisualStyleBackColor = true;
             // 
-            // bRecoverOriginalFiles
-            // 
-            this.bRecoverOriginalFiles.Location = new System.Drawing.Point(115, 154);
-            this.bRecoverOriginalFiles.Name = "bRecoverOriginalFiles";
-            this.bRecoverOriginalFiles.Size = new System.Drawing.Size(128, 32);
-            this.bRecoverOriginalFiles.TabIndex = 8;
-            this.bRecoverOriginalFiles.Text = "Recover original files";
-            this.bRecoverOriginalFiles.UseVisualStyleBackColor = true;
-            this.bRecoverOriginalFiles.Click += new System.EventHandler(this.bRecoverOriginalFiles_Click);
-            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -505,5 +518,6 @@
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.NumericUpDown num_CsbEditor_BufferSize;
         private System.Windows.Forms.Button bRecoverOriginalFiles;
+        private System.Windows.Forms.CheckBox cb_Uninstall_OCMI;
     }
 }
