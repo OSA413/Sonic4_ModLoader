@@ -34,6 +34,7 @@
             this.linkMain = new System.Windows.Forms.LinkLabel();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabInstallation = new System.Windows.Forms.TabPage();
+            this.cb_KeepSettings = new System.Windows.Forms.CheckBox();
             this.cb_Uninstall_OCMI = new System.Windows.Forms.CheckBox();
             this.label5 = new System.Windows.Forms.Label();
             this.cb_recover_orig = new System.Windows.Forms.CheckBox();
@@ -63,7 +64,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.bOK = new System.Windows.Forms.Button();
             this.bCancel = new System.Windows.Forms.Button();
-            this.cb_KeepSettings = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tabInstallation.SuspendLayout();
             this.tabAMBPatcher.SuspendLayout();
@@ -138,6 +138,16 @@
             this.tabInstallation.TabIndex = 0;
             this.tabInstallation.Text = "Installation";
             this.tabInstallation.UseVisualStyleBackColor = true;
+            // 
+            // cb_KeepSettings
+            // 
+            this.cb_KeepSettings.AutoSize = true;
+            this.cb_KeepSettings.Location = new System.Drawing.Point(84, 153);
+            this.cb_KeepSettings.Name = "cb_KeepSettings";
+            this.cb_KeepSettings.Size = new System.Drawing.Size(90, 17);
+            this.cb_KeepSettings.TabIndex = 8;
+            this.cb_KeepSettings.Text = "Keep settings";
+            this.cb_KeepSettings.UseVisualStyleBackColor = true;
             // 
             // cb_Uninstall_OCMI
             // 
@@ -457,16 +467,6 @@
             this.bCancel.Text = "Cancel";
             this.bCancel.UseVisualStyleBackColor = true;
             // 
-            // cb_KeepSettings
-            // 
-            this.cb_KeepSettings.AutoSize = true;
-            this.cb_KeepSettings.Location = new System.Drawing.Point(84, 153);
-            this.cb_KeepSettings.Name = "cb_KeepSettings";
-            this.cb_KeepSettings.Size = new System.Drawing.Size(90, 17);
-            this.cb_KeepSettings.TabIndex = 8;
-            this.cb_KeepSettings.Text = "Keep settings";
-            this.cb_KeepSettings.UseVisualStyleBackColor = true;
-            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -479,6 +479,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "SettingsForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Settings";
             this.tabControl1.ResumeLayout(false);
             this.tabInstallation.ResumeLayout(false);

@@ -91,6 +91,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "FirstLaunch";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "First Launch Dialog";
             this.ResumeLayout(false);
 

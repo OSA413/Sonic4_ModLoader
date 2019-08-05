@@ -282,8 +282,8 @@ namespace Sonic4ModManager
 
             switch (game)
             {
-                case "ep1": original_exe = "Sonic_vis.exe"; original_launcher = "SonicLauncher"; break;
-                case "ep2": original_exe = "Sonic.exe"; original_launcher = "Launcher"; break;
+                case "ep1": original_exe = "Sonic_vis.exe"; original_launcher = "SonicLauncher.exe"; break;
+                case "ep2": original_exe = "Sonic.exe"; original_launcher = "Launcher.exe"; break;
             }
 
             save_file_orig = Path.GetFileNameWithoutExtension(original_exe) + "_save.dat";
@@ -303,6 +303,7 @@ namespace Sonic4ModManager
                 for (int i = 0; i < rename_list.Count; i++)
                     if (File.Exists(rename_list[i][0]) && !File.Exists(rename_list[i][1]))
                         File.Move(rename_list[i][0], rename_list[i][1]);
+                File.WriteAllText("ModManager.cfg","1");
             }
 
             //Uninstallation
@@ -312,6 +313,7 @@ namespace Sonic4ModManager
                 for (int i = 0; i < rename_list.Count; i++)
                     if (File.Exists(rename_list[i][1]) && !File.Exists(rename_list[i][0]))
                         File.Move(rename_list[i][1], rename_list[i][0]);
+                File.WriteAllText("ModManager.exe", "0");
 
                 //Options
 
@@ -392,6 +394,7 @@ namespace Sonic4ModManager
 
         public static void Upgrade(string dir_to_new_version, int options = 0)
         {
+            Directory.SetCurrentDirectory(Path.GetDirectoryName(Application.ExecutablePath));
             if (Directory.Exists(dir_to_new_version))
             {
                 string install_from = dir_to_new_version;
@@ -400,17 +403,55 @@ namespace Sonic4ModManager
                     install_from = Path.Combine(install_from, "Sonic4ModLoader");
                 }
 
-                Install(0);
+                Install(0, 0b10);
+
+                var files_to_move = Directory.GetFileSystemEntries(install_from).ToList();
+                files_to_move.Remove(Path.Combine(install_from, "Sonic4ModManager.exe"));
+
+                foreach (string file in files_to_move)
+                {
+                    if (File.Exists(file))
+                    {
+                        if (File.Exists("./" + Path.GetFileName(file)))
+                            File.Delete("./" + Path.GetFileName(file));
+                        File.Move(file, "./" + Path.GetFileName(file));
+                    }
+                    else
+                        Directory.Move(file, "./" + Path.GetFileName(file));
+                }
+
+                string[] bat =
+                {
+                    "taskkill /IM Sonic4ModManager.exe /F",
+                    "MOVE /Y \"" + install_from + "\"\\Sonic4ModManager.exe Sonic4ModManager.exe",
+                    "Sonic4ModManager.exe --install",
+                    "DEL FinishUpgrade.bat"
+                };
+                File.WriteAllLines("FinishUpgrade.bat", bat);
+                Process.Start("FinishUpgrade.bat");
+                Environment.Exit(0);
             }
         }
 
         public MainForm(string[] args)
         {
+            if (args.Length > 0)
+            {
+                if (args.Length > 1)
+                    if (args[0] == "--upgrade" && Directory.Exists(args[1]))
+                        Upgrade(args[1]);
+
+                switch (args[0])
+                {
+                    case "--install": Install(1);   break;
+                }
+            }
+
             if (GetInstallationStatus() == -1)
             {
                 new FirstLaunch().ShowDialog();
             }
-
+            
             InitializeComponent();
             RefreshMods();
             SetModPriority();
