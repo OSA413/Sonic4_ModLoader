@@ -341,47 +341,67 @@ namespace Sonic4ModManager
                 //Delete Mod Loader files
                 if ((options & 2) != 0)
                 {
-                    foreach (string file in new string[] { "7z.exe",
-                                                            "7z.dll",
-                                                            "AMBPatcher.exe",
-                                                            "CsbEditor.exe",
-                                                            "CsbEditor.exe.config",
-                                                            "ManagerLauncher.exe",
-                                                            "Mod Loader - Whats new.txt",
-                                                            "PatchLauncher.exe",
-                                                            "README.rtf",
-                                                            "README.txt",
-                                                            "SonicAudioLib.dll",
-                                                            "ModManager.cfg",
-                                                            "AMBPatcher.cfg"})
+                    var to_delete_list =
+                        new List<string> {"7z.exe",
+                                            "7z.dll",
+                                            "AMBPatcher.exe",
+                                            "CsbEditor.exe",
+                                            "ManagerLauncher.exe",
+                                            "Mod Loader - Whats new.txt",
+                                            "PatchLauncher.exe",
+                                            "README.rtf",
+                                            "README.txt",
+                                            "SonicAudioLib.dll"};
+
+                    //Delete config
+                    if ((options & 8) == 0)
                     {
+                        to_delete_list.AddRange(new string[] { "ModManager.cfg"
+                                                                ,"AMBPatcher.cfg"
+                                                                ,"CsbEditor.exe.config"});
+                        if ((options & 4) != 0)
+                            to_delete_list.Add("OneClickModInstaller.cfg");
+                    }
+
+                    foreach (string file in to_delete_list)
                         if (File.Exists(file))
                             File.Delete(file);
-                    }
 
                     if (Directory.Exists("Mod Loader - licenses"))
                         Directory.Delete("Mod Loader - licenses", true);
 
                     //Sonic4ModManager.exe
-                    //The only (easy and fast) way to delete an open program is to create a .bat file
-                    //that deletes the .exe file and itself.
-                    string[] bat =
+                    if ((options & 16) != 0)
+                    {
+                        //The only (easy and fast) way to delete an open program is to create a .bat file
+                        //that deletes the .exe file and itself.
+                        string[] bat =
                         {
                             "taskkill /IM Sonic4ModManager.exe /F",
                             "DEL Sonic4ModManager.exe",
                             "DEL FinishInstallation.bat"
                         };
-                    File.WriteAllLines("FinishInstallation.bat", bat);
+                        File.WriteAllLines("FinishInstallation.bat", bat);
 
-                    Process.Start("FinishInstallation.bat");
-                    Environment.Exit(0);
+                        Process.Start("FinishInstallation.bat");
+                        Environment.Exit(0);
+                    }
                 }
             }
         }
 
-        public static void Upgrade(string dir_to_new_version)
+        public static void Upgrade(string dir_to_new_version, int options = 0)
         {
-            
+            if (Directory.Exists(dir_to_new_version))
+            {
+                string install_from = dir_to_new_version;
+                if (Directory.Exists(Path.Combine(dir_to_new_version, "Sonic4ModLoader")))
+                {
+                    install_from = Path.Combine(install_from, "Sonic4ModLoader");
+                }
+
+                Install(0);
+            }
         }
 
         public MainForm(string[] args)

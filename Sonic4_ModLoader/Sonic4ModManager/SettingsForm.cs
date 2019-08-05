@@ -179,6 +179,7 @@ namespace Sonic4ModManager
             rb_rename.Enabled =
             rb_delete.Enabled =
             cb_Uninstall_OCMI.Enabled =
+            cb_KeepSettings.Enabled =
             cb_recover_orig.Enabled = false;
             bInstall.Text = "Install";
 
@@ -244,9 +245,16 @@ namespace Sonic4ModManager
             //Pro tip: imagine the binary representation of this integer
             int options = 0;
 
+            //Recover original files
             options += Convert.ToInt32(cb_recover_orig.Checked);
+            //Delete all Mod Loader files
             options += Convert.ToInt32(rb_delete.Checked)*2;
+            //Uninstall and delete OCMI
             options += Convert.ToInt32(cb_Uninstall_OCMI.Checked)*4 * (options & 2);
+            //Keep settings (affects OCMI removal)
+            options += Convert.ToInt32(cb_KeepSettings.Checked)*8 * (options & 2);
+            //Delete Mod Manager
+            options += Convert.ToInt32(rb_delete.Checked)*16;
 
             if (bInstall.Text == "Install")
                 MainForm.Install(1);
@@ -313,7 +321,8 @@ namespace Sonic4ModManager
         
         private void rb_delete_CheckedChanged(object sender, EventArgs e)
         {
-            cb_Uninstall_OCMI.Enabled = rb_delete.Checked;
+            cb_Uninstall_OCMI.Enabled =
+            cb_KeepSettings.Enabled = rb_delete.Checked;
         }
     }
 }

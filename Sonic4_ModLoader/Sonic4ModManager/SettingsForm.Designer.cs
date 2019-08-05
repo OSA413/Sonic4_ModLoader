@@ -63,6 +63,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.bOK = new System.Windows.Forms.Button();
             this.bCancel = new System.Windows.Forms.Button();
+            this.cb_KeepSettings = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tabInstallation.SuspendLayout();
             this.tabAMBPatcher.SuspendLayout();
@@ -121,6 +122,7 @@
             // 
             this.tabInstallation.AutoScroll = true;
             this.tabInstallation.AutoScrollMargin = new System.Drawing.Size(0, 8);
+            this.tabInstallation.Controls.Add(this.cb_KeepSettings);
             this.tabInstallation.Controls.Add(this.cb_Uninstall_OCMI);
             this.tabInstallation.Controls.Add(this.label5);
             this.tabInstallation.Controls.Add(this.cb_recover_orig);
@@ -159,7 +161,7 @@
             // cb_recover_orig
             // 
             this.cb_recover_orig.AutoSize = true;
-            this.cb_recover_orig.Location = new System.Drawing.Point(68, 153);
+            this.cb_recover_orig.Location = new System.Drawing.Point(68, 176);
             this.cb_recover_orig.Name = "cb_recover_orig";
             this.cb_recover_orig.Size = new System.Drawing.Size(231, 17);
             this.cb_recover_orig.TabIndex = 4;
@@ -455,6 +457,16 @@
             this.bCancel.Text = "Cancel";
             this.bCancel.UseVisualStyleBackColor = true;
             // 
+            // cb_KeepSettings
+            // 
+            this.cb_KeepSettings.AutoSize = true;
+            this.cb_KeepSettings.Location = new System.Drawing.Point(84, 153);
+            this.cb_KeepSettings.Name = "cb_KeepSettings";
+            this.cb_KeepSettings.Size = new System.Drawing.Size(90, 17);
+            this.cb_KeepSettings.TabIndex = 8;
+            this.cb_KeepSettings.Text = "Keep settings";
+            this.cb_KeepSettings.UseVisualStyleBackColor = true;
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -519,5 +531,6 @@
         private System.Windows.Forms.NumericUpDown num_CsbEditor_BufferSize;
         private System.Windows.Forms.Button bRecoverOriginalFiles;
         private System.Windows.Forms.CheckBox cb_Uninstall_OCMI;
+        private System.Windows.Forms.CheckBox cb_KeepSettings;
     }
 }
