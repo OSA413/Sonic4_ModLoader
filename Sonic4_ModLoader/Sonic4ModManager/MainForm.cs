@@ -313,7 +313,7 @@ namespace Sonic4ModManager
                 for (int i = 0; i < rename_list.Count; i++)
                     if (File.Exists(rename_list[i][1]) && !File.Exists(rename_list[i][0]))
                         File.Move(rename_list[i][1], rename_list[i][0]);
-                File.WriteAllText("ModManager.exe", "0");
+                File.WriteAllText("ModManager.cfg", "0");
 
                 //Options
 
@@ -394,14 +394,12 @@ namespace Sonic4ModManager
 
         public static void Upgrade(string dir_to_new_version, int options = 0)
         {
-            Directory.SetCurrentDirectory(Path.GetDirectoryName(Application.ExecutablePath));
+            string my_dir = Path.GetDirectoryName(Application.ExecutablePath);
             if (Directory.Exists(dir_to_new_version))
             {
                 string install_from = dir_to_new_version;
                 if (Directory.Exists(Path.Combine(dir_to_new_version, "Sonic4ModLoader")))
-                {
                     install_from = Path.Combine(install_from, "Sonic4ModLoader");
-                }
 
                 Install(0, 0b10);
 
@@ -410,21 +408,26 @@ namespace Sonic4ModManager
 
                 foreach (string file in files_to_move)
                 {
+                    string my_file = Path.Combine(my_dir, Path.GetFileName(file));
                     if (File.Exists(file))
                     {
-                        if (File.Exists("./" + Path.GetFileName(file)))
-                            File.Delete("./" + Path.GetFileName(file));
-                        File.Move(file, "./" + Path.GetFileName(file));
+                        if (File.Exists(my_file))
+                            File.Delete(my_file);
+                        File.Move(file, my_file);
                     }
                     else
-                        Directory.Move(file, "./" + Path.GetFileName(file));
+                    {
+                        MyDirectory.CopyAll(file, my_file);
+                        Directory.Delete(file, true);
+                    }
                 }
 
                 string[] bat =
                 {
                     "taskkill /IM Sonic4ModManager.exe /F",
                     "MOVE /Y \"" + install_from + "\"\\Sonic4ModManager.exe Sonic4ModManager.exe",
-                    "Sonic4ModManager.exe --install",
+                    "RMDIR /Q /S \"" + dir_to_new_version + "\"",
+                    "START \"\" Sonic4ModManager.exe --install",
                     "DEL FinishUpgrade.bat"
                 };
                 File.WriteAllLines("FinishUpgrade.bat", bat);
