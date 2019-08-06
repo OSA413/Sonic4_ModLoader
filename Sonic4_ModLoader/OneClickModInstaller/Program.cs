@@ -106,13 +106,15 @@ namespace OneClickModInstaller
 
         public static void Uninstall(string game = null)
         {
+            if (game == null) { game = GetGame.Short(); }
+            if (game == "dunno") { return; }
+
+            if (Reg.InstallationStatus()[game] == 0)
+                return;
+            
+            string root_key = "sonic4mm" + game;
             if (Admin.AmI())
             {
-                if (game == null)    { game = GetGame.Short(); }
-                if (game == "dunno") { return; }
-
-                string root_key = "sonic4mm" + game;
-
                 if (Registry.ClassesRoot.OpenSubKey(root_key) != null)
                     Registry.ClassesRoot.DeleteSubKeyTree(root_key);
             }
