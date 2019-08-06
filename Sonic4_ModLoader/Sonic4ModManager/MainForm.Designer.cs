@@ -233,6 +233,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "MainForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Sonic 4 Mod Manager";
             this.groupBox1.ResumeLayout(false);
             this.ResumeLayout(false);

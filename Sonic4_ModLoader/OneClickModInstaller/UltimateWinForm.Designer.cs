@@ -350,16 +350,16 @@
             // 
             // tabModInst
             // 
+            this.tabModInst.Controls.Add(this.lType);
+            this.tabModInst.Controls.Add(this.lDownloadType);
+            this.tabModInst.Controls.Add(this.lDownloadID);
+            this.tabModInst.Controls.Add(this.lModID);
             this.tabModInst.Controls.Add(this.chSaveDownloadedArchives);
             this.tabModInst.Controls.Add(this.cbExitLaunchManager);
             this.tabModInst.Controls.Add(this.bModPath);
             this.tabModInst.Controls.Add(this.tbModURL);
-            this.tabModInst.Controls.Add(this.lType);
-            this.tabModInst.Controls.Add(this.lDownloadType);
             this.tabModInst.Controls.Add(this.lDownloadLink);
             this.tabModInst.Controls.Add(this.lDownloadTrying);
-            this.tabModInst.Controls.Add(this.lDownloadID);
-            this.tabModInst.Controls.Add(this.lModID);
             this.tabModInst.Controls.Add(this.bModInstall);
             this.tabModInst.Location = new System.Drawing.Point(4, 22);
             this.tabModInst.Name = "tabModInst";
@@ -413,7 +413,7 @@
             // lType
             // 
             this.lType.AutoSize = true;
-            this.lType.Location = new System.Drawing.Point(245, 26);
+            this.lType.Location = new System.Drawing.Point(193, 48);
             this.lType.Name = "lType";
             this.lType.Size = new System.Drawing.Size(25, 13);
             this.lType.TabIndex = 18;
@@ -422,7 +422,7 @@
             // lDownloadType
             // 
             this.lDownloadType.AutoSize = true;
-            this.lDownloadType.Location = new System.Drawing.Point(231, 13);
+            this.lDownloadType.Location = new System.Drawing.Point(179, 35);
             this.lDownloadType.Name = "lDownloadType";
             this.lDownloadType.Size = new System.Drawing.Size(54, 13);
             this.lDownloadType.TabIndex = 17;
@@ -449,7 +449,7 @@
             // lDownloadID
             // 
             this.lDownloadID.AutoSize = true;
-            this.lDownloadID.Location = new System.Drawing.Point(310, 13);
+            this.lDownloadID.Location = new System.Drawing.Point(258, 35);
             this.lDownloadID.Name = "lDownloadID";
             this.lDownloadID.Size = new System.Drawing.Size(45, 13);
             this.lDownloadID.TabIndex = 13;
@@ -458,7 +458,7 @@
             // lModID
             // 
             this.lModID.AutoSize = true;
-            this.lModID.Location = new System.Drawing.Point(324, 26);
+            this.lModID.Location = new System.Drawing.Point(272, 48);
             this.lModID.Name = "lModID";
             this.lModID.Size = new System.Drawing.Size(25, 13);
             this.lModID.TabIndex = 12;
@@ -784,6 +784,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "UltimateWinForm";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "One-Click Mod Installer";
             this.tcMain.ResumeLayout(false);
             this.tabInstaller.ResumeLayout(false);
