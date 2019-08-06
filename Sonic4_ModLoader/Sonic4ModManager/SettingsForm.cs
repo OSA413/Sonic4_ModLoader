@@ -255,9 +255,9 @@ namespace Sonic4ModManager
             //Delete all Mod Loader files
             options += Convert.ToInt32(rb_delete.Checked)*2;
             //Uninstall and delete OCMI
-            options += Convert.ToInt32(cb_Uninstall_OCMI.Checked)*4 * (options & 2);
+            options += Convert.ToInt32(cb_Uninstall_OCMI.Checked)*4 * Convert.ToInt32(rb_delete.Checked);
             //Keep settings (affects OCMI removal)
-            options += Convert.ToInt32(cb_KeepSettings.Checked)*8 * (options & 2);
+            options += Convert.ToInt32(cb_KeepSettings.Checked)*8 * Convert.ToInt32(rb_delete.Checked);
             //Delete Mod Manager
             options += Convert.ToInt32(rb_delete.Checked)*16;
             

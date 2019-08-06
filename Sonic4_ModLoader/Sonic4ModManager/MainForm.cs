@@ -326,7 +326,7 @@ namespace Sonic4ModManager
                 {
                     Process.Start("AMBPatcher.exe", "recover").WaitForExit();
 
-                    if ((options & 2) == 2)
+                    if ((options & 2) != 0)
                         if (Directory.Exists("mods_sha"))
                             Directory.Delete("mods_sha", true);
                 }
