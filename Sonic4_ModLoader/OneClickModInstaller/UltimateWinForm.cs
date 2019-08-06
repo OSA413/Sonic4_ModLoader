@@ -576,7 +576,27 @@ namespace OneClickModInstaller
         public void ContinueInstallation()
         {
             progressBar.Style = ProgressBarStyle.Marquee;
-            if (Installation.Platform == "???")
+            if (Installation.Platform == "modloader")
+            {
+                File.Delete(Installation.ArchiveName);
+                var result = MessageBox.Show("One-Click Mod Installer detected a Mod Loader distribution. Do you want to replace current version of Mod Loader with the downloaded one?"
+                                  , "Mod Loader update"
+                                  , MessageBoxButtons.YesNo
+                                  , MessageBoxIcon.Question);
+
+                if (result == DialogResult.Yes)
+                {
+                    Process.Start("Sonic4ModManager", "--upgrade \"" + Installation.ArchiveDir + "\"");
+                    Application.Exit();
+                }
+                else
+                {
+                    Installation.Status = "Cancelled";
+                    statusBar.Text = "Installation was cancelled";
+                    return;
+                }
+            }
+            else if (Installation.Platform == "???")
             {
                 //Status description
                 /*  1 - start (open SelectRoots window)

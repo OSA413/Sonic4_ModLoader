@@ -382,9 +382,10 @@ namespace OneClickModInstaller
             string platform = "???";
             List<string> mod_roots = new List<string>();
 
-            string[] platforms = new string[2] { "pc", "dolphin" };
-            string[] game_folders_array = new string[2] { "CUTSCENE,DEMO,G_COM,G_SS,G_EP1COM,G_EP1ZONE2,G_EP1ZONE3,G_EP1ZONE4,G_ZONE1,G_ZONE2,G_ZONE3,G_ZONE4,G_ZONEF,MSG,NNSTDSHADER,SOUND"
-                                                        , "WSNE8P,WSNP8P,WSNJ8P"};
+            string[] platforms = new string[] { "pc", "dolphin", "modloader" };
+            string[] game_folders_array = new string[] { "CUTSCENE,DEMO,G_COM,G_SS,G_EP1COM,G_EP1ZONE2,G_EP1ZONE3,G_EP1ZONE4,G_ZONE1,G_ZONE2,G_ZONE3,G_ZONE4,G_ZONEF,MSG,NNSTDSHADER,SOUND"
+                                                        , "WSNE8P,WSNP8P,WSNJ8P"
+                                                        , "Sonic4ModLoader"};
 
             for (int i = 0; i < platforms.Length; i++)
             {
@@ -417,8 +418,8 @@ namespace OneClickModInstaller
             List<string> file_roots = new List<string>();
             string type = "???";
 
-            string[] types      = new string[1] { "CheatTables" };
-            string[] extensions = new string[1] { "ct" };
+            string[] types      = new string[] { "CheatTables" };
+            string[] extensions = new string[] { "ct" };
 
             for (int i = 0; i < types.Length; i++)
             {
