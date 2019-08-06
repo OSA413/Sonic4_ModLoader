@@ -21,8 +21,8 @@ cp "./Sonic4_ModLoader/PatchLauncher/bin/Release/PatchLauncher.exe" "./dist/Soni
 cp "./Sonic4_ModLoader/Sonic4ModManager/bin/Release/Sonic4ModManager.exe" "./dist/Sonic4ModLoader/Sonic4ModManager.exe"
 cp "./Sonic4_ModLoader/OneClickModInstaller/bin/Release/OneClickModInstaller.exe" "./dist/Sonic4ModLoader/OneClickModInstaller.exe"
 #READMEs
-cp "./docs/README.rtf" "./dist/Sonic4ModLoader/README.rtf"
-cp "./docs/README.txt" "./dist/Sonic4ModLoader/README.txt"
+cp "./README.md" "./dist/Sonic4ModLoader/README.md"
+pandoc -s -f gfm -t rtf -o "./dist/Sonic4ModLoader/README.rtf" "./README.md"
 #Change log
 cp "./docs/Mod Loader - Whats new.txt" "./dist/Sonic4ModLoader/Mod Loader - Whats new.txt"
 
