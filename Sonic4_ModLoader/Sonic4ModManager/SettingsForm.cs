@@ -194,6 +194,7 @@ namespace Sonic4ModManager
                 bInstall.Text = "Uninstall";
                 rb_rename.Enabled =
                 rb_delete.Enabled =
+                label5.Enabled =
                 cb_recover_orig.Enabled = true;
                 bInstall.Enabled        = true;
                 if (force_uninstall)
@@ -259,9 +260,7 @@ namespace Sonic4ModManager
             options += Convert.ToInt32(cb_KeepSettings.Checked)*8 * (options & 2);
             //Delete Mod Manager
             options += Convert.ToInt32(rb_delete.Checked)*16;
-
-            Console.WriteLine(options);
-
+            
             if (bInstall.Text == "Install")
                 MainForm.Install(1);
             else if (bInstall.Text == "Uninstall")

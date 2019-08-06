@@ -402,13 +402,17 @@ namespace Sonic4ModManager
             if (Directory.Exists(dir_to_new_version))
             {
                 string install_from = dir_to_new_version;
+                int status = GetInstallationStatus();
+                string arg_install = "";
+
+                if (status == 1)
+                    arg_install = " --install";
+
                 if (Directory.Exists(Path.Combine(dir_to_new_version, "Sonic4ModLoader")))
                     install_from = Path.Combine(install_from, "Sonic4ModLoader");
 
                 Install(0, 0b10);
-
-                Console.ReadLine();
-
+                
                 var files_to_move = Directory.GetFileSystemEntries(install_from).ToList();
                 files_to_move.Remove(Path.Combine(install_from, "Sonic4ModManager.exe"));
 
@@ -433,8 +437,7 @@ namespace Sonic4ModManager
                     "taskkill /IM Sonic4ModManager.exe /F",
                     "MOVE /Y \"" + install_from + "\"\\Sonic4ModManager.exe \"" + my_dir + "\"\\Sonic4ModManager.exe",
                     "RMDIR /Q /S \"" + dir_to_new_version + "\"",
-                    "pause",
-                    "START \"\" /D \"" + my_dir + "\" Sonic4ModManager.exe --install",
+                    "START \"\" /D \"" + my_dir + "\" Sonic4ModManager.exe" + arg_install,
                     "DEL FinishUpgrade.bat"
                 };
                 File.WriteAllLines("FinishUpgrade.bat", bat);

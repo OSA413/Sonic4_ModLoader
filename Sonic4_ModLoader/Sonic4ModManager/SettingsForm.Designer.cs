@@ -34,6 +34,7 @@
             this.linkMain = new System.Windows.Forms.LinkLabel();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabInstallation = new System.Windows.Forms.TabPage();
+            this.cb_ForceUninstall = new System.Windows.Forms.CheckBox();
             this.cb_KeepSettings = new System.Windows.Forms.CheckBox();
             this.cb_Uninstall_OCMI = new System.Windows.Forms.CheckBox();
             this.label5 = new System.Windows.Forms.Label();
@@ -64,7 +65,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.bOK = new System.Windows.Forms.Button();
             this.bCancel = new System.Windows.Forms.Button();
-            this.cb_ForceUninstall = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tabInstallation.SuspendLayout();
             this.tabAMBPatcher.SuspendLayout();
@@ -140,6 +140,17 @@
             this.tabInstallation.TabIndex = 0;
             this.tabInstallation.Text = "Installation";
             this.tabInstallation.UseVisualStyleBackColor = true;
+            // 
+            // cb_ForceUninstall
+            // 
+            this.cb_ForceUninstall.AutoSize = true;
+            this.cb_ForceUninstall.Location = new System.Drawing.Point(136, 71);
+            this.cb_ForceUninstall.Name = "cb_ForceUninstall";
+            this.cb_ForceUninstall.Size = new System.Drawing.Size(94, 17);
+            this.cb_ForceUninstall.TabIndex = 9;
+            this.cb_ForceUninstall.Text = "Force uninstall";
+            this.cb_ForceUninstall.UseVisualStyleBackColor = true;
+            this.cb_ForceUninstall.CheckedChanged += new System.EventHandler(this.cb_ForceUninstall_CheckedChanged);
             // 
             // cb_KeepSettings
             // 
@@ -469,17 +480,6 @@
             this.bCancel.Text = "Cancel";
             this.bCancel.UseVisualStyleBackColor = true;
             // 
-            // cb_ForceUninstall
-            // 
-            this.cb_ForceUninstall.AutoSize = true;
-            this.cb_ForceUninstall.Location = new System.Drawing.Point(136, 71);
-            this.cb_ForceUninstall.Name = "cb_ForceUninstall";
-            this.cb_ForceUninstall.Size = new System.Drawing.Size(94, 17);
-            this.cb_ForceUninstall.TabIndex = 9;
-            this.cb_ForceUninstall.Text = "Force uninstall";
-            this.cb_ForceUninstall.UseVisualStyleBackColor = true;
-            this.cb_ForceUninstall.CheckedChanged += new System.EventHandler(this.cb_ForceUninstall_CheckedChanged);
-            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -492,6 +492,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "SettingsForm";
+            this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Settings";
             this.tabControl1.ResumeLayout(false);
