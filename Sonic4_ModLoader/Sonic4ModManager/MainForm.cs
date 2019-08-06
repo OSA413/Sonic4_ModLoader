@@ -307,12 +307,16 @@ namespace Sonic4ModManager
             }
 
             //Uninstallation
-            else if (status == 1 && whattodo == 0)
+            else if (whattodo == 0)
             {
                 rename_list.Reverse();
                 for (int i = 0; i < rename_list.Count; i++)
+                {
+                    Console.WriteLine(rename_list[i][1]);
+                    Console.WriteLine(rename_list[i][0]);
                     if (File.Exists(rename_list[i][1]) && !File.Exists(rename_list[i][0]))
                         File.Move(rename_list[i][1], rename_list[i][0]);
+                }
                 File.WriteAllText("ModManager.cfg", "0");
 
                 //Options
@@ -403,6 +407,8 @@ namespace Sonic4ModManager
 
                 Install(0, 0b10);
 
+                Console.ReadLine();
+
                 var files_to_move = Directory.GetFileSystemEntries(install_from).ToList();
                 files_to_move.Remove(Path.Combine(install_from, "Sonic4ModManager.exe"));
 
@@ -425,9 +431,10 @@ namespace Sonic4ModManager
                 string[] bat =
                 {
                     "taskkill /IM Sonic4ModManager.exe /F",
-                    "MOVE /Y \"" + install_from + "\"\\Sonic4ModManager.exe Sonic4ModManager.exe",
+                    "MOVE /Y \"" + install_from + "\"\\Sonic4ModManager.exe \"" + my_dir + "\"\\Sonic4ModManager.exe",
                     "RMDIR /Q /S \"" + dir_to_new_version + "\"",
-                    "START \"\" Sonic4ModManager.exe --install",
+                    "pause",
+                    "START \"\" /D \"" + my_dir + "\" Sonic4ModManager.exe --install",
                     "DEL FinishUpgrade.bat"
                 };
                 File.WriteAllLines("FinishUpgrade.bat", bat);

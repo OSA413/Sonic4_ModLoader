@@ -172,8 +172,7 @@ namespace Sonic4ModManager
         private void UpdateInstallationStatus()
         {
             int status = MainForm.GetInstallationStatus();
-
-            bInstall.Enabled = true;
+            bool force_uninstall = cb_ForceUninstall.Checked;
             
             label5.Enabled =
             rb_rename.Enabled =
@@ -183,36 +182,41 @@ namespace Sonic4ModManager
             cb_recover_orig.Enabled = false;
             bInstall.Text = "Install";
 
-            if (status == 1)
+            rb_rename.Checked = true;
+            rb_delete.Checked = false;
+            cb_recover_orig.Checked     =
+            cb_KeepSettings.Checked     =
+            cb_Uninstall_OCMI.Checked   = false;
+            bInstall.Enabled = false;
+            
+            if (status == 1 || force_uninstall)
             {
-                label_Installation_status.Text = "Installed";
                 bInstall.Text = "Uninstall";
-
-                label5.Enabled =
                 rb_rename.Enabled =
                 rb_delete.Enabled =
                 cb_recover_orig.Enabled = true;
+                bInstall.Enabled        = true;
+                if (force_uninstall)
+                {
+                    rb_rename.Enabled =
+                    rb_rename.Checked = false;
+                    rb_delete.Checked = true;
+                }
             }
             else if (status == 0 || status == -1)
             {
-                label_Installation_status.Text = "Not installed";
-            }
-            else
-            {
-                if (status == -2)
-                {
-                    label_Installation_status.Text = "Current directory is not the game directory";
-                    bInstall.Enabled = false;
-                }
-                else
-                {
-                    label_Installation_status.Text = "You have changed the .cfg file?";
-                }
+                bInstall.Enabled        = true;
             }
 
-            rb_rename.Checked = true;
-            rb_delete.Checked = !rb_rename.Checked;
-            cb_recover_orig.Checked = false;
+            string the_text = "Current directory is not the game directory";
+            switch (status)
+            {
+                case  1: the_text = "Installed"; break;
+                case  0:
+                case -1: the_text = "Not installed"; break;
+            }
+
+            label_Installation_status.Text = the_text;
         }
         
         private void ReadLicense(string program)
@@ -255,6 +259,8 @@ namespace Sonic4ModManager
             options += Convert.ToInt32(cb_KeepSettings.Checked)*8 * (options & 2);
             //Delete Mod Manager
             options += Convert.ToInt32(rb_delete.Checked)*16;
+
+            Console.WriteLine(options);
 
             if (bInstall.Text == "Install")
                 MainForm.Install(1);
@@ -323,6 +329,11 @@ namespace Sonic4ModManager
         {
             cb_Uninstall_OCMI.Enabled =
             cb_KeepSettings.Enabled = rb_delete.Checked;
+        }
+
+        private void cb_ForceUninstall_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateInstallationStatus();
         }
     }
 }

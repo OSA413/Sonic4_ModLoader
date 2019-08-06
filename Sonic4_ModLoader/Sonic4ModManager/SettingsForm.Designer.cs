@@ -64,6 +64,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.bOK = new System.Windows.Forms.Button();
             this.bCancel = new System.Windows.Forms.Button();
+            this.cb_ForceUninstall = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tabInstallation.SuspendLayout();
             this.tabAMBPatcher.SuspendLayout();
@@ -122,6 +123,7 @@
             // 
             this.tabInstallation.AutoScroll = true;
             this.tabInstallation.AutoScrollMargin = new System.Drawing.Size(0, 8);
+            this.tabInstallation.Controls.Add(this.cb_ForceUninstall);
             this.tabInstallation.Controls.Add(this.cb_KeepSettings);
             this.tabInstallation.Controls.Add(this.cb_Uninstall_OCMI);
             this.tabInstallation.Controls.Add(this.label5);
@@ -142,7 +144,7 @@
             // cb_KeepSettings
             // 
             this.cb_KeepSettings.AutoSize = true;
-            this.cb_KeepSettings.Location = new System.Drawing.Point(84, 153);
+            this.cb_KeepSettings.Location = new System.Drawing.Point(84, 176);
             this.cb_KeepSettings.Name = "cb_KeepSettings";
             this.cb_KeepSettings.Size = new System.Drawing.Size(90, 17);
             this.cb_KeepSettings.TabIndex = 8;
@@ -152,7 +154,7 @@
             // cb_Uninstall_OCMI
             // 
             this.cb_Uninstall_OCMI.AutoSize = true;
-            this.cb_Uninstall_OCMI.Location = new System.Drawing.Point(84, 130);
+            this.cb_Uninstall_OCMI.Location = new System.Drawing.Point(84, 153);
             this.cb_Uninstall_OCMI.Name = "cb_Uninstall_OCMI";
             this.cb_Uninstall_OCMI.Size = new System.Drawing.Size(231, 17);
             this.cb_Uninstall_OCMI.TabIndex = 7;
@@ -162,7 +164,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(84, 68);
+            this.label5.Location = new System.Drawing.Point(84, 91);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(110, 13);
             this.label5.TabIndex = 6;
@@ -171,7 +173,7 @@
             // cb_recover_orig
             // 
             this.cb_recover_orig.AutoSize = true;
-            this.cb_recover_orig.Location = new System.Drawing.Point(68, 176);
+            this.cb_recover_orig.Location = new System.Drawing.Point(68, 199);
             this.cb_recover_orig.Name = "cb_recover_orig";
             this.cb_recover_orig.Size = new System.Drawing.Size(231, 17);
             this.cb_recover_orig.TabIndex = 4;
@@ -181,7 +183,7 @@
             // rb_delete
             // 
             this.rb_delete.AutoSize = true;
-            this.rb_delete.Location = new System.Drawing.Point(68, 107);
+            this.rb_delete.Location = new System.Drawing.Point(68, 130);
             this.rb_delete.Name = "rb_delete";
             this.rb_delete.Size = new System.Drawing.Size(150, 17);
             this.rb_delete.TabIndex = 3;
@@ -193,7 +195,7 @@
             // rb_rename
             // 
             this.rb_rename.AutoSize = true;
-            this.rb_rename.Location = new System.Drawing.Point(68, 84);
+            this.rb_rename.Location = new System.Drawing.Point(68, 107);
             this.rb_rename.Name = "rb_rename";
             this.rb_rename.Size = new System.Drawing.Size(113, 17);
             this.rb_rename.TabIndex = 2;
@@ -264,7 +266,7 @@
             "256",
             "384",
             "512"});
-            this.list_SHAType.Location = new System.Drawing.Point(150, 77);
+            this.list_SHAType.Location = new System.Drawing.Point(232, 99);
             this.list_SHAType.Name = "list_SHAType";
             this.list_SHAType.Size = new System.Drawing.Size(47, 21);
             this.list_SHAType.TabIndex = 4;
@@ -272,7 +274,7 @@
             // cb_AMBPatcher_sha_check
             // 
             this.cb_AMBPatcher_sha_check.AutoSize = true;
-            this.cb_AMBPatcher_sha_check.Location = new System.Drawing.Point(6, 54);
+            this.cb_AMBPatcher_sha_check.Location = new System.Drawing.Point(88, 76);
             this.cb_AMBPatcher_sha_check.Name = "cb_AMBPatcher_sha_check";
             this.cb_AMBPatcher_sha_check.Size = new System.Drawing.Size(191, 17);
             this.cb_AMBPatcher_sha_check.TabIndex = 3;
@@ -283,7 +285,7 @@
             // cb_AMBPatcher_generate_log
             // 
             this.cb_AMBPatcher_generate_log.AutoSize = true;
-            this.cb_AMBPatcher_generate_log.Location = new System.Drawing.Point(6, 31);
+            this.cb_AMBPatcher_generate_log.Location = new System.Drawing.Point(88, 53);
             this.cb_AMBPatcher_generate_log.Name = "cb_AMBPatcher_generate_log";
             this.cb_AMBPatcher_generate_log.Size = new System.Drawing.Size(144, 17);
             this.cb_AMBPatcher_generate_log.TabIndex = 2;
@@ -293,7 +295,7 @@
             // cb_AMBPatcher_progress_bar
             // 
             this.cb_AMBPatcher_progress_bar.AutoSize = true;
-            this.cb_AMBPatcher_progress_bar.Location = new System.Drawing.Point(6, 8);
+            this.cb_AMBPatcher_progress_bar.Location = new System.Drawing.Point(88, 30);
             this.cb_AMBPatcher_progress_bar.Name = "cb_AMBPatcher_progress_bar";
             this.cb_AMBPatcher_progress_bar.Size = new System.Drawing.Size(86, 17);
             this.cb_AMBPatcher_progress_bar.TabIndex = 1;
@@ -317,7 +319,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(6, 8);
+            this.label7.Location = new System.Drawing.Point(88, 30);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(58, 13);
             this.label7.TabIndex = 4;
@@ -325,7 +327,7 @@
             // 
             // num_CsbEditor_BufferSize
             // 
-            this.num_CsbEditor_BufferSize.Location = new System.Drawing.Point(101, 6);
+            this.num_CsbEditor_BufferSize.Location = new System.Drawing.Point(183, 28);
             this.num_CsbEditor_BufferSize.Maximum = new decimal(new int[] {
             2147483647,
             0,
@@ -338,7 +340,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(26, 54);
+            this.label6.Location = new System.Drawing.Point(108, 76);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(69, 13);
             this.label6.TabIndex = 2;
@@ -347,7 +349,7 @@
             // num_CsbEditor_MaxThreads
             // 
             this.num_CsbEditor_MaxThreads.Enabled = false;
-            this.num_CsbEditor_MaxThreads.Location = new System.Drawing.Point(101, 52);
+            this.num_CsbEditor_MaxThreads.Location = new System.Drawing.Point(183, 74);
             this.num_CsbEditor_MaxThreads.Maximum = new decimal(new int[] {
             2147483647,
             0,
@@ -360,7 +362,7 @@
             // cb_CsbEditor_EnableThreading
             // 
             this.cb_CsbEditor_EnableThreading.AutoSize = true;
-            this.cb_CsbEditor_EnableThreading.Location = new System.Drawing.Point(6, 31);
+            this.cb_CsbEditor_EnableThreading.Location = new System.Drawing.Point(88, 53);
             this.cb_CsbEditor_EnableThreading.Name = "cb_CsbEditor_EnableThreading";
             this.cb_CsbEditor_EnableThreading.Size = new System.Drawing.Size(110, 17);
             this.cb_CsbEditor_EnableThreading.TabIndex = 0;
@@ -467,6 +469,17 @@
             this.bCancel.Text = "Cancel";
             this.bCancel.UseVisualStyleBackColor = true;
             // 
+            // cb_ForceUninstall
+            // 
+            this.cb_ForceUninstall.AutoSize = true;
+            this.cb_ForceUninstall.Location = new System.Drawing.Point(136, 71);
+            this.cb_ForceUninstall.Name = "cb_ForceUninstall";
+            this.cb_ForceUninstall.Size = new System.Drawing.Size(94, 17);
+            this.cb_ForceUninstall.TabIndex = 9;
+            this.cb_ForceUninstall.Text = "Force uninstall";
+            this.cb_ForceUninstall.UseVisualStyleBackColor = true;
+            this.cb_ForceUninstall.CheckedChanged += new System.EventHandler(this.cb_ForceUninstall_CheckedChanged);
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -533,5 +546,6 @@
         private System.Windows.Forms.Button bRecoverOriginalFiles;
         private System.Windows.Forms.CheckBox cb_Uninstall_OCMI;
         private System.Windows.Forms.CheckBox cb_KeepSettings;
+        private System.Windows.Forms.CheckBox cb_ForceUninstall;
     }
 }
