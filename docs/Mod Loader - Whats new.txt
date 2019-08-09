@@ -1,3 +1,39 @@
-[c]Version: v0.1.4.0a
+[c]Version: v0.1.4.0
 Change log:
-* ???
+\t[b]AMBPatcher[\b]
+* Now it can read and extract AMB files from any platform, create AMB files and remove files from them.
+* Added recursive file addition.
+* Added a feature to extract all files recursively from an AMB file or directory.
+* Improvemnts in patching of empty AMB files, and it also shrinks unused space when patching by small files.
+* Lots of code review + some Linux optimizations.
+* Fixed crash when progress bar is turned off
+* Improved logging.
+* Crash fix when reading small files
+* Security fix with relative paths while extraction + improved name reading
+* Now it will show the help message when "mods/mods.ini" file does not exist.
+
+\t[b]Mod Manager[\b]
+* Fixed link clicking thing that was broken for 8 months.
+* Added settings for CsbEditor.
+* Added option to recover/restore original files, delete OCMI and configs.
+* Now you can uninstall Mod Loader without installation.
+
+\t[b]One-Click Mod Installer[\b]
+* Completely redesigned, now it looks like it's been worked on.
+* Now it can install custom textures for Dolphin.
+* Now it will ask admin every time you (un)install it (count this as a security fix).
+* Now uses async when downloading and installing mods.
+* Now you can install 1CMI anywhere to download Dolphin mods.
+* Added settings.
+* Added feature to save downloaded archive to a specific folder.
+* Now you can manually enter path/url to mod.
+* Added "Delete files and continue" to the Suspicious dialog.
+* OCMI will offer to select folders to install from and into if it couldn't install it automatically.
+* Progress bar is now smoother.
+* Now you can install mods from directories.
+* Added "About" information.
+* Now you can use local copy of 7-Zip.
+* Added "Retry" button when OCMI couldn't download file complitely.
+* Now you can pass a link to mod as argument.
+* Admin on uninstallation is now only required if OCMI was installed.
+* Now you can install Mod Loader using OCMI.
