@@ -1,5 +1,6 @@
 [c]Version: v0.1.4.0
 Change log:
+
 \t[b]AMBPatcher[\b]
 * Now it can read and extract AMB files from any platform, create AMB files and remove files from them.
 * Added recursive file addition.
