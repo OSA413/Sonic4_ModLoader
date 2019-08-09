@@ -7,7 +7,7 @@
 * [How to install mods](#how-to-install-mods)
 * [Third party works](#third-party-works)
 * [How to use a copy of 7-Zip from your system](#third-party-works)
-* [How to automatically update Mod Loader](#how-to-automatically-update-mod loader)
+* [How to automatically update Mod Loader](#how-to-automatically-update-mod-loader)
 * [Bug reporting and suggestions](#bug-reporting-and-suggestions)
 * [Useful documentation for modders](#useful-documentation-for-modders)
 * [FAQ](#faq)
