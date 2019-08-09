@@ -51,19 +51,20 @@ namespace AMBPatcher
                     foreach (string line in cfg_file)
                     {
                         if (!line.Contains("=")) continue;
-                        string formatted_line = line.Substring(line.IndexOf("=") + 1);
+                        string key   = line.Substring(0, line.IndexOf("="));
+                        string value = line.Substring(line.IndexOf("=") + 1);
 
-                        if (line.StartsWith("ProgressBar="))
-                            ProgressBar = Convert.ToBoolean(Convert.ToInt32(formatted_line));
+                        if (key == "ProgressBar")
+                            ProgressBar = Convert.ToBoolean(Convert.ToInt32(value));
                         
-                        else if (line.StartsWith("GenerateLog="))
-                            GenerateLog = Convert.ToBoolean(Convert.ToInt32(formatted_line));
+                        else if (key == "GenerateLog")
+                            GenerateLog = Convert.ToBoolean(Convert.ToInt32(value));
                         
-                        else if (line.StartsWith("SHACheck="))
-                            SHACheck = Convert.ToBoolean(Convert.ToInt32(formatted_line));
+                        else if (key == "SHACheck")
+                            SHACheck = Convert.ToBoolean(Convert.ToInt32(value));
                         
-                        else if (line.StartsWith("SHAType="))
-                            SHAType = Convert.ToInt32(formatted_line);
+                        else if (key == "SHAType")
+                            SHAType = Convert.ToInt32(value);
                     }
                 }
             }

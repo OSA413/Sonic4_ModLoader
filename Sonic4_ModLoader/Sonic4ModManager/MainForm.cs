@@ -11,6 +11,46 @@ namespace Sonic4ModManager
 {
     public partial class MainForm:Form
     {
+        public static class Settings
+        {
+            public static bool ModLoaderInstalled   { set; get; }
+            public static bool CheckOnlineUpdates   { set; get; }
+
+            public static void Load()
+            {
+                Settings.ModLoaderInstalled = false;
+                Settings.CheckOnlineUpdates = false;
+
+                if (File.Exists("ModManager.cfg"))
+                {
+                    string[] cfg_file = File.ReadAllLines("ModManager.cfg");
+
+                    foreach (string line in cfg_file)
+                    {
+                        if (!line.Contains("=")) continue;
+                        string key   = line.Substring(0, line.IndexOf("="));
+                        string value = line.Substring(line.IndexOf("=") + 1);
+
+                        if (key == "ModLoaderInstalled")
+                            ModLoaderInstalled = Convert.ToBoolean(Convert.ToInt32(value));
+
+                        else if (key == "CheckOnlineUpdates")
+                            CheckOnlineUpdates = Convert.ToBoolean(Convert.ToInt32(value));
+                    }
+                }
+            }
+
+            public static void Save()
+            {
+                var text = new List<string> { };
+
+                text.Add("ModLoaderInstalled="  + Convert.ToInt32(Settings.ModLoaderInstalled));
+                text.Add("CheckOnlineUpdates="  + Convert.ToInt32(Settings.CheckOnlineUpdates));
+                
+                File.WriteAllLines("ModManager.cfg", text);
+            }
+        }
+
         public void RefreshMods()
         {
             listMods.Items.Clear();
@@ -237,24 +277,17 @@ namespace Sonic4ModManager
 
             if (game != "dunno")
             {
+                //TODO: redo
                 if (File.Exists("ModManager.cfg"))
                 {
-                    string tmp_status = File.ReadAllText("ModManager.cfg");
-                    if (tmp_status != "")
-                        if (int.TryParse(tmp_status, out int n))
-                            status = Convert.ToInt32(tmp_status);
+                    status = status = Convert.ToInt32(Settings.ModLoaderInstalled);
+                    if (game == "ep1")
+                        if (File.Exists("Sonic_vis.orig.exe"))
+                            status = 1;
 
-                    else
-                    {
-                        status = 0;
-                        if (game == "ep1")
-                            if (File.Exists("Sonic_vis.orig.exe"))
-                                status = 1;
-
-                        else if (game == "ep2")
-                            if (File.Exists("Sonic.orig.exe"))
-                                status = 1;
-                    }
+                    else if (game == "ep2")
+                        if (File.Exists("Sonic.orig.exe"))
+                            status = 1;
                 }
                 else
                     status = -1;
@@ -303,7 +336,9 @@ namespace Sonic4ModManager
                 for (int i = 0; i < rename_list.Count; i++)
                     if (File.Exists(rename_list[i][0]) && !File.Exists(rename_list[i][1]))
                         File.Move(rename_list[i][0], rename_list[i][1]);
-                File.WriteAllText("ModManager.cfg","1");
+
+                Settings.ModLoaderInstalled = true;
+                Settings.Save();
             }
 
             //Uninstallation
@@ -317,7 +352,9 @@ namespace Sonic4ModManager
                     if (File.Exists(rename_list[i][1]) && !File.Exists(rename_list[i][0]))
                         File.Move(rename_list[i][1], rename_list[i][0]);
                 }
-                File.WriteAllText("ModManager.cfg", "0");
+
+                Settings.ModLoaderInstalled = false;
+                Settings.Save();
 
                 //Options
 
@@ -448,6 +485,8 @@ namespace Sonic4ModManager
 
         public MainForm(string[] args)
         {
+            Settings.Load();
+
             if (args.Length > 0)
             {
                 if (args.Length > 1)
@@ -461,9 +500,7 @@ namespace Sonic4ModManager
             }
 
             if (GetInstallationStatus() == -1)
-            {
                 new FirstLaunch().ShowDialog();
-            }
             
             InitializeComponent();
             RefreshMods();
