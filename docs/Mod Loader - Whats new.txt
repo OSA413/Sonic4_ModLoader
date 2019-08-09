@@ -1,6 +1,5 @@
 [c]Version: v0.1.4.0
 Change log:
-
 \t[b]AMBPatcher[\b]
 * Now it can read and extract AMB files from any platform, create AMB files and remove files from them.
 * Added recursive file addition.
@@ -38,3 +37,4 @@ Change log:
 * Now you can pass a link to mod as argument.
 * Admin on uninstallation is now only required if OCMI was installed.
 * Now you can install Mod Loader using OCMI.
+* Crash fix when deleting readonly directory.

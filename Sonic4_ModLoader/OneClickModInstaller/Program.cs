@@ -227,6 +227,8 @@ namespace OneClickModInstaller
                 MyFile.DeleteAnyway(file);
             }
 
+            //Yes, directories also can be readonly
+            File.SetAttributes(dir, FileAttributes.Normal);
             //If Explorer locks the folder, it will throw "UnauthorizedAccess" instead of "Directory not empty"
             Directory.Delete(dir, true);
         }
