@@ -425,6 +425,7 @@ namespace OneClickModInstaller
             {
                 Installation.Status = "Server error";
                 statusBar.Text      = "Couldn't download full file (server error)";
+                File.Delete(Installation.ArchiveName);
                 UpdateWindow();
             }
         }
