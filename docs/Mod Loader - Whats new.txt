@@ -4,7 +4,7 @@ Change log:
 * Now it can read and extract AMB files from any platform, create AMB files and remove files from them.
 * Added recursive file addition.
 * Added a feature to extract all files recursively from an AMB file or directory.
-* Improvemnts in patching of empty AMB files, and it also shrinks unused space when patching by small files.
+* Improvements in patching of empty AMB files, and it also shrinks unused space when patching by small files.
 * Lots of code review + some Linux optimizations.
 * Fixed crash when progress bar is turned off
 * Improved logging.
@@ -33,7 +33,7 @@ Change log:
 * Now you can install mods from directories.
 * Added "About" information.
 * Now you can use local copy of 7-Zip.
-* Added "Retry" button when OCMI couldn't download file complitely.
+* Added "Retry" button when OCMI couldn't download file completely.
 * Now you can pass a link to mod as argument.
 * Admin on uninstallation is now only required if OCMI was installed.
 * Now you can install Mod Loader using OCMI.
