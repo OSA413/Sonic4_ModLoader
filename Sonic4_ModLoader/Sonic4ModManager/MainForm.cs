@@ -388,12 +388,13 @@ namespace Sonic4ModManager
                         new List<string> {"7z.exe",
                                             "7z.dll",
                                             "AMBPatcher.exe",
+                                            "AMBPatcher.log",
                                             "CsbEditor.exe",
                                             "ManagerLauncher.exe",
                                             "Mod Loader - Whats new.txt",
                                             "PatchLauncher.exe",
                                             "README.rtf",
-                                            "README.txt",
+                                            "README.md",
                                             "SonicAudioLib.dll"};
 
                     //Delete config
