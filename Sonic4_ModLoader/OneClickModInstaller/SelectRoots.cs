@@ -61,6 +61,7 @@ namespace OneClickModInstaller
                                 case "JPG":
                                 case "GIF":
                                 case "BMP":
+                                case "TGA":
                                     imageKey = "image-x-generic"; break;
 
                                 //Archives and containers
