@@ -222,23 +222,17 @@ namespace Sonic4ModManager
         
         private void ReadLicense(string program)
         {
-            string files = "Mod Loader - licenses/";
             string license = "Mod Loader - licenses/";
 
             switch (program)
             {
-                case "S4ML":    license += "LICENSE-Sonic4_ModLoader";
-                                files   += "LICENSE-Sonic4_ModLoader_files"; break;
-                
-                case "SAT":     license += "LICENSE-SonicAudioTools";
-                                files   += "LICENSE-SonicAudioTools_files"; break;
-
-                case "7z":      license += "LICENSE-7-Zip";
-                                files   += "LICENSE-7-Zip_files"; break;
+                case "S4ML":    license += "LICENSE-Sonic4_ModLoader";  break;
+                case "SAT":     license += "LICENSE-SonicAudioTools";   break;
+                case "7z":      license += "LICENSE-7-Zip";             break;
             }
 
-            if (files != "Mod Loader - licenses/" && license != "Mod Loader - licenses/")
-                new LicenseReader(new string[] { files, license }).ShowDialog();
+            if (license != "Mod Loader - licenses/")
+                new LicenseReader(license).ShowDialog();
         }
         
         ////////////////

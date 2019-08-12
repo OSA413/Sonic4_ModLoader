@@ -13,7 +13,6 @@ echo "Copying new distribution files..."
 #Sonic4ModLoader
 #License
 cp "LICENSE" "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-Sonic4_ModLoader"
-cp "./docs/files" "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-Sonic4_ModLoader_files"
 #EXEs
 cp "./Sonic4_ModLoader/AMBPatcher/bin/Release/AMBPatcher.exe" "./dist/Sonic4ModLoader/AMBPatcher.exe"
 cp "./Sonic4_ModLoader/ManagerLauncher/bin/Release/ManagerLauncher.exe" "./dist/Sonic4ModLoader/ManagerLauncher.exe"
@@ -26,20 +25,23 @@ pandoc -s -f gfm -t rtf -o "./dist/Sonic4ModLoader/README.rtf" "./README.md"
 #Change log
 cp "./docs/Mod Loader - Whats new.txt" "./dist/Sonic4ModLoader/Mod Loader - Whats new.txt"
 
-#This copies all files listed in "files" to dist
+#Dependencies
 for dir in $(ls ./dependencies); do
     [ $dir == "readme.md" ] && continue
 
+    #Files
     for file in $(cat ./dependencies/$dir/files); do
         cp "./dependencies/$dir/$file" "./dist/Sonic4ModLoader/$file"
     done
     
-    #And the "files" file
-    cp "./dependencies/$dir/files" "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-"$dir"_files"
+    #License
+    for file in $(ls ./dependencies/$dir); do
+        if [ $file == "LICENSE" ] || [ $file == "License.txt" ]; then
+            cp "./dependencies/$dir/$file" "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-"$dir
+            break
+        fi
+    done
 done
-
-cp "./dependencies/7-Zip/License.txt"       "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-7-Zip"
-cp "./dependencies/SonicAudioTools/LICENSE" "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-SonicAudioTools"
 
 echo "Creating SHA256SUMS..."
 cd dist
