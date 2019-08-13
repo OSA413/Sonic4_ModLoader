@@ -82,26 +82,53 @@ namespace OneClickModInstaller
 
         public static void Install(string game = null)
         {
-            if (Admin.AmI())
+
+            if (game == null)    { game = GetGame.Short(); }
+            if (game == "dunno") { return; }
+            
+            switch ((int) Environment.OSVersion.Platform)
             {
-                if (game == null)    { game = GetGame.Short(); }
-                if (game == "dunno") { return; }
+                //Windows
+                case 2:
+                {
+                    if (Admin.AmI())
+                    {
 
-                string root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
+                        string root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
 
-                Registry.SetValue(root_key, "", "URL:Sonic 4 Mod Loader's 1-Click Installer protocol");
-                Registry.SetValue(root_key, "URL Protocol", "");
-                Registry.SetValue(root_key + "\\DefaultIcon", "", "OneClickModInstaller.exe");
-                Registry.SetValue(root_key + "\\Shell\\Open\\Command", "", "\"" + Assembly.GetEntryAssembly().Location + "\" \"%1\"");
+                        Registry.SetValue(root_key, "", "URL:OSA413's One-Click Installer protocol");
+                        Registry.SetValue(root_key, "URL Protocol", "");
+                        Registry.SetValue(root_key + "\\DefaultIcon", "", "OneClickModInstaller.exe");
+                        Registry.SetValue(root_key + "\\Shell\\Open\\Command", "", "\"" + Assembly.GetEntryAssembly().Location + "\" \"%1\"");
 
-            }
-            else
-            {
-                string extra_arg = "";
-                if (game != null) { extra_arg = " " + game; }
+                    }
+                    else
+                    {
+                        string extra_arg = "";
+                        if (game != null) { extra_arg = " " + game; }
 
-                Admin.RunAs("--install " + extra_arg);
-            }
+                        Admin.RunAs("--install " + extra_arg);
+                    }
+                } break;
+                
+                //Linux
+                case 4:
+                {
+                    string desktop_file = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/.local/share/applications/sonic4mm" + game +".desktop";
+
+                    File.WriteAllText(desktop_file
+                                    , "[Desktop Entry]"
+                                    + "\nType=Application"
+                                    + "\nExec=mono \"" + Application.ExecutablePath + "\" %U"
+                                    + "\nStartupNotify=true"
+                                    + "\nTerminal=false"
+                                    + "\nMimeType=x-scheme-handler/sonic4mm" + game
+                                    + "\nName=One-Click Mod Installer"
+                                    + "\nComment=OSA413's One-Click Mod Installer");
+
+                    Process.Start("xdg-mime", "default sonic4mm" + game +".desktop x-scheme-handler/sonic4mm" + game +".desktop").WaitForExit();
+                } break;
+            }            
         }
 
         public static void Uninstall(string game = null)
@@ -145,7 +172,7 @@ namespace OneClickModInstaller
                 int status = 0;
                 string root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
 
-                if ((string)Registry.GetValue(root_key, "", null) == "URL:Sonic 4 Mod Loader's 1-Click Installer protocol")
+                if ((string)Registry.GetValue(root_key, "", null) == "URL:OSA413's One-Click Installer protocol")
                 {
                     if ((string)Registry.GetValue(root_key, "URL Protocol", null) == "")
                     {
