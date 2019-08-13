@@ -77,11 +77,15 @@ namespace AMBPatcher
 
             Console.CursorTop -= 2;
             
+            int cut = 0;
+            if (title.Length > Console.WindowWidth - 1)
+                cut =  title.Length - Console.WindowWidth + 1;
+
             //What it is doing
             Console.Write(String.Concat(Enumerable.Repeat(" ", Console.WindowWidth-1)));
             Console.CursorLeft = 0;
             if (i == max_i) Console.WriteLine("Done!");
-            else            Console.WriteLine(title);
+            else            Console.WriteLine(title.Substring(cut));
             
             //Percentage
             Console.Write(String.Concat(Enumerable.Repeat(" ", Console.WindowWidth-1)));
@@ -115,9 +119,9 @@ namespace AMBPatcher
 
             if (Directory.Exists(orig_file_sha_root))
             {
-                var sha1_files = Directory.GetFiles(orig_file_sha_root, "*", SearchOption.AllDirectories);
+                var sha_files = Directory.GetFiles(orig_file_sha_root, "*", SearchOption.AllDirectories);
 
-                foreach (string file in sha1_files)
+                foreach (string file in sha_files)
                     File.Delete(file);
             }
         }
@@ -1016,9 +1020,9 @@ namespace AMBPatcher
 
                 for (int i = 0; i < ini_mods.Length; i++)
                 {
-                    if (Directory.Exists("mods\\" + ini_mods[i]))
+                    if (Directory.Exists("mods/" + ini_mods[i]))
                     {
-                        string[] filenames = Directory.GetFiles("mods\\" + ini_mods[i], "*", SearchOption.AllDirectories);
+                        string[] filenames = Directory.GetFiles("mods/" + ini_mods[i], "*", SearchOption.AllDirectories);
 
                         for (int j = 0; j < filenames.Length; j++)
                         {
@@ -1147,9 +1151,9 @@ namespace AMBPatcher
                 List<string> mods_prev = new List<string> { };
                 List<string> modified_files = new List<string> { };
 
-                if (File.Exists(@"mods\mods_prev"))
+                if (File.Exists("mods/mods_prev"))
                 {
-                    mods_prev = File.ReadAllLines(@"mods\mods_prev").ToList<string>();
+                    mods_prev = File.ReadAllLines("mods/mods_prev").ToList<string>();
                 }
 
                 Log.Write("Patching original files...");
@@ -1216,7 +1220,7 @@ namespace AMBPatcher
                 Log.Write("\nSaving list of modified files...");
                 if (Directory.Exists("mods"))
                 {
-                    File.WriteAllText(@"mods\mods_prev", string.Join("\n", modified_files.ToArray()));
+                    File.WriteAllText("modsmods_prev", string.Join("\n", modified_files.ToArray()));
                     Log.Write("Saved");
                 }
                 else { Log.Write("But \"mods\" folder is not present!"); }
@@ -1232,10 +1236,10 @@ namespace AMBPatcher
                 }
                 else if (args[0] == "recover")
                 {
-                    if (File.Exists(@"mods\mods_prev"))
+                    if (File.Exists("mods/mods_prev"))
                     {
                         Console.WriteLine("\n");
-                        string[] mods_prev = File.ReadAllLines(@"mods\mods_prev");
+                        string[] mods_prev = File.ReadAllLines("mods/mods_prev");
 
                         for (int i = 0; i < mods_prev.Length; i++)
                         {
@@ -1254,7 +1258,7 @@ namespace AMBPatcher
                                 ShaRemove(file);
                             }
                         }
-                        File.Delete(@"mods\mods_prev");
+                        File.Delete("mods/mods_prev");
                         ConsoleProgressBar(1, 1, "", 64);
                     }
                 }
