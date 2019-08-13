@@ -356,25 +356,13 @@ namespace AMBPatcher
 
                         //removing ".\" in the names (Windows can't create "." folders)
                         //sometimes they can have several ".\" in the names
-                        bool starts_with_dot;
-                        do
+                        for (int i = 0; i < files_names.Count; i++)
                         {
-                            starts_with_dot = false;
-                            for (int i = 0; i < files_names.Count; i++)
-                            {
-                                if (files_names[i].StartsWith(".\\") || files_names[i].StartsWith("..\\"))
-                                {
-                                    //Turns out there's a double dot directory in file names
-                                    if (files_names[i].StartsWith("..\\")) { files_names[i] = files_names[i].Substring(1); }
-                                    files_names[i] = files_names[i].Substring(2);
-                                    if (files_names[i].StartsWith(".\\") || files_names[i].StartsWith("..\\"))
-                                    {
-                                        starts_with_dot = true;
-                                    }
-                                }
-                            }
+                            //Turns out there's a double dot directory in file names
+                            //And double backslash in file names
+                            while (files_names[i][0] == "." || files_names[i][0] == "\\" )
+                                files_names[i] = files_names[i].Substring(1);
                         }
-                        while (starts_with_dot);
                     }
                 }
 
