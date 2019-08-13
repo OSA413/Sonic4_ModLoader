@@ -170,25 +170,65 @@ namespace OneClickModInstaller
             foreach (string game in games)
             {
                 int status = 0;
-                string root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
-
-                if ((string)Registry.GetValue(root_key, "", null) == "URL:OSA413's One-Click Installer protocol")
+                switch ((int) Environment.OSVersion.Platform)
                 {
-                    if ((string)Registry.GetValue(root_key, "URL Protocol", null) == "")
+                    //Windows
+                    case 2:
                     {
-                        if ((string)Registry.GetValue(root_key + "\\DefaultIcon", "", null) == "OneClickModInstaller.exe")
-                        {
-                            if ((string)Registry.GetValue(root_key + "\\Shell\\Open\\Command", "", null) == "\"" + System.Reflection.Assembly.GetEntryAssembly().Location + "\" \"%1\"")
-                            {
-                                status = 1;
-                            }
-                            else status = 2;
-                        }
-                        else status = -1;
-                    }
-                    else status = -1;
-                }
+                        string root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
 
+                        if ((string)Registry.GetValue(root_key, "", null) == "URL:OSA413's One-Click Installer protocol")
+                        {
+                            if ((string)Registry.GetValue(root_key, "URL Protocol", null) == "")
+                            {
+                                if ((string)Registry.GetValue(root_key + "\\DefaultIcon", "", null) == "OneClickModInstaller.exe")
+                                {
+                                    if ((string)Registry.GetValue(root_key + "\\Shell\\Open\\Command", "", null) == "\"" + System.Reflection.Assembly.GetEntryAssembly().Location + "\" \"%1\"")
+                                    {
+                                        status = 1;
+                                    }
+                                    else status = 2;
+                                }
+                                else status = -1;
+                            }
+                            else status = -1;
+                        }
+                    } break;
+
+                    //Linux
+                    case 4:
+                    {
+                        string desktop_file = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/.local/share/applications/sonic4mm" + game +".desktop";
+                        var process = Process.Start(new ProcessStartInfo
+                        {
+                            FileName = "xdg-mime",
+                            Arguments = "query default x-scheme-handler/sonic4mm" + game,
+                            RedirectStandardOutput = true,
+                            UseShellExecute = false
+                        });
+
+                        string output = process.StandardOutput.ReadToEnd();
+
+                        status = -1;
+                        if (output == "sonic4mm" + game + ".desktop\n")
+                        {
+                            if (File.Exists(desktop_file))
+                            {
+                                foreach (string line in File.ReadAllLines(desktop_file))
+                                {
+                                    if (line.StartsWith("Exec="))
+                                    {
+                                        status = 2;
+                                        if (line == "Exec=mono \"" + Application.ExecutablePath + "\" %U")
+                                            status = 1;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                    } break;
+                }
                 statuses.Add(game, status);
             }
             
@@ -203,13 +243,40 @@ namespace OneClickModInstaller
 
             foreach (string game in games)
             {
-                string root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
-                string location = (string)Registry.GetValue(root_key + "\\Shell\\Open\\Command", "", null);
-
-                if (location != null)
+                string location = null;
+                switch ((int) Environment.OSVersion.Platform)
                 {
-                    location = location.Substring(1, location.Length - 7);
+                    //Windows
+                    case 2:
+                    {
+                        string root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
+                        location = (string)Registry.GetValue(root_key + "\\Shell\\Open\\Command", "", null);
+
+                        if (location != null)
+                        {
+                            //This is to exclude double quotes and argument thing at the end
+                            location = location.Substring(1, location.Length - 7);
+                        }
+                    } break;
+
+                    //Linux
+                    case 4:
+                    {
+                        string desktop_file = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/.local/share/applications/sonic4mm" + game +".desktop";
+                        
+                        if (File.Exists(desktop_file))
+                        {
+                            foreach (string line in File.ReadAllLines(desktop_file))
+                            {
+                                if (line.StartsWith("Exec="))
+                                {
+                                    location = line.Substring(12, line.Length - 16);
+                                }
+                            }
+                        }
+                    } break;
                 }
+
                 locations.Add(game, location);
             }
 
