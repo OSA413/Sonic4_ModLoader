@@ -349,9 +349,7 @@ namespace AMBPatcher
                         {
                             //If there're no names, setting file names as their order number (i)
                             for (int i = 0; i < files_counter; i++)
-                            {
                                 files_names.Add(i.ToString());
-                            }
                         }
 
                         //removing ".\" in the names (Windows can't create "." folders)
@@ -360,7 +358,7 @@ namespace AMBPatcher
                         {
                             //Turns out there's a double dot directory in file names
                             //And double backslash in file names
-                            while (files_names[i][0] == "." || files_names[i][0] == "\\" )
+                            while (files_names[i][0] == '.' || files_names[i][0] == '\\' )
                                 files_names[i] = files_names[i].Substring(1);
                         }
                     }
@@ -385,7 +383,7 @@ namespace AMBPatcher
             public static void Extract(string file_name, string output)
             {
                 byte[] raw_file = File.ReadAllBytes(file_name);
-                if (!AMB.IsAMB(raw_file)) { return; }
+                if (!AMB.IsAMB(raw_file)) return;
 
                 Directory.CreateDirectory(output);
                 
