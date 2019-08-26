@@ -1081,26 +1081,34 @@ namespace AMBPatcher
 
         static void ShowHelpMessage()
         {
-            Console.WriteLine("AMB Patcher by OSA413");
-            Console.WriteLine("Usage:");
-            Console.WriteLine("\tAMBPatcher.exe - Patch all files used by enabled mods.");
-            Console.WriteLine("\tAMBPatcher.exe [AMB] and");
-            Console.WriteLine("\tAMBPatcher.exe extract [AMB] - Extract all files from [AMB] to \"[AMB]_extracted\" directory.");
-            Console.WriteLine("\tAMBPatcher.exe read [AMB file] - Prints content of [AMB]");
-            Console.WriteLine("\tAMBPatcher.exe extract [AMB] [dir] - Extract all files from [AMB] to [dir] directory.");
-            Console.WriteLine("\tAMBPatcher.exe patch [AMB] [file] - Patch [AMB] by [file] if [file] is in [AMB].");
-            Console.WriteLine("\tAMBPatcher.exe [AMB] [dir] and");
-            Console.WriteLine("\tAMBPatcher.exe patch [AMB] [dir] - Patch [AMB] by all files in [dir] if those files are in [AMB].");
-            Console.WriteLine("\tAMBPatcher.exe recover - Recover original files that were changed.");
-            Console.WriteLine("\tAMBPatcher.exe add [AMB] [file] - Add [file] to [AMB].");
-            Console.WriteLine("\tAMBPatcher.exe add [AMB] [file] [name] - Add [file] to [AMB] with internal name of [name].");
-            Console.WriteLine("\tAMBPatcher.exe endianness [AMB] - Print endianness of [AMB].");
-            Console.WriteLine("\tAMBPatcher.exe swap_endianness [AMB] - Swaps endianness of pointers and lengths of [AMB].");
-            Console.WriteLine("\tAMBPatcher.exe delete [AMB] [file] - Delete [file] from [AMB].");
-            Console.WriteLine("\tAMBPatcher.exe create [name] - Creates an empty AMB file with [name].");
-            Console.WriteLine("\tAMBPatcher.exe extract_all [path] - Extract all files from [path] (can be a file or directory) to be Mod Loader compatible (note: this removes original AMB files!).");
-            Console.WriteLine("\tAMBPatcher.exe -h and");
-            Console.WriteLine("\tAMBPatcher.exe --help - Show this message.");
+            string text = "\t\tAMB Patcher by OSA413"
+            + "\n\t\tReleased under the MIT License"
+            + "\n\t\thttps://github.com/OSA413"
+            + "\n"
+            + "\nUsage:"
+            + "\n\tAMBPatcher - If \"mods\" directory exists, patch all files used by enabled mods, else show help message."
+            + "\n\tAMBPatcher [AMB] and"
+            + "\n\tAMBPatcher extract [AMB] - Extract all files from [AMB] to \"[AMB]_extracted\" directory."
+            + "\n\tAMBPatcher extract [AMB] [dir] - Extract all files from [AMB] to [dir]."
+            + "\n\tAMBPatcher read [AMB file] - Prints content of [AMB]"
+            + "\n\tAMBPatcher patch [AMB] [file] - Patch [AMB] by [file] if [file] is in [AMB]."
+            + "\n\tAMBPatcher [AMB] [dir] and"
+            + "\n\tAMBPatcher patch [AMB] [dir] - Patch [AMB] by all files in [dir]."
+            + "\n\tAMBPatcher recover - Recover original files that were changed."
+            + "\n\tAMBPatcher add [AMB] [file] - Add [file] to [AMB]."
+            + "\n\tAMBPatcher add [AMB] [file] [name] - Add [file] to [AMB] as [name]."
+            + "\n\tAMBPatcher endianness [AMB] - Print endianness of [AMB]."
+            + "\n\tAMBPatcher swap_endianness [AMB] - Swaps endianness of [AMB]."
+            + "\n\tAMBPatcher delete [AMB] [file] - Delete [file] from [AMB]."
+            + "\n\tAMBPatcher create [name] - Creates an empty AMB file with [name]."
+            + "\n\tAMBPatcher extract_all [path] - Extract all files from [path] (can be a file or directory) to be Mod Loader compatible (note: this removes original AMB files!)."
+            + "\n\tAMBPatcher -h and"
+            + "\n\tAMBPatcher --help - Show help message.";
+
+            Console.WriteLine(text);
+            
+            //Uncomment this line to get the help message as text file.
+            //File.WriteAllText("HelpMessage.txt", text);
         }
 
         static void Main(string[] args)
