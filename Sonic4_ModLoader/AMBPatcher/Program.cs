@@ -260,108 +260,109 @@ namespace AMBPatcher
                 List<int>       files_pointers  = new List<int>();
                 List<int>       files_lens      = new List<int>();
                 List<string>    files_names     = new List<string>();
+                var result = new List<(string Name, int Pointer, int Length)>();
+
                 int files_counter = 0;
 
-                if (AMB.IsAMB(raw_file))
+                if (!AMB.IsAMB(raw_file))
+                    return result;
+
+                if (BitConverter.IsLittleEndian != AMB.IsLittleEndian(raw_file))
+                    raw_file = AMB.SwapEndianness(raw_file);
+
+                files_counter = BitConverter.ToInt32(raw_file, 0x10);
+                int list_pointer = BitConverter.ToInt32(raw_file, 0x14);
+
+                //Some AMB files have no file inside of them
+                if (files_counter > 0)
                 {
-                    if (BitConverter.IsLittleEndian != AMB.IsLittleEndian(raw_file))
-                        raw_file = AMB.SwapEndianness(raw_file);
+                    //This is actually used to identify extra zero bytes in messed AMBs
+                    int DataPointer = BitConverter.ToInt32(raw_file, 0x18);
 
-                    files_counter = BitConverter.ToInt32(raw_file, 0x10);
-                    int list_pointer = BitConverter.ToInt32(raw_file, 0x14);
+                    //This is the pointer to where the names of the files start
+                    int name_pointer;
 
-                    //Some AMB files have no file inside of it
-                    if (files_counter > 0)
+                    if (DataPointer == 0)
                     {
-                        //This is actually used to identify extra zero bytes in messed AMBs
-                        int DataPointer = BitConverter.ToInt32(raw_file, 0x18);
+                        //Well, this means that we have "empty" integers in the places where pointers should be.
+                        //We need to skip them
 
-                        //This is the pointer to where the names of the files start
-                        int name_pointer;
+                        name_pointer = BitConverter.ToInt32(raw_file, 0x20);
 
-                        if (DataPointer == 0)
+                        for (int i = 0; i < files_counter; i++)
                         {
-                            //Well, this means that we have "empty" integers in the places where pointers should be.
-                            //We need to skip them
-
-                            name_pointer = BitConverter.ToInt32(raw_file, 0x20);
-
-                            for (int i = 0; i < files_counter; i++)
-                            {
-                                int point = list_pointer + i * 0x14;
+                            int point = list_pointer + i * 0x14;
                                 
-                                if (BitConverter.ToInt32(raw_file, point) != 0)
-                                {
-                                    files_pointers.Add(BitConverter.ToInt32(raw_file, point));
-                                    files_lens.Add(BitConverter.ToInt32(raw_file, point + 8));
-                                }
-                            }
-                        }
-                        else
-                        {
-                            name_pointer = BitConverter.ToInt32(raw_file, 0x1C);
-
-                            for (int i = 0; i < files_counter; i++)
+                            if (BitConverter.ToInt32(raw_file, point) != 0)
                             {
-                                int point = list_pointer + i * 0x10;
-
-                                //Adding pointers and lengths of files into corresponding lists
-                                if (BitConverter.ToInt32(raw_file, point) != 0)
-                                {
-                                    files_pointers.Add(BitConverter.ToInt32(raw_file, point));
-                                    files_lens.Add(BitConverter.ToInt32(raw_file, point + 4));
-                                }
+                                files_pointers.Add(BitConverter.ToInt32(raw_file, point));
+                                files_lens.Add(BitConverter.ToInt32(raw_file, point + 8));
                             }
                         }
+                    }
+                    else
+                    {
+                        name_pointer = BitConverter.ToInt32(raw_file, 0x1C);
 
-                        //Actual number of files inside may differ from the number given in the header
-                        files_counter = files_pointers.Count;
-
-                        //Getting the raw files names (with 0x00)
-                        int filenames_offset = raw_file.Length - name_pointer;
-                        byte[] files_names_bytes = new byte[filenames_offset];
-                        Array.Copy(raw_file, name_pointer, files_names_bytes, 0, filenames_offset);
-
-                        //Encoding characters from HEX to ASCII characters
-                        string files_names_str = Encoding.ASCII.GetString(files_names_bytes);
-                        string[] files_names_raw = files_names_str.Split('\x00');
-
-                        //Some AMB files have no names of their files
-                        if (name_pointer != 0)
+                        for (int i = 0; i < files_counter; i++)
                         {
-                            //Adding only names that aren't empty
-                            for (int i = 0; i < files_names_raw.Length; i++)
+                            int point = list_pointer + i * 0x10;
+
+                            //Adding pointers and lengths of files into corresponding lists
+                            if (BitConverter.ToInt32(raw_file, point) != 0)
                             {
-                                if (files_names_raw[i] != "")
+                                files_pointers.Add(BitConverter.ToInt32(raw_file, point));
+                                files_lens.Add(BitConverter.ToInt32(raw_file, point + 4));
+                            }
+                        }
+                    }
+
+                    //Actual number of files inside may differ from the number given in the header
+                    files_counter = files_pointers.Count;
+
+                    //Getting the raw files names (with 0x00)
+                    int filenames_offset = raw_file.Length - name_pointer;
+                    byte[] files_names_bytes = new byte[filenames_offset];
+                    Array.Copy(raw_file, name_pointer, files_names_bytes, 0, filenames_offset);
+
+                    //Encoding characters from HEX to ASCII characters
+                    string files_names_str = Encoding.ASCII.GetString(files_names_bytes);
+                    string[] files_names_raw = files_names_str.Split('\x00');
+
+                    //Some AMB files have no names of their files
+                    if (name_pointer != 0)
+                    {
+                        //Adding only names that aren't empty
+                        for (int i = 0; i < files_names_raw.Length; i++)
+                        {
+                            if (files_names_raw[i] != "")
+                            {
+                                //TODO: make this to not include > 32 char name files
+                                for (int j = 0; j < files_names_raw[i].Length / 32 + 1; j++)
                                 {
-                                    //TODO: make this to not include > 32 char name files
-                                    for (int j = 0; j < files_names_raw[i].Length / 32 + 1; j++)
-                                    {
-                                        files_names.Add(files_names_raw[i].Substring(32 * j, Math.Min(32, files_names_raw[i].Length - 32 * j)));
-                                    }
+                                    files_names.Add(files_names_raw[i].Substring(32 * j, Math.Min(32, files_names_raw[i].Length - 32 * j)));
                                 }
                             }
                         }
-                        else
-                        {
-                            //If there're no names, setting file names as their order number (i)
-                            for (int i = 0; i < files_counter; i++)
-                                files_names.Add(i.ToString());
-                        }
+                    }
+                    else
+                    {
+                        //If there're no names, setting file names as their order number (i)
+                        for (int i = 0; i < files_counter; i++)
+                            files_names.Add(i.ToString());
+                    }
 
-                        //removing ".\" in the names (Windows can't create "." folders)
-                        //sometimes they can have several ".\" in the names
-                        for (int i = 0; i < files_names.Count; i++)
-                        {
-                            //Turns out there's a double dot directory in file names
-                            //And double backslash in file names
-                            while (files_names[i][0] == '.' || files_names[i][0] == '\\' )
-                                files_names[i] = files_names[i].Substring(1);
-                        }
+                    //removing ".\" in the names (Windows can't create "." folders)
+                    //sometimes they can have several ".\" in the names
+                    for (int i = 0; i < files_names.Count; i++)
+                    {
+                        //Turns out there's a double dot directory in file names
+                        //And double backslash in file names
+                        while (files_names[i][0] == '.' || files_names[i][0] == '\\' )
+                            files_names[i] = files_names[i].Substring(1);
                     }
                 }
 
-                var result = new List<(string Name, int Pointer, int Length)>();
                 for (int i = 0; i < files_counter; i++)
                     result.Add((Name: files_names[i], Pointer: files_pointers[i], Length: files_lens[i]));
 
@@ -484,7 +485,7 @@ namespace AMBPatcher
                         InternalIndex = ParentIndex;
                     }
 
-                    Log.Write("AMB.Patch: replacing original file with" + ModFileName);
+                    Log.Write("AMB.Patch: replacing original file with " + ModFileName);
                     //Splitting the AMB file into three parts
                     //Before the file data
                     byte[] part_one = new byte[files[InternalIndex].Pointer];
