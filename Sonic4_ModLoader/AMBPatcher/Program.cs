@@ -1155,6 +1155,8 @@ namespace AMBPatcher
 
                 if (GenerateLog)
                 {
+                    Log.Write("Content of mods.ini:");
+                    Log.Write(File.ReadAllText("mods/mods.ini"));
                     Log.Write("====================");
                     Log.Write("File list:");
                     for (int i = 0; i < test.Count; i++)
