@@ -979,15 +979,15 @@ namespace AMBPatcher
                 File.Copy(file_name + ".bkp", file_name, true);
         }
 
-        static List<Tuple<string, List<string>, List<string>>> GetModFiles()
+        static List<(string OrigFile, List<string> ModFiles, List<string> ModName)> GetModFiles()
         {
             /* returns a list of:
-             * list[0].Item1 = The original file path
-             * list[0].Item2 = List of files that will be modified
-             * list[0].Item3 = List of the mod directories of the mod files of Item2
+             * list[0].OrigFile = Path to original file
+             * list[0].ModFiles = List of mod files
+             * list[0].ModName = List of mod names of Item2
              */
 
-            var result = new List<Tuple<string, List<string>, List<string>>>();
+            var result = new List<(string OrigFile, List<string> ModFiles, List<string> ModName)>();
 
             //Reading the mods.ini file
             if (File.Exists("mods/mods.ini"))
@@ -1072,7 +1072,7 @@ namespace AMBPatcher
 
                 //Into a Tuple into a List
                 for (int i = 0; i < orig_files.Count; i++)
-                    result.Add(Tuple.Create(orig_files[i], mod_files[i], mod_dirs[i]));
+                    result.Add((OrigFile: orig_files[i], ModFiles: mod_files[i], ModName: mod_dirs[i]));
             }
             else { Log.Write("GetModFiles: \"mods/mods.ini\" file not found"); }
 
@@ -1133,10 +1133,10 @@ namespace AMBPatcher
                     Log.Write("File list:");
                     for (int i = 0; i < test.Count; i++)
                     {
-                        Log.Write("\n" + test[i].Item1);
-                        for (int j = 0; j < test[i].Item2.Count; j++)
+                        Log.Write("\n" + test[i].OrigFile);
+                        for (int j = 0; j < test[i].ModFiles.Count; j++)
                         {
-                            Log.Write("\t" + test[i].Item2[j] + "\t" + test[i].Item3[j]);
+                            Log.Write("\t" + test[i].ModFiles[j] + "\t" + test[i].ModName[j]);
                         }
                     }
                     Log.Write("====================");
@@ -1162,23 +1162,21 @@ namespace AMBPatcher
                 }
                 for (int i = 0; i < test.Count; i++)
                 {
-                    modified_files.Add(test[i].Item1);
+                    modified_files.Add(test[i].OrigFile);
                     
                     if (ProgressBar)
                     {
-                        ConsoleProgressBar(i, test.Count, "Modifying \"" + test[i].Item1 + "\"...", 64);
+                        ConsoleProgressBar(i, test.Count, "Modifying \"" + test[i].OrigFile + "\"...", 64);
                         Console.CursorTop += 2;
                     }
 
-                    Backup(test[i].Item1);
+                    Backup(test[i].OrigFile);
                     //Some CSB files may have CPK archive
-                    if (File.Exists(test[i].Item1.Substring(0, test[i].Item1.Length - 4) + ".CPK"))
-                    {
-                        Backup(test[i].Item1.Substring(0, test[i].Item1.Length - 4) + ".CPK");
-                    }
+                    if (File.Exists(test[i].OrigFile.Substring(0, test[i].OrigFile.Length - 4) + ".CPK"))
+                        Backup(test[i].OrigFile.Substring(0, test[i].OrigFile.Length - 4) + ".CPK");
 
-                    PatchAll(test[i].Item1, test[i].Item2, test[i].Item3);
-                    mods_prev.Remove(test[i].Item1);
+                    PatchAll(test[i].OrigFile, test[i].ModFiles, test[i].ModName);
+                    mods_prev.Remove(test[i].OrigFile);
 
                     if (ProgressBar) { Console.CursorTop -= 2; }
                 }
@@ -1198,14 +1196,12 @@ namespace AMBPatcher
                     Recover(mods_prev[i]);
                     //Some CSB files may have CPK archive
                     if (mods_prev[i].EndsWith(".CSB", StringComparison.OrdinalIgnoreCase))
-                    {
                         Recover(mods_prev[i].Substring(0, mods_prev[i].Length - 4) + ".CPK");
-                    }
                     
                     if (mods_prev[i].EndsWith(".CSB", StringComparison.OrdinalIgnoreCase))
-                    { ShaRemove(mods_prev[i].Substring(0, mods_prev[i].Length - 4)); }
+                        ShaRemove(mods_prev[i].Substring(0, mods_prev[i].Length - 4));
                     else
-                    { ShaRemove(mods_prev[i]); }
+                        ShaRemove(mods_prev[i]);
                     
                     
                 }
