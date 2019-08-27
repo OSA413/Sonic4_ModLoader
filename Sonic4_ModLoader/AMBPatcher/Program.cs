@@ -1235,7 +1235,7 @@ namespace AMBPatcher
                 Log.Write("\nSaving list of modified files...");
                 if (Directory.Exists("mods"))
                 {
-                    File.WriteAllText("modsmods_prev", string.Join("\n", modified_files.ToArray()));
+                    File.WriteAllText("mods/mods_prev", string.Join("\n", modified_files.ToArray()));
                     Log.Write("Saved");
                 }
                 else { Log.Write("But \"mods\" folder is not present!"); }
