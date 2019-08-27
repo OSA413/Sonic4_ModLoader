@@ -264,6 +264,9 @@ namespace AMBPatcher
 
                 if (AMB.IsAMB(raw_file))
                 {
+                    if (BitConverter.IsLittleEndian != AMB.IsLittleEndian(raw_file))
+                        raw_file = AMB.SwapEndianness(raw_file);
+
                     files_counter = BitConverter.ToInt32(raw_file, 0x10);
                     int list_pointer = BitConverter.ToInt32(raw_file, 0x14);
 
