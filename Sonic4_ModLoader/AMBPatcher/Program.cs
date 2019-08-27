@@ -431,6 +431,13 @@ namespace AMBPatcher
             
             public static byte[] Patch(byte[] raw_file, string OrigFileName, string ModFileName, string ModFilePath)
             {
+                if (!AMB.IsAMB(raw_file)) return raw_file;
+
+                //This will make patching work with different endianness
+                bool swap_endianness_back = BitConverter.IsLittleEndian != AMB.IsLittleEndian(raw_file);
+                if (swap_endianness_back)
+                    raw_file = AMB.SwapEndianness(raw_file);
+
                 //Why do I need the original file name? To patch files that are inside of an AMB file that is inside of an AMB file that is inside of ...
                 var files = AMB.Read(raw_file);
 
@@ -543,6 +550,9 @@ namespace AMBPatcher
                     raw_file = AMB.Add(raw_file, OrigFileName, ModFileName, ModFilePath);
                 }
 
+                if (swap_endianness_back)
+                    raw_file = AMB.SwapEndianness(raw_file);
+
                 return raw_file;
             }
             
@@ -564,6 +574,11 @@ namespace AMBPatcher
                 if (!AMB.IsAMB(raw_file)) return raw_file;
                 //Okay, I've got a great plan:
                 //Add empty file and patch it.
+
+                //This will make addition work with different endianness
+                bool swap_endianness_back = BitConverter.IsLittleEndian != AMB.IsLittleEndian(raw_file);
+                if (swap_endianness_back)
+                    raw_file = AMB.SwapEndianness(raw_file);
 
                 //Some empty files from S4E1 are "broken", it's better to use a new empty file.
                 if (AMB.Read(raw_file).Count == 0)
@@ -660,7 +675,12 @@ namespace AMBPatcher
                                   data_part.Join(
                                   name_part));
                 
-                return AMB.Patch(raw_file, OrigFileName, ModFileName, ModFilePath);
+                raw_file = AMB.Patch(raw_file, OrigFileName, ModFileName, ModFilePath);
+
+                if (swap_endianness_back)
+                    raw_file = AMB.SwapEndianness(raw_file);
+
+                return raw_file;
             }
 
             public static void Add(string file_name, string mod_file, string ModFileName)
@@ -745,6 +765,11 @@ namespace AMBPatcher
 
             public static byte[] Delete(byte[] raw_file, string file_name_to_delete)
             {
+                //This will make deletion work with different endianness
+                bool swap_endianness_back = BitConverter.IsLittleEndian != AMB.IsLittleEndian(raw_file);
+                if (swap_endianness_back)
+                    raw_file = AMB.SwapEndianness(raw_file);
+
                 var files = AMB.Read(raw_file);
 
                 int pointer_of_file_to_delete = -1;
@@ -825,6 +850,9 @@ namespace AMBPatcher
                     //Joining all together
                     raw_file = before_enum.Join(before_data.Join(before_name.Join(after_name)));
                 }
+
+                if (swap_endianness_back)
+                    raw_file = AMB.SwapEndianness(raw_file);
 
                 return raw_file;
             }
