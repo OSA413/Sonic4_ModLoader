@@ -1016,92 +1016,94 @@ namespace AMBPatcher
             var result = new List<(string OrigFile, List<string> ModFiles, List<string> ModName)>();
 
             //Reading the mods.ini file
-            if (File.Exists("mods/mods.ini"))
+            if (!File.Exists("mods/mods.ini"))
             {
-                //The mods.ini contains directory names of the enabled mods in reversed priority
-                /*e.g.
-                 * Mod 3
-                 * Mod 2
-                 * Mod 1
-                 */
-                string[] ini_mods = File.ReadAllLines("mods/mods.ini");
+                Log.Write("GetModFiles: \"mods/mods.ini\" file not found");
+                return result;
+            }
 
-                List<string> orig_files = new List<string>();
-                List<List<string>> mod_files = new List<List<string>>();
-                List<List<string>> mod_dirs = new List<List<string>>();
+            //The mods.ini contains directory names of the enabled mods in reversed priority
+            /*e.g.
+             * Mod 3
+             * Mod 2
+             * Mod 1
+             */
+            string[] ini_mods = File.ReadAllLines("mods/mods.ini");
 
-                for (int i = 0; i < ini_mods.Length; i++)
+            List<string> orig_files = new List<string>();
+            List<List<string>> mod_files = new List<List<string>>();
+            List<List<string>> mod_dirs = new List<List<string>>();
+
+            for (int i = 0; i < ini_mods.Length; i++)
+            {
+                if (Directory.Exists("mods/" + ini_mods[i]))
                 {
-                    if (Directory.Exists("mods/" + ini_mods[i]))
+                    string[] filenames = Directory.GetFiles(Path.Combine("mods",ini_mods[i]), "*", SearchOption.AllDirectories);
+
+                    for (int j = 0; j < filenames.Length; j++)
                     {
-                        string[] filenames = Directory.GetFiles("mods/" + ini_mods[i], "*", SearchOption.AllDirectories);
+                        //Getting "folder/file" from "mods/mod/folder/file/mod_file"
+                        string[] filename_parts = filenames[j].Split(Path.DirectorySeparatorChar);
+                        string original_file = "";
 
-                        for (int j = 0; j < filenames.Length; j++)
+                        for (int k = 0; k < filename_parts.Length - 2; k++)
                         {
-                            //Getting "folder/file" from "mods/mod/folder/file/mod_file"
-                            string[] filename_parts = filenames[j].Split(Path.DirectorySeparatorChar);
-                            string original_file = "";
+                            string possible_orig_file = Path.Combine(filename_parts.Skip(2).Take(k + 1).ToArray());
 
-                            for (int k = 0; k < filename_parts.Length - 2; k++)
+                            if (File.Exists(possible_orig_file))
                             {
-                                string possible_orig_file = Path.Combine(filename_parts.Skip(2).Take(k + 1).ToArray());
-
-                                if (File.Exists(possible_orig_file))
-                                {
-                                    original_file = possible_orig_file; break;
-                                }
-                                else if (File.Exists(possible_orig_file + ".CSB"))
-                                {
-                                    original_file = possible_orig_file + ".CSB"; break;
-                                }
+                                original_file = possible_orig_file; break;
                             }
-
-                            if (original_file == "") { continue; }
-
-                            //Getting "folder/file/mod_file" from "mods/mod/folder/file/mod_file"
-                            string mod_file = Path.Combine(filename_parts.Skip(2).ToArray());
-
-                            //Getting "mod" from "mods/mod/folder/file/mod_file"
-                            string mod_path = filename_parts[1];
-
-                            //Adding all of this into lists
-                            if (!orig_files.Contains(original_file))
+                            else if (File.Exists(possible_orig_file + ".CSB"))
                             {
-                                orig_files.Add(original_file);
-                                mod_files.Add(new List<string> { });
-                                mod_dirs.Add(new List<string> { });
+                                original_file = possible_orig_file + ".CSB"; break;
                             }
-
-                            int ind = orig_files.IndexOf(original_file);
-
-                            if (mod_files[ind].Contains(mod_file))
-                            {
-                                /* Updating queue of the files that will be modified
-                                 * to correspond to the given mod priority.
-                                 * This is needed because the old single-depth no replacing
-                                 * method doesn't work correctly (theoretically) after some new features.
-                                 * Before it was not a queue at all.
-                                 * Thank you for your attention.
-                                 * 
-                                 * ~OSA413
-                                 */
-                                int mod_index = mod_files[ind].IndexOf(mod_file);
-                                mod_files[ind].RemoveAt(mod_index);
-                                mod_dirs[ind].RemoveAt(mod_index);
-                            }
-
-                            mod_files[ind].Add(mod_file);
-                            mod_dirs[ind].Add(mod_path);
                         }
+
+                        if (original_file == "") { continue; }
+
+                        //Getting "folder/file/mod_file" from "mods/mod/folder/file/mod_file"
+                        string mod_file = Path.Combine(filename_parts.Skip(2).ToArray());
+
+                        //Getting "mod" from "mods/mod/folder/file/mod_file"
+                        string mod_path = filename_parts[1];
+
+                        //Adding all of this into lists
+                        if (!orig_files.Contains(original_file))
+                        {
+                            orig_files.Add(original_file);
+                            mod_files.Add(new List<string> { });
+                            mod_dirs.Add(new List<string> { });
+                        }
+
+                        int ind = orig_files.IndexOf(original_file);
+
+                        if (mod_files[ind].Contains(mod_file))
+                        {
+                            /* Updating queue of the files that will be modified
+                             * to correspond to the given mod priority.
+                             * This is needed because the old single-depth no replacing
+                             * method doesn't work correctly (theoretically) after some new features.
+                             * Before it was not a queue at all.
+                             * Thank you for your attention.
+                             * 
+                             * ~OSA413
+                             */
+                            int mod_index = mod_files[ind].IndexOf(mod_file);
+                            mod_files[ind].RemoveAt(mod_index);
+                            mod_dirs[ind].RemoveAt(mod_index);
+                        }
+
+                        mod_files[ind].Add(mod_file);
+                        mod_dirs[ind].Add(mod_path);
                     }
                 }
-
-                //Into a Tuple into a List
-                for (int i = 0; i < orig_files.Count; i++)
-                    result.Add((OrigFile: orig_files[i], ModFiles: mod_files[i], ModName: mod_dirs[i]));
             }
-            else { Log.Write("GetModFiles: \"mods/mods.ini\" file not found"); }
 
+            //Into a Tuple into a List
+            for (int i = 0; i < orig_files.Count; i++)
+                result.Add((OrigFile: orig_files[i], ModFiles: mod_files[i], ModName: mod_dirs[i]));
+            
             return result;
         }
 
