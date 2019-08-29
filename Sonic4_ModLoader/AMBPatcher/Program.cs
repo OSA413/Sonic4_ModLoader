@@ -918,6 +918,7 @@ namespace AMBPatcher
 
         static void PatchAll(string file_name, List<string> mod_files, List<string> mod_paths)
         {
+            Log.Write("> " + file_name);
             if (File.Exists(file_name))
             {
                 if (file_name.EndsWith(".AMB", StringComparison.OrdinalIgnoreCase))
@@ -925,21 +926,17 @@ namespace AMBPatcher
                     if (ShaChanged(file_name, mod_files, mod_paths))
                     {
                         Recover(file_name);
-                        if (file_name.EndsWith(".CSB", StringComparison.OrdinalIgnoreCase))
-                        {
-                            Recover(file_name.Substring(0, file_name.Length - 4) + ".CPK");
-                        }
                         Log.Write("PatchAll: file " + file_name + " was restored.");
 
                         for (int i = 0; i < mod_files.Count; i++)
                         {
                             string mod_file_full = Path.Combine("mods", mod_paths[i], mod_files[i]);
-
+                            Log.Write(mod_file_full);
                             ConsoleProgressBar(i, mod_files.Count, mod_file_full, 64);
 
                             if (file_name == mod_files[i])
                             {
-                                Log.Write("PatchAll: replacing " + file_name + " with " + mod_file_full);
+                                Log.Write("Replaced");
                                 File.Copy(mod_file_full, file_name, true);
                             }
                             else
@@ -950,7 +947,7 @@ namespace AMBPatcher
                             ShaWrite(mod_files[i], mod_file_full);
                         }
                     }
-                    else { Log.Write("PatchAll: file " + file_name + " wasn't changed."); }
+                    else { Log.Write("Not changed"); }
                 }
                 else if (file_name.ToUpper().EndsWith(".CSB"))
                 {
@@ -962,7 +959,7 @@ namespace AMBPatcher
                             Recover(file_name.Substring(0, file_name.Length - 4) + ".CPK");
                         }
 
-                        Log.Write("PatchAll: asking CsbEditor to unpack " + file_name);
+                        Log.Write("Asking CsbEditor to unpack");
                         ConsoleProgressBar(0, 100, "Asking CsbEditor to unpack " + file_name, 64);
 
                         //Needs CSB Editor (from SonicAudioTools) to work
@@ -976,21 +973,23 @@ namespace AMBPatcher
                             string mod_file = Path.Combine("mods", mod_paths[i], mod_files[i]);
 
                             ConsoleProgressBar(i, mod_files.Count, mod_file, 64);
-                            Log.Write("PatchAll: copying " + mod_file + " to " + mod_files[i]);
-
+                            Log.Write(mod_file);
                             File.Copy(mod_file, mod_files[i], true);
 
                             ShaWrite(mod_files[i], mod_file);
                         }
 
-                        Log.Write("PatchAll: asking CsbEditor to repack " + file_name);
+                        Log.Write("Asking CsbEditor to repack");
                         ConsoleProgressBar(99, 100, "Asking CsbEditor to repack " + file_name, 64);
                         startInfo.Arguments = file_name.Substring(0, file_name.Length - 4);
                         Process.Start(startInfo).WaitForExit();
                     }
+                    else { Log.Write("Not changed"); }
                 }
             }
-            else { Log.Write("PatchAll: " + file_name + " file not found"); }
+            else { Log.Write("File not found"); }
+
+            Log.Write("< " + file_name);
         }
 
         static void Backup(string file_name)
