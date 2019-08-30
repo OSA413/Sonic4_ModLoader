@@ -282,38 +282,27 @@ namespace AMBPatcher
                     //This is the pointer to where the names of the files start
                     int name_pointer;
 
+                    int has_dummy_bytes = 0;
                     if (DataPointer == 0)
                     {
                         //Well, this means that we have "empty" integers in the places where pointers should be.
                         //We need to skip them
-
-                        name_pointer = BitConverter.ToInt32(raw_file, 0x20);
-
-                        for (int i = 0; i < files_counter; i++)
-                        {
-                            int point = list_pointer + i * 0x14;
-                                
-                            if (BitConverter.ToInt32(raw_file, point) != 0)
-                            {
-                                files_pointers.Add(BitConverter.ToInt32(raw_file, point));
-                                files_lens.Add(BitConverter.ToInt32(raw_file, point + 8));
-                            }
-                        }
+                        //Only iOS version of Episode 1 is caught at having this "defect".
+                        has_dummy_bytes = 4;
+                        DataPointer = BitConverter.ToInt32(raw_file, 0x18 + has_dummy_bytes);
                     }
-                    else
+
+                    name_pointer = BitConverter.ToInt32(raw_file, 0x1C + has_dummy_bytes);
+
+                    for (int i = 0; i < files_counter; i++)
                     {
-                        name_pointer = BitConverter.ToInt32(raw_file, 0x1C);
+                        int point = list_pointer + i * (0x10 + has_dummy_bytes);
 
-                        for (int i = 0; i < files_counter; i++)
+                        //Sometimes the lines where pointer and lenght should be are empty
+                        if (BitConverter.ToInt32(raw_file, point) != 0)
                         {
-                            int point = list_pointer + i * 0x10;
-
-                            //Adding pointers and lengths of files into corresponding lists
-                            if (BitConverter.ToInt32(raw_file, point) != 0)
-                            {
-                                files_pointers.Add(BitConverter.ToInt32(raw_file, point));
-                                files_lens.Add(BitConverter.ToInt32(raw_file, point + 4));
-                            }
+                            files_pointers.Add(BitConverter.ToInt32(raw_file, point));
+                            files_lens.Add(BitConverter.ToInt32(raw_file, point + 4 + has_dummy_bytes));
                         }
                     }
 
