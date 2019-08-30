@@ -326,19 +326,15 @@ namespace AMBPatcher
                         {
                             if (files_names_raw[i] != "")
                             {
-                                //TODO: make this to not include > 32 char name files
-                                for (int j = 0; j < files_names_raw[i].Length / 32 + 1; j++)
-                                {
-                                    files_names.Add(files_names_raw[i].Substring(32 * j, Math.Min(32, files_names_raw[i].Length - 32 * j)));
-                                }
+                                files_names.Add(files_names_raw[i]);
                             }
                         }
                     }
                     else
                     {
-                        //If there're no names, setting file names as their order number (i)
+                        //If there're no names, setting file names to their index
                         for (int i = 0; i < files_counter; i++)
-                            files_names.Add(i.ToString());
+                            files_names.Add(i.ToString("D3"));
                     }
 
                     //removing ".\" in the names (Windows can't create "." folders)
@@ -638,18 +634,7 @@ namespace AMBPatcher
 
                 //Length
                 empty_file_enumeration[0x4] = 0x10;
-                empty_file_enumeration[0x5] =
-                empty_file_enumeration[0x6] =
-                empty_file_enumeration[0x7] =
-                //Blank space
-                empty_file_enumeration[0x8] =
-                empty_file_enumeration[0x9] =
-                empty_file_enumeration[0xA] =
-                empty_file_enumeration[0xB] =
-                empty_file_enumeration[0xC] =
-                empty_file_enumeration[0xD] =
-                empty_file_enumeration[0xE] =
-                empty_file_enumeration[0xF] = 0x00;
+                //Blank space 0x5 - 0xF
 
                 byte[] mod_file_name_bytes = new byte[0x20];
 
