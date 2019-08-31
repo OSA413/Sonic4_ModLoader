@@ -10,10 +10,6 @@ namespace AMBPatcher
 {
     class Program
     {
-        /* Two variable to store log
-         * The log won't help you if your game is crashing, but it can tell you if you've named a file 
-         * in the wrong way (e.g. haven't removed "_extracted" in the directory name).
-         */
         public static bool GenerateLog { set; get; }
         public static bool ProgressBar { set; get; }
         public static bool SHACheck { get; set; }
@@ -24,7 +20,6 @@ namespace AMBPatcher
             public static void Write(string Message)
             {
                 if (!GenerateLog) return;
-                
                 File.AppendAllText("AMBPatcher.log", Message + Environment.NewLine);
             }
             
@@ -195,7 +190,7 @@ namespace AMBPatcher
             //Things needed for patching //
             ///////////////////////////////
 
-            internal static (string InternalName, int InternalIndex, string ParentName, int ParentIndex) GetInternalThings(byte[] raw_file, string OriginalFileName, string ModFileName)
+            public static (string InternalName, int InternalIndex, string ParentName, int ParentIndex) GetInternalThings(byte[] raw_file, string OriginalFileName, string ModFileName)
             {
                 /*
                  * InternalName (like from AMB.Read)
@@ -214,7 +209,7 @@ namespace AMBPatcher
                 int InternalIndex = -1;
                 
                 //Turning "C:\1\2\3" into {"C:","1","2","3"}
-                string[] mod_file_parts = ModFileName.Split(Path.DirectorySeparatorChar);
+                string[] mod_file_parts = ModFileName.Replace('/', '\\').Split('\\');
                 
                 string orig_file_last = Path.GetFileName(OriginalFileName);
 
@@ -634,7 +629,6 @@ namespace AMBPatcher
 
                 //Length
                 empty_file_enumeration[0x4] = 0x10;
-                //Blank space 0x5 - 0xF
 
                 byte[] mod_file_name_bytes = new byte[0x20];
 
