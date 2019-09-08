@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace Sonic4ModManager
@@ -18,6 +19,11 @@ namespace Sonic4ModManager
                                 + license_file
                                 + "\n====================\n\n"
                                 + license;
+        }
+        
+        private void LinkClicked(object sender, LinkClickedEventArgs e)
+        {
+            Process.Start(e.LinkText);
         }
     }
 }
