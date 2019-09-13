@@ -1,3 +1,19 @@
+[c]Version: v0.1.4.1
+Change log:
+\t[b]One-Click Mod Installer[\b]
+* Added "TGA" to safe file list since it's used in Dolphin v4
+
+\t[b]Mod Manager[\b]
+* Removed "_files" thing in the License Reader
+* Added link clicking thing to License Reader
+
+\t[b]AMBPatcher[\b]
+* Now progress bar will always fit in one line
+* Some linux optimizations and fixes and a code review
+* Improved logging
+* An attempt to make patching work with different endianness
+
+
 [c]Version: v0.1.4.0
 Change log:
 \t[b]AMBPatcher[\b]
