@@ -36,6 +36,8 @@ Linux! At this moment you can use AMBPatcher and other programs written by me th
 
 Here's a guide to make Episode 1 to work on Linux: https://steamcommunity.com/sharedfiles/filedetails/?id=1726034225
 
+Episode 2 should work rigth out of the box using Proton `4.11-2`.
+
 ## Roadmap?
 
 Check [Project page on GitHub](https://github.com/OSA413/Sonic4_ModLoader/projects). Sometimes I create a TODO list for the next stable version.
