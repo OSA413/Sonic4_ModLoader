@@ -15,17 +15,17 @@ namespace Sonic4ModManager
         {
             public static class AMBPatcher
             {
-                public static bool ProgressBar  { set; get; }
-                public static bool GenerateLog  { set; get; }
-                public static bool SHACheck     { set; get; }
-                public static int  SHAType      { set; get; }
+                public static bool ProgressBar;
+                public static bool GenerateLog;
+                public static bool SHACheck;
+                public static int  SHAType;
             }
 
             public static class CsbEditor
             {
-                public static bool  EnableThreading { set; get; }
-                public static int   MaxThreads      { set; get; }
-                public static int   BufferSize      { set; get; }
+                public static bool  EnableThreading;
+                public static int   MaxThreads;
+                public static int   BufferSize;
             }
             
             public static void Load()

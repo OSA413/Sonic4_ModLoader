@@ -14,31 +14,31 @@ namespace OneClickModInstaller
         //This class stores variables related to mod installation
         public static class Installation
         {
-            public static string    Link        { set; get; }
-            public static string    ServerHost  { set; get; }
-            public static string    ArchiveName { set; get; }
-            public static string    ArchiveDir  { set; get; }
-            public static bool      Local       { set; get; }
-            public static string    LastMod     { set; get; }
-            public static string[]  ModRoots    { set; get; }
-            public static string    Platform    { set; get; }
-            public static string    Status      { set; get; }
-            public static bool      FromArgs    { set; get; }
-            public static string    CustomPath  { set; get; }
-            public static bool      FromDir     { set; get; }
+            public static string    Link;
+            public static string    ServerHost;
+            public static string    ArchiveName;
+            public static string    ArchiveDir;
+            public static bool      Local;
+            public static string    LastMod;
+            public static string[]  ModRoots;
+            public static string    Platform;
+            public static string    Status;
+            public static bool      FromArgs;
+            public static string    CustomPath;
+            public static bool      FromDir;
             //Sometimes server may break connection when file is not fully downloaded
             //User will be offered to redownload it
-            public static long      Recieved    { set; get; }
-            public static long      Total       { set; get; }
+            public static long      Recieved;
+            public static long      Total;
         }
 
         public static class Settings
         {
-            public static bool UseLocal7zip             { set; get; }
-            public static bool SaveDownloadedArchives   { set; get; }
-            public static bool ExitLaunchManager        { set; get; }
+            public static bool UseLocal7zip;
+            public static bool SaveDownloadedArchives;
+            public static bool ExitLaunchManager;
 
-            public static Dictionary<string, string> Paths { set; get; }
+            public static Dictionary<string, string> Paths;
 
             public static void Load()
             {

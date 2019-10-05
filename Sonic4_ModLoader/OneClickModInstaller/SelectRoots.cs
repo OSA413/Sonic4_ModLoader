@@ -8,8 +8,8 @@ namespace OneClickModInstaller
 {
     public partial class SelectRoots:Form
     {
-        public List<string>  output     { set; get; }
-        public static string start_path { set; get; }
+        public List<string>  output;
+        public static string start_path;
 
         public SelectRoots(string dir_name)
         {

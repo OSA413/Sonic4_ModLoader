@@ -10,10 +10,10 @@ namespace AMBPatcher
 {
     class Program
     {
-        public static bool GenerateLog { set; get; }
-        public static bool ProgressBar { set; get; }
-        public static bool SHACheck { get; set; }
-        public static int SHAType { get; set; }
+        public static bool GenerateLog;
+        public static bool ProgressBar;
+        public static bool SHACheck;
+        public static int  SHAType;
         
         public class Log
         {

@@ -5,7 +5,7 @@ namespace OneClickModInstaller
 {
     public partial class TooManyMods : Form
     {
-        public string[] mods { get; set; }
+        public string[] mods;
 
         public TooManyMods(string[] list, string type = "pc")
         {

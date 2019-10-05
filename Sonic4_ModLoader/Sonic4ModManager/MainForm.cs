@@ -13,8 +13,8 @@ namespace Sonic4ModManager
     {
         public static class Settings
         {
-            public static bool ModLoaderInstalled   { set; get; }
-            public static bool CheckOnlineUpdates   { set; get; }
+            public static bool ModLoaderInstalled;
+            public static bool CheckOnlineUpdates;
 
             public static void Load()
             {
@@ -710,10 +710,10 @@ namespace Sonic4ModManager
                                 FontStyle new_style = FontStyle.Regular;
                                 switch (i)
                                 {
-                                    case "b": new_style         = FontStyle.Bold; break;
-                                    case "i": new_style         = FontStyle.Italic; break;
-                                    case "u": new_style         = FontStyle.Underline; break;
-                                    case "strike": new_style    = FontStyle.Strikeout; break;
+                                    case "b":      new_style = FontStyle.Bold;      break;
+                                    case "i":      new_style = FontStyle.Italic;    break;
+                                    case "u":      new_style = FontStyle.Underline; break;
+                                    case "strike": new_style = FontStyle.Strikeout; break;
                                 }
 
                                 rtb.SelectionFont = new Font(rtb.SelectionFont, new_style | rtb.SelectionFont.Style);
