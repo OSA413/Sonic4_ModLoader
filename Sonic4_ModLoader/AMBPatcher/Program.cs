@@ -393,7 +393,14 @@ namespace AMBPatcher
             {
                 if (File.Exists(path))
                 {
-                    AMB.Extract(path, path + "_e");
+                    try
+                    {
+                        AMB.Extract(path, path + "_e");
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Error extracting " + path);
+                    }
 
                     if (Directory.Exists(path + "_e"))
                     {
