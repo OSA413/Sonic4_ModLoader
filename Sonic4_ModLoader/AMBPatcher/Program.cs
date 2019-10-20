@@ -338,7 +338,7 @@ namespace AMBPatcher
                     {
                         //Turns out there's a double dot directory in file names
                         //And double backslash in file names
-                        while (files_names[i][0] == '.' || files_names[i][0] == '\\' )
+                        while (files_names[i][0] == '.' || files_names[i][0] == '\\' || files_names[i][0] == '/' )
                             files_names[i] = files_names[i].Substring(1);
                     }
                 }
