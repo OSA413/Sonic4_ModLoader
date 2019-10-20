@@ -1,8 +1,9 @@
-####################
-#Distributive files#
-####################
+##################
+#Temp directories#
+##################
 
 dist/
+dependencies_source/
 
 #############
 #LibreOffice#
