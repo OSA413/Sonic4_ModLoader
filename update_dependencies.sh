@@ -25,7 +25,7 @@ cd "7-Zip"
 url=$(curl -LIs -w %{url_effective} -o /dev/null https://sourceforge.net/projects/sevenzip/files/latest/download)
 version=$(basename $(dirname $url))
 curl  $url > 7z_install.exe
-echo https://sourceforge.net/projects/sevenzip/files/7-Zip/$version > ./../../dependencies/7-Zip/link
+echo https://sourceforge.net/projects/sevenzip/files/7-Zip/$version > ./../../dependencies/7-Zip/LINK
 
 7z x 7z_install.exe
 

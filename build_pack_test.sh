@@ -38,7 +38,9 @@ for dir in $(ls ./dependencies); do
     for file in $(ls ./dependencies/$dir); do
         if [ $file == "LICENSE" ] || [ $file == "License.txt" ]; then
             cp "./dependencies/$dir/$file" "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-"$dir
-            break
+        fi
+        if [ $file == "LINK" ]; then
+            cp "./dependencies/$dir/$file" "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-"$dir"_link"
         fi
     done
 done
