@@ -186,64 +186,85 @@ namespace AMBPatcher
         
         public class AMB
         {
-            ///////////////////////////////
-            //Things needed for patching //
-            ///////////////////////////////
+            ////////////////////////////////////////////////////
+            //Some internal functions that help do some things//
+            ////////////////////////////////////////////////////
 
-            public static (string InternalName, int InternalIndex, string ParentName, int ParentIndex) GetInternalThings(byte[] raw_file, string OriginalFileName, string ModFileName)
+            public class Internal
             {
-                /*
-                 * InternalName (like from AMB.Read)
-                 * InternalIndex is index of file name in AMB.Read, if present
-                 * ParentName is AMB.Read()[ParentIndex].Name, if present
-                 * ParentIndex is index of parent file in AMB.Read, if present
-                 */
-
-                var files = AMB.Read(raw_file);
-
-                /////////////////
-                //Internal Name//
-                /////////////////
-
-                string InternalName;
-                int InternalIndex = -1;
-                
-                //Turning "C:\1\2\3" into {"C:","1","2","3"}
-                string[] mod_file_parts = ModFileName.Replace('/', '\\').Split('\\');
-                
-                string orig_file_last = Path.GetFileName(OriginalFileName);
-
-                //Trying to find where the original file name starts in the mod file name.
-                int index = Array.IndexOf(mod_file_parts, orig_file_last);
-                
-                //If it's inside, return the part after original file ends
-                if (index != -1)
-                    InternalName = String.Join("\\", mod_file_parts.Skip(index + 1).ToArray());
-                //Else use file name
-                else
-                    InternalName = mod_file_parts.Last();
-
-                //Find internal index
-                for (int i = 0; i < files.Count; i++)
+                public static (string InternalName, int InternalIndex, string ParentName, int ParentIndex) GetInternalThings(byte[] raw_file, string OriginalFileName, string ModFileName)
                 {
-                    if (InternalName == files[i].Name)
-                    { InternalIndex = i; break; }
-                }
-                
-                int ParentIndex = -1;
-                string ParentName = "";
+                    /*
+                    * InternalName (like from AMB.Read)
+                    * InternalIndex is index of file name in AMB.Read, if present
+                    * ParentName is AMB.Read()[ParentIndex].Name, if present
+                    * ParentIndex is index of parent file in AMB.Read, if present
+                    */
 
-                for (int i = 0; i < files.Count; i++)
-                {
-                    if ((InternalName + "\\").StartsWith(files[i].Name + "\\"))
+                    var files = AMB.Read(raw_file);
+
+                    /////////////////
+                    //Internal Name//
+                    /////////////////
+
+                    string InternalName;
+                    int InternalIndex = -1;
+                    
+                    //Turning "C:\1\2\3" into {"C:","1","2","3"}
+                    string[] mod_file_parts = ModFileName.Replace('/', '\\').Split('\\');
+                    
+                    string orig_file_last = Path.GetFileName(OriginalFileName);
+
+                    //Trying to find where the original file name starts in the mod file name.
+                    int index = Array.IndexOf(mod_file_parts, orig_file_last);
+                    
+                    //If it's inside, return the part after original file ends
+                    if (index != -1)
+                        InternalName = String.Join("\\", mod_file_parts.Skip(index + 1).ToArray());
+                    //Else use file name
+                    else
+                        InternalName = mod_file_parts.Last();
+
+                    //Find internal index
+                    for (int i = 0; i < files.Count; i++)
                     {
-                        ParentIndex = i;
-                        ParentName = files[i].Name;
-                        break;
+                        if (InternalName == files[i].Name)
+                        { InternalIndex = i; break; }
                     }
+                    
+                    int ParentIndex = -1;
+                    string ParentName = "";
+
+                    for (int i = 0; i < files.Count; i++)
+                    {
+                        if ((InternalName + "\\").StartsWith(files[i].Name + "\\"))
+                        {
+                            ParentIndex = i;
+                            ParentName = files[i].Name;
+                            break;
+                        }
+                    }
+                    
+                    return (InternalName:  InternalName,
+                            InternalIndex: InternalIndex,
+                            ParentName:    ParentName,
+                            ParentIndex:   ParentIndex);
                 }
-                
-                return (InternalName: InternalName, InternalIndex: InternalIndex, ParentName: ParentName, ParentIndex: ParentIndex);
+
+                public static string MakeNameSafe(string rawName)
+                {
+                    //removing ".\" in the names (Windows can't create "." folders)
+                    //sometimes they can have several ".\" in the names
+                    //Turns out there's a double dot directory in file names
+                    //And double backslash in file names
+                    int safeIndex = 0;
+                    while (rawName[safeIndex] == '.' || rawName[safeIndex] == '\\' || rawName[safeIndex] == '/' )
+                        safeIndex++;
+
+                    if (safeIndex == 0)
+                        return rawName;
+                    return rawName.Substring(safeIndex);
+                }
             }
 
             ////////
@@ -257,94 +278,71 @@ namespace AMBPatcher
                 List<string>    files_names     = new List<string>();
                 var result = new List<(string Name, int Pointer, int Length)>();
 
-                int files_counter = 0;
-
                 if (!AMB.IsAMB(raw_file))
                     return result;
 
                 if (BitConverter.IsLittleEndian != AMB.IsLittleEndian(raw_file))
                     raw_file = AMB.SwapEndianness(raw_file);
 
-                files_counter = BitConverter.ToInt32(raw_file, 0x10);
-                int list_pointer = BitConverter.ToInt32(raw_file, 0x14);
+                int files_counter = BitConverter.ToInt32(raw_file, 0x10);
 
                 //Some AMB files have no file inside of them
-                if (files_counter > 0)
+                if (files_counter == 0)
+                    return result;
+
+                int list_pointer  = BitConverter.ToInt32(raw_file, 0x14);
+                //This is actually used to identify extra zero bytes in messed AMBs
+                int DataPointer = BitConverter.ToInt32(raw_file, 0x18);
+
+                int has_dummy_bytes = 0;
+                if (DataPointer == 0)
                 {
-                    //This is actually used to identify extra zero bytes in messed AMBs
-                    int DataPointer = BitConverter.ToInt32(raw_file, 0x18);
-
-                    //This is the pointer to where the names of the files start
-                    int name_pointer;
-
-                    int has_dummy_bytes = 0;
-                    if (DataPointer == 0)
-                    {
-                        //Well, this means that we have "empty" integers in the places where pointers should be.
-                        //We need to skip them
-                        //Only iOS version of Episode 1 is caught at having this "defect".
-                        has_dummy_bytes = 4;
-                        DataPointer = BitConverter.ToInt32(raw_file, 0x18 + has_dummy_bytes);
-                    }
-
-                    name_pointer = BitConverter.ToInt32(raw_file, 0x1C + has_dummy_bytes);
-
-                    for (int i = 0; i < files_counter; i++)
-                    {
-                        int point = list_pointer + i * (0x10 + has_dummy_bytes);
-
-                        //Sometimes the lines where pointer and lenght should be are empty
-                        if (BitConverter.ToInt32(raw_file, point) != 0)
-                        {
-                            files_pointers.Add(BitConverter.ToInt32(raw_file, point));
-                            files_lens.Add(BitConverter.ToInt32(raw_file, point + 4 + has_dummy_bytes));
-                        }
-                    }
-
-                    //Actual number of files inside may differ from the number given in the header
-                    files_counter = files_pointers.Count;
-
-                    //Getting the raw files names (with 0x00)
-                    int filenames_offset = raw_file.Length - name_pointer;
-                    byte[] files_names_bytes = new byte[filenames_offset];
-                    Array.Copy(raw_file, name_pointer, files_names_bytes, 0, filenames_offset);
-
-                    //Encoding characters from HEX to ASCII characters
-                    string files_names_str = Encoding.ASCII.GetString(files_names_bytes);
-                    string[] files_names_raw = files_names_str.Split('\x00');
-
-                    //Some AMB files have no names of their files
-                    if (name_pointer != 0)
-                    {
-                        //Adding only names that aren't empty
-                        for (int i = 0; i < files_names_raw.Length; i++)
-                        {
-                            if (files_names_raw[i] != "")
-                            {
-                                files_names.Add(files_names_raw[i]);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        //If there're no names, setting file names to their index
-                        for (int i = 0; i < files_counter; i++)
-                            files_names.Add(i.ToString("D3"));
-                    }
-
-                    //removing ".\" in the names (Windows can't create "." folders)
-                    //sometimes they can have several ".\" in the names
-                    for (int i = 0; i < files_names.Count; i++)
-                    {
-                        //Turns out there's a double dot directory in file names
-                        //And double backslash in file names
-                        while (files_names[i][0] == '.' || files_names[i][0] == '\\' || files_names[i][0] == '/' )
-                            files_names[i] = files_names[i].Substring(1);
-                    }
+                    //Well, this means that we have "empty" integers in the places where pointers should be.
+                    //We need to skip them
+                    //Only iOS version of Episode 1 is caught at having this "defect".
+                    has_dummy_bytes = 4;
+                    DataPointer = BitConverter.ToInt32(raw_file, 0x18 + has_dummy_bytes);
                 }
 
                 for (int i = 0; i < files_counter; i++)
-                    result.Add((Name: files_names[i], Pointer: files_pointers[i], Length: files_lens[i]));
+                {
+                    int point = list_pointer + i * (0x10 + has_dummy_bytes);
+
+                    //Sometimes the lines where pointer and lenght should be are empty
+                    if (BitConverter.ToInt32(raw_file, point) != 0)
+                    {
+                        files_pointers.Add(BitConverter.ToInt32(raw_file, point));
+                        files_lens.Add(BitConverter.ToInt32(raw_file, point + 4 + has_dummy_bytes));
+                    }
+                }
+
+                //Actual number of files inside may differ from the number given in the header
+                files_counter = files_pointers.Count;
+                int name_pointer = BitConverter.ToInt32(raw_file, 0x1C + has_dummy_bytes);
+
+                //Some AMB files have no names of their files
+                if (name_pointer != 0)
+                {
+                    //Encoding characters from HEX to ASCII characters
+                    string files_names_raw = Encoding.ASCII.GetString(raw_file, name_pointer, raw_file.Length - name_pointer);
+                    string[] files_names_str = files_names_raw.Split(new char[] {'\x00'}, StringSplitOptions.RemoveEmptyEntries);
+                    files_names.AddRange(files_names_str);
+
+                    //Cleaning up the names
+                    for (int i = 0; i < files_names.Count; i++)
+                        files_names[i] = AMB.Internal.MakeNameSafe(files_names[i]);
+                }
+                else
+                {
+                    //If there're no names, setting file names to their indexes
+                    for (int i = 0; i < files_counter; i++)
+                        files_names.Add(i.ToString("D8"));
+                }
+
+                for (int i = 0; i < files_counter; i++)
+                    result.Add((Name:       files_names[i],
+                                Pointer:    files_pointers[i],
+                                Length:     files_lens[i]));
 
                 return result;
             }
@@ -432,7 +430,7 @@ namespace AMBPatcher
                 //Why do I need the original file name? To patch files that are inside of an AMB file that is inside of an AMB file that is inside of ...
                 var files = AMB.Read(raw_file);
 
-                var InternalThings = AMB.GetInternalThings(raw_file, OrigFileName, ModFileName);
+                var InternalThings = AMB.Internal.GetInternalThings(raw_file, OrigFileName, ModFileName);
                 
                 string InternalName  = InternalThings.InternalName;
                 int    InternalIndex = InternalThings.InternalIndex;
@@ -575,7 +573,7 @@ namespace AMBPatcher
                 if (AMB.Read(raw_file).Count == 0)
                    raw_file = AMB.Create();
 
-                var InternalThings = AMB.GetInternalThings(raw_file, OrigFileName, ModFileName);
+                var InternalThings = AMB.Internal.GetInternalThings(raw_file, OrigFileName, ModFileName);
 
                 string InternalName  = InternalThings.InternalName;
                 int    InternalIndex = InternalThings.InternalIndex;
