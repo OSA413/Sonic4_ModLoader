@@ -531,7 +531,7 @@ namespace AMBPatcher
                     }
 
                     //Combining the parts into one file                        
-                    raw_file = part_one.Join(part_two.Join(part_thr));
+                    raw_file = part_one.Join(part_two, part_thr);
                 }
                 else
                 {
@@ -643,14 +643,9 @@ namespace AMBPatcher
                     mod_file_name_bytes[i] = (byte)InternalName[i];
                 }
                 
-                enumeration_part = enumeration_part.Join(empty_file_enumeration);
-                data_part        = data_part.Join(new byte[0x10]);
-                name_part        = name_part.Join(mod_file_name_bytes);
-
-                
-                raw_file = enumeration_part.Join(
-                                  data_part.Join(
-                                  name_part));
+                raw_file = enumeration_part.Join(empty_file_enumeration,
+                                    data_part, new byte[0x10],
+                                    name_part, mod_file_name_bytes);
                 
                 raw_file = AMB.Patch(raw_file, OrigFileName, ModFileName, ModFilePath);
 
@@ -825,7 +820,7 @@ namespace AMBPatcher
                                 , after_name, 0, after_name.Length);
 
                     //Joining all together
-                    raw_file = before_enum.Join(before_data.Join(before_name.Join(after_name)));
+                    raw_file = before_enum.Join(before_data, before_name, after_name);
                 }
 
                 if (swap_endianness_back)
@@ -1393,12 +1388,21 @@ namespace AMBPatcher
     public static class Extensions
     {
         //This thing joins two byte arrays just like Concat().ToArray() but faster (i think)
-        public static byte[] Join(this byte[] first, byte[] second)
+        public static byte[] Join(this byte[] first, params byte[][] others)
         {
-            byte[] output = new byte[first.Length + second.Length];
+            int totalLength = first.Length;
+            foreach (byte[] arr in others)
+                totalLength += arr.Length;
+
+            byte[] output = new byte[totalLength];
 
             Array.Copy(first,  0, output, 0, first.Length);
-            Array.Copy(second, 0, output, first.Length, second.Length);
+            int index = first.Length;
+            for (int i = 0; i < others.Length; i++)
+            {
+                Array.Copy(others[i], 0, output, index, others[i].Length);
+                index += others[i].Length;
+            }
 
             return output;
         }
