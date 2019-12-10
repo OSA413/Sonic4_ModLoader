@@ -77,16 +77,17 @@ namespace AMBPatcher
                 cut =  title.Length - Console.WindowWidth + 1;
 
             //What it is doing
-            Console.Write(String.Concat(Enumerable.Repeat(" ", Console.WindowWidth-1)));
+            Console.Write(new string(' ', Console.WindowWidth-1));
             Console.CursorLeft = 0;
             if (i == max_i) Console.WriteLine("Done!");
             else            Console.WriteLine(title.Substring(cut));
             
             //Percentage
-            Console.Write(String.Concat(Enumerable.Repeat(" ", Console.WindowWidth-1)));
+            Console.Write(new string(' ', Console.WindowWidth-1));
             Console.CursorLeft = 0;
-            Console.WriteLine("[" + String.Concat(Enumerable.Repeat("#", bar_len * i / max_i)) +
-                                String.Concat(Enumerable.Repeat(" ", bar_len - bar_len * i / max_i)) + "] (" + (i * 100 / max_i).ToString() + "%)");
+            Console.WriteLine("[" + new string('#', bar_len * i / max_i)
+                                  + new string(' ', bar_len - bar_len * i / max_i)
+                                  + "] (" + (i * 100 / max_i).ToString() + "%)");
         }
 
         static string Sha(byte[] file)
@@ -500,10 +501,12 @@ namespace AMBPatcher
 
                     //Changing File Pointers
                     for (int i = it.InternalIndex + 1; i < files.Count; i++)
-                        Array.Copy(BitConverter.GetBytes(BitConverter.ToInt32(patchedFile, 0x20 + i * 0x10) + len_dif),
-                                    0, patchedFile, 0x20 + i * 0x10, 4);
-
-                    //Combining the parts into one file                        
+                    {
+                        int tmp_pointer = 0x20 + i * 0x10;
+                        Array.Copy(BitConverter.GetBytes(BitConverter.ToInt32(patchedFile, tmp_pointer) + len_dif),
+                                    0, patchedFile, tmp_pointer, 4);
+                    }
+                   
                     raw_file = patchedFile;
                 }
                 else
@@ -536,6 +539,7 @@ namespace AMBPatcher
                 if (!AMB.IsAMB(raw_file)) return raw_file;
                 //Okay, I've got a great plan:
                 //Add empty file and patch it.
+                //2019 note: lol this is not very effective
 
                 //This will make addition work with different endianness
                 bool swap_endianness_back = BitConverter.IsLittleEndian != AMB.IsLittleEndian(raw_file);
@@ -587,10 +591,10 @@ namespace AMBPatcher
                 //Shifting other file pointers by 0x10
                 for (int i = 0; i < file_number - 1; i++)
                 {
-                    int file_pointer = BitConverter.ToInt32(enumeration_part, enum_pointer + 0x10 * i);
+                    int tmp_pointer = enum_pointer + 0x10 * i;
 
-                    file_pointer += 0x10;
-                    Array.Copy(BitConverter.GetBytes(file_pointer), 0, enumeration_part, enum_pointer + 0x10 * i, 4);
+                    Array.Copy(BitConverter.GetBytes(BitConverter.ToInt32(enumeration_part, tmp_pointer) + 0x10),
+                                                    0, enumeration_part, tmp_pointer, 4);
                 }
 
                 //Injecting empty file pointer and length
