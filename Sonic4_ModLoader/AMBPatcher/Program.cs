@@ -90,23 +90,24 @@ namespace AMBPatcher
                                   + "] (" + (i * 100 / max_i).ToString() + "%)");
         }
 
+        public static SHA1CryptoServiceProvider SHA1csp = new SHA1CryptoServiceProvider();
+        public static SHA256CryptoServiceProvider SHA256csp = new SHA256CryptoServiceProvider();
+        public static SHA384CryptoServiceProvider SHA384csp = new SHA384CryptoServiceProvider();
+        public static SHA512CryptoServiceProvider SHA512csp = new SHA512CryptoServiceProvider();
+
         static string Sha(byte[] file)
         {
             byte[] hash;
-            string str_hash = "";
 
             switch (SHAType)
             {
-                case 512: hash = new SHA512CryptoServiceProvider().ComputeHash(file); break;
-                case 384: hash = new SHA384CryptoServiceProvider().ComputeHash(file); break;
-                case 256: hash = new SHA256CryptoServiceProvider().ComputeHash(file); break;
-                default:  hash = new SHA1CryptoServiceProvider().ComputeHash(file); break;
+                case 512: hash = SHA512csp.ComputeHash(file); break;
+                case 384: hash = SHA384csp.ComputeHash(file); break;
+                case 256: hash = SHA256csp.ComputeHash(file); break;
+                default:  hash = SHA1csp.ComputeHash(file); break;
             }
-            
-            foreach (byte b in hash)
-                str_hash += b.ToString("X");
 
-            return str_hash;
+            return BitConverter.ToString(hash).Replace("-","");
         }
         
         static void ShaRemove(string file_name)
