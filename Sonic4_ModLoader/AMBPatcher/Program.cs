@@ -39,27 +39,23 @@ namespace AMBPatcher
                 SHACheck    = true;
                 SHAType     = 1;
 
-                if (File.Exists("AMBPatcher.cfg"))
-                {
-                    string[] cfg_file = File.ReadAllLines("AMBPatcher.cfg");
-                    
-                    foreach (string line in cfg_file)
-                    {
-                        if (!line.Contains("=")) continue;
-                        string key   = line.Substring(0, line.IndexOf("="));
-                        string value = line.Substring(line.IndexOf("=") + 1);
+                if (!File.Exists("AMBPatcher.cfg"))
+                    return;
 
-                        if (key == "ProgressBar")
-                            ProgressBar = Convert.ToBoolean(Convert.ToInt32(value));
-                        
-                        else if (key == "GenerateLog")
-                            GenerateLog = Convert.ToBoolean(Convert.ToInt32(value));
-                        
-                        else if (key == "SHACheck")
-                            SHACheck = Convert.ToBoolean(Convert.ToInt32(value));
-                        
-                        else if (key == "SHAType")
-                            SHAType = Convert.ToInt32(value);
+                string[] cfg_file = File.ReadAllLines("AMBPatcher.cfg");
+
+                foreach (string line in cfg_file)
+                {
+                    if (!line.Contains("=")) continue;
+                    string key   = line.Substring(0, line.IndexOf("="));
+                    string value = line.Substring(line.IndexOf("=") + 1);
+
+                    switch (key)
+                    {
+                        case "ProgressBar": ProgressBar = Convert.ToBoolean(Convert.ToInt32(value)); break;
+                        case "GenerateLog": GenerateLog = Convert.ToBoolean(Convert.ToInt32(value)); break;
+                        case "SHACheck":    SHACheck = Convert.ToBoolean(Convert.ToInt32(value)); break;
+                        case "SHAType":     SHAType = Convert.ToInt32(value); break;
                     }
                 }
             }
@@ -70,7 +66,7 @@ namespace AMBPatcher
             //To prevent crashes out of nowhere when progress bar is turned off
             if (!ProgressBar) return;
 
-            Console.CursorTop -= 2;
+            Console.CursorTop -= Math.Min(2, Console.CursorTop);
             
             int cut = 0;
             if (title.Length > Console.WindowWidth - 1)
@@ -612,7 +608,7 @@ namespace AMBPatcher
 
                 for (int i = 0; i < it.InternalName.Length; i++)
                 {
-                    if (i >= mod_file_name_bytes.Length) { break; }
+                    if (i >= mod_file_name_bytes.Length) break;
                     mod_file_name_bytes[i] = (byte)it.InternalName[i];
                 }
                 
@@ -817,19 +813,18 @@ namespace AMBPatcher
                 byte[] raw_file = new byte[0x20];
 
                 //The header
-                raw_file[0x00] = (byte) '#';
-                raw_file[0x01] = (byte) 'A';
-                raw_file[0x02] = (byte) 'M';
-                raw_file[0x03] = (byte) 'B';
+                Array.Copy(Encoding.ASCII.GetBytes("#AMB"), 0, raw_file, 0, 4);
 
                 //Endianness identifier (at least for AMBPatcher)
                 Array.Copy(BitConverter.GetBytes(0x1304), 0, raw_file, 0x04, 4);
+
+                byte[] bytes0x20 = BitConverter.GetBytes(0x20);
                 //List pointer
-                Array.Copy(BitConverter.GetBytes(0x20), 0, raw_file, 0x14, 4);
+                Array.Copy(bytes0x20, 0, raw_file, 0x14, 4);
                 //Data pointer
-                Array.Copy(BitConverter.GetBytes(0x20), 0, raw_file, 0x18, 4);
+                Array.Copy(bytes0x20, 0, raw_file, 0x18, 4);
                 //Name pointer
-                Array.Copy(BitConverter.GetBytes(0x20), 0, raw_file, 0x1C, 4);
+                Array.Copy(bytes0x20, 0, raw_file, 0x1C, 4);
 
                 return raw_file;
             }
@@ -845,14 +840,7 @@ namespace AMBPatcher
 
             public static bool IsAMB(byte[] raw_file)
             {
-                if (raw_file.Length >= 4)
-                {if (raw_file[0] == '#' &&
-                     raw_file[1] == 'A' &&
-                     raw_file[2] == 'M' &&
-                     raw_file[3] == 'B')
-                    {return true;}}
-
-                return false;
+                return raw_file.Length >= 4 && Encoding.ASCII.GetString(raw_file, 0, 4) == "#AMB";
             }
                                 
         }
