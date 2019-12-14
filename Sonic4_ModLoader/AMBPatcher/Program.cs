@@ -840,7 +840,11 @@ namespace AMBPatcher
 
             public static bool IsAMB(byte[] raw_file)
             {
-                return raw_file.Length >= 4 && Encoding.ASCII.GetString(raw_file, 0, 4) == "#AMB";
+                return raw_file.Length >= 4
+                && raw_file[0] == '#'
+                && raw_file[1] == 'A'
+                && raw_file[2] == 'M'
+                && raw_file[3] == 'B';
             }
                                 
         }
