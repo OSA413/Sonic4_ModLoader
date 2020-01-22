@@ -11,11 +11,10 @@ namespace AMBPatcher
     class Program
     {
         public static bool GenerateLog;
-        public static bool ProgressBar;
         public static bool SHACheck;
         public static int  SHAType;
         
-        public class Log
+        public static class Log
         {
             public static void Write(string Message)
             {
@@ -30,11 +29,11 @@ namespace AMBPatcher
             }
         }
 
-        public class Settings
+        public static class Settings
         {
             public static void Load()
             {
-                ProgressBar = true;
+                ProgressBar.Enabled = true;
                 GenerateLog = false;
                 SHACheck    = true;
                 SHAType     = 1;
@@ -52,39 +51,65 @@ namespace AMBPatcher
 
                     switch (key)
                     {
-                        case "ProgressBar": ProgressBar = Convert.ToBoolean(Convert.ToInt32(value)); break;
-                        case "GenerateLog": GenerateLog = Convert.ToBoolean(Convert.ToInt32(value)); break;
-                        case "SHACheck":    SHACheck = Convert.ToBoolean(Convert.ToInt32(value)); break;
-                        case "SHAType":     SHAType = Convert.ToInt32(value); break;
+                        case "ProgressBar": ProgressBar.Enabled = Convert.ToBoolean(Convert.ToInt32(value)); break;
+                        case "GenerateLog": GenerateLog         = Convert.ToBoolean(Convert.ToInt32(value)); break;
+                        case "SHACheck":    SHACheck            = Convert.ToBoolean(Convert.ToInt32(value)); break;
+                        case "SHAType":     SHAType             = Convert.ToInt32(value); break;
                     }
                 }
             }
         }
 
-        static void ConsoleProgressBar(int i, int max_i, string title, int bar_len)
+        public static class ProgressBar
         {
-            //To prevent crashes out of nowhere when progress bar is turned off
-            if (!ProgressBar) return;
+            public static bool Enabled;
 
-            Console.CursorTop -= Math.Min(2, Console.CursorTop);
-            
-            int cut = 0;
-            if (title.Length > Console.WindowWidth - 1)
-                cut =  title.Length - Console.WindowWidth + 1;
+            public static void PrintProgress(int i, int max_i, string title, int bar_len)
+            {
+                if (!ProgressBar.Enabled) return;
 
-            //What it is doing
-            Console.Write(new string(' ', Console.WindowWidth-1));
-            Console.CursorLeft = 0;
-            if (i == max_i) Console.WriteLine("Done!");
-            else            Console.WriteLine(title.Substring(cut));
-            
-            //Percentage
-            Console.Write(new string(' ', Console.WindowWidth-1));
-            Console.CursorLeft = 0;
-            Console.WriteLine("[" + new string('#', bar_len * i / max_i)
-                                  + new string(' ', bar_len - bar_len * i / max_i)
-                                  + "] (" + (i * 100 / max_i).ToString() + "%)");
+                ProgressBar.MoveCursorUp();
+                
+                int cut = 0;
+                if (title.Length > Console.WindowWidth - 1)
+                    cut =  title.Length - Console.WindowWidth + 1;
+
+                //What it is doing
+                Console.Write(new string(' ', Console.WindowWidth-1));
+                Console.CursorLeft = 0;
+                if (i == max_i) Console.WriteLine("Done!");
+                else            Console.WriteLine(title.Substring(cut));
+                
+                //Percentage
+                Console.Write(new string(' ', Console.WindowWidth-1));
+                Console.CursorLeft = 0;
+                Console.WriteLine("[" + new string('#', bar_len * i / max_i)
+                                    + new string(' ', bar_len - bar_len * i / max_i)
+                                    + "] (" + (i * 100 / max_i).ToString() + "%)");
+            }
+
+            public static void MoveCursorUp()
+            {
+                if (!ProgressBar.Enabled) return;
+                Console.CursorTop -= Math.Min(2, Console.CursorTop);
+            }
+
+            public static void MoveCursorDown()
+            {
+                if (!ProgressBar.Enabled) return;
+                Console.CursorTop += 2;
+            }
+
+            public static void PrintFiller()
+            {
+                if (!ProgressBar.Enabled) return;
+                Console.WriteLine("Doing absolutely nothing!"
+                                + "Progress bar goes here"
+                                + "Sub-task!"
+                                + "sub%");
+            }
         }
+
 
         public static SHA1CryptoServiceProvider SHA1csp = new SHA1CryptoServiceProvider();
         public static SHA256CryptoServiceProvider SHA256csp = new SHA256CryptoServiceProvider();
@@ -865,7 +890,7 @@ namespace AMBPatcher
                         {
                             string mod_file_full = Path.Combine("mods", mod_paths[i], mod_files[i]);
                             Log.Write(mod_file_full);
-                            ConsoleProgressBar(i, mod_files.Count, mod_file_full, 64);
+                            ProgressBar.PrintProgress(i, mod_files.Count, mod_file_full, 64);
 
                             if (file_name == mod_files[i])
                             {
@@ -893,7 +918,7 @@ namespace AMBPatcher
                         }
 
                         Log.Write("Asking CsbEditor to unpack");
-                        ConsoleProgressBar(0, 100, "Asking CsbEditor to unpack " + file_name, 64);
+                        ProgressBar.PrintProgress(0, 100, "Asking CsbEditor to unpack " + file_name, 64);
 
                         //Needs CSB Editor (from SonicAudioTools) to work
                         ProcessStartInfo startInfo = new ProcessStartInfo();
@@ -905,7 +930,7 @@ namespace AMBPatcher
                         {
                             string mod_file = Path.Combine("mods", mod_paths[i], mod_files[i]);
 
-                            ConsoleProgressBar(i, mod_files.Count, mod_file, 64);
+                            ProgressBar.PrintProgress(i, mod_files.Count, mod_file, 64);
                             Log.Write(mod_file);
                             File.Copy(mod_file, mod_files[i], true);
 
@@ -913,7 +938,7 @@ namespace AMBPatcher
                         }
 
                         Log.Write("Asking CsbEditor to repack");
-                        ConsoleProgressBar(99, 100, "Asking CsbEditor to repack " + file_name, 64);
+                        ProgressBar.PrintProgress(99, 100, "Asking CsbEditor to repack " + file_name, 64);
                         startInfo.Arguments = file_name.Substring(0, file_name.Length - 4);
                         Process.Start(startInfo).WaitForExit();
                     }
@@ -1066,9 +1091,6 @@ namespace AMBPatcher
             + "\n\tAMBPatcher --help - Show help message.";
 
             Console.WriteLine(text);
-            
-            //Uncomment this line to get the help message as text file.
-            //File.WriteAllText("HelpMessage.txt", text);
         }
 
         static void Main(string[] args)
@@ -1114,23 +1136,16 @@ namespace AMBPatcher
 
                 Log.Write("Patching original files...");
 
-                if (ProgressBar)
-                {
-                    Console.WriteLine("Doing absolutely nothing!");
-                    Console.WriteLine("Progress bar goes here");
-                    Console.WriteLine("Sub-task!");
-                    Console.WriteLine("sub%");
-                    Console.CursorTop -= 2;
-                }
+                ProgressBar.PrintFiller();
+                ProgressBar.MoveCursorDown();
+
                 for (int i = 0; i < test.Count; i++)
                 {
                     modified_files.Add(test[i].OrigFile);
                     
-                    if (ProgressBar)
-                    {
-                        ConsoleProgressBar(i, test.Count, "Modifying \"" + test[i].OrigFile + "\"...", 64);
-                        Console.CursorTop += 2;
-                    }
+                    
+                    ProgressBar.PrintProgress(i, test.Count, "Modifying \"" + test[i].OrigFile + "\"...", 64);
+                    ProgressBar.MoveCursorDown();
 
                     Backup(test[i].OrigFile);
                     //Some CSB files may have CPK archive
@@ -1140,15 +1155,12 @@ namespace AMBPatcher
                     PatchAll(test[i].OrigFile, test[i].ModFiles, test[i].ModName);
                     mods_prev.Remove(test[i].OrigFile);
 
-                    if (ProgressBar) { Console.CursorTop -= 2; }
+                    ProgressBar.MoveCursorUp();
                 }
 
-                if (ProgressBar)
-                {
-                    ConsoleProgressBar(1, 1, "", 64);
-                    Console.CursorTop += 2;
-                    ConsoleProgressBar(1, 1, "", 64);
-                }
+                ProgressBar.PrintProgress(1, 1, "", 64);
+                ProgressBar.MoveCursorDown();
+                ProgressBar.PrintProgress(1, 1, "", 64);
 
                 Log.Write("\nRestoring unchanged files:");
                 for (int i = 0; i < mods_prev.Count; i++)
@@ -1197,7 +1209,7 @@ namespace AMBPatcher
                         {
                             string file = mods_prev[i];
                             
-                            ConsoleProgressBar(i, mods_prev.Length, "Recovering \""+ file +"\" file...", 64);
+                            ProgressBar.PrintProgress(i, mods_prev.Length, "Recovering \""+ file +"\" file...", 64);
 
                             Recover(file);
                             if (file.EndsWith(".CSB", StringComparison.OrdinalIgnoreCase))
@@ -1211,7 +1223,7 @@ namespace AMBPatcher
                             }
                         }
                         File.Delete("mods/mods_prev");
-                        ConsoleProgressBar(1, 1, "", 64);
+                        ProgressBar.PrintProgress(1, 1, "", 64);
                     }
                 }
                 else
@@ -1221,7 +1233,7 @@ namespace AMBPatcher
                         Directory.CreateDirectory(args[0] + "_extracted");
                         AMB.Extract(args[0], args[0] + "_extracted");
                     }
-                    else { ShowHelpMessage(); }
+                    else ShowHelpMessage();
                 }
             }
 
@@ -1235,7 +1247,7 @@ namespace AMBPatcher
                         Directory.CreateDirectory(args[1] + "_extracted");
                         AMB.Extract(args[1], args[1] + "_extracted");
                     }
-                    else { ShowHelpMessage(); }
+                    else ShowHelpMessage();
                 }
                 else if (args[0] == "read")
                 {
@@ -1250,7 +1262,7 @@ namespace AMBPatcher
                             Console.WriteLine("File length:  " + data[i].Length  + "\t(0x" + data[i].Length.ToString("X") + ")");
                         }
                     }
-                    else { ShowHelpMessage(); }
+                    else ShowHelpMessage();
                 }
                 else if (File.Exists(args[0]) && Directory.Exists(args[1]))
                 {
@@ -1270,21 +1282,23 @@ namespace AMBPatcher
                 else if (args[0] == "endianness" && File.Exists(args[1]))
                 {
                     Console.WriteLine("This file's endianness is...");
+
                     if (AMB.IsLittleEndian(args[1]))
-                    { Console.WriteLine("Little endian!"); }
-                    else { Console.WriteLine("Big endian!"); }
+                        Console.WriteLine("Little endian!");
+                    else
+                        Console.WriteLine("Big endian!");
                 }
                 else if (args[0] == "create")
                 {
                     if (Path.GetDirectoryName(args[1]) != "")
-                    { Directory.CreateDirectory(Path.GetDirectoryName(args[1])); }
+                        Directory.CreateDirectory(Path.GetDirectoryName(args[1]));
                     AMB.Create(args[1]);
                 }
                 else if (args[0] == "extract_all")
                 {
                     AMB.ExtractAll(args[1]);
                 }
-                else { ShowHelpMessage(); }
+                else ShowHelpMessage();
             }
 
             else if (args.Length == 3)
@@ -1296,7 +1310,7 @@ namespace AMBPatcher
                         Directory.CreateDirectory(args[2]);
                         AMB.Extract(args[1], args[2]);
                     }
-                    else { ShowHelpMessage(); }
+                    else ShowHelpMessage();
                 }
                 else if (args[0] == "patch")
                 {
@@ -1315,7 +1329,7 @@ namespace AMBPatcher
                         }
                         Console.WriteLine("Done.");
                     }
-                    else { ShowHelpMessage(); }
+                    else ShowHelpMessage();
                 }
                 else if (args[0] == "add")
                 {
@@ -1323,16 +1337,16 @@ namespace AMBPatcher
                     {
                         AMB.Add(args[1], args[2]);
                     }
-                    else { ShowHelpMessage(); }
+                    else ShowHelpMessage();
                 }
                 else if (args[0] == "delete" || args[0] == "remove")
                 {
                     if (File.Exists(args[1]))
                     {
                         AMB.Delete(args[1], args[2]);
-                    } else { ShowHelpMessage(); }
+                    } else ShowHelpMessage();
                 }
-                else { ShowHelpMessage(); }
+                else ShowHelpMessage();
             }
             else if (args.Length == 4)
             {
@@ -1342,11 +1356,11 @@ namespace AMBPatcher
                     {
                         AMB.Add(args[1], args[2], args[3]);
                     }
-                    else { ShowHelpMessage(); }
+                    else ShowHelpMessage();
                 }
-                else { ShowHelpMessage(); }
+                else ShowHelpMessage();
             }
-            else { ShowHelpMessage(); }
+            else ShowHelpMessage();
         }
     }
 
