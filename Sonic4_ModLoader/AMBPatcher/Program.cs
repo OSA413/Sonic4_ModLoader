@@ -64,8 +64,10 @@ namespace AMBPatcher
         {
             public static bool Enabled;
 
-            public static void PrintProgress(int i, int max_i, string title, int bar_len)
+            public static void PrintProgress(int i, int max_i, string title)
             {
+                int bar_len = 50;
+
                 if (!ProgressBar.Enabled) return;
 
                 ProgressBar.MoveCursorUp();
@@ -75,38 +77,43 @@ namespace AMBPatcher
                     cut =  title.Length - Console.WindowWidth + 1;
 
                 //What it is doing
-                Console.Write(new string(' ', Console.WindowWidth-1));
-                Console.CursorLeft = 0;
+                ProgressBar.ClearLine();
                 if (i == max_i) Console.WriteLine("Done!");
                 else            Console.WriteLine(title.Substring(cut));
                 
                 //Percentage
-                Console.Write(new string(' ', Console.WindowWidth-1));
-                Console.CursorLeft = 0;
+                ProgressBar.ClearLine();
                 Console.WriteLine("[" + new string('#', bar_len * i / max_i)
                                     + new string(' ', bar_len - bar_len * i / max_i)
                                     + "] (" + (i * 100 / max_i).ToString() + "%)");
             }
 
-            public static void MoveCursorUp()
+            public static void ClearLine()
             {
-                if (!ProgressBar.Enabled) return;
-                Console.CursorTop -= Math.Min(2, Console.CursorTop);
+                Console.CursorLeft = 0;
+                Console.Write(new string(' ', Console.WindowWidth-1));
+                Console.CursorLeft = 0;
             }
 
-            public static void MoveCursorDown()
+            public static void MoveCursorUp(int i = 2)
             {
                 if (!ProgressBar.Enabled) return;
-                Console.CursorTop += 2;
+                Console.CursorTop -= Math.Min(i, Console.CursorTop);
+            }
+
+            public static void MoveCursorDown(int i = 2)
+            {
+                if (!ProgressBar.Enabled) return;
+                Console.CursorTop += i;
             }
 
             public static void PrintFiller()
             {
                 if (!ProgressBar.Enabled) return;
                 Console.WriteLine("Doing absolutely nothing!"
-                                + "Progress bar goes here"
-                                + "Sub-task!"
-                                + "sub%");
+                                + "\nProgress bar goes here"
+                                + "\nSub-task!"
+                                + "\nsub%");
             }
         }
 
@@ -890,7 +897,7 @@ namespace AMBPatcher
                         {
                             string mod_file_full = Path.Combine("mods", mod_paths[i], mod_files[i]);
                             Log.Write(mod_file_full);
-                            ProgressBar.PrintProgress(i, mod_files.Count, mod_file_full, 64);
+                            ProgressBar.PrintProgress(i, mod_files.Count, mod_file_full);
 
                             if (file_name == mod_files[i])
                             {
@@ -905,7 +912,7 @@ namespace AMBPatcher
                             ShaWrite(mod_files[i], mod_file_full);
                         }
                     }
-                    else { Log.Write("Not changed"); }
+                    else Log.Write("Not changed");
                 }
                 else if (file_name.ToUpper().EndsWith(".CSB"))
                 {
@@ -913,12 +920,10 @@ namespace AMBPatcher
                     {
                         Recover(file_name);
                         if (file_name.EndsWith(".CSB", StringComparison.OrdinalIgnoreCase))
-                        {
                             Recover(file_name.Substring(0, file_name.Length - 4) + ".CPK");
-                        }
 
                         Log.Write("Asking CsbEditor to unpack");
-                        ProgressBar.PrintProgress(0, 100, "Asking CsbEditor to unpack " + file_name, 64);
+                        ProgressBar.PrintProgress(0, 100, "Asking CsbEditor to unpack " + file_name);
 
                         //Needs CSB Editor (from SonicAudioTools) to work
                         ProcessStartInfo startInfo = new ProcessStartInfo();
@@ -930,7 +935,7 @@ namespace AMBPatcher
                         {
                             string mod_file = Path.Combine("mods", mod_paths[i], mod_files[i]);
 
-                            ProgressBar.PrintProgress(i, mod_files.Count, mod_file, 64);
+                            ProgressBar.PrintProgress(i, mod_files.Count, mod_file);
                             Log.Write(mod_file);
                             File.Copy(mod_file, mod_files[i], true);
 
@@ -938,14 +943,14 @@ namespace AMBPatcher
                         }
 
                         Log.Write("Asking CsbEditor to repack");
-                        ProgressBar.PrintProgress(99, 100, "Asking CsbEditor to repack " + file_name, 64);
+                        ProgressBar.PrintProgress(99, 100, "Asking CsbEditor to repack " + file_name);
                         startInfo.Arguments = file_name.Substring(0, file_name.Length - 4);
                         Process.Start(startInfo).WaitForExit();
                     }
-                    else { Log.Write("Not changed"); }
+                    else Log.Write("Not changed");
                 }
             }
-            else { Log.Write("File not found"); }
+            else Log.Write("File not found");
 
             Log.Write("< " + file_name);
         }
@@ -1137,14 +1142,13 @@ namespace AMBPatcher
                 Log.Write("Patching original files...");
 
                 ProgressBar.PrintFiller();
-                ProgressBar.MoveCursorDown();
+                ProgressBar.MoveCursorUp();
 
                 for (int i = 0; i < test.Count; i++)
                 {
                     modified_files.Add(test[i].OrigFile);
                     
-                    
-                    ProgressBar.PrintProgress(i, test.Count, "Modifying \"" + test[i].OrigFile + "\"...", 64);
+                    ProgressBar.PrintProgress(i, test.Count, "Modifying \"" + test[i].OrigFile + "\"...");
                     ProgressBar.MoveCursorDown();
 
                     Backup(test[i].OrigFile);
@@ -1158,9 +1162,9 @@ namespace AMBPatcher
                     ProgressBar.MoveCursorUp();
                 }
 
-                ProgressBar.PrintProgress(1, 1, "", 64);
+                ProgressBar.PrintProgress(1, 1, "");
                 ProgressBar.MoveCursorDown();
-                ProgressBar.PrintProgress(1, 1, "", 64);
+                ProgressBar.PrintProgress(1, 1, "");
 
                 Log.Write("\nRestoring unchanged files:");
                 for (int i = 0; i < mods_prev.Count; i++)
@@ -1202,14 +1206,13 @@ namespace AMBPatcher
                 {
                     if (File.Exists("mods/mods_prev"))
                     {
-                        Console.WriteLine("\n");
                         string[] mods_prev = File.ReadAllLines("mods/mods_prev");
 
                         for (int i = 0; i < mods_prev.Length; i++)
                         {
                             string file = mods_prev[i];
                             
-                            ProgressBar.PrintProgress(i, mods_prev.Length, "Recovering \""+ file +"\" file...", 64);
+                            ProgressBar.PrintProgress(i, mods_prev.Length, "Recovering \""+ file +"\" file...");
 
                             Recover(file);
                             if (file.EndsWith(".CSB", StringComparison.OrdinalIgnoreCase))
@@ -1223,7 +1226,7 @@ namespace AMBPatcher
                             }
                         }
                         File.Delete("mods/mods_prev");
-                        ProgressBar.PrintProgress(1, 1, "", 64);
+                        ProgressBar.PrintProgress(1, 1, "");
                     }
                 }
                 else
