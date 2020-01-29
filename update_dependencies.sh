@@ -2,7 +2,7 @@
 #please, keep all sh scripts in Unix new line (LF)
 cd "$(dirname "$0")"
 
-rm -r "dependencies_source"
+rm -rf "dependencies_source"
 mkdir "dependencies_source"
 cd "dependencies_source"
 

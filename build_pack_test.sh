@@ -6,7 +6,7 @@ echo "Compiling..."
 msbuild ./Sonic4_ModLoader/Sonic4_ModLoader.sln /p:Configuration=Release
 
 echo "Removing old distribution package..."
-rm -r "./dist"
+rm -rf "./dist"
 mkdir -p "./dist/Sonic4ModLoader/Mod Loader - licenses"
 
 echo "Copying new distribution files..."
