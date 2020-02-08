@@ -49,11 +49,12 @@ namespace OneClickModInstaller
 
         public static string Short()
         {
-            switch (GetGame.Full())
+            string full = GetGame.Full();
+            switch (full)
             {
                 case "Episode 1": return "ep1";
                 case "Episode 2": return "ep2";
-                default: return GetGame.Full();
+                default: return full;
             }
         }
     }
@@ -93,14 +94,12 @@ namespace OneClickModInstaller
                 {
                     if (Admin.AmI())
                     {
-
                         string root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
 
                         Registry.SetValue(root_key, "", "URL:OSA413's One-Click Installer protocol");
                         Registry.SetValue(root_key, "URL Protocol", "");
                         Registry.SetValue(root_key + "\\DefaultIcon", "", "OneClickModInstaller.exe");
                         Registry.SetValue(root_key + "\\Shell\\Open\\Command", "", "\"" + Assembly.GetEntryAssembly().Location + "\" \"%1\"");
-
                     }
                     else
                     {
