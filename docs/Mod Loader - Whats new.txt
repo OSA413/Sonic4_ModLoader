@@ -1,3 +1,15 @@
+[c]Version: v0.1.4.2
+Change log:
+\t[b]AMBPatcher[\b]
+* Now "extract_all" will not stop after failing to extract a file
+* Now it removes "/" at the beginning of file names
+* Fixed progress bar crash [i](I'm not sure if it was broken tbh)[\i]
+* General performance improvements
+
+\t[b]Mod Manager[\b]
+* Added link to source/binary files of 7-Zip into the License Reader
+
+
 [c]Version: v0.1.4.1
 Change log:
 \t[b]One-Click Mod Installer[\b]
