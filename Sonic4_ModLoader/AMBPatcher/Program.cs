@@ -117,7 +117,6 @@ namespace AMBPatcher
             }
         }
 
-
         public static SHA1CryptoServiceProvider SHA1csp = new SHA1CryptoServiceProvider();
         public static SHA256CryptoServiceProvider SHA256csp = new SHA256CryptoServiceProvider();
         public static SHA384CryptoServiceProvider SHA384csp = new SHA384CryptoServiceProvider();
@@ -382,6 +381,44 @@ namespace AMBPatcher
                 return AMB.Read(File.ReadAllBytes(file_name));
             }
 
+            //This method is used for Windows Phone version AMB files
+            public static List<(string Name, int Pointer, int Length)> ReadWP(byte[] rawFile)
+            {
+                List<int> filePointers = new List<int>();
+                List<int> fileLengths = new List<int>();
+                List<string> fileNames = new List<string>();
+                var result = new List<(string Name, int Pointer, int Length)>();
+
+                int fileNumber = BitConverter.ToInt32(rawFile, 0x00);
+
+                var sb = new StringBuilder();
+
+                var ptr = 0xD;
+                for (int currentFile = 0; currentFile < fileNumber; ptr++)
+                {
+                    for (; rawFile[ptr] >= 0x20 && rawFile[ptr] < 0x7F; ptr++)
+                        sb.Append((char)rawFile[ptr]);
+                    if (sb.Length > 0)
+                        fileNames.Add(sb.ToString());
+                    sb.Clear();
+                    if (fileNames.Count > currentFile)
+                        currentFile++;
+                }
+
+                for (int i = 0; i < fileNumber; i++)
+                {
+                    filePointers.Add(BitConverter.ToInt32(rawFile, ptr + 4 * i));
+                    fileLengths.Add(BitConverter.ToInt32(rawFile, ptr + 4 * fileNumber + i * 4));
+                }
+
+                for (int i = 0; i < fileNumber; i++)
+                    result.Add((Name: fileNames[i],
+                                Pointer: filePointers[i],
+                                Length: fileLengths[i]));
+
+                return result;
+            }
+
             ///////////
             //Extract//
             ///////////
@@ -410,6 +447,29 @@ namespace AMBPatcher
 
                     //And writing that byte array into a file
                     File.WriteAllBytes(output_file, file_bytes);
+                }
+            }
+
+            public static void ExtractWP(string fileName, string outputDirectory)
+            {
+                byte[] raw_file = File.ReadAllBytes(fileName);
+
+                Directory.CreateDirectory(outputDirectory);
+
+                var files = AMB.ReadWP(raw_file);
+
+                for (int i = 0; i < files.Count; i++)
+                {
+                    string outputFile = Path.Combine(outputDirectory, files[i].Name.Replace('\\', Path.DirectorySeparatorChar));
+
+                    //Copying raw file from the archive into a byte array.
+                    byte[] fileBytes = new byte[files[i].Length];
+                    Array.Copy(raw_file, files[i].Pointer, fileBytes, 0, files[i].Length);
+
+                    Directory.CreateDirectory(Path.GetDirectoryName(outputFile));
+
+                    //And writing that byte array into a file
+                    File.WriteAllBytes(outputFile, fileBytes);
                 }
             }
 
@@ -1301,6 +1361,15 @@ namespace AMBPatcher
                 {
                     AMB.ExtractAll(args[1]);
                 }
+
+                else if (args[0] == "extract_wp")
+                {
+                    if (File.Exists(args[1]))
+                        AMB.ExtractWP(args[1], args[1] + "_extracted");
+                    else
+                        ShowHelpMessage();
+                }
+
                 else ShowHelpMessage();
             }
 
