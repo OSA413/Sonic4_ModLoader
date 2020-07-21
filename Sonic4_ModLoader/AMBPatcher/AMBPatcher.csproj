@@ -43,9 +43,21 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\Common\ValueUpdater.cs">
+      <Link>Common\ValueUpdater.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\IniReader.cs">
+      <Link>Common\IniReader.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Mod.cs">
+      <Link>Common\Mod.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Common\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

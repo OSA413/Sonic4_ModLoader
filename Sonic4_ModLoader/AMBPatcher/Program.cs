@@ -38,25 +38,11 @@ namespace AMBPatcher
                 SHACheck    = true;
                 SHAType     = 1;
 
-                if (!File.Exists("AMBPatcher.cfg"))
-                    return;
-
-                string[] cfg_file = File.ReadAllLines("AMBPatcher.cfg");
-
-                foreach (string line in cfg_file)
-                {
-                    if (!line.Contains("=")) continue;
-                    string key   = line.Substring(0, line.IndexOf("="));
-                    string value = line.Substring(line.IndexOf("=") + 1);
-
-                    switch (key)
-                    {
-                        case "ProgressBar": ProgressBar.Enabled = Convert.ToBoolean(Convert.ToInt32(value)); break;
-                        case "GenerateLog": GenerateLog         = Convert.ToBoolean(Convert.ToInt32(value)); break;
-                        case "SHACheck":    SHACheck            = Convert.ToBoolean(Convert.ToInt32(value)); break;
-                        case "SHAType":     SHAType             = Convert.ToInt32(value); break;
-                    }
-                }
+                var cfg = IniReader.Read("AMBPatcher.cfg");
+                ValueUpdater.UpdateIfKeyPresent(cfg, "ProgressBar", ref ProgressBar.Enabled);
+                ValueUpdater.UpdateIfKeyPresent(cfg, "GenerateLog", ref GenerateLog);
+                ValueUpdater.UpdateIfKeyPresent(cfg, "SHACheck", ref SHACheck);
+                ValueUpdater.UpdateIfKeyPresent(cfg, "SHAType", ref SHAType);
             }
         }
 

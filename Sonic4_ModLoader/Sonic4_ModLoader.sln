@@ -13,6 +13,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManagerLauncher", "ManagerL
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OneClickModInstaller", "OneClickModInstaller\OneClickModInstaller.csproj", "{F993D5C4-5D52-4CC3-91E5-E5D7FA0357BA}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{A162D9A2-BC90-4E86-BEC1-047DF1EEA5A3}"
+	ProjectSection(SolutionItems) = preProject
+		Common\Common.cs = Common\Common.cs
+		Common\IniReader.cs = Common\IniReader.cs
+		Common\Mod.cs = Common\Mod.cs
+		Common\MyIO.cs = Common\MyIO.cs
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -21,23 +21,9 @@ namespace Sonic4ModManager
                 Settings.ModLoaderInstalled = false;
                 Settings.CheckOnlineUpdates = false;
 
-                if (File.Exists("ModManager.cfg"))
-                {
-                    string[] cfg_file = File.ReadAllLines("ModManager.cfg");
-
-                    foreach (string line in cfg_file)
-                    {
-                        if (!line.Contains("=")) continue;
-                        string key   = line.Substring(0, line.IndexOf("="));
-                        string value = line.Substring(line.IndexOf("=") + 1);
-
-                        if (key == "ModLoaderInstalled")
-                            ModLoaderInstalled = Convert.ToBoolean(Convert.ToInt32(value));
-
-                        else if (key == "CheckOnlineUpdates")
-                            CheckOnlineUpdates = Convert.ToBoolean(Convert.ToInt32(value));
-                    }
-                }
+                var cfg = IniReader.Read("ModManager.cfg");
+                ValueUpdater.UpdateIfKeyPresent(cfg, "ModLoaderInstalled", ref Settings.ModLoaderInstalled);
+                ValueUpdater.UpdateIfKeyPresent(cfg, "CheckOnlineUpdates", ref Settings.CheckOnlineUpdates);
             }
 
             public static void Save()
