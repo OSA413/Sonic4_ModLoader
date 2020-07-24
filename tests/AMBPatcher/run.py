@@ -1,6 +1,5 @@
 import os
 import sys
-import time
 
 cwd = os.path.dirname(sys.argv[0])
 if cwd != "":
@@ -20,14 +19,23 @@ def run_test(test_name):
         AMBPATCHER = PATHS[AMBPATCHER], MAIN_AMB = "sandbox/"+MAIN_AMB)
 
     for seq in test_sequence:
-        if MONO: seq.insert(0, MONO)
-        subprocess.check_output(seq)
+        if type(seq) == str:
+            run_test(seq)
+        else:
+            if MONO: seq.insert(0, MONO)
+            subprocess.check_output(seq)
 
 def check_files(test_name, REBUILD_SHA=False):
-    for file in files_to_check.get_files(test_name, MAIN_AMB = MAIN_AMB):
+    files = files_to_check.get_files(test_name, MAIN_AMB = MAIN_AMB)
+    if type(files) == str:
+        return check_files(files, REBUILD_SHA = REBUILD_SHA)
+    elif files == None:
+        return 2
+
+    for file in files:
         sha = sha256("sandbox/"+file)
-        dir = "hashes/" + test_name
-        sha_file = dir + "/" + file
+        sha_file = "hashes/" + test_name + "/" + file
+        dir = os.path.dirname(sha_file)
         
         if (REBUILD_SHA):
             if not os.path.exists(dir):
@@ -57,14 +65,11 @@ if __name__ == "__main__":
         clear_sandbox()
         print(" " * 4 + test + " " * (20 - len(test)), end="")
         
-        t_start = time.time()
         run_test(test)
         check = check_files(test, REBUILD_SHA=REBUILD_SHA)
-        
-        print_time = "("+str(round(time.time() - t_start, 4))+"s)"
 
         if check == 0:
-            print(TEST_SUCCESS + " " + print_time)
+            print(TEST_SUCCESS)
         elif check == 1:
             EXIT_CODE = 1
             print(TEST_FAIL)
