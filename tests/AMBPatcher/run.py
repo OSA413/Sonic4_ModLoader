@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 
 cwd = os.path.dirname(sys.argv[0])
 if cwd != "":
@@ -43,6 +44,9 @@ def check_files(test_name, REBUILD_SHA=False):
             else:
                 return 2
     return 0
+    
+def clear_sandbox():
+    clear_dir("sandbox")
 
 if __name__ == "__main__":
     REBUILD_SHA = len(sys.argv) > 1 and sys.argv[1] == "--rebuild-sha"
@@ -50,17 +54,24 @@ if __name__ == "__main__":
     EXIT_CODE = 0
 
     for test in instructions.get_test().keys():
+        clear_sandbox()
         print(" " * 4 + test + " " * (20 - len(test)), end="")
+        
+        t_start = time.time()
         run_test(test)
         check = check_files(test, REBUILD_SHA=REBUILD_SHA)
+        
+        print_time = "("+str(round(time.time() - t_start, 4))+"s)"
 
         if check == 0:
-            print(TEST_SUCCESS)
+            print(TEST_SUCCESS + " " + print_time)
         elif check == 1:
             EXIT_CODE = 1
             print(TEST_FAIL)
         elif check == 2:
             EXIT_CODE = 2
             print("? No SHA file")
+
+    clear_sandbox()
 
     sys.exit(EXIT_CODE)

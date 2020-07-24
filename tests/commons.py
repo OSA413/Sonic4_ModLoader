@@ -15,18 +15,16 @@ def sha256(x):
 
     return hashlib.sha256(x).hexdigest()
 
-def dir_sha(path):
-    all_shas = []
-
-    walking_down_the_dir = [x for x in glob.glob("./" + path + "/**", recursive = True)]
-    walking_down_the_dir.sort()
-
-    for i in walking_down_the_dir:
-        all_shas.append(i.replace("\\", "/"))
-        if os.path.isfile(i):
-            all_shas.append(sha256(i))
-
-    return sha256("".join(all_shas).encode('utf-8'))
+def clear_dir(d):
+    files = os.listdir(d)
+    for i in files:
+        i = d + "/" + i 
+        if os.path.isdir(i):
+            clear_dir(i)
+            os.rmdir(i)
+        elif os.path.isfile(i):
+            if i.endswith(".gitignore"): continue
+            os.remove(i)
 
 def mono_or_wine():
     answer = ""
