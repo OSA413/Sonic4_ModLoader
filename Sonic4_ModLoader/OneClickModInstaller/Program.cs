@@ -13,11 +13,17 @@ namespace OneClickModInstaller
 {
     public static class Admin
     {
+        private static bool? isAdmin;
+
         public static bool AmI()
         {
-            WindowsIdentity id = WindowsIdentity.GetCurrent();
-            WindowsPrincipal principal = new WindowsPrincipal(id);
-            return principal.IsInRole(WindowsBuiltInRole.Administrator);
+            if (isAdmin == null)
+            {
+                WindowsIdentity id = WindowsIdentity.GetCurrent();
+                WindowsPrincipal principal = new WindowsPrincipal(id);
+                isAdmin = principal.IsInRole(WindowsBuiltInRole.Administrator);
+            }
+            return (bool)isAdmin;
         }
 
         public static void RunAs(string args)
