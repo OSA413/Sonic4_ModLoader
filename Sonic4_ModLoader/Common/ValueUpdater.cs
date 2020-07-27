@@ -26,4 +26,10 @@ public static class ValueUpdater
         if (d.ContainsKey(key))
             value = d[key].ToString() == "0" ? false : true;
     }
+
+    public static void UpdateIfKeyPresent<T, V>(Dictionary<T, V> d, T key, Dictionary<T, V> target_dict)
+    {
+        if (d.ContainsKey(key))
+            target_dict[key] = d[key];
+    }
 }

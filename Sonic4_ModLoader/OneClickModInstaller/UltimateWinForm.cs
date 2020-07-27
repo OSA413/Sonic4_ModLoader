@@ -52,30 +52,16 @@ namespace OneClickModInstaller
                 Settings.Paths.Add("7-Zip", "");
                 Settings.Paths.Add("DownloadedArhives", "mods_downloaded");
 
-                if (File.Exists("OneClickModInstaller.cfg"))
+                var cfg = IniReader.Read("OneClickModInstaller.cfg");
+
+                ValueUpdater.UpdateIfKeyPresent(cfg, "UseLocal7zip", ref Settings.UseLocal7zip);
+                ValueUpdater.UpdateIfKeyPresent(cfg, "SaveDownloadedArchives", ref Settings.SaveDownloadedArchives);
+                ValueUpdater.UpdateIfKeyPresent(cfg, "ExitLaunchManager", ref Settings.ExitLaunchManager);
+
+                foreach (var p in Settings.Paths.Keys)
                 {
-                    string[] cfg_file = File.ReadAllLines("OneClickModInstaller.cfg");
-
-                    foreach (string line in cfg_file)
-                    {
-                        if (!line.Contains("=")) continue;
-                        string key   = line.Substring(0, line.IndexOf("="));
-                        string value = line.Substring(line.IndexOf("=") + 1);
-
-                        //Paths
-                        if (Settings.Paths.ContainsKey(key))
-                            Settings.Paths[key] = value.Replace("\\", "/");
-
-                        //Booleans
-                        else if (key == "UseLocal7zip")
-                            Settings.UseLocal7zip = Convert.ToBoolean(Convert.ToInt32(value));
-
-                        else if (key == "SaveDownloadedArchives")
-                            Settings.SaveDownloadedArchives = Convert.ToBoolean(Convert.ToInt32(value));
-
-                        else if (key == "ExitLaunchManager")
-                            Settings.ExitLaunchManager = Convert.ToBoolean(Convert.ToInt32(value));
-                    }
+                    ValueUpdater.UpdateIfKeyPresent(cfg, p, Settings.Paths);
+                    Settings.Paths[p] = Settings.Paths[p].Replace("\\", "/");
                 }
             }
 
