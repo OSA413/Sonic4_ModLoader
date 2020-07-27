@@ -15,10 +15,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OneClickModInstaller", "One
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{A162D9A2-BC90-4E86-BEC1-047DF1EEA5A3}"
 	ProjectSection(SolutionItems) = preProject
-		Common\Common.cs = Common\Common.cs
 		Common\IniReader.cs = Common\IniReader.cs
 		Common\Mod.cs = Common\Mod.cs
 		Common\MyIO.cs = Common\MyIO.cs
+		Common\ValueUpdater.cs = Common\ValueUpdater.cs
 	EndProjectSection
 EndProject
 Global
