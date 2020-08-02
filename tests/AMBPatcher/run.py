@@ -61,7 +61,7 @@ if __name__ == "__main__":
     rebuild_paths()
     EXIT_CODE = 0
 
-    for test in instructions.get_test().keys():
+    for test in [x for x in instructions.get_test().keys() if x[0] != "."]:
         clear_sandbox()
         print(" " * 4 + test + " " * (20 - len(test)), end="")
         
