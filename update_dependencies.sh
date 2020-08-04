@@ -27,7 +27,7 @@ version=$(basename $(dirname $url))
 curl  $url > 7z_install.exe
 echo https://sourceforge.net/projects/sevenzip/files/7-Zip/$version > ./../../dependencies/7-Zip/LINK
 
-7z x 7z_install.exe
+7z e 7z_install.exe 7z.exe 7z.dll License.txt
 
 cp 7z.exe       ./../../dependencies/7-Zip/7z.exe
 cp 7z.dll       ./../../dependencies/7-Zip/7z.dll
