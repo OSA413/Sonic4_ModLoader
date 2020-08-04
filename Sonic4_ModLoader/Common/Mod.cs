@@ -29,10 +29,16 @@ public class Mod
     {
         var ini = IniReader.Read(iniPath);
 
-        UpdateIfKeyPresent(ini, "Name", ref name);
-        UpdateIfKeyPresent(ini, "Authors", ref authors);
-        UpdateIfKeyPresent(ini, "Version", ref version);
-        UpdateIfKeyPresent(ini, "Description", ref description);
+        Dictionary<string, string> infoSection = null;
+        if (ini.Keys.Count == 1 && ini.ContainsKey(IniReader.DEFAULT_SECTION))
+            infoSection = ini[IniReader.DEFAULT_SECTION];
+        else
+            infoSection = ini["Info"];
+
+        UpdateIfKeyPresent(infoSection, "Name", ref name);
+        UpdateIfKeyPresent(infoSection, "Authors", ref authors);
+        UpdateIfKeyPresent(infoSection, "Version", ref version);
+        UpdateIfKeyPresent(infoSection, "Description", ref description);
     }
 
     private void ReadDescription()

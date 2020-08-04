@@ -54,14 +54,22 @@ namespace OneClickModInstaller
 
                 var cfg = IniReader.Read("OneClickModInstaller.cfg");
 
-                ValueUpdater.UpdateIfKeyPresent(cfg, "UseLocal7zip", ref Settings.UseLocal7zip);
-                ValueUpdater.UpdateIfKeyPresent(cfg, "SaveDownloadedArchives", ref Settings.SaveDownloadedArchives);
-                ValueUpdater.UpdateIfKeyPresent(cfg, "ExitLaunchManager", ref Settings.ExitLaunchManager);
-
-                foreach (var p in Settings.Paths.Keys)
+                if (cfg.ContainsKey(IniReader.DEFAULT_SECTION))
                 {
-                    ValueUpdater.UpdateIfKeyPresent(cfg, p, Settings.Paths);
-                    Settings.Paths[p] = Settings.Paths[p].Replace("\\", "/");
+                    var def = cfg[IniReader.DEFAULT_SECTION];
+                    ValueUpdater.UpdateIfKeyPresent(def, "UseLocal7zip", ref Settings.UseLocal7zip);
+                    ValueUpdater.UpdateIfKeyPresent(def, "SaveDownloadedArchives", ref Settings.SaveDownloadedArchives);
+                    ValueUpdater.UpdateIfKeyPresent(def, "ExitLaunchManager", ref Settings.ExitLaunchManager);
+                }
+
+                if (cfg.ContainsKey("Paths"))
+                {
+                    var cfgPaths = cfg["Paths"];
+                    foreach (var p in Settings.Paths.Keys)
+                    {
+                        ValueUpdater.UpdateIfKeyPresent(cfgPaths, p, Settings.Paths);
+                        Settings.Paths[p] = Settings.Paths[p].Replace("\\", "/");
+                    }
                 }
             }
 

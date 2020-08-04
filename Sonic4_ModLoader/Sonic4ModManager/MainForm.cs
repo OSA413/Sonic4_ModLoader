@@ -22,6 +22,8 @@ namespace Sonic4ModManager
                 Settings.CheckOnlineUpdates = false;
 
                 var cfg = IniReader.Read("ModManager.cfg");
+                if (!cfg.ContainsKey(IniReader.DEFAULT_SECTION)) return;
+
                 ValueUpdater.UpdateIfKeyPresent(cfg, "ModLoaderInstalled", ref Settings.ModLoaderInstalled);
                 ValueUpdater.UpdateIfKeyPresent(cfg, "CheckOnlineUpdates", ref Settings.CheckOnlineUpdates);
             }

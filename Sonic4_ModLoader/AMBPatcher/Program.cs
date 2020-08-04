@@ -39,6 +39,8 @@ namespace AMBPatcher
                 SHAType     = 1;
 
                 var cfg = IniReader.Read("AMBPatcher.cfg");
+                if (!cfg.ContainsKey(IniReader.DEFAULT_SECTION)) return;
+
                 ValueUpdater.UpdateIfKeyPresent(cfg, "ProgressBar", ref ProgressBar.Enabled);
                 ValueUpdater.UpdateIfKeyPresent(cfg, "GenerateLog", ref GenerateLog);
                 ValueUpdater.UpdateIfKeyPresent(cfg, "SHACheck", ref SHACheck);
