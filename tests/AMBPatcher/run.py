@@ -1,6 +1,7 @@
 import os
 import sys
 import time
+import glob
 
 cwd = os.path.dirname(sys.argv[0])
 if cwd != "":
@@ -36,7 +37,10 @@ def run_test(test_name):
 def check_files(test_name, REBUILD_SHA=False):
     files = files_to_check.get_files(test_name, MAIN_AMB = MAIN_AMB)
     if type(files) == str:
-        return check_files(files, REBUILD_SHA = REBUILD_SHA)
+        if files == "#ALL":
+            files = [x[8:] for x in glob.glob("sandbox/**/*", recursive=True)]
+        else:
+            return check_files(files, REBUILD_SHA = REBUILD_SHA)
     elif files == None:
         return 2
 
