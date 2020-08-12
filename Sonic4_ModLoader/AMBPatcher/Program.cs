@@ -1382,7 +1382,7 @@ namespace AMBPatcher
                     {
                         var files = Directory.GetFiles(args[2], "*", SearchOption.AllDirectories);
 
-                        foreach (string file in files)
+                        foreach (string file in files.OrderBy(x => x))
                         {
                             Console.WriteLine("Patching by \""+file+"\"...");
                             AMB.Patch(args[1], file);
