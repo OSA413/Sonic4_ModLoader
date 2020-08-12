@@ -5,7 +5,8 @@ def get_files(test_name, MAIN_AMB=""):
         "extract": [MAIN_AMB + "_extracted/1",
                         MAIN_AMB + "_extracted/2",
                         MAIN_AMB + "_extracted/3"],
-        "extract_swapped": "extract"
+        "extract_swapped": "extract",
+        "add_from_dir": "add"
     }
 
     if test_name in tests:

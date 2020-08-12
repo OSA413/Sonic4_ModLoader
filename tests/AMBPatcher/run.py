@@ -89,6 +89,10 @@ if __name__ == "__main__":
             EXIT_CODE = 2
             print("? No SHA file")
 
+        #this is for testing
+        if test in []:
+            input("Press Enter to continue")
+
     clear_sandbox()
 
     sys.exit(EXIT_CODE)

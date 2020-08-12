@@ -13,7 +13,8 @@ def get_test(test_name="", AMBPATCHER="", MAIN_AMB=""):
         "add_to_swapped": ["create", ".swap_endianness",
                             ".add:files/1", ".add:files/2","#TIME", ".add:files/3"],
         "extract": ["add","#TIME", ".extract"],
-        "extract_swapped": ["add_to_swapped","#TIME", ".extract"]
+        "extract_swapped": ["add_to_swapped","#TIME", ".extract"],
+        "add_from_dir": ["create", "#TIME", [AMBPATCHER, "patch", MAIN_AMB, "files"]]
     }
     
     if test_name == "":
