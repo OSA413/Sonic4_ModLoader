@@ -11,9 +11,10 @@ def sha256(x):
     if type(x) == str:
         if os.path.isfile(x):
             with open(x, "rb") as f:
-                x = f.read()
+                raw = f.read()
 
-    return hashlib.sha256(x).hexdigest()
+            return hashlib.sha256(raw).hexdigest()
+    return None
 
 def clear_dir(d):
     files = os.listdir(d)

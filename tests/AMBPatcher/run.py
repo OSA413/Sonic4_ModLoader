@@ -52,7 +52,10 @@ def check_files(test_name, REBUILD_SHA=False):
         if (REBUILD_SHA):
             if not os.path.exists(dir):
                 os.makedirs(dir)
-            with open(sha_file, "w") as f: f.write(sha)
+
+            if sha != None:
+                with open(sha_file, "w") as f:
+                    f.write(sha)
 
         else:
             if os.path.isfile(sha_file):
