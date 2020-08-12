@@ -242,6 +242,10 @@ namespace AMBPatcher
                     else
                         InternalName = mod_file_parts.Last();
 
+                    //This may occur when main file and added file have the same name
+                    if (InternalName == "")
+                        InternalName = mod_file_parts.Last();
+
                     //Find internal index
                     for (int i = 0; i < files.Count; i++)
                     {
