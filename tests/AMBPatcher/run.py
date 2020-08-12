@@ -38,7 +38,7 @@ def check_files(test_name, REBUILD_SHA=False):
     files = files_to_check.get_files(test_name, MAIN_AMB = MAIN_AMB)
     if type(files) == str:
         if files == "#ALL":
-            files = [x[8:] for x in glob.glob("sandbox/**/*", recursive=True)]
+            files = [x[8:] for x in glob.glob("sandbox/**/*", recursive=True) if os.path.isfile(x)]
         else:
             return check_files(files, REBUILD_SHA = REBUILD_SHA)
     elif files == None:
