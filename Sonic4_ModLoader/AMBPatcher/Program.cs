@@ -706,7 +706,7 @@ namespace AMBPatcher
 
             public static void Add(string file_name, string mod_file, string ModFileName)
             {
-                byte[] raw_file = AMB.Add(File.ReadAllBytes(file_name), file_name, mod_file, ModFileName);
+                byte[] raw_file = AMB.Add(File.ReadAllBytes(file_name), file_name, ModFileName, mod_file);
                 File.WriteAllBytes(file_name, raw_file);
             }
 

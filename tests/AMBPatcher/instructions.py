@@ -14,7 +14,8 @@ def get_test(test_name="", AMBPATCHER="", MAIN_AMB=""):
                             ".add:files/1", ".add:files/2","#TIME", ".add:files/3"],
         "extract": ["add","#TIME", ".extract"],
         "extract_swapped": ["add_to_swapped","#TIME", ".extract"],
-        "add_from_dir": ["create", "#TIME", [AMBPATCHER, "patch", MAIN_AMB, "files"]]
+        "add_from_dir": ["create", "#TIME", [AMBPATCHER, "patch", MAIN_AMB, "files"]],
+        "add_as": ["create", "#TIME", [AMBPATCHER, "add", MAIN_AMB, "files/1", "2"]]
     }
     
     if test_name == "":
