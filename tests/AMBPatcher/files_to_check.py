@@ -11,6 +11,13 @@ def get_files(test_name, MAIN_AMB=""):
         "ml_multiple": ["#ALL", "#EXCEPT:mods*"],
         "ml_inversed": ["#ALL", "#EXCEPT:mods*"],
         "ml_recover": ["#ALL", "#EXCEPT:mods*"],
+        "ml_changed_0": ["#ALL", "#EXCEPT:mods*"],
+        "ml_changed_1": ["#ALL", "#EXCEPT:mods*"],
+        "ml_changed_2": ["#ALL", "#EXCEPT:mods*"],
+        "ml_changed_3": ["#ALL", "#EXCEPT:mods*"],
+        "ml_changed_4": ["#ALL", "#EXCEPT:mods*"],
+        "ml_changed_5": ["#ALL", "#EXCEPT:mods*"],
+        "ml_changed_6": ["#ALL", "#EXCEPT:mods*"],
     }
 
     if test_name in tests:

@@ -33,7 +33,14 @@ def get_test(test_name="", AMBPATCHER="", MAIN_AMB=""):
         "ml_single": [".ml_start", "#TIME", "#MODSINI:2", ".ml", ".ml_end"],
         "ml_multiple": [".ml_start", "#TIME", "#MODSINI:3421", ".ml", ".ml_end"],
         "ml_inversed": [".ml_start", "#TIME", "#MODSINI:1243", ".ml", ".ml_end"],
-        "ml_recover": ["ml_multiple", "#CWD:sandbox", "#TIME", ".recover", ".ml_end"]
+        "ml_recover": ["ml_multiple", "#CWD:sandbox", "#TIME", ".recover", ".ml_end"],
+        "ml_changed_0": [".ml_start", "#TIME", "#MODSINI:1", ".ml", "#MODSINI:3", ".ml", ".ml_end"],
+        "ml_changed_1": [".ml_start", "#TIME", "#MODSINI:2", ".ml", "#MODSINI:431", ".ml", ".ml_end"],
+        "ml_changed_2": [".ml_start", "#TIME", "#MODSINI:4", ".ml", "#MODSINI:3214", ".ml", ".ml_end"],
+        "ml_changed_3": [".ml_start", "#TIME", "#MODSINI:13", ".ml", "#MODSINI:24", ".ml", ".ml_end"],
+        "ml_changed_4": [".ml_start", "#TIME", "#MODSINI:42", ".ml", "#MODSINI:1234", ".ml", ".ml_end"],
+        "ml_changed_5": [".ml_start", "#TIME", "#MODSINI:423", ".ml", "#MODSINI:1", ".ml", ".ml_end"],
+        "ml_changed_6": [".ml_start", "#TIME", "#MODSINI:321", ".ml", "#MODSINI:4132", ".ml", ".ml_end"],
     }
     
     if test_name == "":
