@@ -36,19 +36,25 @@ def run_test(test_name, NO_CRASH=False):
                 with open("mods/mods.ini", "w") as f:
                     f.write("\n".join([x for x in seq[9:]]))
             else:
-                run_test(seq)
+                run_test(seq, NO_CRASH)
         else:
             if MONO: seq.insert(0, MONO)
             if NO_CRASH:
                 try:
                     subprocess.check_output(seq)
-                except: pass
+                except:
+                    sb = "sandbox/"
+                    if not os.path.isdir("sandbox"): sb = ""
+                    with open(sb + "fail", "w") as f: pass
             else:
                 subprocess.check_output(seq)
 
     return time.time() - test_time
 
 def check_files(test_name, REBUILD_SHA=False):
+    if os.path.isfile("sandbox/fail"):
+        return 1
+
     lst = files_to_check.get_files(test_name, MAIN_AMB = MAIN_AMB)
     if type(lst) == str:
         return check_files(lst, REBUILD_SHA = REBUILD_SHA)
@@ -62,16 +68,13 @@ def check_files(test_name, REBUILD_SHA=False):
             if filtr[-1] == "*":
                 files = [x for x in files if not x.startswith(filtr[:-1])]
             else:
-                files.remove(filtr)
+                files = [x for x in files if x != filtr]
 
     expected_files = [x[len("hashes/" + test_name) + 1:] for x in glob.glob("hashes/" + test_name + "/**/*", recursive=True) if os.path.isfile(x)]
     actual_set = set(files)
 
     for file in expected_files:
         if file not in actual_set:
-            print(file)
-            print(actual_set)
-            print(files)
             return 2
 
     for file in files:
@@ -124,7 +127,7 @@ if __name__ == "__main__":
             print("? No SHA file")
 
         #this is for testing
-        if test in ["extract"]:
+        if test in []:
             input("Press Enter to continue")
 
     clear_sandbox()
