@@ -24,6 +24,8 @@ def run_test(test_name):
     test_time = time.time()
 
     for seq in test_sequence:
+        #print(seq)
+        #print(os.getcwd())
         if type(seq) == str:
             if seq == "#TIME":
                 test_time = time.time()
@@ -43,14 +45,20 @@ def run_test(test_name):
     return time.time() - test_time
 
 def check_files(test_name, REBUILD_SHA=False):
-    files = files_to_check.get_files(test_name, MAIN_AMB = MAIN_AMB)
-    if type(files) == str:
-        if files == "#ALL":
-            files = [x[8:] for x in glob.glob("sandbox/**/*", recursive=True) if os.path.isfile(x)]
-        else:
-            return check_files(files, REBUILD_SHA = REBUILD_SHA)
-    elif files == None:
-        return 2
+    lst = files_to_check.get_files(test_name, MAIN_AMB = MAIN_AMB)
+    if type(lst) == str:
+        check_files(lst, REBUILD_SHA = REBUILD_SHA)
+    files = []
+
+    print(lst)
+
+    for i in lst:
+        if i == "#ALL":
+            files += [x[8:] for x in glob.glob("sandbox/**/*", recursive=True) if os.path.isfile(x)]
+        elif i.startswith("#EXCEPT:"):
+            #print(i[8:])
+            files = [x for x in files if not x.startswith(i[8:])]
+            #print(files)
 
     for file in files:
         sha = sha256("sandbox/"+file)
@@ -101,7 +109,7 @@ if __name__ == "__main__":
             print("? No SHA file")
 
         #this is for testing
-        if test in ["ml"]:
+        if test in ["ml_single"]:
             input("Press Enter to continue")
 
     clear_sandbox()

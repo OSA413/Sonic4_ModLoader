@@ -7,6 +7,7 @@ def get_test(test_name="", AMBPATCHER="", MAIN_AMB=""):
         ".extract": [[AMBPATCHER, "extract", MAIN_AMB]],
         ".add_itself": [[AMBPATCHER, "add", MAIN_AMB, MAIN_AMB]],
         ".extract_all": [[AMBPATCHER, "extract_all", MAIN_AMB+"/../"]],
+        ".recover": [[AMBPATCHER, "recover"]],
 
         "create": [[AMBPATCHER, "create", MAIN_AMB]],
         "add": ["create", ".add:files/1", ".add:files/2", "#TIME", ".add:files/3"],
@@ -26,7 +27,8 @@ def get_test(test_name="", AMBPATCHER="", MAIN_AMB=""):
         ".ml": [[AMBPATCHER]],
         ".ml_start": ["#COPYMODS", "#CWD:sandbox"],
         ".ml_end": ["#CWD:.."],
-        "ml": [".ml_start", "#TIME", "#MODSINI:1234", ".ml_end"]
+        "ml_empty": [".ml_start", "#TIME", "#MODSINI:", ".ml", ".ml_end"],
+        "ml_single": [".ml_start", "#TIME", "#MODSINI:2", ".ml_end"]
     }
     
     if test_name == "":
