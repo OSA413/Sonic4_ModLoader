@@ -1054,7 +1054,7 @@ namespace AMBPatcher
             {
                 if (Directory.Exists("mods/" + ini_mods[i]))
                 {
-                    string[] filenames = Directory.GetFiles(Path.Combine("mods",ini_mods[i]), "*", SearchOption.AllDirectories);
+                    string[] filenames = Directory.GetFiles(Path.Combine("mods",ini_mods[i]), "*", SearchOption.AllDirectories).OrderBy(x => x).ToArray();
 
                     for (int j = 0; j < filenames.Length; j++)
                     {
