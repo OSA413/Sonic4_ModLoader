@@ -1,3 +1,15 @@
+[c]Version: v0.1.4.3
+Change log:
+* [b]Added a lot of tests[\b]
+\t[b]AMBPatcher[\b]
+* Now it can extract AMB files from WinPhone version
+* Rewritten ini reading
+* Sorts file list before patching (now mono behaves the same way as wine/windows)
+* Now it can actually add files with different name (rename before/when patching)
+* Crash fix adding file into AMB file with the same name
+* Crash fix when console window's width is 0
+
+
 [c]Version: v0.1.4.2
 Change log:
 \t[b]AMBPatcher[\b]
