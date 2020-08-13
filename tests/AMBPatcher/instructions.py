@@ -11,6 +11,7 @@ def get_test(test_name="", AMBPATCHER="", MAIN_AMB=""):
 
         "create": [[AMBPATCHER, "create", MAIN_AMB]],
         "add": ["create", ".add:files/1", ".add:files/2", "#TIME", ".add:files/3"],
+        "delete": ["add", "#TIME", [AMBPATCHER, "delete", MAIN_AMB, "2"]],
         "swap_endianness": ["add", "#TIME",".swap_endianness"],
         "swap_endianness_x2": ["swap_endianness", "#TIME", ".swap_endianness"],
         "add_to_swapped": ["create", ".swap_endianness",
