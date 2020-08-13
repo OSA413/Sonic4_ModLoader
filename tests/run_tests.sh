@@ -17,4 +17,4 @@ for dir in $(ls ./); do
 
 done
 
-exit $EXIT_CODE
+#exit $EXIT_CODE
