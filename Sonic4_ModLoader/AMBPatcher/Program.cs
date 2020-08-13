@@ -54,10 +54,11 @@ namespace AMBPatcher
 
             public static void PrintProgress(int i, int max_i, string title)
             {
+                if (!ProgressBar.Enabled ||
+                    Console.WindowWidth <= 0)
+                    return;
+
                 int bar_len = 50;
-
-                if (!ProgressBar.Enabled) return;
-
                 ProgressBar.MoveCursorUp();
                 
                 int cut = 0;
@@ -78,9 +79,9 @@ namespace AMBPatcher
 
             public static void ClearLine()
             {
+                if (Console.WindowWidth <= 0) return;
                 Console.CursorLeft = 0;
-                if (Console.WindowWidth > 0)
-                    Console.Write(new string(' ', Console.WindowWidth-1));
+                Console.Write(new string(' ', Console.WindowWidth-1));
                 Console.CursorLeft = 0;
             }
 
