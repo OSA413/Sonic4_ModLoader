@@ -31,6 +31,9 @@ def run_test(test_name):
                 distutils.dir_util.copy_tree("mods", "sandbox")
             elif seq.startswith("#CWD:") and len(seq) > 5:
                 os.chdir(seq[5:])
+            elif seq.startswith("#MODSINI:") and len(seq) >= 9:
+                with open("mods/mods.ini", "w") as f:
+                    f.write("\n".join([x for x in seq[9:]]))
             else:
                 run_test(seq)
         else:
@@ -98,7 +101,7 @@ if __name__ == "__main__":
             print("? No SHA file")
 
         #this is for testing
-        if test in []:
+        if test in ["ml"]:
             input("Press Enter to continue")
 
     clear_sandbox()

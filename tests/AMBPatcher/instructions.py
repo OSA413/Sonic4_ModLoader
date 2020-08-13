@@ -23,9 +23,10 @@ def get_test(test_name="", AMBPATCHER="", MAIN_AMB=""):
         "extract_nested": ["create_nested", "#TIME", ".extract"],
         "extract_all": ["create_nested", "#TIME", ".extract_all"],
 
+        ".ml": [[AMBPATCHER]],
         ".ml_start": ["#COPYMODS", "#CWD:sandbox"],
         ".ml_end": ["#CWD:.."],
-        "ml": [".ml_start", "#TIME", ".ml_end"]
+        "ml": [".ml_start", "#TIME", "#MODSINI:1234", ".ml_end"]
     }
     
     if test_name == "":
