@@ -19,8 +19,13 @@ def get_test(test_name="", AMBPATCHER="", MAIN_AMB=""):
         "add_from_dir": ["create", "#TIME", [AMBPATCHER, "patch", MAIN_AMB, "files"]],
         "add_as": ["create", "#TIME", [AMBPATCHER, "add", MAIN_AMB, "files/1", "2"]],
         "create_nested": ["add", ".add_itself", ".add_itself", "#TIME", ".add_itself"],
+        "add_into_nested": ["create_nested", "#TIME", [AMBPATCHER, "add", MAIN_AMB, "files/1", "test.amb/test.amb/3"]],
         "extract_nested": ["create_nested", "#TIME", ".extract"],
-        "extract_all": ["create_nested", "#TIME", ".extract_all"]
+        "extract_all": ["create_nested", "#TIME", ".extract_all"],
+
+        ".ml_start": ["#COPYMODS", "#CWD:sandbox"],
+        ".ml_end": ["#CWD:.."],
+        "ml": [".ml_start", "#TIME", ".ml_end"]
     }
     
     if test_name == "":

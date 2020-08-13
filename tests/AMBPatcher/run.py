@@ -2,6 +2,7 @@ import os
 import sys
 import time
 import glob
+import distutils.dir_util
 
 cwd = os.path.dirname(sys.argv[0])
 if cwd != "":
@@ -26,6 +27,10 @@ def run_test(test_name):
         if type(seq) == str:
             if seq == "#TIME":
                 test_time = time.time()
+            elif seq == "#COPYMODS":
+                distutils.dir_util.copy_tree("mods", "sandbox")
+            elif seq.startswith("#CWD:") and len(seq) > 5:
+                os.chdir(seq[5:])
             else:
                 run_test(seq)
         else:
