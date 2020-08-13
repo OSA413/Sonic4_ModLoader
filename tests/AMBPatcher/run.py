@@ -17,7 +17,7 @@ import files_to_check
 MAIN_AMB = "test.amb"
 MONO = mono_or_wine()
 
-def run_test(test_name):
+def run_test(test_name, NO_CRASH=False):
     test_sequence = instructions.get_test(test_name=test_name,
         AMBPATCHER = PATHS[AMBPATCHER], MAIN_AMB = "sandbox/"+MAIN_AMB)
 
@@ -39,21 +39,40 @@ def run_test(test_name):
                 run_test(seq)
         else:
             if MONO: seq.insert(0, MONO)
-            subprocess.check_output(seq)
+            if NO_CRASH:
+                try:
+                    subprocess.check_output(seq)
+                except: pass
+            else:
+                subprocess.check_output(seq)
 
     return time.time() - test_time
 
 def check_files(test_name, REBUILD_SHA=False):
     lst = files_to_check.get_files(test_name, MAIN_AMB = MAIN_AMB)
     if type(lst) == str:
-        check_files(lst, REBUILD_SHA = REBUILD_SHA)
+        return check_files(lst, REBUILD_SHA = REBUILD_SHA)
     files = []
 
     for i in lst:
         if i == "#ALL":
             files += [x[8:] for x in glob.glob("sandbox/**/*", recursive=True) if os.path.isfile(x)]
         elif i.startswith("#EXCEPT:"):
-            files = [x for x in files if not x.startswith(i[8:])]
+            filtr = i[8:]
+            if filtr[-1] == "*":
+                files = [x for x in files if not x.startswith(filtr[:-1])]
+            else:
+                files.remove(filtr)
+
+    expected_files = [x[len("hashes/" + test_name) + 1:] for x in glob.glob("hashes/" + test_name + "/**/*", recursive=True) if os.path.isfile(x)]
+    actual_set = set(files)
+
+    for file in expected_files:
+        if file not in actual_set:
+            print(file)
+            print(actual_set)
+            print(files)
+            return 2
 
     for file in files:
         sha = sha256("sandbox/"+file)
@@ -84,6 +103,7 @@ def clear_sandbox():
 
 if __name__ == "__main__":
     REBUILD_SHA = len(sys.argv) > 1 and sys.argv[1] == "--rebuild-sha"
+    NO_CRASH = len(sys.argv) > 1 and sys.argv[1] == "--no-crash"
     rebuild_paths()
     EXIT_CODE = 0
 
@@ -91,7 +111,7 @@ if __name__ == "__main__":
         clear_sandbox()
         print(" " * 4 + test + " " * (20 - len(test)), end="")
         
-        test_time = run_test(test)
+        test_time = run_test(test, NO_CRASH)
         check = check_files(test, REBUILD_SHA=REBUILD_SHA)
 
         if check == 0:
@@ -104,7 +124,7 @@ if __name__ == "__main__":
             print("? No SHA file")
 
         #this is for testing
-        if test in []:
+        if test in ["extract"]:
             input("Press Enter to continue")
 
     clear_sandbox()

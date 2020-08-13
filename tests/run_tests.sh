@@ -11,7 +11,7 @@ for dir in $(ls ./); do
     [ $dir == "__pycache__" ] && continue
     echo
     echo "$dir"
-    python3 $dir"/run.py"
+    python3 $dir"/run.py" $1
     
     [ "$?" != "0" ] && EXIT_CODE=1
 

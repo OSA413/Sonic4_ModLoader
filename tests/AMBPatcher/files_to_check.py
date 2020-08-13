@@ -6,8 +6,11 @@ def get_files(test_name, MAIN_AMB=""):
         "extract_swapped": "extract",
         "add_from_dir": "add",
 
-        "ml_empty": ["#ALL", "#EXCEPT:mods"],
-        "ml_single": ["#ALL", "#EXCEPT:mods"]
+        "ml_empty": ["#ALL", "#EXCEPT:mods*"],
+        "ml_single": ["#ALL", "#EXCEPT:mods*"],
+        "ml_multiple": ["#ALL", "#EXCEPT:mods*"],
+        "ml_inversed": ["#ALL", "#EXCEPT:mods*"],
+        "ml_recover": ["#ALL", "#EXCEPT:mods*"],
     }
 
     if test_name in tests:
