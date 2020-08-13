@@ -79,7 +79,8 @@ namespace AMBPatcher
             public static void ClearLine()
             {
                 Console.CursorLeft = 0;
-                Console.Write(new string(' ', Console.WindowWidth-1));
+                if (Console.WindowWidth > 0)
+                    Console.Write(new string(' ', Console.WindowWidth-1));
                 Console.CursorLeft = 0;
             }
 
