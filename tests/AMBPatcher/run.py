@@ -2,7 +2,7 @@ import os
 import sys
 import time
 import glob
-import distutils.dir_util
+import shutil
 
 cwd = os.path.dirname(sys.argv[0])
 if cwd != "":
@@ -24,13 +24,12 @@ def run_test(test_name):
     test_time = time.time()
 
     for seq in test_sequence:
-        #print(seq)
-        #print(os.getcwd())
         if type(seq) == str:
             if seq == "#TIME":
                 test_time = time.time()
             elif seq == "#COPYMODS":
-                distutils.dir_util.copy_tree("mods", "sandbox")
+                shutil.copytree("mods/mods", "sandbox/mods")
+                shutil.copytree("mods/textures", "sandbox/textures")
             elif seq.startswith("#CWD:") and len(seq) > 5:
                 os.chdir(seq[5:])
             elif seq.startswith("#MODSINI:") and len(seq) >= 9:
@@ -50,15 +49,11 @@ def check_files(test_name, REBUILD_SHA=False):
         check_files(lst, REBUILD_SHA = REBUILD_SHA)
     files = []
 
-    print(lst)
-
     for i in lst:
         if i == "#ALL":
             files += [x[8:] for x in glob.glob("sandbox/**/*", recursive=True) if os.path.isfile(x)]
         elif i.startswith("#EXCEPT:"):
-            #print(i[8:])
             files = [x for x in files if not x.startswith(i[8:])]
-            #print(files)
 
     for file in files:
         sha = sha256("sandbox/"+file)
@@ -109,7 +104,7 @@ if __name__ == "__main__":
             print("? No SHA file")
 
         #this is for testing
-        if test in ["ml_single"]:
+        if test in []:
             input("Press Enter to continue")
 
     clear_sandbox()

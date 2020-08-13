@@ -28,7 +28,7 @@ def get_test(test_name="", AMBPATCHER="", MAIN_AMB=""):
         ".ml_start": ["#COPYMODS", "#CWD:sandbox"],
         ".ml_end": ["#CWD:.."],
         "ml_empty": [".ml_start", "#TIME", "#MODSINI:", ".ml", ".ml_end"],
-        "ml_single": [".ml_start", "#TIME", "#MODSINI:2", ".ml_end"]
+        "ml_single": [".ml_start", "#TIME", "#MODSINI:2", ".ml", ".ml_end"]
     }
     
     if test_name == "":
