@@ -65,8 +65,8 @@ cp "./dist/Sonic4ModLoader.7z" "./dist/Sonic4ModLoader_7zip-less.7z"
 #Tests
 bash ./tests/run_tests.sh
 
-EXIT_CODE="$?"
-if [ "$EXIT_CODE" != "0" ]; then
-    exit $EXIT_CODE
-fi
+#EXIT_CODE="$?"
+#if [ "$EXIT_CODE" != "0" ]; then
+#    exit $EXIT_CODE
+#fi
 
