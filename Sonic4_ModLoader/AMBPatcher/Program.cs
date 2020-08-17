@@ -1378,7 +1378,7 @@ namespace AMBPatcher
                     }
                     else ShowHelpMessage();
                 }
-                else if (args[0] == "patch")
+                else if (args[0] == "add")
                 {
                     if (File.Exists(args[1]) && File.Exists(args[2]))
                     {
@@ -1394,14 +1394,6 @@ namespace AMBPatcher
                             AMB.Patch(args[1], file);
                         }
                         Console.WriteLine("Done.");
-                    }
-                    else ShowHelpMessage();
-                }
-                else if (args[0] == "add")
-                {
-                    if (File.Exists(args[1]) && File.Exists(args[2]))
-                    {
-                        AMB.Add(args[1], args[2]);
                     }
                     else ShowHelpMessage();
                 }
