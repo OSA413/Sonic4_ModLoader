@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 using System.IO;
 using System.Collections.Generic;
@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using Common.IniReader;
 using Common.ValueUpdater;
 using Common.Launcher;
+using AMB;
 
 namespace AMBPatcher
 {
@@ -1335,13 +1336,15 @@ namespace AMBPatcher
                 }
                 else if (args[0] == "swap_endianness" && File.Exists(args[1]))
                 {
-                    AMB.SwapEndianness(args[1]);
+                    var amb = new AMB_new(args[1]);
+                    amb.Write(args[1], true);
                 }
                 else if (args[0] == "endianness" && File.Exists(args[1]))
                 {
                     Console.WriteLine("This file's endianness is...");
 
-                    if (AMB.IsLittleEndian(args[1]))
+                    var amb = new AMB_new(args[1]);
+                    if (amb.IsLittleEndian())
                         Console.WriteLine("Little endian!");
                     else
                         Console.WriteLine("Big endian!");
@@ -1350,7 +1353,8 @@ namespace AMBPatcher
                 {
                     if (Path.GetDirectoryName(args[1]) != "")
                         Directory.CreateDirectory(Path.GetDirectoryName(args[1]));
-                    AMB.Create(args[1]);
+                    var amb = new AMB_new();
+                    amb.Write(args[1]);
                 }
                 else if (args[0] == "extract_all")
                 {
@@ -1383,7 +1387,9 @@ namespace AMBPatcher
                 {
                     if (File.Exists(args[1]) && File.Exists(args[2]))
                     {
-                        AMB.Patch(args[1], args[2]);
+                        var amb = new AMB_new(args[1]);
+                        amb.Add(args[2]);
+                        amb.Write(args[1]);
                     }
                     else if (File.Exists(args[1]) && Directory.Exists(args[2]))
                     {
