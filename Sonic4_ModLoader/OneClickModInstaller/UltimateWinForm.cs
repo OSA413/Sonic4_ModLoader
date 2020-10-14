@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 
 namespace OneClickModInstaller
 {
@@ -65,7 +66,7 @@ namespace OneClickModInstaller
                 if (cfg.ContainsKey("Paths"))
                 {
                     var cfgPaths = cfg["Paths"];
-                    foreach (var p in Settings.Paths.Keys)
+                    foreach (var p in Settings.Paths.Keys.ToList())
                     {
                         ValueUpdater.UpdateIfKeyPresent(cfgPaths, p, Settings.Paths);
                         Settings.Paths[p] = Settings.Paths[p].Replace("\\", "/");
