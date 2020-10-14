@@ -1,3 +1,8 @@
+[c]Version: v0.1.4.4
+\t[b]One-Click Mod Installer[\b]
+* Crash fix when reading config file
+
+
 [c]Version: v0.1.4.3
 Change log:
 * [b]Added a lot of tests[\b]
