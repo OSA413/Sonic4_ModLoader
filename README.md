@@ -12,6 +12,7 @@ Looking for Midday build? [Get it on AppVeyor](https://ci.appveyor.com/project/O
 * [How to automatically update Mod Loader](#how-to-automatically-update-mod-loader)
 * [Bug reporting and suggestions](#bug-reporting-and-suggestions)
 * [Useful documentation for modders](#useful-documentation-for-modders)
+* [See also](#see-also)
 * [FAQ](#faq)
 
 ## What is this?
@@ -101,6 +102,10 @@ For other types of discussions contact my somewhere on the Internet.
 * [Description of file extensions](https://github.com/OSA413/Sonic4_Tools/blob/master/docs/File%20description.md)
 * [Tools by me + extra docs](https://github.com/OSA413/Sonic4_Tools)
 * [Mod examples](https://github.com/OSA413/Sonic4_ModLoader_examples)
+
+## See also
+
+* [darealshinji's rewritten launcher for Episode 1](https://github.com/darealshinji/sonic-4-launcher) so you don't have to install Java to run it.
 
 ## FAQ
 
