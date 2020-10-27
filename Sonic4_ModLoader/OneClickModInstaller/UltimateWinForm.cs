@@ -8,6 +8,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
+using Common.IniReader;
+using Common.ValueUpdater;
+
 namespace OneClickModInstaller
 {
     public partial class UltimateWinForm:Form

@@ -1,42 +1,45 @@
 ﻿using System.IO;
 using System.Collections.Generic;
 
-public static class IniReader
+namespace Common.IniReader
 {
-    public static readonly string DEFAULT_SECTION = "Default";
-
-    public static Dictionary<string, Dictionary<string, string>> Read(string path)
+    public static class IniReader
     {
-        var result = new Dictionary<string, Dictionary<string, string>>();
-        if (!File.Exists(path)) return result;
+        public static readonly string DEFAULT_SECTION = "Default";
 
-        var text = File.ReadAllLines(path);
-        string currentSection = null;
-
-        foreach (var line in text)
+        public static Dictionary<string, Dictionary<string, string>> Read(string path)
         {
-            if (line.Length == 0) continue;
-            if (line[0] == ';' || line[0] == '#') continue;
+            var result = new Dictionary<string, Dictionary<string, string>>();
+            if (!File.Exists(path)) return result;
 
-            if (line[0] == '[' && line[line.Length - 1] == ']')
-            {
-                currentSection = line.Substring(1, line.Length - 2);
-                result.Add(currentSection, new Dictionary<string, string>());
-            }
-            else
-            {
-                var ind = line.IndexOf("=");
-                if (ind == -1) continue;
+            var text = File.ReadAllLines(path);
+            string currentSection = null;
 
-                if (currentSection == null)
+            foreach (var line in text)
+            {
+                if (line.Length == 0) continue;
+                if (line[0] == ';' || line[0] == '#') continue;
+
+                if (line[0] == '[' && line[line.Length - 1] == ']')
                 {
-                    currentSection = DEFAULT_SECTION;
+                    currentSection = line.Substring(1, line.Length - 2);
                     result.Add(currentSection, new Dictionary<string, string>());
                 }
+                else
+                {
+                    var ind = line.IndexOf("=");
+                    if (ind == -1) continue;
 
-                result[currentSection].Add(line.Substring(0, ind), line.Substring(ind + 1));
+                    if (currentSection == null)
+                    {
+                        currentSection = DEFAULT_SECTION;
+                        result.Add(currentSection, new Dictionary<string, string>());
+                    }
+
+                    result[currentSection].Add(line.Substring(0, ind), line.Substring(ind + 1));
+                }
             }
+            return result;
         }
-        return result;
     }
 }

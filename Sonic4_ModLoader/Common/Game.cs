@@ -1,21 +1,24 @@
 ﻿using System.IO;
 
-public enum GAME
+namespace Common.Game
 {
-    Unknown,
-    Episode1,
-    Episode2
-}
-
-public static class Game
-{
-    public static GAME GetGame()
+    public enum GAME
     {
-        if (File.Exists("Sonic_vis.exe") && File.Exists("SonicLauncher.exe"))
-            return GAME.Episode1;
-        else if (File.Exists("Sonic.exe") && File.Exists("Launcher.exe"))
-            return GAME.Episode2;
+        Unknown,
+        Episode1,
+        Episode2
+    }
 
-        return GAME.Unknown;
+    public static class Game
+    {
+        public static GAME GetGame()
+        {
+            if (File.Exists("Sonic_vis.exe") && File.Exists("SonicLauncher.exe"))
+                return GAME.Episode1;
+            else if (File.Exists("Sonic.exe") && File.Exists("Launcher.exe"))
+                return GAME.Episode2;
+
+            return GAME.Unknown;
+        }
     }
 }

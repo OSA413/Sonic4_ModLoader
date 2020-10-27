@@ -7,6 +7,10 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 
+using Common.IniReader;
+using Common.ValueUpdater;
+using Common.MyIO;
+
 namespace Sonic4ModManager
 {
     public partial class MainForm:Form
