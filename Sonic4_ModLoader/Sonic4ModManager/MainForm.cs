@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using Common.IniReader;
 using Common.ValueUpdater;
 using Common.MyIO;
+using Common.Launcher;
 
 namespace Sonic4ModManager
 {
@@ -166,27 +167,6 @@ namespace Sonic4ModManager
             File.WriteAllLines(Path.Combine("mods","mods.ini"), checked_mods.ToArray());
         }
 
-        static bool Play()
-        {
-            bool IsThisStarted = true;
-            //Episode 1
-            if (File.Exists("Sonic_vis.exe"))
-            {
-                Process.Start("Sonic_vis.exe");
-            }
-            //Episode 2
-            else if (File.Exists("Sonic.exe"))
-            {
-                Process.Start("Sonic.exe");
-            }
-            else
-            {
-                IsThisStarted = false;
-            }
-
-            return IsThisStarted;
-        }
-        
         private void ChangePriority(int direction)
         {
             for (int i = 0; i < listMods.SelectedIndices.Count; i++)
@@ -549,7 +529,7 @@ namespace Sonic4ModManager
         private void bSaveAndPlay_Click(object sender, EventArgs e)
         {
             Save();
-            if (Play())
+            if (Launcher.LaunchGame())
                 Application.Exit();
         }
 

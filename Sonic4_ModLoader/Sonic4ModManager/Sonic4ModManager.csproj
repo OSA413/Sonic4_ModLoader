@@ -122,6 +122,9 @@
     <Compile Include="..\Common\ValueUpdater.cs">
       <Link>Common\ValueUpdater.cs</Link>
     </Compile>
+    <Compile Include="..\Common\Launcher.cs">
+      <Link>Launcher.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
