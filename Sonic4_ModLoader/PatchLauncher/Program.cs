@@ -1,5 +1,7 @@
-﻿using System.Diagnostics;
-using System.IO;
+﻿using System;
+using System.Diagnostics;
+
+using Common.Launcher;
 
 namespace PatchLauncher
 {
@@ -8,17 +10,8 @@ namespace PatchLauncher
         static void Main()
         {
             Process.Start("AMBPatcher").WaitForExit();
-
-            if (File.Exists("Sonic_vis.orig.exe"))
-            {
-                if (File.Exists("main.conf"))
-                    Process.Start("Sonic_vis.orig.exe");
-                else
-                    Process.Start("SonicLauncher.orig.exe");
-            }
-
-            else if (File.Exists("Sonic.orig.exe"))
-                Process.Start("Sonic.orig.exe");
+            if (!Launcher.LaunchGame())
+                Console.Write("No game executable found. Press Enter to exit.");
         }
     }
 }
