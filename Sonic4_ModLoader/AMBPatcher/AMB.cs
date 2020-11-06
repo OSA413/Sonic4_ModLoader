@@ -34,7 +34,7 @@ namespace AMB
             return FileIsLittleEndian;
         }
 
-        public void ReverseEndianness(byte[] binary = null)
+        public void SwapEndianness(byte[] binary = null)
         {
             if (binary == null)
                 binary = source;
@@ -96,7 +96,7 @@ namespace AMB
             if (!IsSourceAMB()) return;
 
             if (BitConverter.IsLittleEndian != IsLittleEndian())
-                ReverseEndianness();
+                SwapEndianness();
             else
                 SameEndianness = true;
 
@@ -120,6 +120,7 @@ namespace AMB
         {
             File.WriteAllBytes(filePath, Write(swapEndianness));
         }
+
         public byte[] Write(bool swapEndianness = false)
         {
             var result = new byte[Length];
@@ -146,8 +147,8 @@ namespace AMB
                 pointers.name += 0x20;
             }
 
-            if (swapEndianness)
-                ReverseEndianness(result);
+            if (swapEndianness && SameEndianness)
+                SwapEndianness(result);
 
             return result;
         }
