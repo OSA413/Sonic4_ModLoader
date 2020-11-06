@@ -3,11 +3,11 @@ using System.Text;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using System.Diagnostics;
 using System.Security.Cryptography;
 
 using Common.IniReader;
 using Common.ValueUpdater;
+using Common.Launcher;
 
 namespace AMBPatcher
 {
@@ -983,10 +983,9 @@ namespace AMBPatcher
                         ProgressBar.PrintProgress(0, 100, "Asking CsbEditor to unpack " + file_name);
 
                         //Needs CSB Editor (from SonicAudioTools) to work
-                        ProcessStartInfo startInfo = new ProcessStartInfo();
-                        startInfo.FileName = "CsbEditor.exe";
-                        startInfo.Arguments = file_name;
-                        Process.Start(startInfo).WaitForExit();
+                        //FIXME
+                        if (!Launcher.LaunchCsbEditor(file_name))
+                            throw new Exception("CsbEditor not found (PatchAll)");
 
                         for (int i = 0; i < mod_files.Count; i++)
                         {
@@ -1001,8 +1000,7 @@ namespace AMBPatcher
 
                         Log.Write("Asking CsbEditor to repack");
                         ProgressBar.PrintProgress(99, 100, "Asking CsbEditor to repack " + file_name);
-                        startInfo.Arguments = file_name.Substring(0, file_name.Length - 4);
-                        Process.Start(startInfo).WaitForExit();
+                        Launcher.LaunchCsbEditor(file_name.Substring(0, file_name.Length - 4));
                     }
                     else Log.Write("Not changed");
                 }

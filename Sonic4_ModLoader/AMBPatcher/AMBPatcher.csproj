@@ -52,6 +52,9 @@
     <Compile Include="..\Common\Mod.cs">
       <Link>Common\Mod.cs</Link>
     </Compile>
+    <Compile Include="..\Common\Launcher.cs">
+      <Link>Common\Launcher.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

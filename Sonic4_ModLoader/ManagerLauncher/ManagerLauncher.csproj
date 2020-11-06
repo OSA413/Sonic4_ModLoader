@@ -84,7 +84,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="..\Common\Launcher.cs">
-      <Link>Launcher.cs</Link>
+      <Link>Common\Launcher.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>
@@ -92,6 +92,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="icon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Common\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

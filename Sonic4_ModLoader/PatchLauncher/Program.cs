@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 
 using Common.Launcher;
 
@@ -9,7 +8,7 @@ namespace PatchLauncher
     {
         static void Main()
         {
-            Process.Start("AMBPatcher").WaitForExit();
+            Launcher.LaunchAMBPatcher();
             if (!Launcher.LaunchGame())
                 Console.Write("No game executable found. Press Enter to exit.");
         }

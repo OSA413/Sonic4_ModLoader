@@ -69,5 +69,23 @@ namespace Common.Launcher
                 return false;
             return true;
         }
+
+        public static bool LaunchCsbEditor(string args="")
+        {
+            if (File.Exists("CsbEditor.exe"))
+                Process.Start("CsbEditor.exe", args).WaitForExit();
+            else
+                return false;
+            return true;
+        }
+
+        public static bool LaunchAMBPatcher(string args="")
+        {
+            if (File.Exists("AMBPatcher.exe"))
+                Process.Start("AMBPatcher.exe", args).WaitForExit();
+            else
+                return false;
+            return true;
+        }
     }
 }
