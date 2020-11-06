@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
-using System.IO;
 using System.Windows.Forms;
+
+using Common.Launcher;
 
 namespace ManagerLauncher
 {
@@ -15,48 +15,20 @@ namespace ManagerLauncher
 
         private void bPlay_Click(object sender, EventArgs e)
         {
-            //Episode 1
-            if (File.Exists("Sonic_vis.exe"))
-            {
-                if (File.Exists("main.conf"))
-                {
-                    Process.Start("Sonic_vis.exe");
-                }
-                else
-                {
-                    Process.Start("SonicLauncher.orig.exe");
-                }
-            }
-            //Episode 2
-            else if (File.Exists("Sonic.exe"))
-            {
-                Process.Start("Sonic.exe");
-            }
-            Application.Exit();
+            if (Launcher.LaunchGame())
+                Application.Exit();
         }
 
         private void bConf_Click(object sender, EventArgs e)
         {
-            //Episode 1
-            if (File.Exists("SonicLauncher.orig.exe"))
-            {
-                Process.Start("SonicLauncher.orig.exe");
-            }
-            //Episode 2
-            else if (File.Exists("Launcher.orig.exe"))
-            {
-                Process.Start("Launcher.orig.exe");
-            }
-            Application.Exit();
+            if (Launcher.LaunchConfig())
+                Application.Exit();
         }
 
         private void bManager_Click(object sender, EventArgs e)
         {
-            if (File.Exists("Sonic4ModManager.exe"))
-            {
-                Process.Start("Sonic4ModManager.exe");
-            }
-            Application.Exit();
+            if (Launcher.LaunchModManager())
+                Application.Exit();
         }
     }
 }

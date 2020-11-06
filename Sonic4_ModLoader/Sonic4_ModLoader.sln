@@ -19,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{A162D9
 		Common\Mod.cs = Common\Mod.cs
 		Common\MyIO.cs = Common\MyIO.cs
 		Common\ValueUpdater.cs = Common\ValueUpdater.cs
-		Common\Game.cs = Common\Game.cs
+		Common\Launcher.cs = Common\Launcher.cs
 	EndProjectSection
 EndProject
 Global
