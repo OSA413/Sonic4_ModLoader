@@ -16,7 +16,6 @@ namespace AMBPatcher
     {
         public static bool GenerateLog;
         public static bool SHACheck;
-        public static int  SHAType;
         
         public static class Log
         {
@@ -40,7 +39,6 @@ namespace AMBPatcher
                 ProgressBar.Enabled = true;
                 GenerateLog = false;
                 SHACheck    = true;
-                SHAType     = 1;
 
                 var cfg = IniReader.Read("AMBPatcher.cfg");
                 if (!cfg.ContainsKey(IniReader.DEFAULT_SECTION)) return;
@@ -48,7 +46,6 @@ namespace AMBPatcher
                 ValueUpdater.UpdateIfKeyPresent(cfg, "ProgressBar", ref ProgressBar.Enabled);
                 ValueUpdater.UpdateIfKeyPresent(cfg, "GenerateLog", ref GenerateLog);
                 ValueUpdater.UpdateIfKeyPresent(cfg, "SHACheck", ref SHACheck);
-                ValueUpdater.UpdateIfKeyPresent(cfg, "SHAType", ref SHAType);
             }
         }
 
@@ -111,23 +108,10 @@ namespace AMBPatcher
             }
         }
 
-        public static SHA1CryptoServiceProvider SHA1csp = new SHA1CryptoServiceProvider();
-        public static SHA256CryptoServiceProvider SHA256csp = new SHA256CryptoServiceProvider();
-        public static SHA384CryptoServiceProvider SHA384csp = new SHA384CryptoServiceProvider();
-        public static SHA512CryptoServiceProvider SHA512csp = new SHA512CryptoServiceProvider();
-
+        public static SHA1CryptoServiceProvider SHAcsp = new SHA1CryptoServiceProvider();
         static string Sha(byte[] file)
         {
-            byte[] hash;
-
-            switch (SHAType)
-            {
-                case 512: hash = SHA512csp.ComputeHash(file); break;
-                case 384: hash = SHA384csp.ComputeHash(file); break;
-                case 256: hash = SHA256csp.ComputeHash(file); break;
-                default:  hash = SHA1csp.ComputeHash(file); break;
-            }
-
+            var hash = SHAcsp.ComputeHash(file);
             return BitConverter.ToString(hash).Replace("-","");
         }
         
@@ -1281,7 +1265,6 @@ namespace AMBPatcher
                 {
                     if (File.Exists(args[1]))
                     {
-
                         Directory.CreateDirectory(args[1] + "_extracted");
                         AMB.Extract(args[1], args[1] + "_extracted");
                     }
@@ -1291,13 +1274,13 @@ namespace AMBPatcher
                 {
                     if (File.Exists(args[1]))
                     {
-                        var data = AMB.Read(args[1]);
+                        var amb = new AMB_new(args[1]);
 
-                        for (int i = 0; i < data.Count; i++)
+                        foreach (var o in amb.Objects)
                         {
-                            Console.WriteLine("\nFile name:    " + data[i].Name);
-                            Console.WriteLine("File pointer: " + data[i].Pointer + "\t(0x" + data[i].Pointer.ToString("X") + ")");
-                            Console.WriteLine("File length:  " + data[i].Length  + "\t(0x" + data[i].Length.ToString("X") + ")");
+                            Console.WriteLine("\nFile name:    " + o.Name);
+                            Console.WriteLine("File pointer: " + o.Pointer + "\t(0x" + o.Pointer.ToString("X") + ")");
+                            Console.WriteLine("File length:  " + o.Length  + "\t(0x" + o.Length.ToString("X") + ")");
                         }
                     }
                     else ShowHelpMessage();

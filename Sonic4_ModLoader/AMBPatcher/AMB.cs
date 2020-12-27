@@ -11,9 +11,9 @@ namespace AMB
         private byte[] source;
         private string ambPath;
         public bool SameEndianness = true;
-        List<BinaryObject> objects = new List<BinaryObject>();
+        public List<BinaryObject> Objects = new List<BinaryObject>();
         //TODO: use uint
-        public int Length { get => PredictPointers().name + objects.Count * 0x20;}
+        public int Length { get => PredictPointers().name + Objects.Count * 0x20;}
 
         private bool IsSourceAMB()
         {
@@ -70,8 +70,8 @@ namespace AMB
 
         private (int list, int data, int name) PredictPointers()
         {
-            int data = 0x20 + 0x10 * objects.Count;
-            var ptr = data + objects.Sum(x => x.LengthNice);
+            int data = 0x20 + 0x10 * Objects.Count;
+            var ptr = data + Objects.Sum(x => x.LengthNice);
             return (0x20, data, ptr);
         }
 
@@ -112,7 +112,7 @@ namespace AMB
                 var objLen = BitConverter.ToInt32(source, listPtr + 0x10 * i + 4);
                 var newObj = new BinaryObject(source, objPtr, objLen);
                 newObj.Name = ReadString(source, namePtr + 0x20 * i);
-                objects.Add(newObj);
+                Objects.Add(newObj);
             }
 
             if (!SameEndianness)
@@ -131,12 +131,12 @@ namespace AMB
 
             Array.Copy(Encoding.ASCII.GetBytes("#AMB"), 0, result, 0, 4);
             Array.Copy(BitConverter.GetBytes(0x1304), 0, result, 0x04, 4); //Endianness identifier (at least for AMBPatcher)
-            Array.Copy(BitConverter.GetBytes(objects.Count), 0, result, 0x10, 4);
+            Array.Copy(BitConverter.GetBytes(Objects.Count), 0, result, 0x10, 4);
             Array.Copy(BitConverter.GetBytes(pointers.list), 0, result, 0x14, 4);
             Array.Copy(BitConverter.GetBytes(pointers.data), 0, result, 0x18, 4);
             Array.Copy(BitConverter.GetBytes(pointers.name), 0, result, 0x1C, 4);
 
-            foreach (var o in objects)
+            foreach (var o in Objects)
             {
                 Array.Copy(BitConverter.GetBytes(pointers.data), 0, result, pointers.list, 4);
                 Array.Copy(BitConverter.GetBytes(o.LengthNice), 0, result, pointers.list + 4, 4);
@@ -183,16 +183,16 @@ namespace AMB
         {
             var newObj = new BinaryObject(filePath);
             newObj.Name = GetRelativeName(filePath);
-            objects.Add(newObj);
+            Objects.Add(newObj);
         }
 
-        public void Delete(int objInd) => objects.RemoveAt(objInd);
+        public void Delete(int objInd) => Objects.RemoveAt(objInd);
 
         public void Delete(string objName)
         {
             var ind = 0;
-            for (int i = 0; i < objects.Count; i++)
-                if (objects[i].Name == objName)
+            for (int i = 0; i < Objects.Count; i++)
+                if (Objects[i].Name == objName)
                 {
                     ind = i;
                     break;
@@ -201,6 +201,8 @@ namespace AMB
             if (ind != -1)
                 Delete(ind);
         }
+
+
     }
 
     public class BinaryObject
