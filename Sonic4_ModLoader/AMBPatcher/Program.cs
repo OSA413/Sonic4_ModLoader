@@ -1251,10 +1251,7 @@ namespace AMBPatcher
                 else
                 {
                     if (File.Exists(args[0]))
-                    {
-                        Directory.CreateDirectory(args[0] + "_extracted");
-                        AMB.Extract(args[0], args[0] + "_extracted");
-                    }
+                        new AMB_new(args[0]).Extract();
                     else ShowHelpMessage();
                 }
             }
@@ -1297,31 +1294,21 @@ namespace AMBPatcher
                     Console.WriteLine("Done.");
                 }
                 else if (args[0] == "swap_endianness" && File.Exists(args[1]))
-                {
-                    var amb = new AMB_new(args[1]);
-                    amb.Write(args[1], true);
-                }
+                    new AMB_new(args[1]).Write(args[1], true);
+
                 else if (args[0] == "endianness" && File.Exists(args[1]))
                 {
-                    Console.WriteLine("This file's endianness is...");
-
-                    var amb = new AMB_new(args[1]);
-                    if (amb.IsLittleEndian())
-                        Console.WriteLine("Little endian!");
+                    if (new AMB_new(args[1]).IsLittleEndian())
+                        Console.WriteLine("Little endian");
                     else
-                        Console.WriteLine("Big endian!");
+                        Console.WriteLine("Big endian");
                 }
+
                 else if (args[0] == "create")
-                {
-                    if (Path.GetDirectoryName(args[1]) != "")
-                        Directory.CreateDirectory(Path.GetDirectoryName(args[1]));
-                    var amb = new AMB_new();
-                    amb.Write(args[1]);
-                }
+                    new AMB_new().Write(args[1]);
+
                 else if (args[0] == "extract_all")
-                {
                     AMB.ExtractAll(args[1]);
-                }
 
                 else if (args[0] == "extract_wp")
                 {

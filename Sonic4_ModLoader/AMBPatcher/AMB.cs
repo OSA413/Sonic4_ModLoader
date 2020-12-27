@@ -121,6 +121,8 @@ namespace AMB
 
         public void Write(string filePath, bool swapEndianness = false)
         {
+            if (Path.GetDirectoryName(filePath) != "")
+                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
             File.WriteAllBytes(filePath, Write(swapEndianness));
         }
 
@@ -202,7 +204,16 @@ namespace AMB
                 Delete(ind);
         }
 
+        public void Extract(string output = null)
+        {
+            if (output == null)
+                output = ambPath + "_extracted";
 
+            Directory.CreateDirectory(output);
+
+            foreach (var o in Objects)
+                File.WriteAllBytes(Path.Combine(output, o.Name), o.Source.Skip(o.Pointer).Take(o.Length).ToArray());
+        }
     }
 
     public class BinaryObject
