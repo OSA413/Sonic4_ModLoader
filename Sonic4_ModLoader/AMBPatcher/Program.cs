@@ -720,12 +720,6 @@ namespace AMBPatcher
                 File.WriteAllBytes(file_name, raw_file);
             }
 
-            public static void Add(string file_name, string mod_file)
-            {
-                byte[] raw_file = AMB.Add(File.ReadAllBytes(file_name), file_name, mod_file, mod_file);
-                File.WriteAllBytes(file_name, raw_file);
-            }
-
             //////////////////
             //Get endianness//
             //////////////////
@@ -737,11 +731,6 @@ namespace AMBPatcher
                     FileIsLittleEndian = !FileIsLittleEndian;
 
                 return FileIsLittleEndian;
-            }
-
-            public static bool IsLittleEndian(string FileName)
-            {
-                return AMB.IsLittleEndian(File.ReadAllBytes(FileName));
             }
 
             ///////////////////
@@ -783,11 +772,6 @@ namespace AMBPatcher
                     Array.Reverse(raw_file, pointer, 4);
 
                 return raw_file;
-            }
-
-            public static void SwapEndianness(string FileName)
-            {
-                File.WriteAllBytes(FileName, SwapEndianness(File.ReadAllBytes(FileName)));
             }
 
             ////////////////////////
@@ -917,11 +901,6 @@ namespace AMBPatcher
                 Array.Copy(bytes0x20, 0, raw_file, 0x1C, 4);
 
                 return raw_file;
-            }
-
-            public static void Create(string file_name)
-            {
-                File.WriteAllBytes(file_name, AMB.Create());
             }
 
             ////////////////////////////////////

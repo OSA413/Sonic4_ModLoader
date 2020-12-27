@@ -127,8 +127,7 @@ namespace AMB
             var pointers = PredictPointers();
 
             Array.Copy(Encoding.ASCII.GetBytes("#AMB"), 0, result, 0, 4);
-            //Endianness identifier (at least for AMBPatcher)
-            Array.Copy(BitConverter.GetBytes(0x1304), 0, result, 0x04, 4);
+            Array.Copy(BitConverter.GetBytes(0x1304), 0, result, 0x04, 4); //Endianness identifier (at least for AMBPatcher)
             Array.Copy(BitConverter.GetBytes(objects.Count), 0, result, 0x10, 4);
             Array.Copy(BitConverter.GetBytes(pointers.list), 0, result, 0x14, 4);
             Array.Copy(BitConverter.GetBytes(pointers.data), 0, result, 0x18, 4);
