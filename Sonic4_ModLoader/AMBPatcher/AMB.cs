@@ -10,7 +10,7 @@ namespace AMB
     {
         private byte[] source;
         private string ambPath;
-        public bool SameEndianness;
+        public bool SameEndianness = true;
         List<BinaryObject> objects = new List<BinaryObject>();
         //TODO: use uint
         public int Length { get => PredictPointers().name + objects.Count * 0x20;}
@@ -95,10 +95,10 @@ namespace AMB
             source = File.ReadAllBytes(fileName);
             if (!IsSourceAMB()) return;
 
-            if (BitConverter.IsLittleEndian != IsLittleEndian())
+            SameEndianness = BitConverter.IsLittleEndian == IsLittleEndian();
+
+            if (!SameEndianness)
                 SwapEndianness();
-            else
-                SameEndianness = true;
 
             var objNum = BitConverter.ToInt32(source, 0x10);
             var listPtr = BitConverter.ToInt32(source, 0x14);
@@ -114,6 +114,9 @@ namespace AMB
                 newObj.Name = ReadString(source, namePtr + 0x20 * i);
                 objects.Add(newObj);
             }
+
+            if (!SameEndianness)
+                SwapEndianness();
         }
 
         public void Write(string filePath, bool swapEndianness = false)
@@ -146,7 +149,7 @@ namespace AMB
                 pointers.name += 0x20;
             }
 
-            if (swapEndianness && SameEndianness)
+            if (swapEndianness == SameEndianness)
                 SwapEndianness(result);
 
             return result;
