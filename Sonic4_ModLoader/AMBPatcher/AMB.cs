@@ -214,6 +214,24 @@ namespace AMB
             foreach (var o in Objects)
                 File.WriteAllBytes(Path.Combine(output, o.Name), o.Source.Skip(o.Pointer).Take(o.Length).ToArray());
         }
+
+        public static string MakeNameSafe(string rawName)
+        {
+            //removing ".\" in the names (Windows can't create "." folders)
+            //sometimes they can have several ".\" in the names
+            //Turns out there's a double dot directory in file names
+            //And double backslash in file names
+            int safeIndex = 0;
+            while (rawName[safeIndex] == '.' || rawName[safeIndex] == '\\' || rawName[safeIndex] == '/')
+                safeIndex++;
+
+            if (safeIndex == 0)
+                return rawName;
+            return rawName.Substring(safeIndex);
+        }
+
+        public void Remove(int index) => Objects.RemoveAt(index);
+        public void Remove(string objectName) => Remove(Objects.FindIndex(x=>x.Name == objectName));
     }
 
     public class BinaryObject

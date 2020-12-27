@@ -261,21 +261,6 @@ namespace AMBPatcher
                             ParentName:    ParentName,
                             ParentIndex:   ParentIndex);
                 }
-
-                public static string MakeNameSafe(string rawName)
-                {
-                    //removing ".\" in the names (Windows can't create "." folders)
-                    //sometimes they can have several ".\" in the names
-                    //Turns out there's a double dot directory in file names
-                    //And double backslash in file names
-                    int safeIndex = 0;
-                    while (rawName[safeIndex] == '.' || rawName[safeIndex] == '\\' || rawName[safeIndex] == '/' )
-                        safeIndex++;
-
-                    if (safeIndex == 0)
-                        return rawName;
-                    return rawName.Substring(safeIndex);
-                }
             }
 
             ////////
@@ -341,7 +326,8 @@ namespace AMBPatcher
 
                     //Cleaning up the names
                     for (int i = 0; i < files_names.Count; i++)
-                        files_names[i] = AMB.Internal.MakeNameSafe(files_names[i]);
+                        files_names[i] = AMB_new.MakeNameSafe(files_names[i]);
+                    
                 }
                 else
                 {
@@ -358,11 +344,6 @@ namespace AMBPatcher
                 return result;
             }
             
-            public static List<(string Name, int Pointer, int Length)> Read(string file_name)
-            {
-                return AMB.Read(File.ReadAllBytes(file_name));
-            }
-
             //This method is used for Windows Phone version AMB files
             public static List<(string Name, int Pointer, int Length)> ReadWP(byte[] rawFile)
             {
@@ -1326,10 +1307,8 @@ namespace AMBPatcher
                 if (args[0] == "extract")
                 {
                     if (File.Exists(args[1]))
-                    {
-                        Directory.CreateDirectory(args[2]);
-                        AMB.Extract(args[1], args[2]);
-                    }
+                        new AMB_new(args[1]).Extract(args[2]);
+
                     else ShowHelpMessage();
                 }
                 else if (args[0] == "add")
@@ -1357,8 +1336,10 @@ namespace AMBPatcher
                 {
                     if (File.Exists(args[1]))
                     {
-                        AMB.Delete(args[1], args[2]);
-                    } else ShowHelpMessage();
+                        var amb = new AMB_new(args[1]);
+                        amb.Remove(args[2]);
+                        amb.Write();
+                    }else ShowHelpMessage();
                 }
                 else ShowHelpMessage();
             }
