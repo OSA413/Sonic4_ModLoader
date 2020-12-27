@@ -181,28 +181,28 @@ namespace AMB
             return InternalName;
         }
 
-        public void Add(string filePath)
+        public void Add(string filePath, string newName = null)
         {
+            if (newName != null)
+            {
+                var index = Objects.FindIndex(x=>x.Name == newName);
+                if (index >= 0)
+                {
+                    Replace(filePath, newName);
+                    return;
+                }
+            }
             var newObj = new BinaryObject(filePath);
             newObj.Name = GetRelativeName(filePath);
+            if (newName != null)
+                newObj.Name = newName;
             Objects.Add(newObj);
         }
 
-        public void Delete(int objInd) => Objects.RemoveAt(objInd);
-
-        public void Delete(string objName)
-        {
-            var ind = 0;
-            for (int i = 0; i < Objects.Count; i++)
-                if (Objects[i].Name == objName)
-                {
-                    ind = i;
-                    break;
-                }
-
-            if (ind != -1)
-                Delete(ind);
-        }
+        //TODO this won't work for nested files
+        public void Replace(BinaryObject bo, int targetIndex) => Objects[targetIndex] = bo;
+        public void Replace(BinaryObject bo, string targetName) => Replace(bo, Objects.FindIndex(x => x.Name == targetName));
+        public void Replace(string filePath, string targetIndex) => Replace(new BinaryObject(filePath), targetIndex);
 
         public void Extract(string output = null)
         {
