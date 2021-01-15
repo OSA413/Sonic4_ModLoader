@@ -15,13 +15,13 @@ namespace AMB
         //TODO: use uint
         public int Length { get => PredictPointers().name + Objects.Count * 0x20;}
 
-        private bool IsSourceAMB()
+        private bool IsSourceAMB(int ptr=0)
         {
-            return source.Length >= 0x20
-                && source[0] == '#'
-                && source[1] == 'A'
-                && source[2] == 'M'
-                && source[3] == 'B';
+            return source.Length - ptr >= 0x20
+                && source[ptr + 0] == '#'
+                && source[ptr + 1] == 'A'
+                && source[ptr + 2] == 'M'
+                && source[ptr + 3] == 'B';
         }
 
         public bool IsLittleEndian(byte[] binary = null)
@@ -34,7 +34,7 @@ namespace AMB
             return FileIsLittleEndian;
         }
 
-        public void SwapEndianness(byte[] binary = null)
+        public void SwapEndianness(byte[] binary = null, int ptr=0)
         {
             if (binary == null)
                 binary = source;
@@ -42,15 +42,15 @@ namespace AMB
 
             if (!swapHeader)
             {
-                Array.Reverse(binary, 0x4, 4);
-                Array.Reverse(binary, 0x10, 4);
-                Array.Reverse(binary, 0x14, 4);
-                Array.Reverse(binary, 0x18, 4);
-                Array.Reverse(binary, 0x1C, 4);
+                Array.Reverse(binary, ptr + 0x4, 4);
+                Array.Reverse(binary, ptr + 0x10, 4);
+                Array.Reverse(binary, ptr + 0x14, 4);
+                Array.Reverse(binary, ptr + 0x18, 4);
+                Array.Reverse(binary, ptr + 0x1C, 4);
             }
 
-            var objNum = BitConverter.ToInt32(binary, 0x10);
-            var listPointer = BitConverter.ToInt32(binary, 0x14);
+            var objNum = BitConverter.ToInt32(binary, ptr + 0x10);
+            var listPointer = BitConverter.ToInt32(binary, ptr + 0x14);
 
             for (int i = 0; i < objNum; i++)
             {
@@ -60,11 +60,11 @@ namespace AMB
 
             if (swapHeader)
             {
-                Array.Reverse(binary, 0x4, 4);
-                Array.Reverse(binary, 0x10, 4);
-                Array.Reverse(binary, 0x14, 4);
-                Array.Reverse(binary, 0x18, 4);
-                Array.Reverse(binary, 0x1C, 4);
+                Array.Reverse(binary, ptr + 0x4, 4);
+                Array.Reverse(binary, ptr + 0x10, 4);
+                Array.Reverse(binary, ptr + 0x14, 4);
+                Array.Reverse(binary, ptr + 0x18, 4);
+                Array.Reverse(binary, ptr + 0x1C, 4);
             }
         }
 
@@ -90,9 +90,10 @@ namespace AMB
 
         public AMB_new() {}
 
-        public AMB_new(string fileName)
+        public AMB_new(string fileName) : this(File.ReadAllBytes(fileName)) { }
+
+        public AMB_new(byte[] source, int sourcePtr=0)
         {
-            source = File.ReadAllBytes(fileName);
             if (!IsSourceAMB()) return;
 
             SameEndianness = BitConverter.IsLittleEndian == IsLittleEndian();
@@ -100,10 +101,10 @@ namespace AMB
             if (!SameEndianness)
                 SwapEndianness();
 
-            var objNum = BitConverter.ToInt32(source, 0x10);
-            var listPtr = BitConverter.ToInt32(source, 0x14);
-            var dataPtr = BitConverter.ToInt32(source, 0x18);
-            var namePtr = BitConverter.ToInt32(source, 0x1C);
+            var objNum = BitConverter.ToInt32(source, sourcePtr + 0x10) + sourcePtr;
+            var listPtr = BitConverter.ToInt32(source, sourcePtr + 0x14) + sourcePtr;
+            var dataPtr = BitConverter.ToInt32(source, sourcePtr + 0x18) + sourcePtr;
+            var namePtr = BitConverter.ToInt32(source, sourcePtr + 0x1C) + sourcePtr;
 
             for (int i = 0; i < objNum; i++)
             {
@@ -111,6 +112,8 @@ namespace AMB
                 if (objPtr == 0) continue;
                 var objLen = BitConverter.ToInt32(source, listPtr + 0x10 * i + 4);
                 var newObj = new BinaryObject(source, objPtr, objLen);
+                if (IsSourceAMB(objPtr))
+                    newObj.Amb = new AMB_new(source, objPtr);
                 newObj.Name = ReadString(source, namePtr + 0x20 * i);
                 Objects.Add(newObj);
             }
@@ -237,8 +240,8 @@ namespace AMB
     public class BinaryObject
     {
         public string Name;
-        public bool isAMB;
-        AMB_new Amb;
+        public bool isAMB { get => Amb == null; }
+        public AMB_new Amb;
 
         public byte[] Source {get; private set;}
         //TODO: use uint
