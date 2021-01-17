@@ -109,13 +109,13 @@ namespace AMB
 
             for (int i = 0; i < objNum; i++)
             {
-                var objPtr = BitConverter.ToInt32(source, listPtr + 0x10 * i);
+                var objPtr = BitConverter.ToInt32(source, listPtr + 0x10 * i) + sourcePtr;
                 if (objPtr == 0) continue;
                 var objLen = BitConverter.ToInt32(source, listPtr + 0x10 * i + 4);
                 var newObj = new BinaryObject(source, objPtr, objLen);
+                newObj.Name = MakeNameSafe(ReadString(source, namePtr + 0x20 * i));
                 if (IsSourceAMB(objPtr))
                     newObj.Amb = new AMB_new(source, objPtr);
-                newObj.Name = MakeNameSafe(ReadString(source, namePtr + 0x20 * i));
                 Objects.Add(newObj);
             }
 
