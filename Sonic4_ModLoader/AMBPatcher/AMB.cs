@@ -115,7 +115,7 @@ namespace AMB
                 var newObj = new BinaryObject(source, objPtr, objLen);
                 if (IsSourceAMB(objPtr))
                     newObj.Amb = new AMB_new(source, objPtr);
-                newObj.Name = ReadString(source, namePtr + 0x20 * i);
+                newObj.Name = MakeNameSafe(ReadString(source, namePtr + 0x20 * i));
                 Objects.Add(newObj);
             }
 
@@ -203,10 +203,8 @@ namespace AMB
             Objects.Add(newObj);
         }
 
-        public AMB_new FindObject(string MainFileName, string objectName, AMB_new parent = null)
+        public AMB_new FindObject(string MainFileName, string objectName)
         {
-            if (parent == null) parent = this;
-
             string InternalName;
 
             //Turning "C:\1\2\3" into {"C:","1","2","3"}
@@ -230,11 +228,11 @@ namespace AMB
 
             int InternalIndex = Objects.FindIndex(x => x.Name == InternalName);
             if (InternalIndex != -1)
-                return parent.Objects[InternalIndex].Amb;
+                return Objects[InternalIndex].Amb;
 
             var ParentIndex = Objects.FindIndex(x => x.Name == InternalName.Split('\\').First());
             if (ParentIndex != -1)
-                return FindObject(Objects[ParentIndex].Name, objectName, parent.Objects[ParentIndex].Amb);
+                return Objects[ParentIndex].Amb.FindObject(Objects[ParentIndex].Name, objectName);
 
             return null;
         }
