@@ -18,18 +18,15 @@ namespace Sonic4ModManager
     {
         public static class Settings
         {
-            public static bool ModLoaderInstalled;
             public static bool CheckOnlineUpdates;
 
             public static void Load()
             {
-                Settings.ModLoaderInstalled = false;
                 Settings.CheckOnlineUpdates = false;
 
                 var cfg = IniReader.Read("ModManager.cfg");
                 if (!cfg.ContainsKey(IniReader.DEFAULT_SECTION)) return;
 
-                ValueUpdater.UpdateIfKeyPresent(cfg, "ModLoaderInstalled", ref Settings.ModLoaderInstalled);
                 ValueUpdater.UpdateIfKeyPresent(cfg, "CheckOnlineUpdates", ref Settings.CheckOnlineUpdates);
             }
 
@@ -37,9 +34,7 @@ namespace Sonic4ModManager
             {
                 var text = new List<string> { };
 
-                text.Add("ModLoaderInstalled="  + Convert.ToInt32(Settings.ModLoaderInstalled));
-                text.Add("CheckOnlineUpdates="  + Convert.ToInt32(Settings.CheckOnlineUpdates));
-                
+                text.Add("CheckOnlineUpdates="  + Convert.ToInt32(Settings.CheckOnlineUpdates));                
                 File.WriteAllLines("ModManager.cfg", text);
             }
         }
@@ -65,13 +60,9 @@ namespace Sonic4ModManager
         public void SetModPriority()
         {
             if (Directory.Exists("mods"))
-            {
                 bOpenExplorer.Enabled = true;
-            }
             else
-            {
                 bOpenExplorer.Enabled = false;
-            }
 
             if (File.Exists(@"mods\mods.ini"))
             {
@@ -154,16 +145,12 @@ namespace Sonic4ModManager
         {
             List<string> checked_mods = new List<string>();
             for (int i = 0; i < listMods.Items.Count; i++)
-            {
                 if (listMods.Items[i].Checked)
-                {
                     checked_mods.Insert(0, listMods.Items[i].SubItems[3].Text);
-                }
-            }
+
             if (!Directory.Exists("mods"))
-            {
                 Directory.CreateDirectory("mods");
-            }
+
             File.WriteAllLines(Path.Combine("mods","mods.ini"), checked_mods.ToArray());
         }
 
@@ -194,6 +181,7 @@ namespace Sonic4ModManager
             for (int i = 0; i < listMods.Items.Count; i++)
             {
                 //I know that using it is not the best solution but they are at least more random
+                //TODO: remove later
                 Thread.Sleep(1);
                 listMods.MoveItem(i, rnd.Next(listMods.Items.Count));
             }
@@ -211,60 +199,25 @@ namespace Sonic4ModManager
                     listMods.MoveItem(i, 0);
         }
 
-        static string WhereAmI()
-        {
-            string where = "dunno";
-
-            if (File.Exists("Sonic_vis.exe") && File.Exists("SonicLauncher.exe"))
-                where = "Episode 1";
-            else if (File.Exists("Sonic.exe") && File.Exists("Launcher.exe"))
-                where = "Episode 2";
-
-            return where;
-        }
-
-        static string GetGame()
-        {
-            switch (WhereAmI())
-            {
-                case "Episode 1":   return "ep1";
-                case "Episode 2":   return "ep2";
-                default:            return WhereAmI();
-            }
-        }
-
         public static int GetInstallationStatus()
         {
-            /* status description
-             * -2   = This directory is not not a game directory
-             * -1   = First launch (.cfg file not present)
-             * 0    = Not installed
-             * 1    = Installed
-             */
-
-
-            int status = -2;
-
-            string game = GetGame();
-
-            if (game != "dunno")
+            var game = Launcher.GetCurrentGame();
+            if (game == GAME.Unknown) return -2;
+            if (game == GAME.Episode1)
             {
-                //TODO: redo
-                if (File.Exists("ModManager.cfg"))
-                {
-                    status = status = Convert.ToInt32(Settings.ModLoaderInstalled);
-                    if (game == "ep1")
-                        if (File.Exists("Sonic_vis.orig.exe"))
-                            status = 1;
-
-                    else if (game == "ep2")
-                        if (File.Exists("Sonic.orig.exe"))
-                            status = 1;
-                }
-                else
-                    status = -1;
+                if (File.Exists("Sonic_vis.orig.exe")
+                    && File.Exists("SonicLauncher.orig.exe"))
+                    return 1;
             }
-            return status;
+            else if (game == GAME.Episode2)
+            {
+                if (File.Exists("Sonic.orig.exe")
+                    && File.Exists("Launcher.orig.exe"))
+                    return 1;
+            }
+
+            if (!File.Exists("ModManager.cfg")) return -1; //First launch
+            return 0;
         }
 
         public static void Install(int whattodo, int options = 0)
@@ -272,7 +225,7 @@ namespace Sonic4ModManager
             //whattodo = 1 is install
             //whattodo = 0 is uninstall
             int status = GetInstallationStatus();
-            string game = GetGame();
+            var game = Launcher.GetCurrentGame();
 
             var rename_list = new List<string[]> { };
 
@@ -287,8 +240,8 @@ namespace Sonic4ModManager
 
             switch (game)
             {
-                case "ep1": original_exe = "Sonic_vis.exe"; original_launcher = "SonicLauncher.exe"; break;
-                case "ep2": original_exe = "Sonic.exe"; original_launcher = "Launcher.exe"; break;
+                case GAME.Episode1: original_exe = "Sonic_vis.exe"; original_launcher = "SonicLauncher.exe"; break;
+                case GAME.Episode2: original_exe = "Sonic.exe"; original_launcher = "Launcher.exe"; break;
             }
 
             save_file_orig = Path.GetFileNameWithoutExtension(original_exe) + "_save.dat";
@@ -309,7 +262,6 @@ namespace Sonic4ModManager
                     if (File.Exists(rename_list[i][0]) && !File.Exists(rename_list[i][1]))
                         File.Move(rename_list[i][0], rename_list[i][1]);
 
-                Settings.ModLoaderInstalled = true;
                 Settings.Save();
             }
 
@@ -325,7 +277,6 @@ namespace Sonic4ModManager
                         File.Move(rename_list[i][1], rename_list[i][0]);
                 }
 
-                Settings.ModLoaderInstalled = false;
                 Settings.Save();
 
                 //Options
