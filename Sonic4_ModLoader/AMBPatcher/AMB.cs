@@ -90,7 +90,7 @@ namespace AMB
 
         public AMB_new() {}
 
-        public AMB_new(string fileName) : this(File.ReadAllBytes(fileName)) { }
+        public AMB_new(string fileName) : this(File.ReadAllBytes(fileName)) { ambPath = fileName; }
 
         public AMB_new(byte[] source, int sourcePtr=0)
         {
@@ -161,11 +161,11 @@ namespace AMB
             return result;
         }
 
-        public string GetRelativeName(string ModFilePath)
+        public string GetRelativeName(string MainFileName, string objectName)
         {
             //Turning "C:\1\2\3" into {"C:","1","2","3"}
-            var modPathParts = ModFilePath.Replace('/', '\\').Split('\\');
-            var origFileName = Path.GetFileName(ambPath);
+            var modPathParts = objectName.Replace('/', '\\').Split('\\');
+            var origFileName = Path.GetFileName(MainFileName);
 
             //Trying to find where the original file name starts in the mod file name.
             int index = Array.IndexOf(modPathParts, origFileName);
@@ -197,7 +197,7 @@ namespace AMB
                 }
             }
             var newObj = new BinaryObject(filePath);
-            newObj.Name = GetRelativeName(filePath);
+            newObj.Name = GetRelativeName(ambPath, filePath);
             if (newName != null)
                 newObj.Name = newName;
             Objects.Add(newObj);
@@ -205,26 +205,7 @@ namespace AMB
 
         public AMB_new FindObject(string MainFileName, string objectName)
         {
-            string InternalName;
-
-            //Turning "C:\1\2\3" into {"C:","1","2","3"}
-            var mod_file_parts = objectName.Replace('/', '\\').Split('\\');
-
-            string orig_file_last = Path.GetFileName(MainFileName);
-
-            //Trying to find where the original file name starts in the mod file name.
-            int index = Array.IndexOf(mod_file_parts, orig_file_last);
-
-            //If it's inside, return the part after original file ends
-            if (index != -1)
-                InternalName = String.Join("\\", mod_file_parts.Skip(index + 1).ToArray());
-            //Else use file name
-            else
-                InternalName = mod_file_parts.Last();
-
-            //This may occur when main file and added file have the same name
-            if (InternalName == "")
-                InternalName = mod_file_parts.Last();
+            string InternalName = GetRelativeName(MainFileName, objectName);
 
             int InternalIndex = Objects.FindIndex(x => x.Name == InternalName);
             if (InternalIndex != -1)
