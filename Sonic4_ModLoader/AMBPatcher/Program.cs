@@ -1304,6 +1304,15 @@ namespace AMBPatcher
 
             else if (args.Length == 3)
             {
+                if (args[0] == "find")
+                {
+                    var amb = new AMB_new(args[1]);
+                    var a = amb.FindObject(args[1], args[2]);
+                    foreach (var o in a.Objects)
+                        Console.WriteLine(o.Name);
+                    Console.ReadLine();
+                }
+
                 if (args[0] == "extract")
                 {
                     if (File.Exists(args[1]))

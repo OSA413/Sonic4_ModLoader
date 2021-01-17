@@ -94,6 +94,7 @@ namespace AMB
 
         public AMB_new(byte[] source, int sourcePtr=0)
         {
+            this.source = source;
             if (!IsSourceAMB()) return;
 
             SameEndianness = BitConverter.IsLittleEndian == IsLittleEndian();
@@ -101,7 +102,7 @@ namespace AMB
             if (!SameEndianness)
                 SwapEndianness();
 
-            var objNum = BitConverter.ToInt32(source, sourcePtr + 0x10) + sourcePtr;
+            var objNum = BitConverter.ToInt32(source, sourcePtr + 0x10);
             var listPtr = BitConverter.ToInt32(source, sourcePtr + 0x14) + sourcePtr;
             var dataPtr = BitConverter.ToInt32(source, sourcePtr + 0x18) + sourcePtr;
             var namePtr = BitConverter.ToInt32(source, sourcePtr + 0x1C) + sourcePtr;
@@ -266,7 +267,7 @@ namespace AMB
             Objects.Add(newObj);
         }
 
-        private AMB_new FindObject(AMB_new parent = null, string MainFileName, string objectName)
+        public AMB_new FindObject(string MainFileName, string objectName, AMB_new parent = null)
         {
             if (parent == null) parent = this;
 
@@ -313,7 +314,7 @@ namespace AMB
             }
 
             if (ParentIndex != -1)
-                return FindObject(parent.Objects[ParentIndex].Amb, ParentName, objectName);
+                return FindObject(ParentName, objectName, parent.Objects[ParentIndex].Amb);
             if (InternalIndex != -1)
                 return parent.Objects[InternalIndex].Amb;
             return null;
@@ -358,7 +359,7 @@ namespace AMB
     public class BinaryObject
     {
         public string Name;
-        public bool isAMB { get => Amb == null; }
+        public bool isAMB { get => Amb != null; }
         public AMB_new Amb;
         public AMB_new ParentAMB;
 
