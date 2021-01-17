@@ -30,6 +30,8 @@ The Mod Loader includes:
 
 TL;DR - a quick installation video guide is here: https://www.youtube.com/watch?v=CbeBXJief7w
 
+Note: you need to install the Mod Loader separately for each Episode.
+
 0. Download Mod Loader. [Latest stable release](https://github.com/OSA413/Sonic4_ModLoader/releases/latest) is recommended, but you also can try the latest alpha version (if any available).
 
 1. Extract all files from the archive to the root directory of the game (if you don't know what root directory is/where to find it, check the quick installation video guide above).

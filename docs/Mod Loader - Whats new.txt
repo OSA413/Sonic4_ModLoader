@@ -1,3 +1,8 @@
+[c]Version: v0.1.4.5
+\t[b]Mod Manager[\b]
+* Fixed issue when the Mod Loader is installed but it says it's not (Episode 2)
+
+
 [c]Version: v0.1.4.4
 \t[b]One-Click Mod Installer[\b]
 * Crash fix when reading config file
