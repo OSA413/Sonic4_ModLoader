@@ -1308,7 +1308,7 @@ namespace AMBPatcher
                 {
                     var amb = new AMB_new(args[1]);
                     var a = amb.FindObject(args[1], args[2]);
-                    foreach (var o in a.Objects)
+                    foreach (var o in a.ParentAMB.Objects)
                         Console.WriteLine(o.Name);
                     Console.ReadLine();
                 }

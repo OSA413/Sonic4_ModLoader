@@ -113,9 +113,10 @@ namespace AMB
                 if (objPtr == 0) continue;
                 var objLen = BitConverter.ToInt32(source, listPtr + 0x10 * i + 4);
                 var newObj = new BinaryObject(source, objPtr, objLen);
-                newObj.Name = MakeNameSafe(ReadString(source, namePtr + 0x20 * i));
                 if (IsSourceAMB(objPtr))
                     newObj.Amb = new AMB_new(source, objPtr);
+                newObj.Name = MakeNameSafe(ReadString(source, namePtr + 0x20 * i));
+                newObj.ParentAMB = this;
                 Objects.Add(newObj);
             }
 
@@ -203,13 +204,13 @@ namespace AMB
             Objects.Add(newObj);
         }
 
-        public AMB_new FindObject(string MainFileName, string objectName)
+        public BinaryObject FindObject(string MainFileName, string objectName)
         {
             string InternalName = GetRelativeName(MainFileName, objectName);
 
             int InternalIndex = Objects.FindIndex(x => x.Name == InternalName);
             if (InternalIndex != -1)
-                return Objects[InternalIndex].Amb;
+                return Objects[InternalIndex];
 
             var ParentIndex = Objects.FindIndex(x => x.Name == InternalName.Split('\\').First());
             if (ParentIndex != -1)
@@ -222,9 +223,11 @@ namespace AMB
         public void Replace(BinaryObject bo, int targetIndex) => Objects[targetIndex] = bo;
         public void Replace(BinaryObject bo, string targetName)
         {
-            Replace(bo, Objects.FindIndex(x => x.Name == targetName));
+            var target = FindObject(ambPath, targetName);
+            var targetIndex = target.ParentAMB.Objects.IndexOf(target);
+            target.ParentAMB.Replace(bo, targetIndex);
         }
-        public void Replace(string filePath, string targetIndex) => Replace(new BinaryObject(filePath), targetIndex);
+        public void Replace(string filePath, string targetName) => Replace(new BinaryObject(filePath), targetName);
 
         public void Extract(string output = null)
         {
@@ -245,13 +248,16 @@ namespace AMB
             while (rawName[safeIndex] == '.' || rawName[safeIndex] == '\\' || rawName[safeIndex] == '/')
                 safeIndex++;
 
-            if (safeIndex == 0)
-                return rawName;
             return rawName.Substring(safeIndex);
         }
 
         public void Remove(int index) => Objects.RemoveAt(index);
-        public void Remove(string objectName) => Remove(Objects.FindIndex(x=>x.Name == objectName));
+        public void Remove(string objectName)
+        {
+            var target = FindObject(ambPath, objectName);
+            var targetIndex = target.ParentAMB.Objects.IndexOf(target);
+            target.ParentAMB.Remove(targetIndex);
+        }
     }
 
     public class BinaryObject
