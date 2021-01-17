@@ -184,6 +184,70 @@ namespace AMB
             return InternalName;
         }
 
+        //FIX THIS LATER
+        public (string InternalName, int InternalIndex, string ParentName, int ParentIndex) GetInternalThings(string OriginalFileName, string ModFileName)
+        {
+            /*
+            * InternalName (like from AMB.Read)
+            * InternalIndex is index of file name in AMB.Read, if present
+            * ParentName is AMB.Read()[ParentIndex].Name, if present
+            * ParentIndex is index of parent file in AMB.Read, if present
+            */
+
+            var files = Objects;
+
+            /////////////////
+            //Internal Name//
+            /////////////////
+
+            string InternalName;
+            int InternalIndex = -1;
+
+            //Turning "C:\1\2\3" into {"C:","1","2","3"}
+            var mod_file_parts = ModFileName.Replace('/', '\\').Split('\\');
+
+            string orig_file_last = Path.GetFileName(OriginalFileName);
+
+            //Trying to find where the original file name starts in the mod file name.
+            int index = Array.IndexOf(mod_file_parts, orig_file_last);
+
+            //If it's inside, return the part after original file ends
+            if (index != -1)
+                InternalName = String.Join("\\", mod_file_parts.Skip(index + 1).ToArray());
+            //Else use file name
+            else
+                InternalName = mod_file_parts.Last();
+
+            //This may occur when main file and added file have the same name
+            if (InternalName == "")
+                InternalName = mod_file_parts.Last();
+
+            //Find internal index
+            for (int i = 0; i < files.Count; i++)
+            {
+                if (InternalName == files[i].Name)
+                { InternalIndex = i; break; }
+            }
+
+            int ParentIndex = -1;
+            string ParentName = "";
+
+            for (int i = 0; i < files.Count; i++)
+            {
+                if ((InternalName + "\\").StartsWith(files[i].Name + "\\"))
+                {
+                    ParentIndex = i;
+                    ParentName = files[i].Name;
+                    break;
+                }
+            }
+
+            return (InternalName: InternalName,
+                    InternalIndex: InternalIndex,
+                    ParentName: ParentName,
+                    ParentIndex: ParentIndex);
+        }
+
         public void Add(string filePath, string newName = null)
         {
             if (newName != null)
@@ -202,16 +266,70 @@ namespace AMB
             Objects.Add(newObj);
         }
 
+        private AMB_new FindObject(AMB_new parent = null, string MainFileName, string objectName)
+        {
+            if (parent == null) parent = this;
+
+            string InternalName;
+            int InternalIndex = -1;
+
+            //Turning "C:\1\2\3" into {"C:","1","2","3"}
+            var mod_file_parts = objectName.Replace('/', '\\').Split('\\');
+
+            string orig_file_last = Path.GetFileName(MainFileName);
+
+            //Trying to find where the original file name starts in the mod file name.
+            int index = Array.IndexOf(mod_file_parts, orig_file_last);
+
+            //If it's inside, return the part after original file ends
+            if (index != -1)
+                InternalName = String.Join("\\", mod_file_parts.Skip(index + 1).ToArray());
+            //Else use file name
+            else
+                InternalName = mod_file_parts.Last();
+
+            //This may occur when main file and added file have the same name
+            if (InternalName == "")
+                InternalName = mod_file_parts.Last();
+
+            //Find internal index
+            for (int i = 0; i < Objects.Count; i++)
+            {
+                if (InternalName == Objects[i].Name)
+                { InternalIndex = i; break; }
+            }
+
+            int ParentIndex = -1;
+            string ParentName = "";
+
+            for (int i = 0; i < Objects.Count; i++)
+            {
+                if ((InternalName + "\\").StartsWith(Objects[i].Name + "\\"))
+                {
+                    ParentIndex = i;
+                    ParentName = Objects[i].Name;
+                    break;
+                }
+            }
+
+            if (ParentIndex != -1)
+                return FindObject(parent.Objects[ParentIndex].Amb, ParentName, objectName);
+            if (InternalIndex != -1)
+                return parent.Objects[InternalIndex].Amb;
+            return null;
+        }
+
         //TODO this won't work for nested files
         public void Replace(BinaryObject bo, int targetIndex) => Objects[targetIndex] = bo;
-        public void Replace(BinaryObject bo, string targetName) => Replace(bo, Objects.FindIndex(x => x.Name == targetName));
+        public void Replace(BinaryObject bo, string targetName)
+        {
+            Replace(bo, Objects.FindIndex(x => x.Name == targetName));
+        }
         public void Replace(string filePath, string targetIndex) => Replace(new BinaryObject(filePath), targetIndex);
 
         public void Extract(string output = null)
         {
-            if (output == null)
-                output = ambPath + "_extracted";
-
+            if (output == null) output = ambPath + "_extracted";
             Directory.CreateDirectory(output);
 
             foreach (var o in Objects)
@@ -242,6 +360,7 @@ namespace AMB
         public string Name;
         public bool isAMB { get => Amb == null; }
         public AMB_new Amb;
+        public AMB_new ParentAMB;
 
         public byte[] Source {get; private set;}
         //TODO: use uint
