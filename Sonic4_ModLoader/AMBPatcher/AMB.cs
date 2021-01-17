@@ -228,30 +228,14 @@ namespace AMB
             if (InternalName == "")
                 InternalName = mod_file_parts.Last();
 
-            //Find internal index
             int InternalIndex = Objects.FindIndex(x => x.Name == InternalName);
-
-            int ParentIndex = -1;
-            string ParentName = "";
-
-            //ParentIndex = Objects.FindIndex(x => x.Name == InternalName.Split('\\').First());
-            for (int i = 0; i < Objects.Count; i++)
-            {
-                var d = InternalName + "\\";
-                var j = d.StartsWith("G_FIX.AMB\\");
-                var a = (InternalName + "\\").StartsWith(Objects[i].Name + "\\");
-                if ((InternalName + "\\").StartsWith(Objects[i].Name + "\\"))
-                {
-                    ParentIndex = i;
-                    ParentName = Objects[i].Name;
-                    break;
-                }
-            }//*/
-
-            if (ParentIndex != -1)
-                return FindObject(Objects[ParentIndex].Name, objectName, parent.Objects[ParentIndex].Amb);
             if (InternalIndex != -1)
                 return parent.Objects[InternalIndex].Amb;
+
+            var ParentIndex = Objects.FindIndex(x => x.Name == InternalName.Split('\\').First());
+            if (ParentIndex != -1)
+                return FindObject(Objects[ParentIndex].Name, objectName, parent.Objects[ParentIndex].Amb);
+
             return null;
         }
 
