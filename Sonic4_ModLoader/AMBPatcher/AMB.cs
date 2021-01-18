@@ -12,7 +12,6 @@ namespace AMB
         private string ambPath;
         public bool SameEndianness = true;
         public List<BinaryObject> Objects = new List<BinaryObject>();
-        //TODO: use uint
         public int Length { get => PredictPointers().name + Objects.Count * 0x20;}
 
         private bool IsSourceAMB(int ptr=0)
@@ -124,8 +123,9 @@ namespace AMB
                 SwapEndianness();
         }
 
-        public void Write(string filePath, bool swapEndianness = false)
+        public void Save(string filePath = null, bool swapEndianness = false)
         {
+            if (filePath == null) filePath = ambPath;
             if (Path.GetDirectoryName(filePath) != "")
                 Directory.CreateDirectory(Path.GetDirectoryName(filePath));
             File.WriteAllBytes(filePath, Write(swapEndianness));

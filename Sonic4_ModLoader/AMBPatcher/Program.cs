@@ -1025,7 +1025,7 @@ namespace AMBPatcher
                     Console.WriteLine("Done.");
                 }
                 else if (args[0] == "swap_endianness" && File.Exists(args[1]))
-                    new AMB_new(args[1]).Write(args[1], true);
+                    new AMB_new(args[1]).Save(args[1], true);
 
                 else if (args[0] == "endianness" && File.Exists(args[1]))
                 {
@@ -1036,7 +1036,7 @@ namespace AMBPatcher
                 }
 
                 else if (args[0] == "create")
-                    new AMB_new().Write(args[1]);
+                    new AMB_new().Save(args[1]);
 
                 else if (args[0] == "extract_all")
                     new AMB_new(args[1]).ExtractAll();
@@ -1076,7 +1076,7 @@ namespace AMBPatcher
                     {
                         var amb = new AMB_new(args[1]);
                         amb.Add(args[2]);
-                        amb.Write(args[1]);
+                        amb.Save(args[1]);
                     }
                     else if (File.Exists(args[1]) && Directory.Exists(args[2]))
                     {
@@ -1097,7 +1097,7 @@ namespace AMBPatcher
                     {
                         var amb = new AMB_new(args[1]);
                         amb.Remove(args[2]);
-                        amb.Write();
+                        amb.Save();
                     }else ShowHelpMessage();
                 }
                 else ShowHelpMessage();
