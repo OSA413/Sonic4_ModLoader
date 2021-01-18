@@ -229,13 +229,18 @@ namespace AMB
         }
         public void Replace(string filePath, string targetName) => Replace(new BinaryObject(filePath), targetName);
 
-        public void Extract(string output = null)
+        public void ExtractAll(string output = null) => Extract(output, true);
+
+        public void Extract(string output = null, bool extractAll = false)
         {
             if (output == null) output = ambPath + "_extracted";
             Directory.CreateDirectory(output);
 
             foreach (var o in Objects)
-                File.WriteAllBytes(Path.Combine(output, o.Name), o.Source.Skip(o.Pointer).Take(o.Length).ToArray());
+                if (extractAll && o.isAMB)
+                    o.Amb.Extract(Path.Combine(output, o.Name));
+                else
+                    File.WriteAllBytes(Path.Combine(output, o.Name), o.Source.Skip(o.Pointer).Take(o.Length).ToArray());
         }
 
         public static string MakeNameSafe(string rawName)
