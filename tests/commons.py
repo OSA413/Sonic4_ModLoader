@@ -3,7 +3,11 @@ import os
 import glob
 import subprocess
 import shutil
-import distutils.dir_util
+try:
+    #This is a fallback for shutil.copytree for WSL
+    import distutils.dir_util
+except:
+    pass
 from paths import *
 
 TEST_SUCCESS = "✔ OK"
