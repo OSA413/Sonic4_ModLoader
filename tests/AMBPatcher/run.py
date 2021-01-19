@@ -28,8 +28,8 @@ def run_test(test_name, NO_CRASH=False):
             if seq == "#TIME":
                 test_time = time.time()
             elif seq == "#COPYMODS":
-                shutil.copytree("mods/mods", "sandbox/mods")
-                shutil.copytree("mods/textures", "sandbox/textures")
+                copy_dir_recursively("mods/mods", "sandbox/mods")
+                copy_dir_recursively("mods/textures", "sandbox/textures")
             elif seq.startswith("#CWD:") and len(seq) > 5:
                 os.chdir(seq[5:])
             elif seq.startswith("#MODSINI:") and len(seq) >= 9:

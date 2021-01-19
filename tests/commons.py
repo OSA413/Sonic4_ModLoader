@@ -2,6 +2,8 @@ import hashlib
 import os
 import glob
 import subprocess
+import shutil
+import distutils.dir_util
 from paths import *
 
 TEST_SUCCESS = "✔ OK"
@@ -48,3 +50,25 @@ def make_path_abs(p):
 
 def rebuild_paths():
     PATHS[AMBPATCHER] = make_path_abs(PATHS[AMBPATCHER])
+
+
+def copy_dir_recursively_shutil(src, dst):
+    shutil.copytree(src, dst)
+
+def copy_dir_recursively_distutils(src, dst):
+    distutils.dir_util._path_created = {}
+    distutils.dir_util.copy_tree(src, dst)
+
+COPY_DIR_RECURSIVELY_FUNCTION = None
+def copy_dir_recursively(src, dst):
+    global COPY_DIR_RECURSIVELY_FUNCTION
+    if COPY_DIR_RECURSIVELY_FUNCTION == None:
+        try:
+            #For some reason shutil.copytree may crash with Errno 13 on WSL when running script outside of home directory
+            copy_dir_recursively_shutil(src, dst)
+            COPY_DIR_RECURSIVELY_FUNCTION = copy_dir_recursively_shutil
+        except:
+            copy_dir_recursively_distutils(src, dst)
+            COPY_DIR_RECURSIVELY_FUNCTION = copy_dir_recursively_distutils
+    else:
+        COPY_DIR_RECURSIVELY_FUNCTION(src, dst)
