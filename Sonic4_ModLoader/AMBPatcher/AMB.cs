@@ -14,7 +14,7 @@ namespace AMB
         public List<BinaryObject> Objects = new List<BinaryObject>();
         public int Length { get => PredictPointers().name + Objects.Count * 0x20;}
 
-        private bool IsSourceAMB(int ptr=0)
+        public bool IsSourceAMB(int ptr=0)
         {
             return source.Length - ptr >= 0x20
                 && source[ptr + 0] == '#'
