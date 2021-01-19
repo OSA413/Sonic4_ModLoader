@@ -32,18 +32,18 @@ namespace Common.Launcher
             return GAME.Unknown;
         }
 
-        public static bool LaunchGame()
+        public static bool LaunchGame(bool launchOriginals = false)
         {
             var game = GetCurrentGame();
             if (game == GAME.Episode1)
             {
                 if (File.Exists("main.conf"))
-                    Process.Start("Sonic_vis.exe");
+                    Process.Start(launchOriginals ? "Sonic_vis.orig.exe" : "Sonic_vis.exe");
                 else
                     Process.Start("SonicLauncher.orig.exe");
             }
             else if (game == GAME.Episode2)
-                Process.Start("Sonic.exe");
+                Process.Start(launchOriginals ? "Sonic.orig.exe" : "Sonic.exe");
             else
                 return false;
             return true;
@@ -82,10 +82,11 @@ namespace Common.Launcher
         public static bool LaunchAMBPatcher(string args="")
         {
             if (File.Exists("AMBPatcher.exe"))
+            {
                 Process.Start("AMBPatcher.exe", args).WaitForExit();
-            else
-                return false;
-            return true;
+                return true;
+            }
+            return false;
         }
     }
 }
