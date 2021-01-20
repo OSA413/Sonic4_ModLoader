@@ -112,10 +112,13 @@ namespace AMB
                 if (objPtr == 0) continue;
                 var objLen = BitConverter.ToInt32(source, listPtr + 0x10 * i + 4);
                 var newObj = new BinaryObject(source, objPtr, objLen);
-                if (IsSourceAMB(objPtr))
-                    newObj.Amb = new AMB_new(source, objPtr);
                 newObj.Name = MakeNameSafe(ReadString(source, namePtr + 0x20 * i));
                 newObj.ParentAMB = this;
+                if (IsSourceAMB(objPtr))
+                {
+                    newObj.Amb = new AMB_new(source, objPtr);
+                    newObj.Amb.ambPath = ambPath + "\\" + newObj.Name;
+                }
                 Objects.Add(newObj);
             }
 
@@ -188,35 +191,30 @@ namespace AMB
 
         public void Add(string filePath, string newName = null)
         {
-            if (newName != null)
-            {
-                var index = Objects.FindIndex(x=>x.Name == newName);
-                if (index >= 0)
-                {
-                    Replace(filePath, newName);
-                    return;
-                }
-            }
+            var target = FindObject(ambPath, GetRelativeName(ambPath, filePath));
+
             var newObj = new BinaryObject(filePath);
-            newObj.Name = GetRelativeName(ambPath, filePath);
-            if (newName != null)
-                newObj.Name = newName;
-            Objects.Add(newObj);
+            newObj.Name = newName ?? GetRelativeName(target.amb.ambPath, filePath);
+
+            if (target.index == -1)
+                target.amb.Objects.Add(newObj);
+            else
+                Objects.Add(newObj);
         }
 
-        public BinaryObject FindObject(string MainFileName, string objectName)
+        public (AMB_new amb, int index) FindObject(string MainFileName, string objectName)
         {
-            string InternalName = GetRelativeName(MainFileName, objectName);
+            var InternalName = GetRelativeName(MainFileName, objectName);
 
-            int InternalIndex = Objects.FindIndex(x => x.Name == InternalName);
+            var InternalIndex = Objects.FindIndex(x => x.Name == InternalName);
             if (InternalIndex != -1)
-                return Objects[InternalIndex];
+                return (this, InternalIndex);
 
             var ParentIndex = Objects.FindIndex(x => x.Name == InternalName.Split('\\').First());
             if (ParentIndex != -1)
                 return Objects[ParentIndex].Amb.FindObject(Objects[ParentIndex].Name, objectName);
 
-            return null;
+            return (this, -1);
         }
 
         //TODO this won't work for nested files
@@ -224,8 +222,7 @@ namespace AMB
         public void Replace(BinaryObject bo, string targetName)
         {
             var target = FindObject(ambPath, targetName);
-            var targetIndex = target.ParentAMB.Objects.IndexOf(target);
-            target.ParentAMB.Replace(bo, targetIndex);
+            target.amb.Replace(bo, target.index);
         }
         public void Replace(string filePath, string targetName) => Replace(new BinaryObject(filePath), targetName);
 
@@ -260,8 +257,7 @@ namespace AMB
         public void Remove(string objectName)
         {
             var target = FindObject(ambPath, objectName);
-            var targetIndex = target.ParentAMB.Objects.IndexOf(target);
-            target.ParentAMB.Remove(targetIndex);
+            target.amb.Remove(target.index);
         }
     }
 

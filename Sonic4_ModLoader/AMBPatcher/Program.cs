@@ -250,11 +250,6 @@ namespace AMBPatcher
                     File.WriteAllBytes(outputFile, fileBytes);
                 }
             }
-
-            public static void Patch(string file_name, string mod_file)
-            {
-                
-            }
         }
 
         static void PatchAll(string file_name, List<string> mod_files, List<string> mod_paths)
@@ -282,10 +277,9 @@ namespace AMBPatcher
                             }
                             else
                             {
-                                //var amb = new AMB_new(file_name);
-                                //amb.Add(mod_file_full, mod_file_name);
-                                //amb.Save()
-                                AMB.Patch(file_name, mod_file_full);
+                                var amb = new AMB_new(file_name);
+                                amb.Add(mod_file_full, mod_file_full);
+                                amb.Save();
                             }
 
                             ShaWrite(mod_files[i], mod_file_full);
@@ -696,7 +690,7 @@ namespace AMBPatcher
                 {
                     var amb = new AMB_new(args[1]);
                     var a = amb.FindObject(args[1], args[2]);
-                    foreach (var o in a.ParentAMB.Objects)
+                    foreach (var o in a.amb.Objects)
                         Console.WriteLine(o.Name);
                     Console.ReadLine();
                 }
@@ -714,7 +708,7 @@ namespace AMBPatcher
                     {
                         var amb = new AMB_new(args[1]);
                         amb.Add(args[2]);
-                        amb.Save(args[1]);
+                        amb.Save();
                     }
                     else if (File.Exists(args[1]) && Directory.Exists(args[2]))
                     {
