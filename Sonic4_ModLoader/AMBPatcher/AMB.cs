@@ -199,7 +199,7 @@ namespace AMB
             if (target.index == -1)
                 target.amb.Objects.Add(newObj);
             else
-                Objects.Add(newObj);
+                target.amb.Replace(newObj, target.index);
         }
 
         public (AMB_new amb, int index) FindObject(string MainFileName, string objectName)
