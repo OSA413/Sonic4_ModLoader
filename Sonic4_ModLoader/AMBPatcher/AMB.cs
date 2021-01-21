@@ -149,7 +149,7 @@ namespace AMB
                 Array.Copy(BitConverter.GetBytes(pointers.data), 0, result, pointers.list, 4);
                 Array.Copy(BitConverter.GetBytes(o.LengthNice), 0, result, pointers.list + 4, 4);
 
-                Array.Copy(o.Source, o.Pointer, result, pointers.data, o.Length);
+                Array.Copy(o.Write(), o.Pointer, result, pointers.data, o.Length);
                 Array.Copy(Encoding.ASCII.GetBytes(o.Name), 0, result, pointers.name, o.Name.Length);
 
                 pointers.list += 0x10;
@@ -192,7 +192,7 @@ namespace AMB
             var target = FindObject(newName?.Replace('/', '\\') ?? GetRelativeName(ambPath, filePath));
 
             var newObj = new BinaryObject(filePath);
-            newObj.Name = GetRelativeName(target.amb.ambPath, newName ?? filePath);
+            newObj.Name = target.name;
 
             if (target.index == -1)
                 target.amb.Objects.Add(newObj);
@@ -200,13 +200,13 @@ namespace AMB
                 target.amb.Replace(newObj, target.index);
         }
 
-        public (AMB_new amb, int index) FindObject(string objectName)
+        public (AMB_new amb, int index, string name) FindObject(string objectName)
         {
             var InternalName = objectName;
 
             var InternalIndex = Objects.FindIndex(x => x.Name == InternalName);
             if (InternalIndex != -1)
-                return (this, InternalIndex);
+                return (this, InternalIndex, InternalName);
 
             var ParentIndex = -1;
             //Objects.FindIndex(x => x.Name == InternalName.Split('\\').Take(x.Name.Count(chr => chr == '\\') + 1).ToString());
@@ -226,7 +226,7 @@ namespace AMB
             if (ParentIndex != -1)
                 return Objects[ParentIndex].Amb.FindObject(objectName.Substring(Objects[ParentIndex].Name.Length + 1));
 
-            return (this, -1);
+            return (this, -1, InternalName);
         }
 
         public void Replace(BinaryObject bo, int targetIndex) => Objects[targetIndex] = bo;
@@ -303,6 +303,13 @@ namespace AMB
         {
             Source = File.ReadAllBytes(filePath);
             this.length = Source.Length;
+        }
+
+        public byte[] Write()
+        {
+            if (isAMB)
+                return Amb.Write();
+            return Source;
         }
     }
 }
