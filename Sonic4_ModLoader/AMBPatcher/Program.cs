@@ -689,7 +689,7 @@ namespace AMBPatcher
                 if (args[0] == "find")
                 {
                     var amb = new AMB_new(args[1]);
-                    var a = amb.FindObject(args[1], args[2]);
+                    var a = amb.FindObject(args[2]);
                     foreach (var o in a.amb.Objects)
                         Console.WriteLine(o.Name);
                     Console.ReadLine();

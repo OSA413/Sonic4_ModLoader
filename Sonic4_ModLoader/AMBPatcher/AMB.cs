@@ -89,11 +89,12 @@ namespace AMB
 
         public AMB_new() {}
 
-        public AMB_new(string fileName) : this(File.ReadAllBytes(fileName)) { ambPath = fileName; }
+        public AMB_new(string fileName) : this(File.ReadAllBytes(fileName), 0, fileName) {}
 
-        public AMB_new(byte[] source, int sourcePtr=0)
+        public AMB_new(byte[] source, int sourcePtr=0, string fileName=null)
         {
             this.source = source;
+            ambPath = fileName;
             if (!IsSourceAMB()) return;
 
             SameEndianness = BitConverter.IsLittleEndian == IsLittleEndian();
@@ -115,10 +116,7 @@ namespace AMB
                 newObj.Name = MakeNameSafe(ReadString(source, namePtr + 0x20 * i));
                 newObj.ParentAMB = this;
                 if (IsSourceAMB(objPtr))
-                {
-                    newObj.Amb = new AMB_new(source, objPtr);
-                    newObj.Amb.ambPath = ambPath + "\\" + newObj.Name;
-                }
+                    newObj.Amb = new AMB_new(source, objPtr, ambPath + "\\" + newObj.Name);
                 Objects.Add(newObj);
             }
 
@@ -191,10 +189,10 @@ namespace AMB
 
         public void Add(string filePath, string newName = null)
         {
-            var target = FindObject(ambPath, GetRelativeName(ambPath, filePath));
+            var target = FindObject(newName.Replace('/', '\\') ?? GetRelativeName(ambPath, filePath));
 
             var newObj = new BinaryObject(filePath);
-            newObj.Name = newName ?? GetRelativeName(target.amb.ambPath, filePath);
+            newObj.Name = GetRelativeName(target.amb.ambPath, newName ?? filePath);
 
             if (target.index == -1)
                 target.amb.Objects.Add(newObj);
@@ -202,29 +200,41 @@ namespace AMB
                 target.amb.Replace(newObj, target.index);
         }
 
-        public (AMB_new amb, int index) FindObject(string MainFileName, string objectName)
+        public (AMB_new amb, int index) FindObject(string objectName)
         {
-            var InternalName = GetRelativeName(MainFileName, objectName);
+            var InternalName = objectName;
 
             var InternalIndex = Objects.FindIndex(x => x.Name == InternalName);
             if (InternalIndex != -1)
                 return (this, InternalIndex);
 
-            var ParentIndex = Objects.FindIndex(x => x.Name == InternalName.Split('\\').First());
+            var ParentIndex = -1;
+            //Objects.FindIndex(x => x.Name == InternalName.Split('\\').Take(x.Name.Count(chr => chr == '\\') + 1).ToString());
+
+            var InternalParts = InternalName.Split('\\');
+            for (int i = 0; i < Objects.Count; i++)
+            {
+                var objName = Objects[i].Name;
+                var seps = objName.Count(c => c == '\\');
+                if (objName == String.Join("\\", InternalParts.Take(seps + 1)))
+                {
+                    ParentIndex = i;
+                    break;
+                }
+            }
+
             if (ParentIndex != -1)
-                return Objects[ParentIndex].Amb.FindObject(Objects[ParentIndex].Name, objectName);
+                return Objects[ParentIndex].Amb.FindObject(objectName.Substring(Objects[ParentIndex].Name.Length + 1));
 
             return (this, -1);
         }
 
-        //TODO this won't work for nested files
         public void Replace(BinaryObject bo, int targetIndex) => Objects[targetIndex] = bo;
         public void Replace(BinaryObject bo, string targetName)
         {
-            var target = FindObject(ambPath, targetName);
+            var target = FindObject(targetName);
             target.amb.Replace(bo, target.index);
         }
-        public void Replace(string filePath, string targetName) => Replace(new BinaryObject(filePath), targetName);
 
         public void ExtractAll(string output = null) => Extract(output, true);
 
@@ -256,7 +266,7 @@ namespace AMB
         public void Remove(int index) => Objects.RemoveAt(index);
         public void Remove(string objectName)
         {
-            var target = FindObject(ambPath, objectName);
+            var target = FindObject(objectName);
             target.amb.Remove(target.index);
         }
     }
