@@ -189,7 +189,7 @@ namespace AMB
 
         public void Add(string filePath, string newName = null)
         {
-            var target = FindObject(newName.Replace('/', '\\') ?? GetRelativeName(ambPath, filePath));
+            var target = FindObject(newName?.Replace('/', '\\') ?? GetRelativeName(ambPath, filePath));
 
             var newObj = new BinaryObject(filePath);
             newObj.Name = GetRelativeName(target.amb.ambPath, newName ?? filePath);
