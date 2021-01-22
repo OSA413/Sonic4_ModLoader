@@ -241,12 +241,13 @@ namespace AMB
 
         public void Extract(string output = null, bool extractAll = false)
         {
+            if (!IsSourceAMB()) return;
             if (output == null) output = ambPath + "_extracted";
             Directory.CreateDirectory(output);
 
             foreach (var o in Objects)
                 if (extractAll && o.isAMB)
-                    o.Amb.Extract(Path.Combine(output, o.Name));
+                    o.Amb.Extract(Path.Combine(output, o.Name), true);
                 else
                     File.WriteAllBytes(Path.Combine(output, o.Name), o.Source.Skip(o.Pointer).Take(o.Length).ToArray());
         }

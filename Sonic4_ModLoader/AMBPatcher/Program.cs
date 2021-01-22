@@ -462,7 +462,7 @@ namespace AMBPatcher
             + "\n\tAMBPatcher swap_endianness [AMB] - Swaps endianness of [AMB]."
             + "\n\tAMBPatcher delete [AMB] [file] - Delete [file] from [AMB]."
             + "\n\tAMBPatcher create [name] - Creates an empty AMB file with [name]."
-            + "\n\tAMBPatcher extract_all [path] - Extract all files from [path] (can be a file or directory) to be Mod Loader compatible (note: this removes original AMB files!)."
+            + "\n\tAMBPatcher extract_all [path] - Extract all files from [path] (can be a file or directory) to be Mod Loader compatible."
             + "\n\tAMBPatcher -h and"
             + "\n\tAMBPatcher --help - Show help message.";
 
@@ -666,11 +666,7 @@ namespace AMBPatcher
                         files = Directory.GetFiles(args[1], "*.*", SearchOption.AllDirectories);
 
                     foreach (var f in files)
-                    {
-                        var amb = new AMB_new(f);
-                        if (amb.IsSourceAMB())
-                            amb.ExtractAll();
-                    }
+                        new AMB_new(f).ExtractAll();
                 }
 
                 else if (args[0] == "extract_wp")
