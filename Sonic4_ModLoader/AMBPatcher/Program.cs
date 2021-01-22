@@ -278,7 +278,7 @@ namespace AMBPatcher
                             else
                             {
                                 var amb = new AMB_new(file_name);
-                                amb.Add(mod_file_full, mod_file_full);
+                                amb.Add(mod_file_full);
                                 amb.Save();
                             }
 
@@ -495,9 +495,7 @@ namespace AMBPatcher
                     {
                         Log.Write("\n" + test[i].OrigFile);
                         for (int j = 0; j < test[i].ModFiles.Count; j++)
-                        {
                             Log.Write("\t" + test[i].ModFiles[j] + "\t" + test[i].ModName[j]);
-                        }
                     }
                     Log.Write("====================");
                 }
@@ -506,9 +504,7 @@ namespace AMBPatcher
                 List<string> modified_files = new List<string> { };
 
                 if (File.Exists("mods/mods_prev"))
-                {
                     mods_prev = File.ReadAllLines("mods/mods_prev").ToList<string>();
-                }
 
                 Log.Write("Patching original files...");
 
