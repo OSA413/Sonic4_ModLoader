@@ -149,7 +149,8 @@ namespace AMB
                 Array.Copy(BitConverter.GetBytes(pointers.data), 0, result, pointers.list, 4);
                 Array.Copy(BitConverter.GetBytes(o.LengthNice), 0, result, pointers.list + 4, 4);
 
-                Array.Copy(o.Write(), o.Pointer, result, pointers.data, o.Length);
+                var oWrite = o.Write();
+                Array.Copy(oWrite, o.isAMB ? 0 : o.Pointer, result, pointers.data, o.Length);
                 Array.Copy(Encoding.ASCII.GetBytes(o.Name), 0, result, pointers.name, o.Name.Length);
 
                 pointers.list += 0x10;
