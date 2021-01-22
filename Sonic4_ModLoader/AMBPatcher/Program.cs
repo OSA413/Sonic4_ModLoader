@@ -704,7 +704,7 @@ namespace AMBPatcher
                     }
                     else if (File.Exists(args[1]) && Directory.Exists(args[2]))
                     {
-                        var files = Directory.GetFiles(args[2], "*", SearchOption.AllDirectories);
+                        var files = Directory.GetFiles(args[2], "*", SearchOption.AllDirectories).OrderBy(x => x);
 
                         var amb = new AMB_new(args[1]);
                         foreach (var file in files)
