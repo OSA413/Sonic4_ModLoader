@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 using System.IO;
 using System.Collections.Generic;
@@ -9,13 +9,14 @@ using Common.IniReader;
 using Common.ValueUpdater;
 using Common.Launcher;
 
+using AMB;
+
 namespace AMBPatcher
 {
     class Program
     {
         public static bool GenerateLog;
         public static bool SHACheck;
-        public static int  SHAType;
         
         public static class Log
         {
@@ -39,7 +40,6 @@ namespace AMBPatcher
                 ProgressBar.Enabled = true;
                 GenerateLog = false;
                 SHACheck    = true;
-                SHAType     = 1;
 
                 var cfg = IniReader.Read("AMBPatcher.cfg");
                 if (!cfg.ContainsKey(IniReader.DEFAULT_SECTION)) return;
@@ -47,7 +47,6 @@ namespace AMBPatcher
                 ValueUpdater.UpdateIfKeyPresent(cfg, "ProgressBar", ref ProgressBar.Enabled);
                 ValueUpdater.UpdateIfKeyPresent(cfg, "GenerateLog", ref GenerateLog);
                 ValueUpdater.UpdateIfKeyPresent(cfg, "SHACheck", ref SHACheck);
-                ValueUpdater.UpdateIfKeyPresent(cfg, "SHAType", ref SHAType);
             }
         }
 
@@ -110,23 +109,10 @@ namespace AMBPatcher
             }
         }
 
-        public static SHA1CryptoServiceProvider SHA1csp = new SHA1CryptoServiceProvider();
-        public static SHA256CryptoServiceProvider SHA256csp = new SHA256CryptoServiceProvider();
-        public static SHA384CryptoServiceProvider SHA384csp = new SHA384CryptoServiceProvider();
-        public static SHA512CryptoServiceProvider SHA512csp = new SHA512CryptoServiceProvider();
-
+        public static SHA1CryptoServiceProvider SHAcsp = new SHA1CryptoServiceProvider();
         static string Sha(byte[] file)
         {
-            byte[] hash;
-
-            switch (SHAType)
-            {
-                case 512: hash = SHA512csp.ComputeHash(file); break;
-                case 384: hash = SHA384csp.ComputeHash(file); break;
-                case 256: hash = SHA256csp.ComputeHash(file); break;
-                default:  hash = SHA1csp.ComputeHash(file); break;
-            }
-
+            var hash = SHAcsp.ComputeHash(file);
             return BitConverter.ToString(hash).Replace("-","");
         }
         
@@ -202,182 +188,8 @@ namespace AMBPatcher
             File.WriteAllText(sha_file, Sha(File.ReadAllBytes(full_mod_file_path)));
         }
 
-        //////////////////
-        //Main functions//
-        //////////////////
-        
         public class AMB
         {
-            ////////////////////////////////////////////////////
-            //Some internal functions that help do some things//
-            ////////////////////////////////////////////////////
-
-            public class Internal
-            {
-                public static (string InternalName, int InternalIndex, string ParentName, int ParentIndex) GetInternalThings(byte[] raw_file, string OriginalFileName, string ModFileName)
-                {
-                    /*
-                    * InternalName (like from AMB.Read)
-                    * InternalIndex is index of file name in AMB.Read, if present
-                    * ParentName is AMB.Read()[ParentIndex].Name, if present
-                    * ParentIndex is index of parent file in AMB.Read, if present
-                    */
-
-                    var files = AMB.Read(raw_file);
-
-                    /////////////////
-                    //Internal Name//
-                    /////////////////
-
-                    string InternalName;
-                    int InternalIndex = -1;
-                    
-                    //Turning "C:\1\2\3" into {"C:","1","2","3"}
-                    string[] mod_file_parts = ModFileName.Replace('/', '\\').Split('\\');
-                    
-                    string orig_file_last = Path.GetFileName(OriginalFileName);
-
-                    //Trying to find where the original file name starts in the mod file name.
-                    int index = Array.IndexOf(mod_file_parts, orig_file_last);
-                    
-                    //If it's inside, return the part after original file ends
-                    if (index != -1)
-                        InternalName = String.Join("\\", mod_file_parts.Skip(index + 1).ToArray());
-                    //Else use file name
-                    else
-                        InternalName = mod_file_parts.Last();
-
-                    //This may occur when main file and added file have the same name
-                    if (InternalName == "")
-                        InternalName = mod_file_parts.Last();
-
-                    //Find internal index
-                    for (int i = 0; i < files.Count; i++)
-                    {
-                        if (InternalName == files[i].Name)
-                        { InternalIndex = i; break; }
-                    }
-                    
-                    int ParentIndex = -1;
-                    string ParentName = "";
-
-                    for (int i = 0; i < files.Count; i++)
-                    {
-                        if ((InternalName + "\\").StartsWith(files[i].Name + "\\"))
-                        {
-                            ParentIndex = i;
-                            ParentName = files[i].Name;
-                            break;
-                        }
-                    }
-                    
-                    return (InternalName:  InternalName,
-                            InternalIndex: InternalIndex,
-                            ParentName:    ParentName,
-                            ParentIndex:   ParentIndex);
-                }
-
-                public static string MakeNameSafe(string rawName)
-                {
-                    //removing ".\" in the names (Windows can't create "." folders)
-                    //sometimes they can have several ".\" in the names
-                    //Turns out there's a double dot directory in file names
-                    //And double backslash in file names
-                    int safeIndex = 0;
-                    while (rawName[safeIndex] == '.' || rawName[safeIndex] == '\\' || rawName[safeIndex] == '/' )
-                        safeIndex++;
-
-                    if (safeIndex == 0)
-                        return rawName;
-                    return rawName.Substring(safeIndex);
-                }
-            }
-
-            ////////
-            //Read//
-            ////////
-            
-            public static List<(string Name, int Pointer, int Length)> Read(byte[] raw_file)
-            {
-                List<int>       files_pointers  = new List<int>();
-                List<int>       files_lens      = new List<int>();
-                List<string>    files_names     = new List<string>();
-                var result = new List<(string Name, int Pointer, int Length)>();
-
-                if (!AMB.IsAMB(raw_file))
-                    return result;
-
-                if (BitConverter.IsLittleEndian != AMB.IsLittleEndian(raw_file))
-                    raw_file = AMB.SwapEndianness(raw_file);
-
-                int files_counter = BitConverter.ToInt32(raw_file, 0x10);
-
-                //Some AMB files have no file inside of them
-                if (files_counter == 0)
-                    return result;
-
-                int list_pointer  = BitConverter.ToInt32(raw_file, 0x14);
-                //This is actually used to identify extra zero bytes in messed AMBs
-                int DataPointer = BitConverter.ToInt32(raw_file, 0x18);
-
-                int has_dummy_bytes = 0;
-                if (DataPointer == 0)
-                {
-                    //Well, this means that we have "empty" integers in the places where pointers should be.
-                    //We need to skip them
-                    //Only iOS version of Episode 1 is caught at having this "defect".
-                    has_dummy_bytes = 4;
-                    DataPointer = BitConverter.ToInt32(raw_file, 0x18 + has_dummy_bytes);
-                }
-
-                for (int i = 0; i < files_counter; i++)
-                {
-                    int point = list_pointer + i * (0x10 + has_dummy_bytes);
-
-                    //Sometimes the lines where pointer and lenght should be are empty
-                    if (BitConverter.ToInt32(raw_file, point) != 0)
-                    {
-                        files_pointers.Add(BitConverter.ToInt32(raw_file, point));
-                        files_lens.Add(BitConverter.ToInt32(raw_file, point + 4 + has_dummy_bytes));
-                    }
-                }
-
-                //Actual number of files inside may differ from the number given in the header
-                files_counter = files_pointers.Count;
-                int name_pointer = BitConverter.ToInt32(raw_file, 0x1C + has_dummy_bytes);
-
-                //Some AMB files have no names of their files
-                if (name_pointer != 0)
-                {
-                    //Encoding characters from HEX to ASCII characters
-                    string files_names_raw = Encoding.ASCII.GetString(raw_file, name_pointer, raw_file.Length - name_pointer);
-                    string[] files_names_str = files_names_raw.Split(new char[] {'\x00'}, StringSplitOptions.RemoveEmptyEntries);
-                    files_names.AddRange(files_names_str);
-
-                    //Cleaning up the names
-                    for (int i = 0; i < files_names.Count; i++)
-                        files_names[i] = AMB.Internal.MakeNameSafe(files_names[i]);
-                }
-                else
-                {
-                    //If there're no names, setting file names to their indexes
-                    for (int i = 0; i < files_counter; i++)
-                        files_names.Add(i.ToString("D8"));
-                }
-
-                for (int i = 0; i < files_counter; i++)
-                    result.Add((Name:       files_names[i],
-                                Pointer:    files_pointers[i],
-                                Length:     files_lens[i]));
-
-                return result;
-            }
-            
-            public static List<(string Name, int Pointer, int Length)> Read(string file_name)
-            {
-                return AMB.Read(File.ReadAllBytes(file_name));
-            }
-
             //This method is used for Windows Phone version AMB files
             public static List<(string Name, int Pointer, int Length)> ReadWP(byte[] rawFile)
             {
@@ -416,37 +228,6 @@ namespace AMBPatcher
                 return result;
             }
 
-            ///////////
-            //Extract//
-            ///////////
-
-            public static void Extract(string file_name, string output)
-            {
-                byte[] raw_file = File.ReadAllBytes(file_name);
-                if (!AMB.IsAMB(raw_file)) return;
-
-                Directory.CreateDirectory(output);
-                
-                if (BitConverter.IsLittleEndian != AMB.IsLittleEndian(raw_file))
-                    raw_file = AMB.SwapEndianness(raw_file);
-
-                var files = AMB.Read(raw_file);
-
-                for (int i = 0; i < files.Count; i++)
-                {
-                    string output_file = Path.Combine(output, files[i].Name.Replace('\\', Path.DirectorySeparatorChar));
-
-                    //Copying raw file from the archive into a byte array.
-                    byte[] file_bytes = new byte[files[i].Length];
-                    Array.Copy(raw_file, files[i].Pointer, file_bytes, 0, files[i].Length);
-
-                    Directory.CreateDirectory(Path.GetDirectoryName(output_file));
-
-                    //And writing that byte array into a file
-                    File.WriteAllBytes(output_file, file_bytes);
-                }
-            }
-
             public static void ExtractWP(string fileName, string outputDirectory)
             {
                 byte[] raw_file = File.ReadAllBytes(fileName);
@@ -469,473 +250,6 @@ namespace AMBPatcher
                     File.WriteAllBytes(outputFile, fileBytes);
                 }
             }
-
-            ///////////////
-            //Extract all//
-            ///////////////
-
-            public static void ExtractAll(string path)
-            {
-                if (File.Exists(path))
-                {
-                    try
-                    {
-                        AMB.Extract(path, path + "_e");
-                    }
-                    catch
-                    {
-                        Console.WriteLine("Error extracting " + path);
-                    }
-
-                    if (Directory.Exists(path + "_e"))
-                    {
-                        File.Delete(path);
-                        Directory.Move(path + "_e", path);
-                        AMB.ExtractAll(path);
-                    }
-                }
-                else if (Directory.Exists(path))
-                {
-                    foreach (string sub_path in Directory.GetFileSystemEntries(path))
-                        AMB.ExtractAll(sub_path);
-                }
-            }
-
-            /////////
-            //Patch//
-            /////////
-            
-            public static byte[] Patch(byte[] raw_file, string OrigFileName, string ModFileName, string ModFilePath)
-            {
-                if (!AMB.IsAMB(raw_file)) return raw_file;
-
-                //This will make patching work with different endianness
-                bool swap_endianness_back = BitConverter.IsLittleEndian != AMB.IsLittleEndian(raw_file);
-                if (swap_endianness_back)
-                    raw_file = AMB.SwapEndianness(raw_file);
-
-                //Why do I need the original file name? To patch files that are inside of an AMB file that is inside of an AMB file that is inside of ...
-                var files = AMB.Read(raw_file);
-
-                var it = AMB.Internal.GetInternalThings(raw_file, OrigFileName, ModFileName);
-                
-                //If mod file is in the original file or it has a parent file.
-                if (it.InternalIndex != -1 || it.ParentIndex != -1)
-                {
-                    byte[] raw_mod_file;
-
-                    //In case if the file is in another file, we need to get patched(!) parent file and patch original file.
-                    //Else we can simply get mod file and patch original one.
-                    
-                    //If the file file is in the original file (not in a parent file)
-                    if (it.InternalIndex != -1)
-                    {
-                        raw_mod_file = File.ReadAllBytes(ModFilePath);
-                    }
-                    //Else we get parent file and patch it.
-                    //This is the place where recursive patching begins
-                    else
-                    {
-                        //These two lines "extract" parent file (TODO: add a feature to extract only one file)
-                        byte[] parent_raw = new byte[files[it.ParentIndex].Length];
-                        Array.Copy(raw_file, files[it.ParentIndex].Pointer, parent_raw,
-                        0, files[it.ParentIndex].Length);
-
-                        //This returns patched parent file
-                        raw_mod_file = AMB.Patch(parent_raw,
-                                                 it.ParentName,
-                                                 it.InternalName,
-                                                 ModFilePath);
-
-                        //Now we have a parent file, so we need to replace it.
-                        it.InternalName  = it.ParentName;
-                        it.InternalIndex = it.ParentIndex;
-                    }
-
-                    Log.Write("AMB.Patch: replacing original file with " + ModFileName);
-
-                    int namePointer = BitConverter.ToInt32(raw_file, 0x1C);
-                    //This makes length of the mod file to be % 16 = 0
-                    int rawModLen = raw_mod_file.Length + (16 - raw_mod_file.Length % 16) % 16;
-
-                    int finalPartPointer;
-                    //If this is the last file, start copying from names
-                    if (it.InternalIndex == files.Count - 1)
-                        finalPartPointer = namePointer;
-                    else
-                        finalPartPointer = files[it.InternalIndex + 1].Pointer;
-
-                    //The length difference between the mod file and the original one.
-                    int len_dif = rawModLen - finalPartPointer + files[it.InternalIndex].Pointer;
-                    
-                    byte[] patchedFile = new byte[raw_file.Length + len_dif];
-                    
-                    //Copying beginning of the file
-                    Array.Copy(raw_file, 0, patchedFile, 0, files[it.InternalIndex].Pointer);
-
-                    //Copying mod file
-                    Array.Copy(raw_mod_file, 0, patchedFile, files[it.InternalIndex].Pointer, raw_mod_file.Length);
-
-                    //Copyting final part
-                    Array.Copy(raw_file, finalPartPointer, patchedFile, finalPartPointer + len_dif, raw_file.Length - finalPartPointer);
-
-                    //Changing Name Pointer
-                    Array.Copy(BitConverter.GetBytes(namePointer + len_dif), 0, patchedFile, 0x1C, 4);
-
-                    //Changing File Length
-                    Array.Copy(BitConverter.GetBytes(rawModLen), 0, patchedFile, 0x24 + it.InternalIndex * 0x10, 4);
-
-                    //Changing File Pointers
-                    for (int i = it.InternalIndex + 1; i < files.Count; i++)
-                    {
-                        int tmp_pointer = 0x20 + i * 0x10;
-                        Array.Copy(BitConverter.GetBytes(BitConverter.ToInt32(patchedFile, tmp_pointer) + len_dif),
-                                    0, patchedFile, tmp_pointer, 4);
-                    }
-                   
-                    raw_file = patchedFile;
-                }
-                else
-                {
-                    Log.Write("AMB.Patch: " + ModFileName + " is not in " + OrigFileName + ", trying to add!");
-                    raw_file = AMB.Add(raw_file, OrigFileName, ModFileName, ModFilePath);
-                }
-
-                if (swap_endianness_back)
-                    raw_file = AMB.SwapEndianness(raw_file);
-
-                return raw_file;
-            }
-            
-            public static void Patch(string file_name, string mod_file)
-            {
-                byte[] raw_file = AMB.Patch(File.ReadAllBytes(file_name),
-                                            file_name,
-                                            mod_file,
-                                            mod_file);
-                File.WriteAllBytes(file_name, raw_file);
-            }
-
-            ///////
-            //Add//
-            ///////
-
-            public static byte[] Add(byte[] raw_file, string OrigFileName, string ModFileName, string ModFilePath)
-            {
-                if (!AMB.IsAMB(raw_file)) return raw_file;
-                //Okay, I've got a great plan:
-                //Add empty file and patch it.
-                //2019 note: lol this is not very effective
-
-                //This will make addition work with different endianness
-                bool swap_endianness_back = BitConverter.IsLittleEndian != AMB.IsLittleEndian(raw_file);
-                if (swap_endianness_back)
-                    raw_file = AMB.SwapEndianness(raw_file);
-
-                //Some empty files from S4E1 are "broken", it's better to use a new empty file.
-                if (AMB.Read(raw_file).Count == 0)
-                   raw_file = AMB.Create();
-
-                var it = AMB.Internal.GetInternalThings(raw_file, OrigFileName, ModFileName);
-
-                if (it.InternalIndex != -1 || it.ParentIndex != -1)
-                    return AMB.Patch(raw_file, OrigFileName, ModFileName, ModFilePath);
-                
-                int file_number  = BitConverter.ToInt32(raw_file, 0x10);
-                int enum_pointer = BitConverter.ToInt32(raw_file, 0x14);
-                int data_pointer = BitConverter.ToInt32(raw_file, 0x18);
-                int name_pointer = BitConverter.ToInt32(raw_file, 0x1C);
-                
-                byte[] enumeration_part = new byte[enum_pointer + 0x10 * file_number];
-                byte[] data_part        = new byte[name_pointer - enumeration_part.Length];
-                byte[] name_part        = new byte[raw_file.Length - name_pointer];
-
-                Array.Copy(raw_file, 0, enumeration_part, 0, enumeration_part.Length);
-                Array.Copy(raw_file, enumeration_part.Length, data_part, 0, data_part.Length);
-                Array.Copy(raw_file, name_pointer, name_part, 0, name_part.Length);
-
-                //////////
-                //Header//
-                //////////
-                
-                //Increasing file counter by 1
-                file_number += 1;
-                Array.Copy(BitConverter.GetBytes(file_number), 0, enumeration_part, 0x10, 4);
-
-                //Shifting data pointer by 0x10
-                data_pointer += 0x10;
-                Array.Copy(BitConverter.GetBytes(data_pointer), 0, enumeration_part, 0x18, 4);
-
-                //Shifting name pointer by 0x20
-                name_pointer += 0x20;
-                Array.Copy(BitConverter.GetBytes(name_pointer), 0, enumeration_part, 0x1C, 4);
-
-                ///////////////
-                //Enumeration//
-                ///////////////
-                
-                //Shifting other file pointers by 0x10
-                for (int i = 0; i < file_number - 1; i++)
-                {
-                    int tmp_pointer = enum_pointer + 0x10 * i;
-
-                    Array.Copy(BitConverter.GetBytes(BitConverter.ToInt32(enumeration_part, tmp_pointer) + 0x10),
-                                                    0, enumeration_part, tmp_pointer, 4);
-                }
-
-                //Injecting empty file pointer and length
-                byte[] empty_file_enumeration = new byte[0x10];
-                name_pointer -= 0x10;
-                Array.Copy(BitConverter.GetBytes(name_pointer), 0, empty_file_enumeration, 0x00, 4);
-
-                name_pointer += 0x10;
-
-                //Length
-                empty_file_enumeration[0x4] = 0x10;
-
-                byte[] mod_file_name_bytes = new byte[0x20];
-
-                for (int i = 0; i < it.InternalName.Length; i++)
-                {
-                    if (i >= mod_file_name_bytes.Length) break;
-                    mod_file_name_bytes[i] = (byte)it.InternalName[i];
-                }
-                
-                raw_file = enumeration_part.Join(empty_file_enumeration,
-                                    data_part, new byte[0x10],
-                                    name_part, mod_file_name_bytes);
-                
-                raw_file = AMB.Patch(raw_file, OrigFileName, ModFileName, ModFilePath);
-
-                if (swap_endianness_back)
-                    raw_file = AMB.SwapEndianness(raw_file);
-
-                return raw_file;
-            }
-
-            public static void Add(string file_name, string mod_file, string ModFileName)
-            {
-                byte[] raw_file = AMB.Add(File.ReadAllBytes(file_name), file_name, ModFileName, mod_file);
-                File.WriteAllBytes(file_name, raw_file);
-            }
-
-            public static void Add(string file_name, string mod_file)
-            {
-                byte[] raw_file = AMB.Add(File.ReadAllBytes(file_name), file_name, mod_file, mod_file);
-                File.WriteAllBytes(file_name, raw_file);
-            }
-
-            //////////////////
-            //Get endianness//
-            //////////////////
-            
-            public static bool IsLittleEndian(byte[] raw_file)
-            {
-                bool FileIsLittleEndian = BitConverter.IsLittleEndian;
-                if (BitConverter.ToInt32(raw_file, 4) > 0xFFFF)
-                    FileIsLittleEndian = !FileIsLittleEndian;
-
-                return FileIsLittleEndian;
-            }
-
-            public static bool IsLittleEndian(string FileName)
-            {
-                return AMB.IsLittleEndian(File.ReadAllBytes(FileName));
-            }
-
-            ///////////////////
-            //Swap endianness//
-            ///////////////////
-
-            public static byte[] SwapEndianness(byte[] raw_file)
-            {
-                bool FileIsLittleEndian = IsLittleEndian(raw_file);
-
-                List<int> PointerList = new List<int> { 0x4, //Endianness
-                                                       0x10,
-                                                       0x14,
-                                                       0x18,
-                                                       0x1C };
-
-                byte[] FileCounter_raw = new byte[4];
-                byte[] ListPointer_raw = new byte[4];
-
-                Array.Copy(raw_file, 0x10, FileCounter_raw, 0, 4);
-                Array.Copy(raw_file, 0x14, ListPointer_raw, 0, 4);
-
-                if (FileIsLittleEndian != BitConverter.IsLittleEndian)
-                {
-                    Array.Reverse(FileCounter_raw);
-                    Array.Reverse(ListPointer_raw);
-                }
-
-                int FileCounter = BitConverter.ToInt32(FileCounter_raw, 0);
-                int ListPointer = BitConverter.ToInt32(ListPointer_raw, 0);
-
-                for (int i = 0; i < FileCounter; i++)
-                {
-                    PointerList.Add(ListPointer + 0x10 * i);
-                    PointerList.Add(ListPointer + 0x10 * i + 4);
-                }
-                
-                foreach (int pointer in PointerList)
-                    Array.Reverse(raw_file, pointer, 4);
-
-                return raw_file;
-            }
-
-            public static void SwapEndianness(string FileName)
-            {
-                File.WriteAllBytes(FileName, SwapEndianness(File.ReadAllBytes(FileName)));
-            }
-
-            ////////////////////////
-            //Delete file from AMB//
-            ////////////////////////
-
-            public static byte[] Delete(byte[] raw_file, string file_name_to_delete)
-            {
-                //This will make deletion work with different endianness
-                bool swap_endianness_back = BitConverter.IsLittleEndian != AMB.IsLittleEndian(raw_file);
-                if (swap_endianness_back)
-                    raw_file = AMB.SwapEndianness(raw_file);
-
-                var files = AMB.Read(raw_file);
-
-                int pointer_of_file_to_delete = -1;
-                int len_of_file_to_delete = -1;
-
-                for (int i = 0; i < files.Count; i++)
-                {
-                    if (files[i].Name == file_name_to_delete)
-                    {
-                        pointer_of_file_to_delete = files[i].Pointer;
-                        len_of_file_to_delete = files[i].Length;
-                    }
-                }
-
-                if (pointer_of_file_to_delete != -1)
-                {
-                    //Remember that the actual number of files inside may be different
-                    int prev_file_number = BitConverter.ToInt32(raw_file, 0x10);
-                    //Changing File Number
-                    Array.Copy(BitConverter.GetBytes(prev_file_number - 1)
-                                , 0, raw_file, 0x10, 4);
-
-                    int list_pointer = BitConverter.ToInt32(raw_file, 0x14);
-
-                    int prev_data_pointer = BitConverter.ToInt32(raw_file, 0x18);
-                    //Changing Data Pointer
-                    Array.Copy(BitConverter.GetBytes(prev_data_pointer - 0x10)
-                                , 0, raw_file, 0x18, 4);
-
-                    int prev_name_pointer = BitConverter.ToInt32(raw_file, 0x1C);
-                    //Changing Name Pointer
-                    Array.Copy(BitConverter.GetBytes(prev_name_pointer - 0x10 - len_of_file_to_delete)
-                                , 0, raw_file, 0x1C, 4);
-
-                    int enum_pointer_of_file_to_delete = -1;
-                    int file_index = -1;
-
-                    //decreasing file data pointers by the length of the file to delete
-                    for (int i = 0; i < prev_file_number; i++)
-                    {
-                        int file_pointer = BitConverter.ToInt32(raw_file, list_pointer + 0x10 * i);
-
-                        if (file_pointer != 0)
-                        {
-                            int tmp = len_of_file_to_delete;
-                            if (enum_pointer_of_file_to_delete == -1) {tmp = 0;}
-
-                            Array.Copy(BitConverter.GetBytes(file_pointer - tmp - 0x10)
-                                        , 0, raw_file, list_pointer + 0x10 * i, 4);
-                        }
-
-                        if (file_pointer == pointer_of_file_to_delete)
-                        {
-                            enum_pointer_of_file_to_delete = list_pointer + 0x10 * i;
-                            file_index = i;
-                        }
-                    }
-
-                    //Copying the part before the pointer in the list
-                    byte[] before_enum = new byte[enum_pointer_of_file_to_delete];
-                    Array.Copy(raw_file, 0, before_enum, 0, before_enum.Length);
-
-                    //Copyting the part after the pointer in the list and before the file data
-                    byte[] before_data = new byte[pointer_of_file_to_delete - (enum_pointer_of_file_to_delete + 0x10)];
-                    Array.Copy(raw_file, enum_pointer_of_file_to_delete + 0x10
-                                , before_data, 0, before_data.Length);
-
-                    //Copyting the part after file data and before the file name
-                    byte[] before_name = new byte[prev_name_pointer + file_index * 0x20 - (pointer_of_file_to_delete + len_of_file_to_delete)];
-                    Array.Copy(raw_file, pointer_of_file_to_delete + len_of_file_to_delete
-                                , before_name, 0, before_name.Length);
-
-                    //Copyting the part after file data and before the file name
-                    byte[] after_name = new byte[raw_file.Length - (prev_name_pointer + (file_index + 1) * 0x20)];
-                    Array.Copy(raw_file, prev_name_pointer + (file_index + 1) * 0x20
-                                , after_name, 0, after_name.Length);
-
-                    //Joining all together
-                    raw_file = before_enum.Join(before_data, before_name, after_name);
-                }
-
-                if (swap_endianness_back)
-                    raw_file = AMB.SwapEndianness(raw_file);
-
-                return raw_file;
-            }
-
-            public static void Delete(string file_name, string file_name_to_delete)
-            {
-                File.WriteAllBytes(file_name
-                                    , AMB.Delete(File.ReadAllBytes(file_name), file_name_to_delete));
-            }
-
-            /////////////////////////
-            //Create empty AMB file//
-            /////////////////////////
-
-            public static byte[] Create()
-            {
-                byte[] raw_file = new byte[0x20];
-
-                //The header
-                Array.Copy(Encoding.ASCII.GetBytes("#AMB"), 0, raw_file, 0, 4);
-
-                //Endianness identifier (at least for AMBPatcher)
-                Array.Copy(BitConverter.GetBytes(0x1304), 0, raw_file, 0x04, 4);
-
-                byte[] bytes0x20 = BitConverter.GetBytes(0x20);
-                //List pointer
-                Array.Copy(bytes0x20, 0, raw_file, 0x14, 4);
-                //Data pointer
-                Array.Copy(bytes0x20, 0, raw_file, 0x18, 4);
-                //Name pointer
-                Array.Copy(bytes0x20, 0, raw_file, 0x1C, 4);
-
-                return raw_file;
-            }
-
-            public static void Create(string file_name)
-            {
-                File.WriteAllBytes(file_name, AMB.Create());
-            }
-
-            ////////////////////////////////////
-            //Check if file is AMB (by header)//
-            ////////////////////////////////////
-
-            public static bool IsAMB(byte[] raw_file)
-            {
-                return raw_file.Length >= 4
-                && raw_file[0] == '#'
-                && raw_file[1] == 'A'
-                && raw_file[2] == 'M'
-                && raw_file[3] == 'B';
-            }
-                                
         }
 
         static void PatchAll(string file_name, List<string> mod_files, List<string> mod_paths)
@@ -963,7 +277,9 @@ namespace AMBPatcher
                             }
                             else
                             {
-                                AMB.Patch(file_name, mod_file_full);
+                                var amb = new AMB_new(file_name);
+                                amb.Add(mod_file_full);
+                                amb.Save();
                             }
 
                             ShaWrite(mod_files[i], mod_file_full);
@@ -1146,7 +462,7 @@ namespace AMBPatcher
             + "\n\tAMBPatcher swap_endianness [AMB] - Swaps endianness of [AMB]."
             + "\n\tAMBPatcher delete [AMB] [file] - Delete [file] from [AMB]."
             + "\n\tAMBPatcher create [name] - Creates an empty AMB file with [name]."
-            + "\n\tAMBPatcher extract_all [path] - Extract all files from [path] (can be a file or directory) to be Mod Loader compatible (note: this removes original AMB files!)."
+            + "\n\tAMBPatcher extract_all [path] - Extract all files from [path] (can be a file or directory) to be Mod Loader compatible."
             + "\n\tAMBPatcher -h and"
             + "\n\tAMBPatcher --help - Show help message.";
 
@@ -1179,9 +495,7 @@ namespace AMBPatcher
                     {
                         Log.Write("\n" + test[i].OrigFile);
                         for (int j = 0; j < test[i].ModFiles.Count; j++)
-                        {
                             Log.Write("\t" + test[i].ModFiles[j] + "\t" + test[i].ModName[j]);
-                        }
                     }
                     Log.Write("====================");
                 }
@@ -1190,9 +504,7 @@ namespace AMBPatcher
                 List<string> modified_files = new List<string> { };
 
                 if (File.Exists("mods/mods_prev"))
-                {
                     mods_prev = File.ReadAllLines("mods/mods_prev").ToList<string>();
-                }
 
                 Log.Write("Patching original files...");
 
@@ -1287,10 +599,7 @@ namespace AMBPatcher
                 else
                 {
                     if (File.Exists(args[0]))
-                    {
-                        Directory.CreateDirectory(args[0] + "_extracted");
-                        AMB.Extract(args[0], args[0] + "_extracted");
-                    }
+                        new AMB_new(args[0]).Extract();
                     else ShowHelpMessage();
                 }
             }
@@ -1300,24 +609,20 @@ namespace AMBPatcher
                 if (args[0] == "extract")
                 {
                     if (File.Exists(args[1]))
-                    {
-
-                        Directory.CreateDirectory(args[1] + "_extracted");
-                        AMB.Extract(args[1], args[1] + "_extracted");
-                    }
+                        new AMB_new(args[1]).Extract();
                     else ShowHelpMessage();
                 }
                 else if (args[0] == "read")
                 {
                     if (File.Exists(args[1]))
                     {
-                        var data = AMB.Read(args[1]);
+                        var amb = new AMB_new(args[1]);
 
-                        for (int i = 0; i < data.Count; i++)
+                        foreach (var o in amb.Objects)
                         {
-                            Console.WriteLine("\nFile name:    " + data[i].Name);
-                            Console.WriteLine("File pointer: " + data[i].Pointer + "\t(0x" + data[i].Pointer.ToString("X") + ")");
-                            Console.WriteLine("File length:  " + data[i].Length  + "\t(0x" + data[i].Length.ToString("X") + ")");
+                            Console.WriteLine("\nFile name:    " + o.Name);
+                            Console.WriteLine("File pointer: " + o.Pointer + "\t(0x" + o.Pointer.ToString("X") + ")");
+                            Console.WriteLine("File length:  " + o.Length + "\t(0x" + o.Length.ToString("X") + ")");
                         }
                     }
                     else ShowHelpMessage();
@@ -1325,36 +630,39 @@ namespace AMBPatcher
                 else if (File.Exists(args[0]) && Directory.Exists(args[1]))
                 {
                     var files = Directory.GetFiles(args[1], "*", SearchOption.AllDirectories);
+                    if (files.Length == 0) return;
 
+                    var amb = new AMB_new(args[0]);
                     foreach (string file in files)
                     {
                         Console.WriteLine("Patching by \"" + file + "\"...");
-                        AMB.Patch(args[0], file);
+                        amb.Add(file);
                     }
+                    amb.Save();
                     Console.WriteLine("Done.");
                 }
                 else if (args[0] == "swap_endianness" && File.Exists(args[1]))
-                {
-                    AMB.SwapEndianness(args[1]);
-                }
+                    new AMB_new(args[1]).Save(args[1], true);
+
                 else if (args[0] == "endianness" && File.Exists(args[1]))
                 {
-                    Console.WriteLine("This file's endianness is...");
-
-                    if (AMB.IsLittleEndian(args[1]))
-                        Console.WriteLine("Little endian!");
+                    if (new AMB_new(args[1]).IsLittleEndian())
+                        Console.WriteLine("Little endian");
                     else
-                        Console.WriteLine("Big endian!");
+                        Console.WriteLine("Big endian");
                 }
+
                 else if (args[0] == "create")
-                {
-                    if (Path.GetDirectoryName(args[1]) != "")
-                        Directory.CreateDirectory(Path.GetDirectoryName(args[1]));
-                    AMB.Create(args[1]);
-                }
+                    new AMB_new().Save(args[1]);
+
                 else if (args[0] == "extract_all")
                 {
-                    AMB.ExtractAll(args[1]);
+                    string[] files = { args[1] };
+                    if (Directory.Exists(args[1]))
+                        files = Directory.GetFiles(args[1], "*.*", SearchOption.AllDirectories);
+
+                    foreach (var f in files)
+                        new AMB_new(f).ExtractAll();
                 }
 
                 else if (args[0] == "extract_wp")
@@ -1370,31 +678,38 @@ namespace AMBPatcher
 
             else if (args.Length == 3)
             {
+                if (args[0] == "find")
+                {
+                    var amb = new AMB_new(args[1]);
+                    var a = amb.FindObject(args[2]);
+                    foreach (var o in a.amb.Objects)
+                        Console.WriteLine(o.Name);
+                    Console.ReadLine();
+                }
+
                 if (args[0] == "extract")
                 {
                     if (File.Exists(args[1]))
-                    {
-                        Directory.CreateDirectory(args[2]);
-                        AMB.Extract(args[1], args[2]);
-                    }
+                        new AMB_new(args[1]).Extract(args[2]);
+
                     else ShowHelpMessage();
                 }
                 else if (args[0] == "add")
                 {
                     if (File.Exists(args[1]) && File.Exists(args[2]))
                     {
-                        AMB.Patch(args[1], args[2]);
+                        var amb = new AMB_new(args[1]);
+                        amb.Add(args[2]);
+                        amb.Save();
                     }
                     else if (File.Exists(args[1]) && Directory.Exists(args[2]))
                     {
-                        var files = Directory.GetFiles(args[2], "*", SearchOption.AllDirectories);
+                        var files = Directory.GetFiles(args[2], "*", SearchOption.AllDirectories).OrderBy(x => x);
 
-                        foreach (string file in files.OrderBy(x => x))
-                        {
-                            Console.WriteLine("Patching by \""+file+"\"...");
-                            AMB.Patch(args[1], file);
-                        }
-                        Console.WriteLine("Done.");
+                        var amb = new AMB_new(args[1]);
+                        foreach (var file in files)
+                            amb.Add(file);
+                        amb.Save();
                     }
                     else ShowHelpMessage();
                 }
@@ -1402,8 +717,10 @@ namespace AMBPatcher
                 {
                     if (File.Exists(args[1]))
                     {
-                        AMB.Delete(args[1], args[2]);
-                    } else ShowHelpMessage();
+                        var amb = new AMB_new(args[1]);
+                        amb.Remove(args[2]);
+                        amb.Save();
+                    }else ShowHelpMessage();
                 }
                 else ShowHelpMessage();
             }
@@ -1413,7 +730,9 @@ namespace AMBPatcher
                 {
                     if (File.Exists(args[1]) && File.Exists(args[2]))
                     {
-                        AMB.Add(args[1], args[2], args[3]);
+                        var amb = new AMB_new(args[1]);
+                        amb.Add(args[2], args[3]);
+                        amb.Save();
                     }
                     else ShowHelpMessage();
                 }
@@ -1422,28 +741,4 @@ namespace AMBPatcher
             else ShowHelpMessage();
         }
     }
-
-    public static class Extensions
-    {
-        //This thing joins two byte arrays just like Concat().ToArray() but faster (i think)
-        public static byte[] Join(this byte[] first, params byte[][] others)
-        {
-            int totalLength = first.Length;
-            foreach (byte[] arr in others)
-                totalLength += arr.Length;
-
-            byte[] output = new byte[totalLength];
-
-            Array.Copy(first,  0, output, 0, first.Length);
-            int index = first.Length;
-            for (int i = 0; i < others.Length; i++)
-            {
-                Array.Copy(others[i], 0, output, index, others[i].Length);
-                index += others[i].Length;
-            }
-
-            return output;
-        }
-    }
-
 }

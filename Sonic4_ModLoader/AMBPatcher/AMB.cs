@@ -1,0 +1,317 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Collections.Generic;
+
+namespace AMB
+{
+    public class AMB_new
+    {
+        private byte[] source;
+        private string ambPath;
+        public bool SameEndianness = true;
+        public List<BinaryObject> Objects = new List<BinaryObject>();
+        public int Length { get => PredictPointers().name + Objects.Count * 0x20;}
+
+        public bool IsSourceAMB(int ptr=0)
+        {
+            return source.Length - ptr >= 0x20
+                && source[ptr + 0] == '#'
+                && source[ptr + 1] == 'A'
+                && source[ptr + 2] == 'M'
+                && source[ptr + 3] == 'B';
+        }
+
+        public bool IsLittleEndian(byte[] binary = null)
+        {
+            if (binary == null)
+                binary = source;
+            bool FileIsLittleEndian = BitConverter.IsLittleEndian;
+            if (BitConverter.ToInt32(binary, 4) > 0xFFFF)
+                FileIsLittleEndian = !FileIsLittleEndian;
+            return FileIsLittleEndian;
+        }
+
+        public void SwapEndianness(byte[] binary = null, int ptr=0)
+        {
+            if (binary == null)
+                binary = source;
+            var swapHeader = IsLittleEndian(binary) == BitConverter.IsLittleEndian;
+
+            if (!swapHeader)
+            {
+                Array.Reverse(binary, ptr + 0x4, 4);
+                Array.Reverse(binary, ptr + 0x10, 4);
+                Array.Reverse(binary, ptr + 0x14, 4);
+                Array.Reverse(binary, ptr + 0x18, 4);
+                Array.Reverse(binary, ptr + 0x1C, 4);
+            }
+
+            var objNum = BitConverter.ToInt32(binary, ptr + 0x10);
+            var listPointer = BitConverter.ToInt32(binary, ptr + 0x14);
+
+            for (int i = 0; i < objNum; i++)
+            {
+                Array.Reverse(binary, listPointer + 0x10 * i, 4);
+                Array.Reverse(binary, listPointer + 0x10 * i + 4, 4);
+            }
+
+            if (swapHeader)
+            {
+                Array.Reverse(binary, ptr + 0x4, 4);
+                Array.Reverse(binary, ptr + 0x10, 4);
+                Array.Reverse(binary, ptr + 0x14, 4);
+                Array.Reverse(binary, ptr + 0x18, 4);
+                Array.Reverse(binary, ptr + 0x1C, 4);
+            }
+        }
+
+        private (int list, int data, int name) PredictPointers()
+        {
+            int data = 0x20 + 0x10 * Objects.Count;
+            var ptr = data + Objects.Sum(x => x.LengthNice);
+            return (0x20, data, ptr);
+        }
+
+
+        private StringBuilder sb = new StringBuilder();
+        private string ReadString(byte[] source, int pointer)
+        {
+            sb.Clear();
+            while (pointer < source.Length && source[pointer] != 0x00)
+                sb.Append((char)source[pointer++]);
+
+            var str = sb.ToString();
+            sb.Clear();
+            return str;
+        }
+
+        public AMB_new() {}
+
+        public AMB_new(string fileName) : this(File.ReadAllBytes(fileName), 0, fileName) {}
+
+        public AMB_new(byte[] source, int sourcePtr=0, string fileName=null)
+        {
+            this.source = source;
+            ambPath = fileName;
+            if (!IsSourceAMB()) return;
+
+            SameEndianness = BitConverter.IsLittleEndian == IsLittleEndian();
+
+            if (!SameEndianness)
+                SwapEndianness();
+
+            var objNum = BitConverter.ToInt32(source, sourcePtr + 0x10);
+            var listPtr = BitConverter.ToInt32(source, sourcePtr + 0x14) + sourcePtr;
+            var dataPtr = BitConverter.ToInt32(source, sourcePtr + 0x18) + sourcePtr;
+            var namePtr = BitConverter.ToInt32(source, sourcePtr + 0x1C) + sourcePtr;
+
+            for (int i = 0; i < objNum; i++)
+            {
+                var objPtr = BitConverter.ToInt32(source, listPtr + 0x10 * i) + sourcePtr;
+                if (objPtr == 0) continue;
+                var objLen = BitConverter.ToInt32(source, listPtr + 0x10 * i + 4);
+                var newObj = new BinaryObject(source, objPtr, objLen);
+                newObj.Name = MakeNameSafe(ReadString(source, namePtr + 0x20 * i));
+                newObj.ParentAMB = this;
+                if (IsSourceAMB(objPtr))
+                    newObj.Amb = new AMB_new(source, objPtr, ambPath + "\\" + newObj.Name);
+                Objects.Add(newObj);
+            }
+
+            if (!SameEndianness)
+                SwapEndianness();
+        }
+
+        public void Save(string filePath = null, bool swapEndianness = false)
+        {
+            if (filePath == null) filePath = ambPath;
+            if (Path.GetDirectoryName(filePath) != "")
+                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+            File.WriteAllBytes(filePath, Write(swapEndianness));
+        }
+
+        public byte[] Write(bool swapEndianness = false)
+        {
+            var result = new byte[Length];
+            var pointers = PredictPointers();
+
+            Array.Copy(Encoding.ASCII.GetBytes("#AMB"), 0, result, 0, 4);
+            Array.Copy(BitConverter.GetBytes(0x1304), 0, result, 0x04, 4); //Endianness identifier (at least for AMBPatcher)
+            Array.Copy(BitConverter.GetBytes(Objects.Count), 0, result, 0x10, 4);
+            Array.Copy(BitConverter.GetBytes(pointers.list), 0, result, 0x14, 4);
+            Array.Copy(BitConverter.GetBytes(pointers.data), 0, result, 0x18, 4);
+            Array.Copy(BitConverter.GetBytes(pointers.name), 0, result, 0x1C, 4);
+
+            foreach (var o in Objects)
+            {
+                Array.Copy(BitConverter.GetBytes(pointers.data), 0, result, pointers.list, 4);
+                Array.Copy(BitConverter.GetBytes(o.LengthNice), 0, result, pointers.list + 4, 4);
+
+                var oWrite = o.Write();
+                Array.Copy(oWrite, o.isAMB ? 0 : o.Pointer, result, pointers.data, o.Length);
+                Array.Copy(Encoding.ASCII.GetBytes(o.Name), 0, result, pointers.name, o.Name.Length);
+
+                pointers.list += 0x10;
+                pointers.data += o.LengthNice;
+                pointers.name += 0x20;
+            }
+
+            if (swapEndianness == SameEndianness)
+                SwapEndianness(result);
+
+            return result;
+        }
+
+        public string GetRelativeName(string MainFileName, string objectName)
+        {
+            //Turning "C:\1\2\3" into {"C:","1","2","3"}
+            var modPathParts = objectName.Replace('/', '\\').Split('\\');
+            var origFileName = Path.GetFileName(MainFileName);
+
+            //Trying to find where the original file name starts in the mod file name.
+            int index = Array.IndexOf(modPathParts, origFileName);
+                    
+            string InternalName;
+            //If it's inside, return the part after original file ends
+            if (index != -1)
+                InternalName = String.Join("\\", modPathParts.Skip(index + 1).ToArray());
+            //Else use file name
+            else
+                InternalName = modPathParts.Last();
+
+            //This may occur when main file and added file have the same name
+            if (InternalName == "")
+                InternalName = modPathParts.Last();
+
+            return InternalName;
+        }
+
+        public void Add(string filePath, string newName = null)
+        {
+            var target = FindObject(newName?.Replace('/', '\\') ?? GetRelativeName(ambPath, filePath));
+
+            var newObj = new BinaryObject(filePath);
+            newObj.Name = target.name;
+
+            if (target.index == -1)
+                target.amb.Objects.Add(newObj);
+            else
+                target.amb.Replace(newObj, target.index);
+        }
+
+        public (AMB_new amb, int index, string name) FindObject(string objectName)
+        {
+            var InternalName = objectName;
+
+            var InternalIndex = Objects.FindIndex(x => x.Name == InternalName);
+            if (InternalIndex != -1)
+                return (this, InternalIndex, InternalName);
+
+            var ParentIndex = -1;
+            //Objects.FindIndex(x => x.Name == InternalName.Split('\\').Take(x.Name.Count(chr => chr == '\\') + 1).ToString());
+
+            var InternalParts = InternalName.Split('\\');
+            for (int i = 0; i < Objects.Count; i++)
+            {
+                var objName = Objects[i].Name;
+                var seps = objName.Count(c => c == '\\');
+                if (objName == String.Join("\\", InternalParts.Take(seps + 1)))
+                {
+                    ParentIndex = i;
+                    break;
+                }
+            }
+
+            if (ParentIndex != -1)
+                return Objects[ParentIndex].Amb.FindObject(objectName.Substring(Objects[ParentIndex].Name.Length + 1));
+
+            return (this, -1, InternalName);
+        }
+
+        public void Replace(BinaryObject bo, int targetIndex) => Objects[targetIndex] = bo;
+        public void Replace(BinaryObject bo, string targetName)
+        {
+            var target = FindObject(targetName);
+            target.amb.Replace(bo, target.index);
+        }
+
+        public void ExtractAll(string output = null) => Extract(output, true);
+
+        public void Extract(string output = null, bool extractAll = false)
+        {
+            if (!IsSourceAMB()) return;
+            if (output == null) output = ambPath + "_extracted";
+            Directory.CreateDirectory(output);
+
+            foreach (var o in Objects)
+                if (extractAll && o.isAMB)
+                    o.Amb.Extract(Path.Combine(output, o.Name), true);
+                else
+                    File.WriteAllBytes(Path.Combine(output, o.Name), o.Source.Skip(o.Pointer).Take(o.Length).ToArray());
+        }
+
+        public static string MakeNameSafe(string rawName)
+        {
+            //removing ".\" in the names (Windows can't create "." folders)
+            //sometimes they can have several ".\" in the names
+            //Turns out there's a double dot directory in file names
+            //And double backslash in file names
+            int safeIndex = 0;
+            while (rawName[safeIndex] == '.' || rawName[safeIndex] == '\\' || rawName[safeIndex] == '/')
+                safeIndex++;
+
+            return rawName.Substring(safeIndex);
+        }
+
+        public void Remove(int index) => Objects.RemoveAt(index);
+        public void Remove(string objectName)
+        {
+            var target = FindObject(objectName);
+            target.amb.Remove(target.index);
+        }
+    }
+
+    public class BinaryObject
+    {
+        public string Name;
+        public bool isAMB { get => Amb != null; }
+        public AMB_new Amb;
+        public AMB_new ParentAMB;
+
+        public byte[] Source {get; private set;}
+        //TODO: use uint
+        public int Pointer {get; private set;}
+        int length;
+        public int Length {get => isAMB ? Amb.Length : length;}
+        //This makes length of the mod file to be % 16 = 0 with no empty space at the end
+        public int LengthNice {get => Length + (16 - Length % 16) % 16;}
+
+        public BinaryObject(byte[] source, int pointer, int length)
+        {
+            Source = source;
+            Pointer = pointer;
+            this.length = length;
+        }
+
+        public BinaryObject(byte[] source)
+        {
+            Source = source;
+            this.length = Source.Length;
+        }
+
+        public BinaryObject(string filePath)
+        {
+            Source = File.ReadAllBytes(filePath);
+            this.length = Source.Length;
+        }
+
+        public byte[] Write()
+        {
+            if (isAMB)
+                return Amb.Write();
+            return Source;
+        }
+    }
+}
