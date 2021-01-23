@@ -1,3 +1,11 @@
+[c]Version: v0.1.4.6
+\t[b]AMB Patcher[\b]
+* AMB manipulation side of the program was mostly rewritten
+
+\t[b]Patch Launcher[\b]
+* Fixed issue that prevented the game from starting
+
+
 [c]Version: v0.1.4.5
 \t[b]Mod Manager[\b]
 * Fixed issue when the Mod Loader is installed but it says it's not (Episode 2)
