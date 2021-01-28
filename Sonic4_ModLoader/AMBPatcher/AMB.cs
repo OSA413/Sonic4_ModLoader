@@ -12,7 +12,8 @@ namespace AMB
         private string ambPath;
         public bool SameEndianness = true;
         public List<BinaryObject> Objects = new List<BinaryObject>();
-        public int Length { get => PredictPointers().name + Objects.Count * 0x20;}
+        public bool hasNames = true;
+        public int Length { get => PredictPointers().name + Objects.Count * (hasNames ? 0x20 : 0) ;}
 
         public bool IsSourceAMB(int ptr=0)
         {
@@ -71,7 +72,7 @@ namespace AMB
         {
             int data = 0x20 + 0x10 * Objects.Count;
             var ptr = data + Objects.Sum(x => x.LengthNice);
-            return (0x20, data, ptr);
+            return (0x20, data, hasNames ? ptr : 0);
         }
 
 
@@ -104,8 +105,9 @@ namespace AMB
 
             var objNum = BitConverter.ToInt32(source, sourcePtr + 0x10);
             var listPtr = BitConverter.ToInt32(source, sourcePtr + 0x14) + sourcePtr;
-            var dataPtr = BitConverter.ToInt32(source, sourcePtr + 0x18) + sourcePtr;
+          //var dataPtr = BitConverter.ToInt32(source, sourcePtr + 0x18) + sourcePtr;
             var namePtr = BitConverter.ToInt32(source, sourcePtr + 0x1C) + sourcePtr;
+            if (namePtr == 0) hasNames = false;
 
             for (int i = 0; i < objNum; i++)
             {
@@ -113,7 +115,7 @@ namespace AMB
                 if (objPtr == 0) continue;
                 var objLen = BitConverter.ToInt32(source, listPtr + 0x10 * i + 4);
                 var newObj = new BinaryObject(source, objPtr, objLen);
-                newObj.Name = MakeNameSafe(ReadString(source, namePtr + 0x20 * i));
+                newObj.Name = hasNames ? MakeNameSafe(ReadString(source, namePtr + 0x20 * i)) : i.ToString();
                 newObj.ParentAMB = this;
                 if (IsSourceAMB(objPtr))
                     newObj.Amb = new AMB_new(source, objPtr, ambPath + "\\" + newObj.Name);
@@ -151,11 +153,14 @@ namespace AMB
 
                 var oWrite = o.Write();
                 Array.Copy(oWrite, o.isAMB ? 0 : o.Pointer, result, pointers.data, o.Length);
-                Array.Copy(Encoding.ASCII.GetBytes(o.Name), 0, result, pointers.name, o.Name.Length);
+                if (hasNames)
+                {
+                    Array.Copy(Encoding.ASCII.GetBytes(o.Name), 0, result, pointers.name, o.Name.Length);
+                    pointers.name += 0x20;
+                }
 
                 pointers.list += 0x10;
                 pointers.data += o.LengthNice;
-                pointers.name += 0x20;
             }
 
             if (swapEndianness == SameEndianness)
