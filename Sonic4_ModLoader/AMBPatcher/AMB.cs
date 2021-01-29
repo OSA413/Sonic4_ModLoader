@@ -115,7 +115,8 @@ namespace AMB
                 if (objPtr == 0) continue;
                 var objLen = BitConverter.ToInt32(source, listPtr + 0x10 * i + 4);
                 var newObj = new BinaryObject(source, objPtr, objLen);
-                newObj.Name = hasNames ? MakeNameSafe(ReadString(source, namePtr + 0x20 * i)) : i.ToString();
+                newObj.RealName = hasNames ? ReadString(source, namePtr + 0x20 * i) : i.ToString();
+                newObj.Name = MakeNameSafe(newObj.RealName);
                 newObj.ParentAMB = this;
                 if (IsSourceAMB(objPtr))
                     newObj.Amb = new AMB_new(source, objPtr, ambPath + "\\" + newObj.Name);
@@ -155,7 +156,7 @@ namespace AMB
                 Array.Copy(oWrite, o.isAMB ? 0 : o.Pointer, result, pointers.data, o.Length);
                 if (hasNames)
                 {
-                    Array.Copy(Encoding.ASCII.GetBytes(o.Name), 0, result, pointers.name, o.Name.Length);
+                    Array.Copy(Encoding.ASCII.GetBytes(o.RealName), 0, result, pointers.name, o.RealName.Length);
                     pointers.name += 0x20;
                 }
 
@@ -198,7 +199,7 @@ namespace AMB
             var target = FindObject(newName?.Replace('/', '\\') ?? GetRelativeName(ambPath, filePath));
 
             var newObj = new BinaryObject(filePath);
-            newObj.Name = target.name;
+            newObj.Name = newObj.RealName = target.name;
 
             if (target.index == -1)
                 target.amb.Objects.Add(newObj);
@@ -235,11 +236,10 @@ namespace AMB
             return (this, -1, InternalName);
         }
 
-        public void Replace(BinaryObject bo, int targetIndex) => Objects[targetIndex] = bo;
-        public void Replace(BinaryObject bo, string targetName)
+        public void Replace(BinaryObject bo, int targetIndex)
         {
-            var target = FindObject(targetName);
-            target.amb.Replace(bo, target.index);
+            bo.RealName = Objects[targetIndex].RealName;
+            Objects[targetIndex] = bo;
         }
 
         public void ExtractAll(string output = null) => Extract(output, true);
@@ -251,10 +251,13 @@ namespace AMB
             Directory.CreateDirectory(output);
 
             foreach (var o in Objects)
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(Path.Combine(output, o.Name)));
                 if (extractAll && o.isAMB)
                     o.Amb.Extract(Path.Combine(output, o.Name), true);
                 else
                     File.WriteAllBytes(Path.Combine(output, o.Name), o.Source.Skip(o.Pointer).Take(o.Length).ToArray());
+            }
         }
 
         public static string MakeNameSafe(string rawName)
@@ -281,6 +284,7 @@ namespace AMB
     public class BinaryObject
     {
         public string Name;
+        public string RealName;
         public bool isAMB { get => Amb != null; }
         public AMB_new Amb;
         public AMB_new ParentAMB;
