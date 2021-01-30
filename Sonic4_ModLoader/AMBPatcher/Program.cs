@@ -603,7 +603,8 @@ namespace AMBPatcher
                     else if (Directory.Exists(args[0]))
                     {
                         var amb = new AMB_new();
-                        var files = Directory.GetFiles(args[1], "*.*", SearchOption.AllDirectories).OrderBy(x => x);
+                        amb.AmbPath = args[0];
+                        var files = Directory.GetFiles(args[0], "*.*", SearchOption.AllDirectories).OrderBy(x => x);
                         foreach (var f in files)
                             amb.Add(f);
                         amb.Save(args[0] + ".AMB");

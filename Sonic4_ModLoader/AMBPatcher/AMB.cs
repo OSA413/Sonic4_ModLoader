@@ -9,7 +9,7 @@ namespace AMB
     public class AMB_new
     {
         private byte[] source;
-        private string ambPath;
+        public string AmbPath;
         public bool SameEndianness = true;
         public List<BinaryObject> Objects = new List<BinaryObject>();
         public bool hasNames = true;
@@ -95,7 +95,7 @@ namespace AMB
         public AMB_new(byte[] source, int sourcePtr=0, string fileName=null)
         {
             this.source = source;
-            ambPath = fileName;
+            AmbPath = fileName;
             if (!IsSourceAMB()) return;
 
             SameEndianness = BitConverter.IsLittleEndian == IsLittleEndian();
@@ -119,7 +119,7 @@ namespace AMB
                 newObj.Name = MakeNameSafe(newObj.RealName);
                 newObj.ParentAMB = this;
                 if (IsSourceAMB(objPtr))
-                    newObj.Amb = new AMB_new(source, objPtr, ambPath + "\\" + newObj.Name);
+                    newObj.Amb = new AMB_new(source, objPtr, AmbPath + "\\" + newObj.Name);
                 Objects.Add(newObj);
             }
 
@@ -129,7 +129,7 @@ namespace AMB
 
         public void Save(string filePath = null, bool swapEndianness = false)
         {
-            if (filePath == null) filePath = ambPath;
+            if (filePath == null) filePath = AmbPath;
             if (Path.GetDirectoryName(filePath) != "")
                 Directory.CreateDirectory(Path.GetDirectoryName(filePath));
             File.WriteAllBytes(filePath, Write(swapEndianness));
@@ -196,7 +196,7 @@ namespace AMB
 
         public void Add(string filePath, string newName = null)
         {
-            var target = FindObject(newName?.Replace('/', '\\') ?? GetRelativeName(ambPath, filePath));
+            var target = FindObject(newName?.Replace('/', '\\') ?? GetRelativeName(AmbPath, filePath));
 
             var newObj = new BinaryObject(filePath);
             newObj.Name = newObj.RealName = target.name;
@@ -247,7 +247,7 @@ namespace AMB
         public void Extract(string output = null, bool extractAll = false)
         {
             if (!IsSourceAMB()) return;
-            if (output == null) output = ambPath + "_extracted";
+            if (output == null) output = AmbPath + "_extracted";
             Directory.CreateDirectory(output);
 
             foreach (var o in Objects)
