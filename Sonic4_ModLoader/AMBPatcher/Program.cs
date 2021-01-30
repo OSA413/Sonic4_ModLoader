@@ -452,9 +452,9 @@ namespace AMBPatcher
             + "\n\tAMBPatcher extract [AMB] - Extract all files from [AMB] to \"[AMB]_extracted\" directory."
             + "\n\tAMBPatcher extract [AMB] [dir] - Extract all files from [AMB] to [dir]."
             + "\n\tAMBPatcher read [AMB file] - Prints content of [AMB]"
-            + "\n\tAMBPatcher patch [AMB] [file] - Patch [AMB] by [file] if [file] is in [AMB]."
+            + "\n\tAMBPatcher add [AMB] [file] - Patch [AMB] by [file] if [file] is in [AMB]."
             + "\n\tAMBPatcher [AMB] [dir] and"
-            + "\n\tAMBPatcher patch [AMB] [dir] - Patch [AMB] by all files in [dir]."
+            + "\n\tAMBPatcher add [AMB] [dir] - Patch [AMB] by all files in [dir]."
             + "\n\tAMBPatcher recover - Recover original files that were changed."
             + "\n\tAMBPatcher add [AMB] [file] - Add [file] to [AMB]."
             + "\n\tAMBPatcher add [AMB] [file] [name] - Add [file] to [AMB] as [name]."
@@ -600,6 +600,14 @@ namespace AMBPatcher
                 {
                     if (File.Exists(args[0]))
                         new AMB_new(args[0]).Extract();
+                    else if (Directory.Exists(args[0]))
+                    {
+                        var amb = new AMB_new();
+                        var files = Directory.GetFiles(args[1], "*.*", SearchOption.AllDirectories).OrderBy(x => x);
+                        foreach (var f in files)
+                            amb.Add(f);
+                        amb.Save(args[0] + ".AMB");
+                    }
                     else ShowHelpMessage();
                 }
             }
