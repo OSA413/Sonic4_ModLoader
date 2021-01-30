@@ -1,3 +1,10 @@
+[c]Version: v0.1.4.7
+\t[b]AMB Patcher[\b]
+* Now it can extract and edit files with no file names
+* Crash fix when extracting files that contain folders in their names
+* Now it can create AMB files by drag&dropping a folder on the executable
+
+
 [c]Version: v0.1.4.6
 \t[b]AMB Patcher[\b]
 * AMB manipulation side of the program was mostly rewritten
