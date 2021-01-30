@@ -2,6 +2,8 @@
 
 Looking for Midday build? [Get it on AppVeyor](https://ci.appveyor.com/project/OSA413/sonic4-modloader/branch/master/artifacts)
 
+FAQ: https://github.com/OSA413/Sonic4_ModLoader/blob/master/docs/FAQ.md
+
 **Table of content:**
 * [What is this?](#what-is-this)
 * [How to install the Mod Loader](#how-to-install-the-mod-loader)
@@ -13,7 +15,6 @@ Looking for Midday build? [Get it on AppVeyor](https://ci.appveyor.com/project/O
 * [Bug reporting and suggestions](#bug-reporting-and-suggestions)
 * [Useful documentation for modders](#useful-documentation-for-modders)
 * [See also](#see-also)
-* [FAQ](#faq)
 
 ## What is this?
 
@@ -38,7 +39,7 @@ Note: you need to install the Mod Loader separately for each Episode.
 
 2. Launch `Sonic4ModManager.exe` and press "Yes" button on the First Launch Dialogue. You can also install it in the settings menu.
 
-If you want to enable 1-Click integration, launch `OneClickModInstaller.exe` and press "Install" button (requires administrator privileges).
+If you want to enable 1-Click installation, launch `OneClickModInstaller.exe` and press "Install" button (requires administrator privileges).
 
 ## How to uninstall the Mod Loader
 
@@ -68,7 +69,7 @@ Installation from a local archive/directory:
 https://github.com/blueskythlikesclouds/SonicAudioTools
 
 * 7-Zip Copyright (C) Igor Pavlov.
-[License](https://7-zip.org/license.txt)
+[(License)](https://7-zip.org/license.txt)
 https://7-zip.org
 
 ## How to use copy of 7-Zip from your system
@@ -95,11 +96,10 @@ Note: if OCMI fails to find `7z.exe` in your path, it will try to use a copy tha
 Bugs reports and suggestions should be sent to GitHub's issues page of the Mod Loader:
 https://github.com/OSA413/Sonic4_ModLoader/issues
 
-For other types of discussions contact my somewhere on the Internet.
+For other types of discussions contact my on my [Twitter](https://twitter.com/OSA_413).
 
 ## Useful documentation for modders
-[Documentation index](https://github.com/OSA413/Sonic4_ModLoader/blob/master/docs/Index.md)
-* [How to use AMBPatcher](https://github.com/OSA413/Sonic4_ModLoader/blob/master/docs/How%20to%20use%20AMBPatcher.md)
+* How to use AMBPatcher: `AMBPatcher.exe --help`
 * [Mod structure](https://github.com/OSA413/Sonic4_ModLoader/blob/master/docs/Mod%20structure.md)
 * [Description of file extensions](https://github.com/OSA413/Sonic4_Tools/blob/master/docs/File%20description.md)
 * [Tools by me + extra docs](https://github.com/OSA413/Sonic4_Tools)
@@ -108,9 +108,5 @@ For other types of discussions contact my somewhere on the Internet.
 ## See also
 
 * [darealshinji's rewritten launcher for Episode 1](https://github.com/darealshinji/sonic-4-launcher) so you don't have to install Java to run it.
-
-## FAQ
-
-https://github.com/OSA413/Sonic4_ModLoader/blob/master/docs/FAQ.md
 
 *~OSA413*

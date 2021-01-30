@@ -83,5 +83,3 @@ Also URL links to web-sites can be highlighted (they are **clickable!**):
 ## Examples
 
 You can get some examples of mod structure from here: https://github.com/OSA413/Sonic4_ModLoader_examples
-
-Those files are archives that would be extracted to the `mods` folder if they were real mods.
