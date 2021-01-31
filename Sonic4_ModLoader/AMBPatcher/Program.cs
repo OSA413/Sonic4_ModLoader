@@ -601,7 +601,18 @@ namespace AMBPatcher
                         new AMB_new(args[0]).Extract();
                     else if (Directory.Exists(args[0]))
                     {
-                        var amb = new AMB_new();
+                        AMB_new amb;
+                        if (args[0].EndsWith("_extracted")
+                            && (File.Exists(args[0].Substring(0, args[0].Length - 14) + ".AMB")
+                            || File.Exists(args[0].Substring(0, args[0].Length - 14) + ".amb")))
+                        {
+                            var filePath = args[0].Substring(0, args[0].Length - 14) + ".AMB";
+                            if (!File.Exists(filePath))
+                                filePath = args[0].Substring(0, args[0].Length - 14) + ".amb";
+                            amb = new AMB_new(filePath);
+                        }
+                        else
+                            amb = new AMB_new();
                         amb.AmbPath = args[0];
                         var files = Directory.GetFiles(args[0], "*.*", SearchOption.AllDirectories).OrderBy(x => x);
                         foreach (var f in files)
