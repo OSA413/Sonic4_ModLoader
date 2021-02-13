@@ -215,20 +215,7 @@ namespace AMB
             if (InternalIndex != -1)
                 return (this, InternalIndex, InternalName);
 
-            var ParentIndex = -1;
-            //Objects.FindIndex(x => x.Name == InternalName.Split('\\').Take(x.Name.Count(chr => chr == '\\') + 1).ToString());
-
-            var InternalParts = InternalName.Split('\\');
-            for (int i = 0; i < Objects.Count; i++)
-            {
-                var objName = Objects[i].Name;
-                var seps = objName.Count(c => c == '\\');
-                if (objName == String.Join("\\", InternalParts.Take(seps + 1)))
-                {
-                    ParentIndex = i;
-                    break;
-                }
-            }
+            var ParentIndex = Objects.FindIndex(x => x.Name == String.Join("\\", InternalName.Split('\\').Take(x.Name.Count(c => c == '\\') + 1)));
 
             if (ParentIndex != -1)
                 return Objects[ParentIndex].Amb.FindObject(objectName.Substring(Objects[ParentIndex].Name.Length + 1));
