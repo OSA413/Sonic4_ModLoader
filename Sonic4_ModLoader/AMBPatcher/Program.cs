@@ -3,10 +3,7 @@ using System.Text;
 using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 
-using Common.IniReader;
-using Common.ValueUpdater;
 using Common.Launcher;
 
 using AMB;
@@ -15,179 +12,6 @@ namespace AMBPatcher
 {
     class Program
     {
-        public static bool GenerateLog;
-        public static bool SHACheck;
-        
-        public static class Log
-        {
-            public static void Write(string Message)
-            {
-                if (!GenerateLog) return;
-                File.AppendAllText("AMBPatcher.log", Message + Environment.NewLine);
-            }
-            
-            public static void Reset()
-            {
-                if (!GenerateLog) return;
-                File.WriteAllText("AMBPatcher.log", "");
-            }
-        }
-
-        public static class Settings
-        {
-            public static void Load()
-            {
-                ProgressBar.Enabled = true;
-                GenerateLog = false;
-                SHACheck    = true;
-
-                var cfg = IniReader.Read("AMBPatcher.cfg");
-                if (!cfg.ContainsKey(IniReader.DEFAULT_SECTION)) return;
-
-                ValueUpdater.UpdateIfKeyPresent(cfg, "ProgressBar", ref ProgressBar.Enabled);
-                ValueUpdater.UpdateIfKeyPresent(cfg, "GenerateLog", ref GenerateLog);
-                ValueUpdater.UpdateIfKeyPresent(cfg, "SHACheck", ref SHACheck);
-            }
-        }
-
-        public static class ProgressBar
-        {
-            public static bool Enabled;
-
-            public static void PrintProgress(int i, int max_i, string title)
-            {
-                if (!ProgressBar.Enabled ||
-                    Console.WindowWidth <= 0)
-                    return;
-
-                int bar_len = 50;
-                ProgressBar.MoveCursorUp();
-                
-                int cut = 0;
-                if (title.Length > Console.WindowWidth - 1)
-                    cut =  title.Length - Console.WindowWidth + 1;
-
-                //What it is doing
-                ProgressBar.ClearLine();
-                if (i == max_i) Console.WriteLine("Done!");
-                else            Console.WriteLine(title.Substring(cut));
-                
-                //Percentage
-                ProgressBar.ClearLine();
-                Console.WriteLine("[" + new string('#', bar_len * i / max_i)
-                                    + new string(' ', bar_len - bar_len * i / max_i)
-                                    + "] (" + (i * 100 / max_i).ToString() + "%)");
-            }
-
-            public static void ClearLine()
-            {
-                if (Console.WindowWidth <= 0) return;
-                Console.CursorLeft = 0;
-                Console.Write(new string(' ', Console.WindowWidth-1));
-                Console.CursorLeft = 0;
-            }
-
-            public static void MoveCursorUp(int i = 2)
-            {
-                if (!ProgressBar.Enabled) return;
-                Console.CursorTop -= Math.Min(i, Console.CursorTop);
-            }
-
-            public static void MoveCursorDown(int i = 2)
-            {
-                if (!ProgressBar.Enabled) return;
-                Console.CursorTop += i;
-            }
-
-            public static void PrintFiller()
-            {
-                if (!ProgressBar.Enabled) return;
-                Console.WriteLine("Doing absolutely nothing!"
-                                + "\nProgress bar goes here"
-                                + "\nSub-task!"
-                                + "\nsub%");
-            }
-        }
-
-        public static SHA1CryptoServiceProvider SHAcsp = new SHA1CryptoServiceProvider();
-        static string Sha(byte[] file)
-        {
-            var hash = SHAcsp.ComputeHash(file);
-            return BitConverter.ToString(hash).Replace("-","");
-        }
-        
-        static void ShaRemove(string file_name)
-        {
-            string orig_file_sha_root = Path.Combine("mods_sha", file_name);
-
-            if (Directory.Exists(orig_file_sha_root))
-            {
-                var sha_files = Directory.GetFiles(orig_file_sha_root, "*", SearchOption.AllDirectories);
-
-                foreach (string file in sha_files)
-                    File.Delete(file);
-            }
-        }
-
-        static bool ShaChanged(string file_name, List<string> mod_files, List<string> mod_paths)
-        {
-            if (!SHACheck) return true;
-
-            bool files_changed = false;
-            
-            List<string> sha_list = new List<string> { };
-
-            string orig_file_sha_root = Path.Combine("mods_sha", file_name);
-
-            if (Directory.Exists(orig_file_sha_root))
-                sha_list = new List<string>(Directory.GetFiles(orig_file_sha_root, "*.txt", SearchOption.AllDirectories));
-
-            //Checking SHA1s
-            for (int i = 0; i < mod_files.Count; i++)
-            {
-                if (files_changed) { break; }
-
-                string mod_file_full    = Path.Combine("mods", mod_paths[i], mod_files[i] );
-                string mod_file_sha     = Path.Combine("mods_sha", mod_files[i] + ".txt");
-
-                if (sha_list.Contains(mod_file_sha))
-                    sha_list.Remove(mod_file_sha);
-                else
-                {
-                    files_changed = true;
-                    break;
-                }
-
-                if (File.Exists(mod_file_sha))
-                {
-                    string sha_tmp = Sha(File.ReadAllBytes(mod_file_full));
-                    if (sha_tmp != File.ReadAllText(mod_file_sha)) { files_changed = true; }
-                }
-                else files_changed = true;
-            }
-
-            //Checking if there're removed files
-            //And removing those SHAs
-            if (sha_list.Count > 0)
-            {
-                files_changed = true;
-
-                foreach (string file in sha_list)
-                    File.Delete(file);
-            }
-
-            return files_changed;
-        }
-
-        static void ShaWrite(string relative_mod_file_path, string full_mod_file_path)
-        {
-            string sha_file = Path.Combine("mods_sha", relative_mod_file_path + ".txt");
-            string sha_dir = Path.GetDirectoryName(sha_file);
-
-            Directory.CreateDirectory(sha_dir);
-            File.WriteAllText(sha_file, Sha(File.ReadAllBytes(full_mod_file_path)));
-        }
-
         public class AMB
         {
             //This method is used for Windows Phone version AMB files
@@ -259,7 +83,7 @@ namespace AMBPatcher
             {
                 if (file_name.EndsWith(".AMB", StringComparison.OrdinalIgnoreCase))
                 {
-                    if (ShaChanged(file_name, mod_files, mod_paths))
+                    if (ShaChecker.ShaChanged(file_name, mod_files, mod_paths))
                     {
                         Recover(file_name);
                         Log.Write("PatchAll: file " + file_name + " was restored.");
@@ -282,14 +106,14 @@ namespace AMBPatcher
                                 amb.Save();
                             }
 
-                            ShaWrite(mod_files[i], mod_file_full);
+                            ShaChecker.ShaWrite(mod_files[i], mod_file_full);
                         }
                     }
                     else Log.Write("Not changed");
                 }
                 else if (file_name.ToUpper().EndsWith(".CSB"))
                 {
-                    if (ShaChanged(file_name.Substring(0, file_name.Length - 4), mod_files, mod_paths))
+                    if (ShaChecker.ShaChanged(file_name.Substring(0, file_name.Length - 4), mod_files, mod_paths))
                     {
                         Recover(file_name);
                         if (file_name.EndsWith(".CSB", StringComparison.OrdinalIgnoreCase))
@@ -311,7 +135,7 @@ namespace AMBPatcher
                             Log.Write(mod_file);
                             File.Copy(mod_file, mod_files[i], true);
 
-                            ShaWrite(mod_files[i], mod_file);
+                            ShaChecker.ShaWrite(mod_files[i], mod_file);
                         }
 
                         Log.Write("Asking CsbEditor to repack");
@@ -484,7 +308,7 @@ namespace AMBPatcher
                 Log.Write("Getting list of enabled mods...");
                 var test = GetModFiles();
 
-                if (GenerateLog)
+                if (Settings.GenerateLog)
                 {
                     Log.Write("Content of mods.ini:");
                     Log.Write(File.ReadAllText("mods/mods.ini"));
@@ -543,9 +367,9 @@ namespace AMBPatcher
                         Recover(mods_prev[i].Substring(0, mods_prev[i].Length - 4) + ".CPK");
                     
                     if (mods_prev[i].EndsWith(".CSB", StringComparison.OrdinalIgnoreCase))
-                        ShaRemove(mods_prev[i].Substring(0, mods_prev[i].Length - 4));
+                        ShaChecker.ShaRemove(mods_prev[i].Substring(0, mods_prev[i].Length - 4));
                     else
-                        ShaRemove(mods_prev[i]);
+                        ShaChecker.ShaRemove(mods_prev[i]);
                     
                     
                 }
@@ -584,11 +408,11 @@ namespace AMBPatcher
                             if (file.EndsWith(".CSB", StringComparison.OrdinalIgnoreCase))
                             {
                                 Recover(file.Substring(0, file.Length - 4) + ".CPK");
-                                ShaRemove(file.Substring(0, file.Length - 4));
+                                ShaChecker.ShaRemove(file.Substring(0, file.Length - 4));
                             }
                             else
                             {
-                                ShaRemove(file);
+                                ShaChecker.ShaRemove(file);
                             }
                         }
                         File.Delete("mods/mods_prev");
