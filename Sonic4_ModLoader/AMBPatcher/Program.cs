@@ -85,29 +85,25 @@ namespace AMBPatcher
                 {
                     if (ShaChecker.ShaChanged(file_name, mod_files, mod_paths))
                     {
-                        Recover(file_name);
-                        Log.Write("PatchAll: file " + file_name + " was restored.");
+                        AMB_new amb;
+                        if (file_name == mod_files.FirstOrDefault())
+                            amb = new AMB_new(Path.Combine(mod_paths[0], mod_files[0]));
+                        else if (File.Exists(file_name + ".bkp"))
+                            amb = new AMB_new(file_name + ".bkp");
+                        else
+                            amb = new AMB_new(file_name);
+                        amb.AmbPath = file_name;
 
                         for (int i = 0; i < mod_files.Count; i++)
                         {
-                            string mod_file_full = Path.Combine("mods", mod_paths[i], mod_files[i]);
+                            var mod_file_full = Path.Combine("mods", mod_paths[i], mod_files[i]);
                             Log.Write(mod_file_full);
                             ProgressBar.PrintProgress(i, mod_files.Count, mod_file_full);
-
-                            if (file_name == mod_files[i])
-                            {
-                                Log.Write("Replaced");
-                                File.Copy(mod_file_full, file_name, true);
-                            }
-                            else
-                            {
-                                var amb = new AMB_new(file_name);
-                                amb.Add(mod_file_full);
-                                amb.Save();
-                            }
-
+                            amb.Add(mod_file_full);
                             ShaChecker.ShaWrite(mod_files[i], mod_file_full);
                         }
+
+                        amb.Save(file_name);
                     }
                     else Log.Write("Not changed");
                 }

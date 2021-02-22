@@ -8,11 +8,9 @@ namespace AMBPatcher
 
         public static void PrintProgress(int i, int max_i, string title)
         {
-            if (!ProgressBar.Enabled ||
-                Console.WindowWidth <= 0)
-                return;
+            if (!ProgressBar.Enabled || Console.WindowWidth <= 0) return;
 
-            int bar_len = 50;
+            int barLen = Math.Min(50, Console.WindowWidth);
             ProgressBar.MoveCursorUp();
 
             int cut = 0;
@@ -26,8 +24,8 @@ namespace AMBPatcher
 
             //Percentage
             ProgressBar.ClearLine();
-            Console.WriteLine("[" + new string('#', bar_len * i / max_i)
-                                + new string(' ', bar_len - bar_len * i / max_i)
+            Console.WriteLine("[" + new string('#', barLen * i / max_i)
+                                + new string(' ', barLen - barLen * i / max_i)
                                 + "] (" + (i * 100 / max_i).ToString() + "%)");
         }
 
