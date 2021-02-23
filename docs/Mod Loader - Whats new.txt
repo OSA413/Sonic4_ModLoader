@@ -1,3 +1,8 @@
+[c]Version: v0.1.4.8
+\t[b]AMB Patcher[\b]
+* [\b]Significant performance update[\b]
+
+
 [c]Version: v0.1.4.7
 \t[b]AMB Patcher[\b]
 * Now it can extract and edit files with no file names
