@@ -1,6 +1,6 @@
 [c]Version: v0.1.4.8
 \t[b]AMB Patcher[\b]
-* [\b]Significant performance update[\b]
+* [b]Significant performance update[\b]
 
 
 [c]Version: v0.1.4.7
