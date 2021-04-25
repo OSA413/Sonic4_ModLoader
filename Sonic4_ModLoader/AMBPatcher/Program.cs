@@ -6,13 +6,11 @@ using System.Linq;
 
 using Common.Launcher;
 
-using AMB;
-
 namespace AMBPatcher
 {
     class Program
     {
-        public class AMB
+        public class AMB_old
         {
             //This method is used for Windows Phone version AMB files
             public static List<(string Name, int Pointer, int Length)> ReadWP(byte[] rawFile)
@@ -58,7 +56,7 @@ namespace AMBPatcher
 
                 Directory.CreateDirectory(outputDirectory);
 
-                var files = AMB.ReadWP(raw_file);
+                var files = AMB_old.ReadWP(raw_file);
 
                 for (int i = 0; i < files.Count; i++)
                 {
@@ -85,13 +83,13 @@ namespace AMBPatcher
                 {
                     if (ShaChecker.ShaChanged(file_name, mod_files, mod_paths))
                     {
-                        AMB_new amb;
+                        AMB amb;
                         if (file_name == mod_files.FirstOrDefault())
-                            amb = new AMB_new(Path.Combine(mod_paths[0], mod_files[0]));
+                            amb = new AMB(Path.Combine(mod_paths[0], mod_files[0]));
                         else if (File.Exists(file_name + ".bkp"))
-                            amb = new AMB_new(file_name + ".bkp");
+                            amb = new AMB(file_name + ".bkp");
                         else
-                            amb = new AMB_new(file_name);
+                            amb = new AMB(file_name);
                         amb.AmbPath = file_name;
 
                         for (int i = 0; i < mod_files.Count; i++)
@@ -418,10 +416,10 @@ namespace AMBPatcher
                 else
                 {
                     if (File.Exists(args[0]))
-                        new AMB_new(args[0]).Extract();
+                        new AMB(args[0]).Extract();
                     else if (Directory.Exists(args[0]))
                     {
-                        AMB_new amb;
+                        AMB amb;
                         if (args[0].EndsWith("_extracted")
                             && (File.Exists(args[0].Substring(0, args[0].Length - 14) + ".AMB")
                             || File.Exists(args[0].Substring(0, args[0].Length - 14) + ".amb")))
@@ -429,10 +427,10 @@ namespace AMBPatcher
                             var filePath = args[0].Substring(0, args[0].Length - 14) + ".AMB";
                             if (!File.Exists(filePath))
                                 filePath = args[0].Substring(0, args[0].Length - 14) + ".amb";
-                            amb = new AMB_new(filePath);
+                            amb = new AMB(filePath);
                         }
                         else
-                            amb = new AMB_new();
+                            amb = new AMB();
                         amb.AmbPath = args[0];
                         var files = Directory.GetFiles(args[0], "*.*", SearchOption.AllDirectories).OrderBy(x => x);
                         foreach (var f in files)
@@ -448,14 +446,14 @@ namespace AMBPatcher
                 if (args[0] == "extract")
                 {
                     if (File.Exists(args[1]))
-                        new AMB_new(args[1]).Extract();
+                        new AMB(args[1]).Extract();
                     else ShowHelpMessage();
                 }
                 else if (args[0] == "read")
                 {
                     if (File.Exists(args[1]))
                     {
-                        var amb = new AMB_new(args[1]);
+                        var amb = new AMB(args[1]);
 
                         foreach (var o in amb.Objects)
                         {
@@ -471,7 +469,7 @@ namespace AMBPatcher
                     var files = Directory.GetFiles(args[1], "*", SearchOption.AllDirectories);
                     if (files.Length == 0) return;
 
-                    var amb = new AMB_new(args[0]);
+                    var amb = new AMB(args[0]);
                     foreach (string file in files)
                     {
                         Console.WriteLine("Patching by \"" + file + "\"...");
@@ -481,18 +479,18 @@ namespace AMBPatcher
                     Console.WriteLine("Done.");
                 }
                 else if (args[0] == "swap_endianness" && File.Exists(args[1]))
-                    new AMB_new(args[1]).Save(args[1], true);
+                    new AMB(args[1]).Save(args[1], true);
 
                 else if (args[0] == "endianness" && File.Exists(args[1]))
                 {
-                    if (new AMB_new(args[1]).IsLittleEndian())
+                    if (new AMB(args[1]).IsLittleEndian())
                         Console.WriteLine("Little endian");
                     else
                         Console.WriteLine("Big endian");
                 }
 
                 else if (args[0] == "create")
-                    new AMB_new().Save(args[1]);
+                    new AMB().Save(args[1]);
 
                 else if (args[0] == "extract_all")
                 {
@@ -501,13 +499,13 @@ namespace AMBPatcher
                         files = Directory.GetFiles(args[1], "*.*", SearchOption.AllDirectories);
 
                     foreach (var f in files)
-                        new AMB_new(f).ExtractAll();
+                        new AMB(f).ExtractAll();
                 }
 
                 else if (args[0] == "extract_wp")
                 {
                     if (File.Exists(args[1]))
-                        AMB.ExtractWP(args[1], args[1] + "_extracted");
+                        AMB_old.ExtractWP(args[1], args[1] + "_extracted");
                     else
                         ShowHelpMessage();
                 }
@@ -519,7 +517,7 @@ namespace AMBPatcher
             {
                 if (args[0] == "find")
                 {
-                    var amb = new AMB_new(args[1]);
+                    var amb = new AMB(args[1]);
                     var a = amb.FindObject(args[2]);
                     foreach (var o in a.amb.Objects)
                         Console.WriteLine(o.Name);
@@ -529,7 +527,7 @@ namespace AMBPatcher
                 if (args[0] == "extract")
                 {
                     if (File.Exists(args[1]))
-                        new AMB_new(args[1]).Extract(args[2]);
+                        new AMB(args[1]).Extract(args[2]);
 
                     else ShowHelpMessage();
                 }
@@ -537,7 +535,7 @@ namespace AMBPatcher
                 {
                     if (File.Exists(args[1]) && File.Exists(args[2]))
                     {
-                        var amb = new AMB_new(args[1]);
+                        var amb = new AMB(args[1]);
                         amb.Add(args[2]);
                         amb.Save();
                     }
@@ -545,7 +543,7 @@ namespace AMBPatcher
                     {
                         var files = Directory.GetFiles(args[2], "*", SearchOption.AllDirectories).OrderBy(x => x);
 
-                        var amb = new AMB_new(args[1]);
+                        var amb = new AMB(args[1]);
                         foreach (var file in files)
                             amb.Add(file);
                         amb.Save();
@@ -556,7 +554,7 @@ namespace AMBPatcher
                 {
                     if (File.Exists(args[1]))
                     {
-                        var amb = new AMB_new(args[1]);
+                        var amb = new AMB(args[1]);
                         amb.Remove(args[2]);
                         amb.Save();
                     }else ShowHelpMessage();
@@ -569,7 +567,7 @@ namespace AMBPatcher
                 {
                     if (File.Exists(args[1]) && File.Exists(args[2]))
                     {
-                        var amb = new AMB_new(args[1]);
+                        var amb = new AMB(args[1]);
                         amb.Add(args[2], args[3]);
                         amb.Save();
                     }
