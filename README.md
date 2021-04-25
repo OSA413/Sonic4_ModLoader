@@ -1,7 +1,5 @@
 # Sonic 4 Mod Loader
 
-Looking for Midday build? [Get it on AppVeyor](https://ci.appveyor.com/project/OSA413/sonic4-modloader/branch/master/artifacts)
-
 FAQ: https://github.com/OSA413/Sonic4_ModLoader/blob/master/docs/FAQ.md
 
 **Table of content:**
