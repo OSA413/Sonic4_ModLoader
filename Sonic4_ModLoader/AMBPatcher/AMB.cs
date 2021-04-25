@@ -153,7 +153,7 @@ namespace AMB
                 Array.Copy(BitConverter.GetBytes(o.LengthNice), 0, result, pointers.list + 4, 4);
 
                 var oWrite = o.Write();
-                Array.Copy(oWrite, o.isAMB ? 0 : o.Pointer, result, pointers.data, o.Length);
+                Array.Copy(oWrite, 0, result, pointers.data, o.Length);
                 if (hasNames)
                 {
                     Array.Copy(Encoding.ASCII.GetBytes(o.RealName), 0, result, pointers.name, o.RealName.Length);
@@ -243,7 +243,7 @@ namespace AMB
                 if (extractAll && o.isAMB)
                     o.Amb.Extract(Path.Combine(output, o.Name), true);
                 else
-                    File.WriteAllBytes(Path.Combine(output, o.Name), o.Source.Skip(o.Pointer).Take(o.Length).ToArray());
+                    o.Save(Path.Combine(output, o.Name));
             }
         }
 
@@ -307,7 +307,9 @@ namespace AMB
         {
             if (isAMB)
                 return Amb.Write();
-            return Source;
+            return Source.Skip(Pointer).Take(Length).ToArray();
         }
+
+        public void Save(string path) => File.WriteAllBytes(path, Write());
     }
 }
