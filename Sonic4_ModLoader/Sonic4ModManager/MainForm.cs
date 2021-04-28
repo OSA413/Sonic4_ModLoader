@@ -42,7 +42,7 @@ namespace Sonic4ModManager
             var checkedMods = new List<string>();
             for (int i = 0; i < listMods.Items.Count; i++)
                 if (listMods.Items[i].Checked)
-                    checkedMods.Insert(0, listMods.Items[i].SubItems[3].Text);
+                    checkedMods.Add(listMods.Items[i].SubItems[3].Text);
 
             if (!Directory.Exists("mods"))
                 Directory.CreateDirectory("mods");
@@ -158,12 +158,16 @@ namespace Sonic4ModManager
         public void LinkClicked(object sender, LinkClickedEventArgs e)
         {
             try
-            { Process.Start(e.LinkText); }
+            { 
+                Process.Start(e.LinkText); 
+            }
             catch (Exception err)
-            { MessageBox.Show("Clicking on the link raised the following exception:\n\n"+err.Message,
+            {
+                MessageBox.Show("Clicking on the link raised the following exception:\n\n"+err.Message,
                                 "Watch out! You are going to crash!",
                                 MessageBoxButtons.OK,
-                                MessageBoxIcon.Warning); }
+                                MessageBoxIcon.Warning);
+            }
         }
         
         private void listMods_SelectedIndexChanged(object sender, EventArgs e)

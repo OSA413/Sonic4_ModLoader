@@ -30,7 +30,7 @@ namespace Common.Mods
                 }
             }
 
-            return result.OrderByDescending(x => x.Enabled).ThenByDescending(x => x.Priority).ToList();
+            return result.OrderByDescending(x => x.Enabled).ThenBy(x => x.Priority).ToList();
         }
     }
 

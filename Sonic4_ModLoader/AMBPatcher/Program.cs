@@ -169,6 +169,8 @@ namespace AMBPatcher
              * Mod 1
              */
 
+            
+            //TODO: Make it work with forward order, remove Reverse()
             var modsIni = Mods.GetMods().Where(x => x.Enabled).Select(x => x.Path).Reverse().ToList();
 
             List<string> orig_files = new List<string>();
