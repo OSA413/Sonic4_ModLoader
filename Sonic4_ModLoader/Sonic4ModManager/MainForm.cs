@@ -7,8 +7,8 @@ using System.Linq;
 using System.Threading;
 using System.Windows.Forms;
 
+using Common.Mods;
 using Common.Ini;
-using Common.ValueUpdater;
 using Common.MyIO;
 using Common.Launcher;
 
@@ -19,19 +19,16 @@ namespace Sonic4ModManager
         public void RefreshMods()
         {
             listMods.Items.Clear();
-
-            var mod_list = GetMods();
-
-            for (int i = 0; i < mod_list.Count; i++)
+            var mods = Mods.GetMods();
+            foreach (var mod in mods)
             {
-                ListViewItem item = new ListViewItem(mod_list[i].Item1); //Mod Name
-                item.SubItems.Add(mod_list[i].Item2); //Mod Authors
-                item.SubItems.Add(mod_list[i].Item3); //Mod Version
-                item.SubItems.Add(mod_list[i].Item4); //Mod Directory
-                item.SubItems.Add(mod_list[i].Item5); //Description
+                var item = new ListViewItem(mod.Name); //Mod Name
+                item.SubItems.Add(mod.Authors); //Mod Authors
+                item.SubItems.Add(mod.Version); //Mod Version
+                item.SubItems.Add(mod.Path); //Mod Directory
+                item.SubItems.Add(mod.Description); //Description
                 listMods.Items.Add(item);
             }
-
         }
 
         public void SetModPriority()
@@ -68,59 +65,9 @@ namespace Sonic4ModManager
             }
         }
 
-        static List<Tuple<string, string, string, string, string>> GetMods()
-        {
-            var mod_list = new List<Tuple<string, string, string, string, string>>();
-
-            if (Directory.Exists("mods"))
-            {
-                string[] dir_names = Directory.GetDirectories("mods");
-
-                for (int i = 0; i < dir_names.Length; i++)
-                {
-                    dir_names[i] = dir_names[i].Split(Path.DirectorySeparatorChar)[1];
-                }
-
-                for (int i = 0; i < dir_names.Length; i++)
-                {
-                    string mod_name = dir_names[i];
-                    string mod_authors = "???";
-                    string mod_version = "???";
-                    string mod_description = "No description.";
-
-                    string ini_path = Path.Combine("mods", dir_names[i], "mod.ini");
-
-                    if (File.Exists(ini_path))
-                    {
-                        string[] ini_file = File.ReadAllLines(ini_path);
-
-                        foreach (string line in ini_file)
-                        {
-                            if (!line.Contains("=")) {continue;}
-                            string formatted_line = line.Substring(line.IndexOf("=") + 1);
-
-                            if (line.StartsWith("Name="))
-                            { mod_name = formatted_line; }
-
-                            else if (line.StartsWith("Authors="))
-                            { mod_authors = formatted_line; }
-
-                            else if (line.StartsWith("Version="))
-                            { mod_version = formatted_line; }
-
-                            else if (line.StartsWith("Description="))
-                            { mod_description = formatted_line; }
-                        }
-                    }
-                    mod_list.Add(Tuple.Create(mod_name, mod_authors, mod_version, dir_names[i], mod_description));
-                }
-            }
-            return mod_list;
-        }
-
         public void Save()
         {
-            List<string> checked_mods = new List<string>();
+            var checked_mods = new List<string>();
             for (int i = 0; i < listMods.Items.Count; i++)
                 if (listMods.Items[i].Checked)
                     checked_mods.Insert(0, listMods.Items[i].SubItems[3].Text);
@@ -135,7 +82,7 @@ namespace Sonic4ModManager
         {
             for (int i = 0; i < listMods.SelectedIndices.Count; i++)
             {
-                int ind = listMods.SelectedIndices[i];
+                var ind = listMods.SelectedIndices[i];
 
                 switch (direction)
                 {
@@ -386,8 +333,6 @@ namespace Sonic4ModManager
 
         public MainForm(string[] args)
         {
-            Settings.Load();
-
             if (args.Length > 0)
             {
                 if (args.Length > 1)
@@ -407,20 +352,6 @@ namespace Sonic4ModManager
             RefreshMods();
             SetModPriority();
             
-            //TOP SECRET EASTER EGG
-            string today = DateTime.Now.ToString("dd.MM");
-            if (new string[] {
-                "01.01", //New Year
-                "13.01", //OSA413's BD
-                "19.01", //Sonic 4:1's release day
-                "29.02", //Leap year day
-                "15.05", //Sonic 4:2's release day
-                "23.06", //Sonic's BD
-                "18.08", //Initial release of Mod Loader
-                "31.12"  //New Year
-            }.Contains(today))
-            { bRandom.Text = "I'm Feeling Lucky"; }
-
             string whats_new = "\n\n[c][b][i]What's new:[\\i][\\b]\n";
             if (File.Exists("Mod Loader - Whats new.txt"))
                 whats_new += File.ReadAllText("Mod Loader - Whats new.txt");
@@ -449,11 +380,7 @@ namespace Sonic4ModManager
             }
         }
 
-        private void bSave_Click(object sender, EventArgs e)
-        {
-            Save();
-        }
-
+        private void bSave_Click(object sender, EventArgs e) => Save();
         private void bSaveAndPlay_Click(object sender, EventArgs e)
         {
             Save();
@@ -467,40 +394,15 @@ namespace Sonic4ModManager
             SetModPriority();
         }
 
-        private void bExit_Click(object sender, EventArgs e)
-        {
-            Application.Exit();
-        }
+        private void bExit_Click(object sender, EventArgs e) => Application.Exit();
 
-        private void bPriorityUp_Click(object sender, EventArgs e)
-        {
-            ChangePriority(-1);
-        }
+        private void bPriorityUp_Click(object sender, EventArgs e) => ChangePriority(-1);
+        private void bPriorityDown_Click(object sender, EventArgs e) => ChangePriority(1);
+        private void bPriorityFirst_Click(object sender, EventArgs e) => ChangePriority(-2);
+        private void bPriorityLast_Click(object sender, EventArgs e) => ChangePriority(2);
 
-        private void bPriorityDown_Click(object sender, EventArgs e)
-        {
-            ChangePriority(1);
-        }
-
-        private void bPriorityFirst_Click(object sender, EventArgs e)
-        {
-            ChangePriority(-2);
-        }
-
-        private void bPriorityLast_Click(object sender, EventArgs e)
-        {
-            ChangePriority(2);
-        }
-
-        private void bAbout_Click(object sender, EventArgs e)
-        {
-            new SettingsForm().ShowDialog();
-        }
-        
-        private void bRandom_Click(object sender, EventArgs e)
-        {
-            RandomMods();
-        }
+        private void bAbout_Click(object sender, EventArgs e) => new SettingsForm().ShowDialog();        
+        private void bRandom_Click(object sender, EventArgs e) => RandomMods();
 
         private void bOpenExplorer_Click(object sender, EventArgs e)
         {
@@ -541,20 +443,7 @@ namespace Sonic4ModManager
 
             //Updating description
             rtb_mod_description.Text = listMods.Items[listMods.SelectedIndices[0]].SubItems[4].Text;
-
-            //Updating description if there's a description link
-            if (rtb_mod_description.Text.StartsWith("file="))
-            {
-                string description_file = Path.Combine("mods", listMods.Items[listMods.SelectedIndices[0]].SubItems[3].Text, rtb_mod_description.Text.Substring(5));
-
-                if (File.Exists(description_file))
-                    if (description_file.EndsWith(".TXT", StringComparison.OrdinalIgnoreCase))
-                        rtb_mod_description.Text = File.ReadAllText(description_file);
-                    else
-                        rtb_mod_description.Text = "Error: unsupported format of \"" + description_file + "\" file.";
-                else
-                    rtb_mod_description.Text = "Error: \"" + description_file + "\" file not found.";
-            }
+            
             rtb_mod_description.Format();
         }
     }

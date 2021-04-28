@@ -1,8 +1,22 @@
 ﻿using System.IO;
 using System.Collections.Generic;
 
-namespace Common.Mod
+namespace Common.Mods
 {
+    public static class Mods
+    {
+        public static List<Mod> GetMods()
+        {
+            var result = new List<Mod>();
+
+            if (Directory.Exists("mods"))
+                foreach (var modDir in Directory.GetDirectories("mods"))
+                    result.Add(new Mod(modDir));
+
+            return result;
+        }
+    }
+
     public class Mod
     {
         public string Path { get; private set; }
@@ -12,17 +26,14 @@ namespace Common.Mod
         public string Description { get { return description; } }
 
         private string name;
-        private string authors;
-        private string version;
-        private string description;
+        private string authors = "???";
+        private string version = "???";
+        private string description = "No description.";
 
         public Mod(string path)
         {
             Path = path;
             name = System.IO.Path.GetFileName(path);
-            authors = "???";
-            version = "???";
-            description = "No description.";
             ReadIni(System.IO.Path.Combine(path, "mod.ini"));
             ReadDescription();
         }
@@ -46,7 +57,15 @@ namespace Common.Mod
         private void ReadDescription()
         {
             if (description.StartsWith("file="))
-                description = File.ReadAllText(description.Substring(5));
+            {
+                var descriptionPath = description.Substring(5);
+                if (File.Exists(descriptionPath))
+                    //todo: wrap try-catch
+                    if (descriptionPath.EndsWith("txt", System.StringComparison.OrdinalIgnoreCase))
+                        description = File.ReadAllText(description.Substring(5));
+                    else description = "Error: unsupported format of \"" + descriptionPath + "\" file.";
+                else description = "Error: \"" + descriptionPath + "\" file not found.";
+            }
         }
 
         private void UpdateIfKeyPresent<T, V>(Dictionary<T, V> d, T key, ref V value)

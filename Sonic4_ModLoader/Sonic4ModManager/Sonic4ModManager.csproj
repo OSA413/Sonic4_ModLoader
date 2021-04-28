@@ -117,8 +117,8 @@
     <Compile Include="..\Common\Ini.cs">
       <Link>Common\Ini.cs</Link>
     </Compile>
-    <Compile Include="..\Common\Mod.cs">
-      <Link>Common\Mod.cs</Link>
+    <Compile Include="..\Common\Mods.cs">
+      <Link>Common\Mods.cs</Link>
     </Compile>
     <Compile Include="..\Common\ValueUpdater.cs">
       <Link>Common\ValueUpdater.cs</Link>

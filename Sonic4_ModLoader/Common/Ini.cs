@@ -6,7 +6,6 @@ namespace Common.Ini
     public static class IniReader
     {
         public static readonly string DEFAULT_SECTION = "Default";
-
         public static Dictionary<string, Dictionary<string, string>> Read(string path)
         {
             var result = new Dictionary<string, Dictionary<string, string>>();
@@ -41,30 +40,32 @@ namespace Common.Ini
             }
             return result;
         }
+    }
+    public static class IniWriter
+    {
+        public static Dictionary<string, Dictionary<string, string>> CreateIni() =>
+            new Dictionary<string, Dictionary<string, string>>();
 
-        public static class IniWriter
+        private static void WriteSection(List<string> result, Dictionary<string, string> section)
         {
-            private static void WriteSection(List<string> result, Dictionary<string, string> section)
+            foreach (var v in section)
+                result.Add(v.Key + "=" + v.Value);
+        }
+
+        public static void Write(Dictionary<string, Dictionary<string, string>> ini, string path)
+        {
+            var result = new List<string>();
+
+            var onlyDefaultSection = ini.ContainsKey(IniReader.DEFAULT_SECTION) && ini.Keys.Count == 1;
+
+            foreach (var section in ini)
             {
-                foreach (var v in section)
-                    result.Add(v.Key + "=" + v.Value);
+                if (!onlyDefaultSection)
+                    result.Add("[" + section.Key ?? IniReader.DEFAULT_SECTION + "]");
+                WriteSection(result, section.Value);
             }
 
-            public static void Write(Dictionary<string, Dictionary<string, string>> ini, string path)
-            {
-                var result = new List<string>();
-
-                var onlyDefaultSection = ini.ContainsKey(IniReader.DEFAULT_SECTION) && ini.Keys.Count == 1;
-
-                foreach (var section in ini)
-                {
-                    if (!onlyDefaultSection)
-                        result.Add("[" + section.Key ?? IniReader.DEFAULT_SECTION + "]");
-                    WriteSection(result, section.Value);
-                }
-
-                File.WriteAllText(path, string.Join("\n", result));
-            }
+            File.WriteAllText(path, string.Join("\n", result));
         }
     }
 }
