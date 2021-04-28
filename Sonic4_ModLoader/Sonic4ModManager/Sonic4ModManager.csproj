@@ -54,6 +54,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions.cs" />
+    <Compile Include="Installation.cs" />
     <Compile Include="LicenseReader.cs">
       <SubType>Form</SubType>
     </Compile>
