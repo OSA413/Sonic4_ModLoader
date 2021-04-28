@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Windows.Forms;
 
 using Common.Mods;
@@ -12,7 +11,6 @@ namespace Sonic4ModManager
 {
     public partial class MainForm:Form
     {
-        
         private Random rnd = new Random();
         private List<Mod> CurrentMods;
         private Dictionary<string, Mod> ModsDict = new Dictionary<string, Mod>();
@@ -86,15 +84,15 @@ namespace Sonic4ModManager
             InitializeComponent();
             RefreshMods();
             
-            string whats_new = "\n\n[c][b][i]What's new:[\\i][\\b]\n";
+            var whatsNew = "\n\n[c][b][i]What's new:[\\i][\\b]\n";
             if (File.Exists("Mod Loader - Whats new.txt"))
-                whats_new += File.ReadAllText("Mod Loader - Whats new.txt");
+                whatsNew += File.ReadAllText("Mod Loader - Whats new.txt");
             else
-                whats_new += "File \"Mod Loader - Whats new.txt\" not found.";
+                whatsNew += "File \"Mod Loader - Whats new.txt\" not found.";
 
-            whats_new += "\n\nHome page: https://github.com/OSA413/Sonic4_ModLoader";
+            whatsNew += "\n\nHome page: https://github.com/OSA413/Sonic4_ModLoader";
 
-            rtb_mod_description.Text += whats_new;
+            rtb_mod_description.Text += whatsNew;
             rtb_mod_description.Format();
 
             //The call after 1CMI installation
@@ -134,18 +132,14 @@ namespace Sonic4ModManager
         {
             if (Directory.Exists("mods"))
             {
-                string local_explorer = "";
+                var localExplorer = "";
                 switch ((int) Environment.OSVersion.Platform)
                 {
-                    //Windows
-                    case 2: local_explorer = "explorer"; break;
-                    //Linux (with xdg)
-                    case 4: local_explorer = "xdg-open"; break;
-                    //MacOS (not tested)
-                    case 6: local_explorer = "open"; break;
+                    case 2: localExplorer = "explorer"; break; //Windows
+                    case 4: localExplorer = "xdg-open"; break; //Linux (with xdg)
+                    case 6: localExplorer = "open"; break;     //MacOS (not tested)
                 }
-
-                Process.Start(local_explorer, "mods");
+                Process.Start(localExplorer, "mods");
             }
             else
                 bOpenExplorer.Enabled = false;

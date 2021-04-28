@@ -184,7 +184,7 @@ namespace Sonic4ModManager
         
         private void ReadLicense(string program)
         {
-            string license = "Mod Loader - licenses/";
+            var license = "Mod Loader - licenses/";
 
             switch (program)
             {
@@ -214,13 +214,11 @@ namespace Sonic4ModManager
             options += Convert.ToInt32(cb_Uninstall_OCMI.Checked)*4 * Convert.ToInt32(rb_delete.Checked);
             //Keep settings (affects OCMI removal)
             options += Convert.ToInt32(cb_KeepSettings.Checked)*8 * Convert.ToInt32(rb_delete.Checked);
-            //Delete Mod Manager
-            options += Convert.ToInt32(rb_delete.Checked)*16;
             
             if (bInstall.Text == "Install")
-                Installation.Install(1);
+                Installation.Install();
             else if (bInstall.Text == "Uninstall")
-                Installation.Install(0, options);
+                Installation.Uninstall(options);
 
             UpdateInstallationStatus();
         }
@@ -245,9 +243,7 @@ namespace Sonic4ModManager
 
         private void LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) =>
             Process.Start(((Control)sender).Text);
-
         private void bOK_Click(object sender, System.EventArgs e) => Settings_Save();
-
         private void bRecoverOriginalFiles_Click(object sender, EventArgs e)
         {
             if (File.Exists("AMBPatcher.exe"))

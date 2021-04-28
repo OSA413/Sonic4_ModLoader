@@ -49,7 +49,7 @@ namespace Common.Ini
         private static void WriteSection(List<string> result, Dictionary<string, string> section)
         {
             foreach (var v in section)
-                result.Add(v.Key + v.Value == null ? "" : "=" + v.Value);
+                result.Add(v.Key + (v.Value == null ? "" : ("=" + v.Value)));
         }
 
         public static void Write(Dictionary<string, Dictionary<string, string>> ini, string path)

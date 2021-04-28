@@ -15,16 +15,16 @@ namespace Sonic4ModManager
                     Installation.Upgrade(args[1]);
 
                 if (args[0] == "--install")
-                    Installation.Install(1);
+                    Installation.Install();
             }
+
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
 
             if (Installation.GetInstallationStatus() == Installation.Status.FirstLaunch)
                 new FirstLaunch().ShowDialog();
 
             Settings.Load();
-
-            Application.EnableVisualStyles();
-            Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MainForm(args));
         }
     }

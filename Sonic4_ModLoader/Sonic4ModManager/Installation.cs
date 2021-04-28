@@ -40,139 +40,124 @@ namespace Sonic4ModManager
             return Status.NotInstalled;
         }
 
-        public static void Install(int whattodo, int options = 0)
+        public static List<(string orig, string newName, bool modloaderFile)> GetInstallationInstructions()
         {
-            //whattodo = 1 is install
-            //whattodo = 0 is uninstall
-            var status = GetInstallationStatus();
             var game = Launcher.GetCurrentGame();
+            var renameList = new List<(string orig, string newName, bool modloaderFile)>();
 
-            var rename_list = new List<string[]> { };
+            var originalExe = "";
+            var originalLauncher = "";
+            var patchLauncher = "PatchLauncher.exe";
+            var managerLauncher = "ManagerLauncher.exe";
 
-            string original_exe = "";
-            string original_launcher = "";
-            string save_file_orig = "";
-            string save_file_new = "";
-            string original_exe_bkp = "";
-            string original_launcher_bkp = "";
-            string patch_launcher = "PatchLauncher.exe";
-            string manager_launcher = "ManagerLauncher.exe";
-
-            switch (game)
+            if (game == GAME.Episode1)
             {
-                case GAME.Episode1: original_exe = "Sonic_vis.exe"; original_launcher = "SonicLauncher.exe"; break;
-                case GAME.Episode2: original_exe = "Sonic.exe"; original_launcher = "Launcher.exe"; break;
+                originalExe = "Sonic_vis.exe";
+                originalLauncher = "SonicLauncher.exe";
+            }
+            else if (game == GAME.Episode2)
+            {
+                originalExe = "Sonic.exe";
+                originalLauncher = "Launcher.exe";
             }
 
-            save_file_orig = Path.GetFileNameWithoutExtension(original_exe) + "_save.dat";
-            save_file_new = Path.GetFileNameWithoutExtension(original_exe) + ".orig_save.dat";
-            original_exe_bkp = Path.GetFileNameWithoutExtension(original_exe) + ".orig.exe";
-            original_launcher_bkp = Path.GetFileNameWithoutExtension(original_launcher) + ".orig.exe";
+            var saveFileOrig = Path.GetFileNameWithoutExtension(originalExe) + "_save.dat";
+            var saveFileNew = Path.GetFileNameWithoutExtension(originalExe) + ".orig_save.dat";
+            var originalExeBkp = Path.GetFileNameWithoutExtension(originalExe) + ".orig.exe";
+            var originalLauncherBkp = Path.GetFileNameWithoutExtension(originalLauncher) + ".orig.exe";
 
-            rename_list.Add(new string[] { original_exe, original_exe_bkp });
-            rename_list.Add(new string[] { patch_launcher, original_exe });
-            rename_list.Add(new string[] { original_launcher, original_launcher_bkp });
-            rename_list.Add(new string[] { manager_launcher, original_launcher });
-            rename_list.Add(new string[] { save_file_orig, save_file_new });
+            renameList.Add((originalExe, originalExeBkp, false));
+            renameList.Add((patchLauncher, originalExe, true));
+            renameList.Add((originalLauncher, originalLauncherBkp, false));
+            renameList.Add((managerLauncher, originalLauncher, true));
+            renameList.Add((saveFileOrig, saveFileNew, false));
+
+            renameList.Add(("7z.exe", null, true));
+            renameList.Add(("7z.dll", null, true));
+            renameList.Add(("AMBPatcher.exe", null, true));
+            renameList.Add(("CsbEditor.exe", null, true));
+            renameList.Add(("ManagerLauncher.exe", null, true));
+            renameList.Add(("Mod Loader - Whats new.txt", null, true));
+            renameList.Add(("README.md", null, true));
+            renameList.Add(("SonicAudioLib.dll", null, true));
+
+            return renameList;
+        }
+
+        public static void Install()
+        {
+            var status = GetInstallationStatus();
 
             //Installation
-            if ((status == Status.NotInstalled || status == Status.FirstLaunch) && whattodo == 1)
+            if (status == Status.NotInstalled || status == Status.FirstLaunch)
             {
-                for (int i = 0; i < rename_list.Count; i++)
-                    if (File.Exists(rename_list[i][0]) && !File.Exists(rename_list[i][1]))
-                        File.Move(rename_list[i][0], rename_list[i][1]);
+                var instructions = GetInstallationInstructions();
+                foreach (var i in instructions)
+                    if (File.Exists(i.orig) && !File.Exists(i.newName))
+                        File.Move(i.orig, i.newName);
 
                 Settings.Save();
             }
+        }
 
-            //Uninstallation
-            else if (whattodo == 0)
+        public static void Uninstall(int options = 0)
+        {
+            var renameList = GetInstallationInstructions();
+            renameList.Reverse();
+
+            foreach (var i in renameList)
+                if (File.Exists(i.newName) && !File.Exists(i.orig))
+                    File.Move(i.newName, i.orig);
+
+            //Options
+
+            //Recover original files
+            if ((options & 1) != 0)
             {
-                rename_list.Reverse();
-                for (int i = 0; i < rename_list.Count; i++)
+                Process.Start("AMBPatcher.exe", "recover").WaitForExit();
+
+                if ((options & 2) != 0)
+                    if (Directory.Exists("mods_sha"))
+                        Directory.Delete("mods_sha", true);
+            }
+
+            //Uninstall and remove OCMI
+            if ((options & 4) != 0)
+            {
+                if (File.Exists("OneClickModInstaller.exe"))
                 {
-                    Console.WriteLine(rename_list[i][1]);
-                    Console.WriteLine(rename_list[i][0]);
-                    if (File.Exists(rename_list[i][1]) && !File.Exists(rename_list[i][0]))
-                        File.Move(rename_list[i][1], rename_list[i][0]);
+                    Process.Start("OneClickModInstaller.exe", "--uninstall").WaitForExit();
+                    File.Delete("OneClickModInstaller.exe");
                 }
 
-                Settings.Save();
+                if (File.Exists("OneClickModInstaller.cfg"))
+                    File.Delete("OneClickModInstaller.cfg");
+            }
 
-                //Options
+            //Delete Mod Loader files
+            if ((options & 2) != 0)
+            {
+                foreach (var file in renameList)
+                    if (file.modloaderFile && File.Exists(file.orig))
+                        File.Delete(file.orig);
 
-                //Recover original files
-                if ((options & 1) != 0)
-                {
-                    Process.Start("AMBPatcher.exe", "recover").WaitForExit();
+                if (Directory.Exists("Mod Loader - licenses"))
+                    Directory.Delete("Mod Loader - licenses", true);
 
-                    if ((options & 2) != 0)
-                        if (Directory.Exists("mods_sha"))
-                            Directory.Delete("mods_sha", true);
-                }
-
-                //Uninstall and remove OCMI
-                if ((options & 4) != 0)
-                {
-                    if (File.Exists("OneClickModInstaller.exe"))
-                    {
-                        Process.Start("OneClickModInstaller.exe", "--uninstall").WaitForExit();
-                        File.Delete("OneClickModInstaller.exe");
-                    }
-
-                    if (File.Exists("OneClickModInstaller.cfg"))
-                        File.Delete("OneClickModInstaller.cfg");
-                }
-
-                //Delete Mod Loader files
                 if ((options & 2) != 0)
                 {
-                    var to_delete_list =
-                        new List<string> {"7z.exe",
-                                            "7z.dll",
-                                            "AMBPatcher.exe",
-                                            "AMBPatcher.log",
-                                            "CsbEditor.exe",
-                                            "ManagerLauncher.exe",
-                                            "Mod Loader - Whats new.txt",
-                                            "PatchLauncher.exe",
-                                            "README.rtf",
-                                            "README.md",
-                                            "SonicAudioLib.dll"};
-
-                    //Delete config
-                    if ((options & 8) == 0)
+                    //The only (easy and fast) way to delete an open program is to create a .bat file
+                    //that deletes the .exe file and itself.
+                    string[] bat =
                     {
-                        to_delete_list.AddRange(new string[] { "ModManager.cfg"
-                                                                ,"AMBPatcher.cfg"
-                                                                ,"CsbEditor.exe.config"});
-                        if ((options & 4) != 0)
-                            to_delete_list.Add("OneClickModInstaller.cfg");
-                    }
+                        "taskkill /IM Sonic4ModManager.exe /F",
+                        "DEL Sonic4ModManager.exe",
+                        "DEL FinishInstallation.bat"
+                    };
+                    File.WriteAllLines("FinishInstallation.bat", bat);
 
-                    foreach (string file in to_delete_list)
-                        if (File.Exists(file))
-                            File.Delete(file);
-
-                    if (Directory.Exists("Mod Loader - licenses"))
-                        Directory.Delete("Mod Loader - licenses", true);
-
-                    //Sonic4ModManager.exe
-                    if ((options & 16) != 0)
-                    {
-                        //The only (easy and fast) way to delete an open program is to create a .bat file
-                        //that deletes the .exe file and itself.
-                        string[] bat =
-                        {
-                            "taskkill /IM Sonic4ModManager.exe /F",
-                            "DEL Sonic4ModManager.exe",
-                            "DEL FinishInstallation.bat"
-                        };
-                        File.WriteAllLines("FinishInstallation.bat", bat);
-
-                        Process.Start("FinishInstallation.bat");
-                        Environment.Exit(0);
-                    }
+                    Process.Start("FinishInstallation.bat");
+                    Environment.Exit(0);
                 }
             }
         }
@@ -182,24 +167,24 @@ namespace Sonic4ModManager
             string my_dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
             if (Directory.Exists(dir_to_new_version))
             {
-                string install_from = dir_to_new_version;
+                var installFrom = dir_to_new_version;
                 var status = GetInstallationStatus();
-                string arg_install = "";
+                var argInstall = "";
 
                 if (status == Status.Installed)
-                    arg_install = " --install";
+                    argInstall = " --install";
 
                 if (Directory.Exists(Path.Combine(dir_to_new_version, "Sonic4ModLoader")))
-                    install_from = Path.Combine(install_from, "Sonic4ModLoader");
+                    installFrom = Path.Combine(installFrom, "Sonic4ModLoader");
 
-                Install(0, 0b10);
+                Uninstall(0b10);
 
-                var files_to_move = Directory.GetFileSystemEntries(install_from).ToList();
-                files_to_move.Remove(Path.Combine(install_from, "Sonic4ModManager.exe"));
+                var filesToMove = Directory.GetFileSystemEntries(installFrom).ToList();
+                filesToMove.Remove(Path.Combine(installFrom, "Sonic4ModManager.exe"));
 
-                foreach (string file in files_to_move)
+                foreach (var file in filesToMove)
                 {
-                    string my_file = Path.Combine(my_dir, Path.GetFileName(file));
+                    var my_file = Path.Combine(my_dir, Path.GetFileName(file));
                     if (File.Exists(file))
                     {
                         if (File.Exists(my_file))
@@ -216,9 +201,9 @@ namespace Sonic4ModManager
                 string[] bat =
                 {
                     "taskkill /IM Sonic4ModManager.exe /F",
-                    "MOVE /Y \"" + install_from + "\"\\Sonic4ModManager.exe \"" + my_dir + "\"\\Sonic4ModManager.exe",
+                    "MOVE /Y \"" + installFrom + "\"\\Sonic4ModManager.exe \"" + my_dir + "\"\\Sonic4ModManager.exe",
                     "RMDIR /Q /S \"" + dir_to_new_version + "\"",
-                    "START \"\" /D \"" + my_dir + "\" Sonic4ModManager.exe" + arg_install,
+                    "START \"\" /D \"" + my_dir + "\" Sonic4ModManager.exe" + argInstall,
                     "DEL FinishUpgrade.bat"
                 };
                 File.WriteAllLines("FinishUpgrade.bat", bat);
