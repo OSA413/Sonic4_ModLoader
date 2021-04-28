@@ -290,7 +290,6 @@
             this.cb_AMBPatcher_sha_check.TabIndex = 3;
             this.cb_AMBPatcher_sha_check.Text = "Check SHA of files (recommended)";
             this.cb_AMBPatcher_sha_check.UseVisualStyleBackColor = true;
-            this.cb_AMBPatcher_sha_check.CheckedChanged += new System.EventHandler(this.cb_AMBPatcher_sha_check_CheckedChanged);
             // 
             // cb_AMBPatcher_progress_bar
             // 
