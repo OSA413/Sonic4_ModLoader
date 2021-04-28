@@ -1,4 +1,4 @@
-﻿using Common.IniReader;
+﻿using Common.Ini;
 using Common.ValueUpdater;
 
 namespace AMBPatcher

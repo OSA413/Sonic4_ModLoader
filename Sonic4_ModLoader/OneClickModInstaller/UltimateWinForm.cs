@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-using Common.IniReader;
+using Common.Ini;
 using Common.ValueUpdater;
 
 namespace OneClickModInstaller

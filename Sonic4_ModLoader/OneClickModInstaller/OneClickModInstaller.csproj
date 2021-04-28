@@ -114,8 +114,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="..\Common\IniReader.cs">
-      <Link>Common\IniReader.cs</Link>
+    <Compile Include="..\Common\Ini.cs">
+      <Link>Common\Ini.cs</Link>
     </Compile>
     <Compile Include="..\Common\ValueUpdater.cs">
       <Link>Common\ValueUpdater.cs</Link>

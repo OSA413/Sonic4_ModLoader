@@ -29,11 +29,11 @@ namespace Common.Mod
 
         private void ReadIni(string iniPath)
         {
-            var ini = Common.IniReader.IniReader.Read(iniPath);
+            var ini = Common.Ini.IniReader.Read(iniPath);
 
             Dictionary<string, string> infoSection = null;
-            if (ini.Keys.Count == 1 && ini.ContainsKey(Common.IniReader.IniReader.DEFAULT_SECTION))
-                infoSection = ini[Common.IniReader.IniReader.DEFAULT_SECTION];
+            if (ini.Keys.Count == 1 && ini.ContainsKey(Common.Ini.IniReader.DEFAULT_SECTION))
+                infoSection = ini[Common.Ini.IniReader.DEFAULT_SECTION];
             else
                 infoSection = ini["Info"];
 

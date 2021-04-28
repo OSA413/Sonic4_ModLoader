@@ -1,9 +1,10 @@
 ﻿using System.IO;
 using System.Collections.Generic;
 
-namespace Common.IniReader
+namespace Common.Ini
 {
     public static class IniReader
+
     {
         public static readonly string DEFAULT_SECTION = "Default";
 
@@ -40,6 +41,11 @@ namespace Common.IniReader
                 }
             }
             return result;
+        }
+
+        public static class Writer
+        {
+
         }
     }
 }
