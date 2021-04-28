@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 
 using Common.Mods;
@@ -11,15 +12,18 @@ namespace Sonic4ModManager
 {
     public partial class MainForm:Form
     {
+        
+        private Random rnd = new Random();
         private List<Mod> CurrentMods;
         private Dictionary<string, Mod> ModsDict = new Dictionary<string, Mod>();
 
         public void RefreshMods()
         {
+            bOpenExplorer.Enabled = Directory.Exists("mods");
             listMods.Items.Clear();
             CurrentMods = Mods.GetMods();
+
             ModsDict.Clear();
-            
             foreach (var mod in CurrentMods)
             {
                 ModsDict[mod.Path] = mod;
@@ -28,53 +32,22 @@ namespace Sonic4ModManager
                 item.SubItems.Add(mod.Authors);
                 item.SubItems.Add(mod.Version);
                 item.SubItems.Add(mod.Path);
-                item.SubItems.Add(mod.Description);
+                item.Checked = mod.Enabled;
                 listMods.Items.Add(item);
-            }
-        }
-
-        public void SetModPriority()
-        {
-            bOpenExplorer.Enabled = Directory.Exists("mods");
-
-            if (File.Exists(@"mods\mods.ini"))
-            {
-                string[] ini_priority = File.ReadAllLines(@"mods\mods.ini");
-
-                for (int i = 0; i < ini_priority.Length; i++)
-                {
-                    int folder_ind = -1;
-                    for (int j = 0; j < listMods.Items.Count; j++)
-                    {
-                        if (ini_priority[i] == listMods.Items[j].SubItems[3].Text)
-                        {
-                            folder_ind = j;
-                            break;
-                        }
-                    }
-
-                    if (folder_ind != -1)
-                    {
-                        var tmp_item = listMods.Items[folder_ind];
-                        listMods.Items.RemoveAt(folder_ind);
-                        listMods.Items.Insert(0, tmp_item);
-                        listMods.Items[0].Checked = true;
-                    }
-                }
             }
         }
 
         public void Save()
         {
-            var checked_mods = new List<string>();
+            var checkedMods = new List<string>();
             for (int i = 0; i < listMods.Items.Count; i++)
                 if (listMods.Items[i].Checked)
-                    checked_mods.Insert(0, listMods.Items[i].SubItems[3].Text);
+                    checkedMods.Insert(0, listMods.Items[i].SubItems[3].Text);
 
             if (!Directory.Exists("mods"))
                 Directory.CreateDirectory("mods");
 
-            File.WriteAllLines(Path.Combine("mods","mods.ini"), checked_mods.ToArray());
+            File.WriteAllLines(Path.Combine("mods","mods.ini"), checkedMods.ToArray());
         }
 
         private void ChangePriority(int direction)
@@ -87,8 +60,8 @@ namespace Sonic4ModManager
                 {
                     case -1: if (ind != 0) listMods.MoveItem(ind, ind - 1); break;
                     case  1: if (ind != listMods.Items.Count - 1) listMods.MoveItem(ind, ind + 1); break;
-                    case -2: /**********************************/  listMods.MoveItem(ind, 0); break;
-                    case  2: /**********************************/  listMods.MoveItem(ind, listMods.Items.Count - 1); break;
+                    case -2: listMods.MoveItem(ind, 0); break;
+                    case  2: listMods.MoveItem(ind, listMods.Items.Count - 1); break;
                 }
             }
             listMods.Select();
@@ -99,16 +72,13 @@ namespace Sonic4ModManager
 
         public void RandomMods()
         {
-            Random rnd = new Random();
-            //Placement
             for (int i = 0; i < listMods.Items.Count; i++)
-                listMods.MoveItem(i, rnd.Next(listMods.Items.Count));
-
-            //Enabling
-            for (int i = 0; i < listMods.Items.Count; i++)
+            {
                 listMods.Items[i].Checked = Convert.ToBoolean(rnd.Next(2));
+                listMods.MoveItem(i, rnd.Next(listMods.Items.Count));
+            }
 
-            //Final sort
+            //Randomize enabled mods
             for (int i = 0; i < listMods.Items.Count; i++)
                 if (listMods.Items[i].Checked)
                     listMods.MoveItem(i, 0);
@@ -116,24 +86,8 @@ namespace Sonic4ModManager
 
         public MainForm(string[] args)
         {
-            if (args.Length > 0)
-            {
-                if (args.Length > 1)
-                    if (args[0] == "--upgrade" && Directory.Exists(args[1]))
-                        Installation.Upgrade(args[1]);
-
-                switch (args[0])
-                {
-                    case "--install": Installation.Install(1);   break;
-                }
-            }
-
-            if (Installation.GetInstallationStatus() == -1)
-                new FirstLaunch().ShowDialog();
-            
             InitializeComponent();
             RefreshMods();
-            SetModPriority();
             
             string whats_new = "\n\n[c][b][i]What's new:[\\i][\\b]\n";
             if (File.Exists("Mod Loader - Whats new.txt"))
@@ -171,12 +125,7 @@ namespace Sonic4ModManager
                 Application.Exit();
         }
 
-        private void bRefresh_Click(object sender, EventArgs e)
-        {
-            RefreshMods();
-            SetModPriority();
-        }
-
+        private void bRefresh_Click(object sender, EventArgs e) => RefreshMods();
         private void bExit_Click(object sender, EventArgs e) => Application.Exit();
         private void bPriorityUp_Click(object sender, EventArgs e) => ChangePriority(-1);
         private void bPriorityDown_Click(object sender, EventArgs e) => ChangePriority(1);
@@ -220,7 +169,7 @@ namespace Sonic4ModManager
         private void listMods_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listMods.SelectedItems.Count == 0) return;
-            rtb_mod_description.Text = listMods.Items[listMods.SelectedIndices[0]].SubItems[4].Text;
+            rtb_mod_description.Text = ModsDict[listMods.Items[listMods.SelectedIndices[0]].SubItems[3].Text].Description;
             rtb_mod_description.Format();
         }
     }

@@ -11,11 +11,11 @@ cd "dependencies_source"
 git clone --depth=1 https://github.com/blueskythlikesclouds/SonicAudioTools
 cd "SonicAudioTools"
 nuget restore SonicAudioTools.sln
-msbuild SonicAudioTools.sln /p:Configuration=Release
+msbuild SonicAudioTools.sln /p:Configuration=Release -m
 
 cp ./Release/CsbEditor.exe ./../../dependencies/SonicAudioTools/CsbEditor.exe
 cp ./Release/SonicAudioLib.dll ./../../dependencies/SonicAudioTools/SonicAudioLib.dll
-cp ./LICENSE.md ./../../dependencies/SonicAudioTools/LICENSE
+cp ./LICENSE ./../../dependencies/SonicAudioTools/LICENSE
 
 cd ..
 

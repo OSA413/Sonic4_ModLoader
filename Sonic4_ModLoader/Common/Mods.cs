@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Common.Mods
@@ -13,7 +15,22 @@ namespace Common.Mods
                 foreach (var modDir in Directory.GetDirectories("mods"))
                     result.Add(new Mod(modDir));
 
-            return result;
+            if (File.Exists("mods/mods.ini"))
+            {
+                var modsIni = File.ReadAllLines("mods/mods.ini");
+
+                foreach (var mod in result)
+                {
+                    var priority = Array.IndexOf(modsIni, mod.Path);
+                    if (priority != -1)
+                    {
+                        mod.Enabled = true;
+                        mod.Priority = priority;
+                    }
+                }
+            }
+
+            return result.OrderByDescending(x => x.Enabled).ThenByDescending(x => x.Priority).ToList();
         }
     }
 
@@ -30,10 +47,13 @@ namespace Common.Mods
         private string version = "???";
         private string description = "No description.";
 
+        public bool Enabled = false;
+        public int Priority;
+
         public Mod(string path)
         {
-            Path = path;
             name = System.IO.Path.GetFileName(path);
+            Path = name;
             ReadIni(System.IO.Path.Combine(path, "mod.ini"));
             ReadDescription();
         }
@@ -41,6 +61,7 @@ namespace Common.Mods
         private void ReadIni(string iniPath)
         {
             var ini = Common.Ini.IniReader.Read(iniPath);
+            if (ini.Count == 0) return;
 
             Dictionary<string, string> infoSection = null;
             if (ini.Keys.Count == 1 && ini.ContainsKey(Common.Ini.IniReader.DEFAULT_SECTION))
@@ -58,11 +79,11 @@ namespace Common.Mods
         {
             if (description.StartsWith("file="))
             {
-                var descriptionPath = description.Substring(5);
+                var descriptionPath = System.IO.Path.Combine("mods", Path, description.Substring(5));
                 if (File.Exists(descriptionPath))
                     //todo: wrap try-catch
                     if (descriptionPath.EndsWith("txt", System.StringComparison.OrdinalIgnoreCase))
-                        description = File.ReadAllText(description.Substring(5));
+                        description = File.ReadAllText(descriptionPath);
                     else description = "Error: unsupported format of \"" + descriptionPath + "\" file.";
                 else description = "Error: \"" + descriptionPath + "\" file not found.";
             }
