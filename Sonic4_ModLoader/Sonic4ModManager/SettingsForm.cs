@@ -31,20 +31,20 @@ namespace Sonic4ModManager
             public static void Load()
             {
                 //AMBPatcher
-                Settings.AMBPatcher.ProgressBar = true;
-                Settings.AMBPatcher.SHACheck    = true;
+                AMBPatcher.ProgressBar = true;
+                AMBPatcher.SHACheck    = true;
 
                 var cfg = IniReader.Read("AMBPatcher.cfg");
                 if (cfg.ContainsKey(IniReader.DEFAULT_SECTION))
                 {
-                    ValueUpdater.UpdateIfKeyPresent(cfg, "ProgressBar", ref Settings.AMBPatcher.ProgressBar);
-                    ValueUpdater.UpdateIfKeyPresent(cfg, "SHACheck", ref Settings.AMBPatcher.SHACheck);
+                    ValueUpdater.UpdateIfKeyPresent(cfg, "ProgressBar", ref AMBPatcher.ProgressBar);
+                    ValueUpdater.UpdateIfKeyPresent(cfg, "SHACheck", ref AMBPatcher.SHACheck);
                 }
 
                 //CsbEditor//
-                Settings.CsbEditor.EnableThreading  = true;
-                Settings.CsbEditor.MaxThreads       = 4;
-                Settings.CsbEditor.BufferSize       = 4096;
+                CsbEditor.EnableThreading  = true;
+                CsbEditor.MaxThreads       = 4;
+                CsbEditor.BufferSize       = 4096;
 
                 if (File.Exists("CsbEditor.exe.config"))
                 {
@@ -57,9 +57,9 @@ namespace Sonic4ModManager
                         string value = settings[i].InnerText;
                         switch (settings[i].Attributes["name"].InnerText)
                         {
-                            case "EnableThreading": Settings.CsbEditor.EnableThreading  = Boolean.Parse(value); break;
-                            case "MaxThreads":      Settings.CsbEditor.MaxThreads       = Convert.ToInt32(value); break;
-                            case "BufferSize":      Settings.CsbEditor.BufferSize       = Convert.ToInt32(value); break;
+                            case "EnableThreading": CsbEditor.EnableThreading  = Boolean.Parse(value); break;
+                            case "MaxThreads":      CsbEditor.MaxThreads       = Convert.ToInt32(value); break;
+                            case "BufferSize":      CsbEditor.BufferSize       = Convert.ToInt32(value); break;
                         }
                     }
                 }
@@ -70,8 +70,8 @@ namespace Sonic4ModManager
                 //AMBPatcher
                 var text = new List<string> { };
 
-                text.Add("ProgressBar=" + Convert.ToInt32(Settings.AMBPatcher.ProgressBar));
-                text.Add("SHACheck="    + Convert.ToInt32(Settings.AMBPatcher.SHACheck));
+                text.Add("ProgressBar=" + Convert.ToInt32(AMBPatcher.ProgressBar));
+                text.Add("SHACheck="    + Convert.ToInt32(AMBPatcher.SHACheck));
                 
                 File.WriteAllLines("AMBPatcher.cfg", text);
 
@@ -91,6 +91,7 @@ namespace Sonic4ModManager
                                                                 new XElement("value", Settings.CsbEditor.EnableThreading)),
                                                             new XElement("setting",
                                                                 new XAttribute("name", "MaxThreads"),
+                                                                //help
                                                                 new XAttribute("serializeAs", "String"),
                                                                 new XElement("value", Settings.CsbEditor.MaxThreads)),
                                                             new XElement("setting",
@@ -142,14 +143,12 @@ namespace Sonic4ModManager
             rb_rename.Enabled =
             rb_delete.Enabled =
             cb_Uninstall_OCMI.Enabled =
-            cb_KeepSettings.Enabled =
             cb_recover_orig.Enabled = false;
             bInstall.Text = "Install";
 
             rb_rename.Checked = true;
             rb_delete.Checked = false;
             cb_recover_orig.Checked     =
-            cb_KeepSettings.Checked     =
             cb_Uninstall_OCMI.Checked   = false;
             bInstall.Enabled = false;
             
@@ -212,8 +211,6 @@ namespace Sonic4ModManager
             options += Convert.ToInt32(rb_delete.Checked)*2;
             //Uninstall and delete OCMI
             options += Convert.ToInt32(cb_Uninstall_OCMI.Checked)*4 * Convert.ToInt32(rb_delete.Checked);
-            //Keep settings (affects OCMI removal)
-            options += Convert.ToInt32(cb_KeepSettings.Checked)*8 * Convert.ToInt32(rb_delete.Checked);
             
             if (bInstall.Text == "Install")
                 Installation.Install();
@@ -243,7 +240,7 @@ namespace Sonic4ModManager
 
         private void LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) =>
             Process.Start(((Control)sender).Text);
-        private void bOK_Click(object sender, System.EventArgs e) => Settings_Save();
+        private void bOK_Click(object sender, EventArgs e) => Settings_Save();
         private void bRecoverOriginalFiles_Click(object sender, EventArgs e)
         {
             if (File.Exists("AMBPatcher.exe"))
@@ -255,7 +252,7 @@ namespace Sonic4ModManager
         }
         
         private void rb_delete_CheckedChanged(object sender, EventArgs e) =>
-            cb_Uninstall_OCMI.Enabled = cb_KeepSettings.Enabled = rb_delete.Checked;
+            cb_Uninstall_OCMI.Enabled = rb_delete.Checked;
 
         private void cb_ForceUninstall_CheckedChanged(object sender, EventArgs e) =>
             UpdateInstallationStatus();

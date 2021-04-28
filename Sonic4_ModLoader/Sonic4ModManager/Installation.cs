@@ -162,19 +162,19 @@ namespace Sonic4ModManager
             }
         }
 
-        public static void Upgrade(string dir_to_new_version, int options = 0)
+        public static void Upgrade(string dirToNewVersion, int options = 0)
         {
-            string my_dir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
-            if (Directory.Exists(dir_to_new_version))
+            string myDir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
+            if (Directory.Exists(dirToNewVersion))
             {
-                var installFrom = dir_to_new_version;
+                var installFrom = dirToNewVersion;
                 var status = GetInstallationStatus();
                 var argInstall = "";
 
                 if (status == Status.Installed)
                     argInstall = " --install";
 
-                if (Directory.Exists(Path.Combine(dir_to_new_version, "Sonic4ModLoader")))
+                if (Directory.Exists(Path.Combine(dirToNewVersion, "Sonic4ModLoader")))
                     installFrom = Path.Combine(installFrom, "Sonic4ModLoader");
 
                 Uninstall(0b10);
@@ -184,16 +184,16 @@ namespace Sonic4ModManager
 
                 foreach (var file in filesToMove)
                 {
-                    var my_file = Path.Combine(my_dir, Path.GetFileName(file));
+                    var myFile = Path.Combine(myDir, Path.GetFileName(file));
                     if (File.Exists(file))
                     {
-                        if (File.Exists(my_file))
-                            File.Delete(my_file);
-                        File.Move(file, my_file);
+                        if (File.Exists(myFile))
+                            File.Delete(myFile);
+                        File.Move(file, myFile);
                     }
                     else
                     {
-                        MyDirectory.CopyAll(file, my_file);
+                        MyDirectory.CopyAll(file, myFile);
                         Directory.Delete(file, true);
                     }
                 }
@@ -201,9 +201,9 @@ namespace Sonic4ModManager
                 string[] bat =
                 {
                     "taskkill /IM Sonic4ModManager.exe /F",
-                    "MOVE /Y \"" + installFrom + "\"\\Sonic4ModManager.exe \"" + my_dir + "\"\\Sonic4ModManager.exe",
-                    "RMDIR /Q /S \"" + dir_to_new_version + "\"",
-                    "START \"\" /D \"" + my_dir + "\" Sonic4ModManager.exe" + argInstall,
+                    "MOVE /Y \"" + installFrom + "\"\\Sonic4ModManager.exe \"" + myDir + "\"\\Sonic4ModManager.exe",
+                    "RMDIR /Q /S \"" + dirToNewVersion + "\"",
+                    "START \"\" /D \"" + myDir + "\" Sonic4ModManager.exe" + argInstall,
                     "DEL FinishUpgrade.bat"
                 };
                 File.WriteAllLines("FinishUpgrade.bat", bat);

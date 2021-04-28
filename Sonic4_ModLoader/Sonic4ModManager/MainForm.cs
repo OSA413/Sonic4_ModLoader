@@ -145,21 +145,7 @@ namespace Sonic4ModManager
                 bOpenExplorer.Enabled = false;
         }
 
-        public void LinkClicked(object sender, LinkClickedEventArgs e)
-        {
-            try
-            { 
-                Process.Start(e.LinkText); 
-            }
-            catch (Exception err)
-            {
-                MessageBox.Show("Clicking on the link raised the following exception:\n\n"+err.Message,
-                                "Watch out! You are going to crash!",
-                                MessageBoxButtons.OK,
-                                MessageBoxIcon.Warning);
-            }
-        }
-        
+        public void LinkClicked(object sender, LinkClickedEventArgs e) => Process.Start(e.LinkText);
         private void listMods_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (listMods.SelectedItems.Count == 0) return;
