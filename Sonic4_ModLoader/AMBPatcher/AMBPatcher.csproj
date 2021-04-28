@@ -41,7 +41,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Log.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="AMB.cs" />
     <Compile Include="ProgressBar.cs" />

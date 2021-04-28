@@ -4,6 +4,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 
+using Common.Mods;
 using Common.Launcher;
 
 namespace AMBPatcher
@@ -13,6 +14,7 @@ namespace AMBPatcher
         public class AMB_old
         {
             //This method is used for Windows Phone version AMB files
+            //TODO: use it later in AMB.cs
             public static List<(string Name, int Pointer, int Length)> ReadWP(byte[] rawFile)
             {
                 List<int> filePointers = new List<int>();
@@ -76,7 +78,6 @@ namespace AMBPatcher
 
         static void PatchAll(string file_name, List<string> mod_files, List<string> mod_paths)
         {
-            Log.Write("> " + file_name);
             if (File.Exists(file_name))
             {
                 if (file_name.EndsWith(".AMB", StringComparison.OrdinalIgnoreCase))
@@ -95,7 +96,6 @@ namespace AMBPatcher
                         for (int i = 0; i < mod_files.Count; i++)
                         {
                             var mod_file_full = Path.Combine("mods", mod_paths[i], mod_files[i]);
-                            Log.Write(mod_file_full);
                             ProgressBar.PrintProgress(i, mod_files.Count, mod_file_full);
                             amb.Add(mod_file_full);
                             ShaChecker.ShaWrite(mod_files[i], mod_file_full);
@@ -103,7 +103,6 @@ namespace AMBPatcher
 
                         amb.Save(file_name);
                     }
-                    else Log.Write("Not changed");
                 }
                 else if (file_name.ToUpper().EndsWith(".CSB"))
                 {
@@ -113,7 +112,6 @@ namespace AMBPatcher
                         if (file_name.EndsWith(".CSB", StringComparison.OrdinalIgnoreCase))
                             Recover(file_name.Substring(0, file_name.Length - 4) + ".CPK");
 
-                        Log.Write("Asking CsbEditor to unpack");
                         ProgressBar.PrintProgress(0, 100, "Asking CsbEditor to unpack " + file_name);
 
                         //Needs CSB Editor (from SonicAudioTools) to work
@@ -126,22 +124,16 @@ namespace AMBPatcher
                             string mod_file = Path.Combine("mods", mod_paths[i], mod_files[i]);
 
                             ProgressBar.PrintProgress(i, mod_files.Count, mod_file);
-                            Log.Write(mod_file);
                             File.Copy(mod_file, mod_files[i], true);
 
                             ShaChecker.ShaWrite(mod_files[i], mod_file);
                         }
 
-                        Log.Write("Asking CsbEditor to repack");
                         ProgressBar.PrintProgress(99, 100, "Asking CsbEditor to repack " + file_name);
                         Launcher.LaunchCsbEditor(file_name.Substring(0, file_name.Length - 4));
                     }
-                    else Log.Write("Not changed");
                 }
             }
-            else Log.Write("File not found");
-
-            Log.Write("< " + file_name);
         }
 
         static void Backup(string file_name)
@@ -168,10 +160,7 @@ namespace AMBPatcher
 
             //Reading the mods.ini file
             if (!File.Exists("mods/mods.ini"))
-            {
-                Log.Write("GetModFiles: \"mods/mods.ini\" file not found");
                 return result;
-            }
 
             //The mods.ini contains directory names of the enabled mods in reversed priority
             /*e.g.
@@ -179,27 +168,28 @@ namespace AMBPatcher
              * Mod 2
              * Mod 1
              */
-            string[] ini_mods = File.ReadAllLines("mods/mods.ini");
+
+            var modsIni = Mods.GetMods().Where(x => x.Enabled).Select(x => x.Path).Reverse().ToList();
 
             List<string> orig_files = new List<string>();
             List<List<string>> mod_files = new List<List<string>>();
             List<List<string>> mod_dirs = new List<List<string>>();
 
-            for (int i = 0; i < ini_mods.Length; i++)
+            for (int i = 0; i < modsIni.Count; i++)
             {
-                if (Directory.Exists("mods/" + ini_mods[i]))
+                if (Directory.Exists("mods/" + modsIni[i]))
                 {
-                    string[] filenames = Directory.GetFiles(Path.Combine("mods",ini_mods[i]), "*", SearchOption.AllDirectories).OrderBy(x => x).ToArray();
+                    var filenames = Directory.GetFiles(Path.Combine("mods",modsIni[i]), "*", SearchOption.AllDirectories).OrderBy(x => x).ToArray();
 
                     for (int j = 0; j < filenames.Length; j++)
                     {
                         //Getting "folder/file" from "mods/mod/folder/file/mod_file"
-                        string[] filename_parts = filenames[j].Split(Path.DirectorySeparatorChar);
-                        string original_file = "";
+                        var filename_parts = filenames[j].Split(Path.DirectorySeparatorChar);
+                        var original_file = "";
 
                         for (int k = 0; k < filename_parts.Length - 2; k++)
                         {
-                            string possible_orig_file = Path.Combine(filename_parts.Skip(2).Take(k + 1).ToArray());
+                            var possible_orig_file = Path.Combine(filename_parts.Skip(2).Take(k + 1).ToArray());
 
                             if (File.Exists(possible_orig_file))
                             {
@@ -211,13 +201,13 @@ namespace AMBPatcher
                             }
                         }
 
-                        if (original_file == "") { continue; }
+                        if (original_file == "") continue;
 
                         //Getting "folder/file/mod_file" from "mods/mod/folder/file/mod_file"
-                        string mod_file = Path.Combine(filename_parts.Skip(2).ToArray());
+                        var mod_file = Path.Combine(filename_parts.Skip(2).ToArray());
 
                         //Getting "mod" from "mods/mod/folder/file/mod_file"
-                        string mod_path = filename_parts[1];
+                        var mod_path = filename_parts[1];
 
                         //Adding all of this into lists
                         if (!orig_files.Contains(original_file))
@@ -227,7 +217,7 @@ namespace AMBPatcher
                             mod_dirs.Add(new List<string> { });
                         }
 
-                        int ind = orig_files.IndexOf(original_file);
+                        var ind = orig_files.IndexOf(original_file);
 
                         if (mod_files[ind].Contains(mod_file))
                         {
@@ -240,7 +230,7 @@ namespace AMBPatcher
                              * 
                              * ~OSA413
                              */
-                            int mod_index = mod_files[ind].IndexOf(mod_file);
+                            var mod_index = mod_files[ind].IndexOf(mod_file);
                             mod_files[ind].RemoveAt(mod_index);
                             mod_dirs[ind].RemoveAt(mod_index);
                         }
@@ -289,7 +279,6 @@ namespace AMBPatcher
         static void Main(string[] args)
         {
             Settings.Load();
-            Log.Reset();
 
             if (args.Length == 0)
             {
@@ -299,31 +288,12 @@ namespace AMBPatcher
                     return;
                 }
 
-                Log.Write("Getting list of enabled mods...");
                 var test = GetModFiles();
-
-                if (Settings.GenerateLog)
-                {
-                    Log.Write("Content of mods.ini:");
-                    Log.Write(File.ReadAllText("mods/mods.ini"));
-                    Log.Write("====================");
-                    Log.Write("File list:");
-                    for (int i = 0; i < test.Count; i++)
-                    {
-                        Log.Write("\n" + test[i].OrigFile);
-                        for (int j = 0; j < test[i].ModFiles.Count; j++)
-                            Log.Write("\t" + test[i].ModFiles[j] + "\t" + test[i].ModName[j]);
-                    }
-                    Log.Write("====================");
-                }
-
                 List<string> mods_prev = new List<string> { };
                 List<string> modified_files = new List<string> { };
 
                 if (File.Exists("mods/mods_prev"))
                     mods_prev = File.ReadAllLines("mods/mods_prev").ToList<string>();
-
-                Log.Write("Patching original files...");
 
                 ProgressBar.PrintFiller();
                 ProgressBar.MoveCursorUp();
@@ -350,11 +320,8 @@ namespace AMBPatcher
                 ProgressBar.MoveCursorDown();
                 ProgressBar.PrintProgress(1, 1, "");
 
-                Log.Write("\nRestoring unchanged files:");
                 for (int i = 0; i < mods_prev.Count; i++)
                 {
-                    Log.Write("Restoring " + mods_prev[i]);
-
                     Recover(mods_prev[i]);
                     //Some CSB files may have CPK archive
                     if (mods_prev[i].EndsWith(".CSB", StringComparison.OrdinalIgnoreCase))
@@ -364,28 +331,16 @@ namespace AMBPatcher
                         ShaChecker.ShaRemove(mods_prev[i].Substring(0, mods_prev[i].Length - 4));
                     else
                         ShaChecker.ShaRemove(mods_prev[i]);
-                    
-                    
                 }
-                Log.Write("Restored");
 
-                Log.Write("\nSaving list of modified files...");
                 if (Directory.Exists("mods"))
-                {
                     File.WriteAllText("mods/mods_prev", string.Join("\n", modified_files.ToArray()));
-                    Log.Write("Saved");
-                }
-                else { Log.Write("But \"mods\" folder is not present!"); }
-
-                Log.Write("\nFinished.");
             }
 
             else if (args.Length == 1)
             {
                 if (args[0] == "-h" || args[0] == "--help")
-                {
                     ShowHelpMessage();
-                }
                 else if (args[0] == "recover")
                 {
                     if (File.Exists("mods/mods_prev"))
