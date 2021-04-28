@@ -171,7 +171,7 @@ namespace Sonic4ModManager
 
         private void UpdateInstallationStatus()
         {
-            int status = MainForm.GetInstallationStatus();
+            int status = Installation.GetInstallationStatus();
             bool force_uninstall = cb_ForceUninstall.Checked;
             
             label5.Enabled =
@@ -256,9 +256,9 @@ namespace Sonic4ModManager
             options += Convert.ToInt32(rb_delete.Checked)*16;
             
             if (bInstall.Text == "Install")
-                MainForm.Install(1);
+                Installation.Install(1);
             else if (bInstall.Text == "Uninstall")
-                MainForm.Install(0, options);
+                Installation.Install(0, options);
 
             UpdateInstallationStatus();
         }
