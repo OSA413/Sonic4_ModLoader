@@ -30,6 +30,8 @@ def run_test(test_name, NO_CRASH=False):
             elif seq == "#COPYMODS":
                 copy_dir_recursively("mods/mods", "sandbox/mods")
                 copy_dir_recursively("mods/textures", "sandbox/textures")
+            elif seq == "#EDGE_EXTRACTED_PREP":
+                copy_dir_recursively("files", "sandbox/files.amb_extracted/abc/def")
             elif seq.startswith("#CWD:") and len(seq) > 5:
                 os.chdir(seq[5:])
             elif seq.startswith("#MODSINI:") and len(seq) >= 9:
@@ -69,6 +71,8 @@ def check_files(test_name, REBUILD_SHA=False):
                 files = [x for x in files if not x.startswith(filtr[:-1])]
             else:
                 files = [x for x in files if x != filtr]
+        else:
+            files.append(i)
 
     expected_files = [x[len("hashes/" + test_name) + 1:] for x in glob.glob("hashes/" + test_name + "/**/*", recursive=True) if os.path.isfile(x)]
     actual_set = set(files)

@@ -201,7 +201,7 @@ public class AMB
 
     public void Add(string filePath, string newName = null)
     {
-        var target = FindObject(newName?.Replace('/', '\\') ?? GetRelativeName(AmbPath, filePath));
+        var target = FindObject(newName?.Replace('/', '\\') ?? GetRelativeName(AmbPath, filePath.Replace("_extracted", "")));
 
         var newObj = new BinaryObject(filePath);
         newObj.Name = newObj.RealName = target.name;

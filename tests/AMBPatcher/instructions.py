@@ -25,6 +25,14 @@ def get_test(test_name="", AMBPATCHER="", MAIN_AMB=""):
         "extract_nested": ["create_nested", "#TIME", ".extract"],
         "extract_all": ["create_nested", "#TIME", ".extract_all"],
 
+        #This test covers cases when patching an original file by a folder that was
+        #generated after extraction and internal files have directories.
+        "edge_extracted": [[AMBPATCHER, "create", "sandbox/files.amb"],
+                            [AMBPATCHER, "add", "sandbox/files.amb", "files/2", "abc/def/1"],
+                            [AMBPATCHER, "add", "sandbox/files.amb", "files/3", "abc/def/2"],
+                            [AMBPATCHER, "add", "sandbox/files.amb", "files/1", "abc/def/3"],
+                            "#EDGE_EXTRACTED_PREP",
+                            [AMBPATCHER, "sandbox/files.amb", "sandbox/files.amb_extracted"]],
 
         ".ml": [[AMBPATCHER]],
         ".ml_start": ["#COPYMODS", "#CWD:sandbox"],
