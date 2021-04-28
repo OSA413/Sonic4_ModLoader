@@ -5,8 +5,6 @@ namespace Sonic4ModManager
 {
     static class Program
     {
-
-
         [STAThread]
         static void Main(string[] args)
         {
