@@ -2,10 +2,12 @@
 using System.IO;
 using System.Diagnostics;
 using System.Windows.Forms;
-using System.Linq;
 using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Linq;
+
+using Common.Ini;
+using Common.ValueUpdater;
 
 namespace Sonic4ModManager
 {
@@ -16,9 +18,7 @@ namespace Sonic4ModManager
             public static class AMBPatcher
             {
                 public static bool ProgressBar;
-                public static bool GenerateLog;
                 public static bool SHACheck;
-                public static int  SHAType;
             }
 
             public static class CsbEditor
@@ -30,41 +30,18 @@ namespace Sonic4ModManager
             
             public static void Load()
             {
-                //////////////
-                //AMBPatcher//
-                //////////////
-
-                //Defaults
+                //AMBPatcher
                 Settings.AMBPatcher.ProgressBar = true;
-                Settings.AMBPatcher.GenerateLog = false;
                 Settings.AMBPatcher.SHACheck    = true;
-                Settings.AMBPatcher.SHAType     = 1;
 
-                if (File.Exists("AMBPatcher.cfg"))
+                var cfg = IniReader.Read("AMBPatcher.cfg");
+                if (cfg.ContainsKey(IniReader.DEFAULT_SECTION))
                 {
-                    string[] cfg_file = File.ReadAllLines("AMBPatcher.cfg");
-
-                    foreach (string line in cfg_file)
-                    {
-                        if (!line.Contains("=")) continue;
-                        string key   = line.Substring(0, line.IndexOf("="));
-                        string value = line.Substring(line.IndexOf("=") + 1);
-                        
-                        switch (key)
-                        {
-                            case "ProgressBar": Settings.AMBPatcher.ProgressBar = Convert.ToBoolean(Convert.ToInt32(value)); break;
-                            case "GenerateLog": Settings.AMBPatcher.GenerateLog = Convert.ToBoolean(Convert.ToInt32(value)); break;
-                            case "SHACheck":    Settings.AMBPatcher.SHACheck    = Convert.ToBoolean(Convert.ToInt32(value)); break;
-                            case "SHAType":     Settings.AMBPatcher.SHAType     = Convert.ToInt32(value); break;
-                        }
-                    }
+                    ValueUpdater.UpdateIfKeyPresent(cfg, "ProgressBar", ref Settings.AMBPatcher.ProgressBar);
+                    ValueUpdater.UpdateIfKeyPresent(cfg, "SHACheck", ref Settings.AMBPatcher.SHACheck);
                 }
 
-                /////////////
                 //CsbEditor//
-                /////////////
-
-                //Defaults
                 Settings.CsbEditor.EnableThreading  = true;
                 Settings.CsbEditor.MaxThreads       = 4;
                 Settings.CsbEditor.BufferSize       = 4096;
@@ -93,10 +70,8 @@ namespace Sonic4ModManager
                 //AMBPatcher
                 var text = new List<string> { };
 
-                text.Add("ProgressBar="            + Convert.ToInt32(Settings.AMBPatcher.ProgressBar));
-                text.Add("GenerateLog="            + Convert.ToInt32(Settings.AMBPatcher.GenerateLog));
-                text.Add("SHACheck="               + Convert.ToInt32(Settings.AMBPatcher.SHACheck));
-                text.Add("SHAType="                +                 Settings.AMBPatcher.SHAType);
+                text.Add("ProgressBar=" + Convert.ToInt32(Settings.AMBPatcher.ProgressBar));
+                text.Add("SHACheck="    + Convert.ToInt32(Settings.AMBPatcher.SHACheck));
                 
                 File.WriteAllLines("AMBPatcher.cfg", text);
 
@@ -131,16 +106,9 @@ namespace Sonic4ModManager
         {
             Settings.Load();
 
-            //AMBPatcher
             cb_AMBPatcher_progress_bar.Checked = Settings.AMBPatcher.ProgressBar;
-            cb_AMBPatcher_generate_log.Checked = Settings.AMBPatcher.GenerateLog;
             cb_AMBPatcher_sha_check.Checked    = Settings.AMBPatcher.SHACheck;
-            list_SHAType.SelectedIndex = 0;
 
-            if (new string[] { "1", "256", "384", "512" }.Contains(Settings.AMBPatcher.SHAType.ToString()))
-                list_SHAType.SelectedItem = Settings.AMBPatcher.SHAType;
-
-            //CsbEditor
             num_CsbEditor_BufferSize.Value          = Settings.CsbEditor.BufferSize;
             cb_CsbEditor_EnableThreading.Checked    = Settings.CsbEditor.EnableThreading;
             num_CsbEditor_MaxThreads.Value          = Settings.CsbEditor.MaxThreads;
@@ -148,13 +116,9 @@ namespace Sonic4ModManager
 
         private void Settings_Save()
         {
-            //AMBPatcher
             Settings.AMBPatcher.ProgressBar = cb_AMBPatcher_progress_bar.Checked;
-            Settings.AMBPatcher.GenerateLog = cb_AMBPatcher_generate_log.Checked;
             Settings.AMBPatcher.SHACheck    = cb_AMBPatcher_sha_check.Checked;
-            Settings.AMBPatcher.SHAType     = Convert.ToInt32(list_SHAType.SelectedItem);
 
-            //CsbEditor
             Settings.CsbEditor.BufferSize       = (int)num_CsbEditor_BufferSize.Value;
             Settings.CsbEditor.EnableThreading  = cb_CsbEditor_EnableThreading.Checked;
             Settings.CsbEditor.MaxThreads       = (int)num_CsbEditor_MaxThreads.Value;
@@ -171,7 +135,7 @@ namespace Sonic4ModManager
 
         private void UpdateInstallationStatus()
         {
-            int status = Installation.GetInstallationStatus();
+            var status = Installation.GetInstallationStatus();
             bool force_uninstall = cb_ForceUninstall.Checked;
             
             label5.Enabled =
@@ -189,7 +153,7 @@ namespace Sonic4ModManager
             cb_Uninstall_OCMI.Checked   = false;
             bInstall.Enabled = false;
             
-            if (status == 1 || force_uninstall)
+            if (status == Installation.Status.Installed || force_uninstall)
             {
                 bInstall.Text = "Uninstall";
                 rb_rename.Enabled =
@@ -204,17 +168,15 @@ namespace Sonic4ModManager
                     rb_delete.Checked = true;
                 }
             }
-            else if (status == 0 || status == -1)
-            {
-                bInstall.Enabled        = true;
-            }
+            else if (status == 0 || status == Installation.Status.FirstLaunch)
+                bInstall.Enabled = true;
 
             string the_text = "Current directory is not the game directory";
             switch (status)
             {
-                case  1: the_text = "Installed"; break;
-                case  0:
-                case -1: the_text = "Not installed"; break;
+                case Installation.Status.Installed: the_text = "Installed"; break;
+                case Installation.Status.NotInstalled:
+                case Installation.Status.FirstLaunch: the_text = "Not installed"; break;
             }
 
             label_Installation_status.Text = the_text;
@@ -263,70 +225,43 @@ namespace Sonic4ModManager
             UpdateInstallationStatus();
         }
 
-        //////////////
-        //AMBPatcher//
-        //////////////
-
-        private void cb_AMBPatcher_sha_check_CheckedChanged(object sender, EventArgs e)
-        {
-            list_SHAType.Enabled = cb_AMBPatcher_sha_check.Checked;
-        }
-
         /////////////
         //CsbEditor//
         /////////////
 
-        private void cb_CsbEditor_EnableThreading_CheckedChanged(object sender, EventArgs e)
-        {
+        private void cb_CsbEditor_EnableThreading_CheckedChanged(object sender, EventArgs e) =>
             num_CsbEditor_MaxThreads.Enabled = cb_CsbEditor_EnableThreading.Checked;
-        }
 
         /////////
         //About//
         /////////
         
-        private void ReadLicense_Click(object sender, EventArgs e)
-        {
+        private void ReadLicense_Click(object sender, EventArgs e) =>
             ReadLicense(((Control)sender).Name.Substring(4));
-        }
 
         //////////
         //Common//
         //////////
 
-        private void LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
+        private void LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) =>
             Process.Start(((Control)sender).Text);
-        }
 
-        private void bOK_Click(object sender, System.EventArgs e)
-        {
-            Settings_Save();
-        }
+        private void bOK_Click(object sender, System.EventArgs e) => Settings_Save();
 
         private void bRecoverOriginalFiles_Click(object sender, EventArgs e)
         {
             if (File.Exists("AMBPatcher.exe"))
             {
                 Process.Start("AMBPatcher.exe", "recover").WaitForExit();
-
-                if (File.Exists("mods/mods_prev"))
-                    File.Delete("mods/mods_prev");
-
-                if (Directory.Exists("mods_sha"))
-                    Directory.Delete("mods_sha", true);
+                if (File.Exists("mods/mods_prev")) File.Delete("mods/mods_prev");
+                if (Directory.Exists("mods_sha")) Directory.Delete("mods_sha", true);
             }
         }
         
-        private void rb_delete_CheckedChanged(object sender, EventArgs e)
-        {
-            cb_Uninstall_OCMI.Enabled =
-            cb_KeepSettings.Enabled = rb_delete.Checked;
-        }
+        private void rb_delete_CheckedChanged(object sender, EventArgs e) =>
+            cb_Uninstall_OCMI.Enabled = cb_KeepSettings.Enabled = rb_delete.Checked;
 
-        private void cb_ForceUninstall_CheckedChanged(object sender, EventArgs e)
-        {
+        private void cb_ForceUninstall_CheckedChanged(object sender, EventArgs e) =>
             UpdateInstallationStatus();
-        }
     }
 }

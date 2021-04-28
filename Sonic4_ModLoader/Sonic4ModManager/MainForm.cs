@@ -39,13 +39,11 @@ namespace Sonic4ModManager
 
         public void Save()
         {
+            Directory.CreateDirectory("mods");
             var checkedMods = new List<string>();
             for (int i = 0; i < listMods.Items.Count; i++)
                 if (listMods.Items[i].Checked)
                     checkedMods.Add(listMods.Items[i].SubItems[3].Text);
-
-            if (!Directory.Exists("mods"))
-                Directory.CreateDirectory("mods");
 
             File.WriteAllLines(Path.Combine("mods","mods.ini"), checkedMods.ToArray());
         }
@@ -55,7 +53,6 @@ namespace Sonic4ModManager
             for (int i = 0; i < listMods.SelectedIndices.Count; i++)
             {
                 var ind = listMods.SelectedIndices[i];
-
                 switch (direction)
                 {
                     case -1: if (ind != 0) listMods.MoveItem(ind, ind - 1); break;
@@ -98,7 +95,6 @@ namespace Sonic4ModManager
             whats_new += "\n\nHome page: https://github.com/OSA413/Sonic4_ModLoader";
 
             rtb_mod_description.Text += whats_new;
-
             rtb_mod_description.Format();
 
             //The call after 1CMI installation

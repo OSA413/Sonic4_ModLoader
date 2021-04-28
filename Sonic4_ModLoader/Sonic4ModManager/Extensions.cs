@@ -11,17 +11,10 @@ namespace Sonic4ModManager
         //https://github.com/OSA413/Sonic4_ModLoader/blob/master/docs/Mod%20structure.md#description-formating
         public static void Format(this RichTextBox rtb)
         {
-            //Remember folks, you can't delete any text if the richtextbox is ReadOnly
             rtb.ReadOnly = false;
-
-            //Newline character
-            rtb.Text = rtb.Text.Replace("\\n", "\n");
-
-            //Tab character
-            rtb.Text = rtb.Text.Replace("\\t", "\t");
-
-            //Bullet character at the biginning of a line
-            rtb.Text = rtb.Text.Replace("\n* ", "\n • ");
+            rtb.Text = rtb.Text.Replace("\\n", "\n"); //Newline character
+            rtb.Text = rtb.Text.Replace("\\t", "\t"); //Tab character
+            rtb.Text = rtb.Text.Replace("\n* ", "\n • "); //Bullet character at the biginning of a line
 
             //Description from mod.ini
             foreach (string i in new string[] { "b", "i", "u", "strike" })
@@ -42,9 +35,7 @@ namespace Sonic4ModManager
 
                     //Formating the original text
                     if (end_lst.Count == 0)
-                    {
                         end_lst.Add(rtb.Text.Length);
-                    }
                     foreach (int j in end_lst)
                     {
                         if (j > start_ind)
@@ -97,10 +88,8 @@ namespace Sonic4ModManager
                     case "r": rtb.SelectionAlignment = HorizontalAlignment.Right; break;
                     default: rtb.SelectionAlignment = HorizontalAlignment.Left; break;
                 }
-
                 rtb.SelectedText = "";
             }
-
             rtb.ReadOnly = true;
         }
 
@@ -114,6 +103,5 @@ namespace Sonic4ModManager
             else
                 lv.Items.Insert(insert_to, item);
         }
-
     }
 }

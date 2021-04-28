@@ -18,7 +18,7 @@ namespace Sonic4ModManager
                     Installation.Install(1);
             }
 
-            if (Installation.GetInstallationStatus() == -1)
+            if (Installation.GetInstallationStatus() == Installation.Status.FirstLaunch)
                 new FirstLaunch().ShowDialog();
 
             Settings.Load();

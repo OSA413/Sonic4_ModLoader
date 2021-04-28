@@ -11,32 +11,40 @@ namespace Sonic4ModManager
 {
     class Installation
     {
-        public static int GetInstallationStatus()
+        public enum Status
+        {
+            Installed,
+            NotInstalled,
+            FirstLaunch,
+            NotGameDirectory
+        }
+
+        public static Status GetInstallationStatus()
         {
             var game = Launcher.GetCurrentGame();
-            if (game == GAME.Unknown) return -2;
-            if (game == GAME.Episode1)
-            {
-                if (File.Exists("Sonic_vis.orig.exe")
-                    && File.Exists("SonicLauncher.orig.exe"))
-                    return 1;
-            }
-            else if (game == GAME.Episode2)
-            {
-                if (File.Exists("Sonic.orig.exe")
-                    && File.Exists("Launcher.orig.exe"))
-                    return 1;
-            }
 
-            if (!File.Exists("ModManager.cfg")) return -1; //First launch
-            return 0;
+            if (game == GAME.Unknown)
+                return Status.NotGameDirectory;
+
+            if (game == GAME.Episode1)
+                if (File.Exists("Sonic_vis.orig.exe") && File.Exists("SonicLauncher.orig.exe"))
+                    return Status.Installed;
+
+            else if (game == GAME.Episode2)
+                if (File.Exists("Sonic.orig.exe") && File.Exists("Launcher.orig.exe"))
+                    return Status.Installed;
+
+            if (!File.Exists("ModManager.cfg"))
+                return Status.FirstLaunch;
+
+            return Status.NotInstalled;
         }
 
         public static void Install(int whattodo, int options = 0)
         {
             //whattodo = 1 is install
             //whattodo = 0 is uninstall
-            int status = GetInstallationStatus();
+            var status = GetInstallationStatus();
             var game = Launcher.GetCurrentGame();
 
             var rename_list = new List<string[]> { };
@@ -68,7 +76,7 @@ namespace Sonic4ModManager
             rename_list.Add(new string[] { save_file_orig, save_file_new });
 
             //Installation
-            if ((status == 0 || status == -1) && whattodo == 1)
+            if ((status == Status.NotInstalled || status == Status.FirstLaunch) && whattodo == 1)
             {
                 for (int i = 0; i < rename_list.Count; i++)
                     if (File.Exists(rename_list[i][0]) && !File.Exists(rename_list[i][1]))
@@ -175,10 +183,10 @@ namespace Sonic4ModManager
             if (Directory.Exists(dir_to_new_version))
             {
                 string install_from = dir_to_new_version;
-                int status = GetInstallationStatus();
+                var status = GetInstallationStatus();
                 string arg_install = "";
 
-                if (status == 1)
+                if (status == Status.Installed)
                     arg_install = " --install";
 
                 if (Directory.Exists(Path.Combine(dir_to_new_version, "Sonic4ModLoader")))
