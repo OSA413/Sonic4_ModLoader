@@ -41,5 +41,5 @@ jobs:
 
       - uses: actions/upload-artifact@v2
         with:
-          name: AMB Patcher
+          name: AMBPatcher
           path: dist/Sonic4ModLoader/AMBPatcher.exe
