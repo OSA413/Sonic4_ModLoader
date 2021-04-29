@@ -26,12 +26,12 @@ jobs:
         
       - uses: actions/upload-artifact@v2
         with:
-          name: Sonic 4 Mod Manager
+          name: Sonic 4 Mod Loader
           path: dist/Sonic4ModLoader.7z
 
       - uses: actions/upload-artifact@v2
         with:
-          name: Sonic 4 Mod Manager (without 7-Zip)
+          name: Sonic 4 Mod Loader (without 7-Zip)
           path: dist/Sonic4ModLoader_7zip-less.7z
 
       - uses: actions/upload-artifact@v2
