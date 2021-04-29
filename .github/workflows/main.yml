@@ -26,15 +26,20 @@ jobs:
         
       - uses: actions/upload-artifact@v2
         with:
-          name: Artifacts - Main
-          path: dist/*.7z
+          name: Sonic 4 Mod Manager
+          path: dist/Sonic4ModLoader.7z
 
       - uses: actions/upload-artifact@v2
         with:
-          name: Artifacts - SHA256 sums
+          name: Sonic 4 Mod Manager (without 7-Zip)
+          path: dist/Sonic4ModLoader_7zip-less.7z
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: SHA256 sums
           path: dist/SHA256SUMS
 
       - uses: actions/upload-artifact@v2
         with:
-          name: Artifacts - AMBPatcher
+          name: AMB Patcher
           path: dist/Sonic4ModLoader/AMBPatcher.exe
