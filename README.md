@@ -1,5 +1,7 @@
 # Sonic 4 Mod Loader
 
+Looking for midday builds? Get it from [GitHub Actions](https://github.com/OSA413/Sonic4_ModLoader/actions)!
+
 FAQ: https://github.com/OSA413/Sonic4_ModLoader/blob/master/docs/FAQ.md
 
 **Table of content:**
