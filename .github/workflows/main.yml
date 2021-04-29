@@ -23,3 +23,18 @@ jobs:
 
       - name: Build
         run: bash build_pack_test.sh
+        
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Artifacts - Main
+          path: dist/*.7z
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Artifacts - SHA256 sums
+          path: dist/SHA256SUMS
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Artifacts - AMBPatcher
+          path: dist/Sonic4ModLoader/AMBPatcher.exe
