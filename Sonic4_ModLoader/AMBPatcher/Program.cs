@@ -467,6 +467,12 @@ namespace AMBPatcher
                         ShowHelpMessage();
                 }
 
+                else if (args[0] == "recreate" && File.Exists(args[1]))
+                {
+                    var amb = new AMB(args[1]);
+                    amb.Save(args[1]+"_recreated");
+                }
+
                 else ShowHelpMessage();
             }
 

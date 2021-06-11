@@ -24,7 +24,7 @@ public class AMB
     public bool SameEndianness = true;
     public List<BinaryObject> Objects = new List<BinaryObject>();
     public bool hasNames = true;
-    public Version version;
+    public Version version = Version.PC;
     public int Length { get => PredictPointers().name + Objects.Count * (hasNames ? 0x20 : 0) ;}
 
     public bool IsSourceAMB(int ptr=0)
@@ -175,7 +175,7 @@ public class AMB
         var pointers = PredictPointers();
 
         Array.Copy(Encoding.ASCII.GetBytes("#AMB"), 0, result, 0, 4);
-        Array.Copy(BitConverter.GetBytes(0x20), 0, result, 0x04, 4); //AMB file version
+        Array.Copy(BitConverter.GetBytes(Enum.IsDefined(typeof(Version), version) ? (int)version : 0x20), 0, result, 0x04, 4); //AMB file version
         Array.Copy(BitConverter.GetBytes(Objects.Count), 0, result, 0x10, 4);
         Array.Copy(BitConverter.GetBytes(pointers.list), 0, result, 0x14, 4);
         Array.Copy(BitConverter.GetBytes(pointers.data), 0, result, 0x18, 4);
