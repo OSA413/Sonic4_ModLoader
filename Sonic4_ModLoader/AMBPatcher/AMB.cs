@@ -13,11 +13,18 @@ using System.Collections.Generic;
 
 public class AMB
 {
+    public enum Version
+    {
+        PC = 0x20,
+        Mobile = 0x28
+    }
+
     private byte[] source;
     public string AmbPath;
     public bool SameEndianness = true;
     public List<BinaryObject> Objects = new List<BinaryObject>();
     public bool hasNames = true;
+    public Version version;
     public int Length { get => PredictPointers().name + Objects.Count * (hasNames ? 0x20 : 0) ;}
 
     public bool IsSourceAMB(int ptr=0)
@@ -39,6 +46,23 @@ public class AMB
         return FileIsLittleEndian;
     }
 
+    public Version GetVersion(byte[] binary = null, int ptr=0)
+    {
+        if (binary == null)
+            binary = source;
+
+        Version result;
+
+        if (Enum.TryParse<Version>(BitConverter.ToInt32(binary, ptr + 0x4).ToString(), out result))
+            return result;
+        
+        Array.Reverse(binary, ptr + 0x4, 4);
+        Enum.TryParse<Version>(BitConverter.ToInt32(binary, ptr + 0x4).ToString(), out result);
+        Array.Reverse(binary, ptr + 0x4, 4);
+
+        return result;
+    }
+
     public void SwapEndianness(byte[] binary = null, int ptr=0)
     {
         if (binary == null)
@@ -47,11 +71,11 @@ public class AMB
 
         if (!swapHeader)
         {
-            Array.Reverse(binary, ptr + 0x4, 4);
-            Array.Reverse(binary, ptr + 0x10, 4);
-            Array.Reverse(binary, ptr + 0x14, 4);
-            Array.Reverse(binary, ptr + 0x18, 4);
-            Array.Reverse(binary, ptr + 0x1C, 4);
+            Array.Reverse(binary, ptr + 0x4, 4); //version
+            Array.Reverse(binary, ptr + 0x10, 4); //file number
+            Array.Reverse(binary, ptr + 0x14, 4); //enumeration pointer
+            Array.Reverse(binary, ptr + 0x18, 4); //data pointer
+            Array.Reverse(binary, ptr + 0x1C, 4); //name pointer
         }
 
         var objNum = BitConverter.ToInt32(binary, ptr + 0x10);
@@ -102,6 +126,11 @@ public class AMB
         this.source = source;
         AmbPath = fileName;
         if (!IsSourceAMB()) return;
+        version = GetVersion();
+        
+        int shift = 0;
+        if (version == Version.Mobile)
+            shift = 0x4;
 
         SameEndianness = BitConverter.IsLittleEndian == IsLittleEndian();
 
@@ -110,15 +139,15 @@ public class AMB
 
         var objNum = BitConverter.ToInt32(source, sourcePtr + 0x10);
         var listPtr = BitConverter.ToInt32(source, sourcePtr + 0x14) + sourcePtr;
-        //var dataPtr = BitConverter.ToInt32(source, sourcePtr + 0x18) + sourcePtr;
-        var namePtr = BitConverter.ToInt32(source, sourcePtr + 0x1C) + sourcePtr;
+        //var dataPtr = BitConverter.ToInt32(source, sourcePtr + 0x18 + shift) + sourcePtr; //this may be not dataPtr for mobile
+        var namePtr = BitConverter.ToInt32(source, sourcePtr + 0x1C + shift) + sourcePtr;
         if (namePtr == 0) hasNames = false;
 
         for (int i = 0; i < objNum; i++)
         {
-            var objPtr = BitConverter.ToInt32(source, listPtr + 0x10 * i) + sourcePtr;
+            var objPtr = BitConverter.ToInt32(source, listPtr + (0x10 + shift) * i) + sourcePtr;
             if (objPtr == 0) continue;
-            var objLen = BitConverter.ToInt32(source, listPtr + 0x10 * i + 4);
+            var objLen = BitConverter.ToInt32(source, listPtr + (0x10 + shift) * i + 4 + shift);
             var newObj = new BinaryObject(source, objPtr, objLen);
             newObj.RealName = hasNames ? ReadString(source, namePtr + 0x20 * i) : i.ToString();
             newObj.Name = MakeNameSafe(newObj.RealName);
