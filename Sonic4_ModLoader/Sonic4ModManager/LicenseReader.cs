@@ -25,7 +25,7 @@ namespace Sonic4ModManager
                                 + license;
 
             if (sourceLink != "") richTextBox1.Text = "====================\n"
-                                    + "You can get source code and binary files of this program on\n"
+                                    + "You can get source code and/or binary files of this program at\n"
                                     + sourceLink
                                     + "====================\n\n"
                                     + richTextBox1.Text;

@@ -19,6 +19,14 @@ namespace Sonic4ModManager
             NotGameDirectory
         }
 
+        public class UninstallationOptions
+        {
+            public bool RecoverOriginalFiles;
+            public bool KeepSettings;
+            public bool UninstallAndDeleteOCMI;
+            public bool DeleteAllModLoaderFiles;
+        }
+
         public static Status GetInstallationStatus()
         {
             var game = Launcher.GetCurrentGame();
@@ -88,7 +96,6 @@ namespace Sonic4ModManager
         {
             var status = GetInstallationStatus();
 
-            //Installation
             if (status == Status.NotInstalled || status == Status.FirstLaunch)
             {
                 var instructions = GetInstallationInstructions();
@@ -100,8 +107,9 @@ namespace Sonic4ModManager
             }
         }
 
-        public static void Uninstall(int options = 0)
+        public static void Uninstall(UninstallationOptions options)
         {
+            //TODO: add deletion of config files
             var renameList = GetInstallationInstructions();
             renameList.Reverse();
 
@@ -109,20 +117,16 @@ namespace Sonic4ModManager
                 if (File.Exists(i.newName) && !File.Exists(i.orig))
                     File.Move(i.newName, i.orig);
 
-            //Options
-
-            //Recover original files
-            if ((options & 1) != 0)
+            if (options.RecoverOriginalFiles)
             {
                 Process.Start("AMBPatcher.exe", "recover").WaitForExit();
 
-                if ((options & 2) != 0)
+                if (options.DeleteAllModLoaderFiles)
                     if (Directory.Exists("mods_sha"))
                         Directory.Delete("mods_sha", true);
             }
 
-            //Uninstall and remove OCMI
-            if ((options & 4) != 0)
+            if (options.UninstallAndDeleteOCMI)
             {
                 if (File.Exists("OneClickModInstaller.exe"))
                 {
@@ -130,12 +134,11 @@ namespace Sonic4ModManager
                     File.Delete("OneClickModInstaller.exe");
                 }
 
-                if (File.Exists("OneClickModInstaller.cfg"))
+                if (!options.KeepSettings && File.Exists("OneClickModInstaller.cfg"))
                     File.Delete("OneClickModInstaller.cfg");
             }
 
-            //Delete Mod Loader files
-            if ((options & 2) != 0)
+            if (options.DeleteAllModLoaderFiles)
             {
                 foreach (var file in renameList)
                     if (file.modloaderFile && File.Exists(file.orig))
@@ -144,25 +147,21 @@ namespace Sonic4ModManager
                 if (Directory.Exists("Mod Loader - licenses"))
                     Directory.Delete("Mod Loader - licenses", true);
 
-                if ((options & 2) != 0)
+                //TODO: rewrite this as an executable command instead of file call
+                string[] bat =
                 {
-                    //The only (easy and fast) way to delete an open program is to create a .bat file
-                    //that deletes the .exe file and itself.
-                    string[] bat =
-                    {
-                        "taskkill /IM Sonic4ModManager.exe /F",
-                        "DEL Sonic4ModManager.exe",
-                        "DEL FinishInstallation.bat"
-                    };
-                    File.WriteAllLines("FinishInstallation.bat", bat);
+                    "taskkill /IM Sonic4ModManager.exe /F",
+                    "DEL Sonic4ModManager.exe",
+                    "DEL FinishInstallation.bat"
+                };
+                File.WriteAllLines("FinishInstallation.bat", bat);
 
-                    Process.Start("FinishInstallation.bat");
-                    Environment.Exit(0);
-                }
+                Process.Start("FinishInstallation.bat");
+                Environment.Exit(0);
             }
         }
 
-        public static void Upgrade(string dirToNewVersion, int options = 0)
+        public static void Upgrade(string dirToNewVersion)
         {
             string myDir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
             if (Directory.Exists(dirToNewVersion))
@@ -177,7 +176,9 @@ namespace Sonic4ModManager
                 if (Directory.Exists(Path.Combine(dirToNewVersion, "Sonic4ModLoader")))
                     installFrom = Path.Combine(installFrom, "Sonic4ModLoader");
 
-                Uninstall(0b10);
+                var options = new UninstallationOptions();
+                options.DeleteAllModLoaderFiles = true;
+                Uninstall(options);
 
                 var filesToMove = Directory.GetFileSystemEntries(installFrom).ToList();
                 filesToMove.Remove(Path.Combine(installFrom, "Sonic4ModManager.exe"));

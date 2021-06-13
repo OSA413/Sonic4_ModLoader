@@ -14,6 +14,7 @@ namespace Sonic4ModManager
             rtb.Text = rtb.Text.Replace("\\n", "\n"); //Newline character
             rtb.Text = rtb.Text.Replace("\\t", "\t"); //Tab character
             rtb.Text = rtb.Text.Replace("\n* ", "\n • "); //Bullet character at the biginning of a line
+            if (rtb.Text.StartsWith("* ")) rtb.Text = " • " + rtb.Text.Substring(2);
 
             foreach (var i in new [] { "b", "i", "u", "strike" })
             {

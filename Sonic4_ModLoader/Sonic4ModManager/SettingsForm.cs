@@ -91,7 +91,6 @@ namespace Sonic4ModManager
                                                                 new XElement("value", Settings.CsbEditor.EnableThreading)),
                                                             new XElement("setting",
                                                                 new XAttribute("name", "MaxThreads"),
-                                                                //help
                                                                 new XAttribute("serializeAs", "String"),
                                                                 new XElement("value", Settings.CsbEditor.MaxThreads)),
                                                             new XElement("setting",
@@ -142,6 +141,7 @@ namespace Sonic4ModManager
             label5.Enabled =
             rb_rename.Enabled =
             rb_delete.Enabled =
+            cbKeepConfigs.Enabled =
             cb_Uninstall_OCMI.Enabled =
             cb_recover_orig.Enabled = false;
             bInstall.Text = "Install";
@@ -157,6 +157,7 @@ namespace Sonic4ModManager
                 bInstall.Text = "Uninstall";
                 rb_rename.Enabled =
                 rb_delete.Enabled =
+                cbKeepConfigs.Enabled =
                 label5.Enabled =
                 cb_recover_orig.Enabled = true;
                 bInstall.Enabled        = true;
@@ -167,7 +168,7 @@ namespace Sonic4ModManager
                     rb_delete.Checked = true;
                 }
             }
-            else if (status == 0 || status == Installation.Status.FirstLaunch)
+            else if (status == Installation.Status.NotInstalled || status == Installation.Status.FirstLaunch)
                 bInstall.Enabled = true;
 
             string the_text = "Current directory is not the game directory";
@@ -183,34 +184,27 @@ namespace Sonic4ModManager
         
         private void ReadLicense(string program)
         {
-            var license = "Mod Loader - licenses/";
+            var license = "";
 
             switch (program)
             {
-                case "S4ML":    license += "LICENSE-Sonic4_ModLoader";  break;
-                case "SAT":     license += "LICENSE-SonicAudioTools";   break;
-                case "7z":      license += "LICENSE-7-Zip";             break;
+                case "S4ML":    license = "LICENSE-Sonic4_ModLoader";  break;
+                case "SAT":     license = "LICENSE-SonicAudioTools";   break;
+                case "7z":      license = "LICENSE-7-Zip";             break;
             }
 
-            if (license != "Mod Loader - licenses/")
+            if (license != "")
                 new LicenseReader(license).ShowDialog();
         }
         
-        ////////////////
-        //Installation//
-        ////////////////
-
         private void bInstall_Click(object sender, EventArgs e)
         {
-            //Pro tip: imagine the binary representation of this integer
-            int options = 0;
+            var options = new Installation.UninstallationOptions();
 
-            //Recover original files
-            options += Convert.ToInt32(cb_recover_orig.Checked);
-            //Delete all Mod Loader files
-            options += Convert.ToInt32(rb_delete.Checked)*2;
-            //Uninstall and delete OCMI
-            options += Convert.ToInt32(cb_Uninstall_OCMI.Checked)*4 * Convert.ToInt32(rb_delete.Checked);
+            options.RecoverOriginalFiles = cb_recover_orig.Checked;
+            options.DeleteAllModLoaderFiles = rb_delete.Checked;
+            options.KeepSettings = cbKeepConfigs.Checked;
+            options.UninstallAndDeleteOCMI = cb_Uninstall_OCMI.Checked && options.DeleteAllModLoaderFiles;
             
             if (bInstall.Text == "Install")
                 Installation.Install();
@@ -220,23 +214,11 @@ namespace Sonic4ModManager
             UpdateInstallationStatus();
         }
 
-        /////////////
-        //CsbEditor//
-        /////////////
-
         private void cb_CsbEditor_EnableThreading_CheckedChanged(object sender, EventArgs e) =>
             num_CsbEditor_MaxThreads.Enabled = cb_CsbEditor_EnableThreading.Checked;
 
-        /////////
-        //About//
-        /////////
-        
         private void ReadLicense_Click(object sender, EventArgs e) =>
             ReadLicense(((Control)sender).Name.Substring(4));
-
-        //////////
-        //Common//
-        //////////
 
         private void LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) =>
             Process.Start(((Control)sender).Text);
