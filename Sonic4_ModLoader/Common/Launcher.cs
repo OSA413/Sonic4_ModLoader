@@ -82,11 +82,10 @@ namespace Common.Launcher
         public static bool LaunchAMBPatcher(string args="")
         {
             if (File.Exists("AMBPatcher.exe"))
-            {
                 Process.Start("AMBPatcher.exe", args).WaitForExit();
-                return true;
-            }
-            return false;
+            else
+                return false;
+            return true;
         }
     }
 }

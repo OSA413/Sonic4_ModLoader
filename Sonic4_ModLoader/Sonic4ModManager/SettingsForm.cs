@@ -157,7 +157,6 @@ namespace Sonic4ModManager
                 bInstall.Text = "Uninstall";
                 rb_rename.Enabled =
                 rb_delete.Enabled =
-                cbKeepConfigs.Enabled =
                 label5.Enabled =
                 cb_recover_orig.Enabled = true;
                 bInstall.Enabled        = true;
@@ -171,15 +170,15 @@ namespace Sonic4ModManager
             else if (status == Installation.Status.NotInstalled || status == Installation.Status.FirstLaunch)
                 bInstall.Enabled = true;
 
-            string the_text = "Current directory is not the game directory";
+            string statusText = "Current directory is not the game directory";
             switch (status)
             {
-                case Installation.Status.Installed: the_text = "Installed"; break;
+                case Installation.Status.Installed: statusText = "Installed"; break;
                 case Installation.Status.NotInstalled:
-                case Installation.Status.FirstLaunch: the_text = "Not installed"; break;
+                case Installation.Status.FirstLaunch: statusText = "Not installed"; break;
             }
 
-            label_Installation_status.Text = the_text;
+            label_Installation_status.Text = statusText;
         }
         
         private void ReadLicense(string program)
@@ -215,7 +214,7 @@ namespace Sonic4ModManager
         }
 
         private void cb_CsbEditor_EnableThreading_CheckedChanged(object sender, EventArgs e) =>
-            num_CsbEditor_MaxThreads.Enabled = cb_CsbEditor_EnableThreading.Checked;
+            num_CsbEditor_MaxThreads.Enabled = label6.Enabled = cb_CsbEditor_EnableThreading.Checked;
 
         private void ReadLicense_Click(object sender, EventArgs e) =>
             ReadLicense(((Control)sender).Name.Substring(4));
@@ -234,7 +233,7 @@ namespace Sonic4ModManager
         }
         
         private void rb_delete_CheckedChanged(object sender, EventArgs e) =>
-            cb_Uninstall_OCMI.Enabled = rb_delete.Checked;
+            cb_Uninstall_OCMI.Enabled = cbKeepConfigs.Enabled = rb_delete.Checked;
 
         private void cb_ForceUninstall_CheckedChanged(object sender, EventArgs e) =>
             UpdateInstallationStatus();

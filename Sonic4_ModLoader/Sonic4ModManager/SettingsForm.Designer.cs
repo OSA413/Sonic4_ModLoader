@@ -34,6 +34,7 @@
             this.linkMain = new System.Windows.Forms.LinkLabel();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabInstallation = new System.Windows.Forms.TabPage();
+            this.cbKeepConfigs = new System.Windows.Forms.CheckBox();
             this.cb_ForceUninstall = new System.Windows.Forms.CheckBox();
             this.cb_Uninstall_OCMI = new System.Windows.Forms.CheckBox();
             this.label5 = new System.Windows.Forms.Label();
@@ -63,7 +64,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.bOK = new System.Windows.Forms.Button();
             this.bCancel = new System.Windows.Forms.Button();
-            this.cbKeepConfigs = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tabInstallation.SuspendLayout();
             this.tabProgram.SuspendLayout();
@@ -144,6 +144,16 @@
             this.tabInstallation.TabIndex = 0;
             this.tabInstallation.Text = "Installation";
             this.tabInstallation.UseVisualStyleBackColor = true;
+            // 
+            // cbKeepConfigs
+            // 
+            this.cbKeepConfigs.AutoSize = true;
+            this.cbKeepConfigs.Location = new System.Drawing.Point(296, 156);
+            this.cbKeepConfigs.Name = "cbKeepConfigs";
+            this.cbKeepConfigs.Size = new System.Drawing.Size(112, 21);
+            this.cbKeepConfigs.TabIndex = 10;
+            this.cbKeepConfigs.Text = "Keep configs";
+            this.cbKeepConfigs.UseVisualStyleBackColor = true;
             // 
             // cb_ForceUninstall
             // 
@@ -413,9 +423,9 @@
             this.label4.Location = new System.Drawing.Point(8, 165);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(275, 17);
+            this.label4.Size = new System.Drawing.Size(202, 17);
             this.label4.TabIndex = 5;
-            this.label4.Text = "7-Zip Copyright (C) 1999-2018 Igor Pavlov";
+            this.label4.Text = "7-Zip Copyright (C) Igor Pavlov";
             // 
             // link7z
             // 
@@ -483,16 +493,6 @@
             this.bCancel.TabIndex = 99;
             this.bCancel.Text = "Cancel";
             this.bCancel.UseVisualStyleBackColor = true;
-            // 
-            // cbKeepConfigs
-            // 
-            this.cbKeepConfigs.AutoSize = true;
-            this.cbKeepConfigs.Location = new System.Drawing.Point(296, 156);
-            this.cbKeepConfigs.Name = "cbKeepConfigs";
-            this.cbKeepConfigs.Size = new System.Drawing.Size(112, 21);
-            this.cbKeepConfigs.TabIndex = 10;
-            this.cbKeepConfigs.Text = "Keep configs";
-            this.cbKeepConfigs.UseVisualStyleBackColor = true;
             // 
             // SettingsForm
             // 

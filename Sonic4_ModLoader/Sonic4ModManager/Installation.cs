@@ -109,7 +109,6 @@ namespace Sonic4ModManager
 
         public static void Uninstall(UninstallationOptions options)
         {
-            //TODO: add deletion of config files
             var renameList = GetInstallationInstructions();
             renameList.Reverse();
 

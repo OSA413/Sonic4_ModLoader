@@ -8,15 +8,15 @@ namespace Common.MyIO
         {
             Directory.CreateDirectory(destination);
 
-            foreach (string file in Directory.GetFiles(source))
+            foreach (var file in Directory.GetFiles(source))
             {
                 File.Copy(file, Path.Combine(destination, Path.GetFileName(file)), true);
                 File.SetAttributes(file, FileAttributes.Normal);
             }
 
-            foreach (string dir in Directory.GetDirectories(source))
+            foreach (var dir in Directory.GetDirectories(source))
             {
-                string dir_name = Path.GetFileName(dir);
+                var dir_name = Path.GetFileName(dir);
                 Directory.CreateDirectory(Path.Combine(destination, dir_name));
                 MyDirectory.CopyAll(Path.Combine(source, dir_name), Path.Combine(destination, dir_name));
             }

@@ -55,7 +55,6 @@ namespace Common.Ini
         public static void Write(Dictionary<string, Dictionary<string, string>> ini, string path)
         {
             var result = new List<string>();
-
             var onlyDefaultSection = ini.ContainsKey(IniReader.DEFAULT_SECTION) && ini.Keys.Count == 1;
 
             foreach (var section in ini)

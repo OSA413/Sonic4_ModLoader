@@ -12,17 +12,15 @@ namespace Sonic4ModManager
     public partial class MainForm:Form
     {
         private Random rnd = new Random();
-        private List<Mod> CurrentMods;
         private Dictionary<string, Mod> ModsDict = new Dictionary<string, Mod>();
 
         public void RefreshMods()
         {
             bOpenExplorer.Enabled = Directory.Exists("mods");
             listMods.Items.Clear();
-            CurrentMods = Mods.GetMods();
-
             ModsDict.Clear();
-            foreach (var mod in CurrentMods)
+            
+            foreach (var mod in Mods.GetMods())
             {
                 ModsDict[mod.Path] = mod;
 
@@ -37,12 +35,12 @@ namespace Sonic4ModManager
 
         public void Save()
         {
-            Directory.CreateDirectory("mods");
             var checkedMods = new List<string>();
             for (int i = 0; i < listMods.Items.Count; i++)
                 if (listMods.Items[i].Checked)
                     checkedMods.Add(listMods.Items[i].SubItems[3].Text);
 
+            Directory.CreateDirectory("mods");
             File.WriteAllLines(Path.Combine("mods","mods.ini"), checkedMods.ToArray());
         }
 
@@ -67,16 +65,16 @@ namespace Sonic4ModManager
 
         public void RandomMods()
         {
-            for (int i = 0; i < listMods.Items.Count; i++)
+            foreach (ListViewItem o in listMods.Items)
             {
-                listMods.Items[i].Checked = Convert.ToBoolean(rnd.Next(2));
-                listMods.MoveItem(i, rnd.Next(listMods.Items.Count));
+                o.Checked = rnd.Next(2) == 1;
+                if (o.Checked)
+                    listMods.MoveItem(o.Index, rnd.Next(listMods.Items.Count));
             }
 
-            //Randomize enabled mods
-            for (int i = 0; i < listMods.Items.Count; i++)
-                if (listMods.Items[i].Checked)
-                    listMods.MoveItem(i, 0);
+            foreach (ListViewItem o in listMods.Items)
+                if (o.Checked)
+                    listMods.MoveItem(o.Index, 0);
         }
 
         public MainForm(string[] args)
@@ -84,15 +82,14 @@ namespace Sonic4ModManager
             InitializeComponent();
             RefreshMods();
             
-            var whatsNew = "\n\n[c][b][i]What's new:[\\i][\\b]\n";
+            var whatsNew = "Select a mod to read its description\n\n[c][b][i]What's new:[\\i][\\b]\n";
             if (File.Exists("Mod Loader - Whats new.txt"))
                 whatsNew += File.ReadAllText("Mod Loader - Whats new.txt");
             else
                 whatsNew += "File \"Mod Loader - Whats new.txt\" not found.";
-
             whatsNew += "\n\nHome page: https://github.com/OSA413/Sonic4_ModLoader";
 
-            rtb_mod_description.Text += whatsNew;
+            rtb_mod_description.Text = whatsNew;
             rtb_mod_description.Format();
 
             //The call after 1CMI installation
@@ -102,8 +99,8 @@ namespace Sonic4ModManager
                 {
                     if (listMods.Items[i].SubItems[3].Text == args[0])
                     {
-                        listMods.Items[i].Selected = true;
-                        listMods.TopItem = listMods.Items[i];
+                        listMods.Items[i].Selected = true;                
+                        listMods.EnsureVisible(i);
                         listMods.Select();
                         break;
                     }
