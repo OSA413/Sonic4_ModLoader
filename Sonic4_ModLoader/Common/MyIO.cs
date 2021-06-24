@@ -1,9 +1,22 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Diagnostics;
 
 namespace Common.MyIO
 {
     public static class MyDirectory
     {
+        public static void OpenInFileManager(string path)
+        {
+            var fileManager = "";
+            switch (Environment.OSVersion.Platform)
+            {
+                case PlatformID.Win32NT:fileManager = "explorer"; break;
+                case PlatformID.Unix:   fileManager = "xdg-open"; break;
+                case PlatformID.MacOSX: fileManager = "open"; break;
+            }
+            Process.Start(fileManager, path);
+        }
         public static void CopyAll(string source, string destination)
         {
             Directory.CreateDirectory(destination);

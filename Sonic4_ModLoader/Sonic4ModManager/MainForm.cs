@@ -6,6 +6,7 @@ using System.Windows.Forms;
 
 using Common.Mods;
 using Common.Launcher;
+using Common.MyIO;
 
 namespace Sonic4ModManager
 {
@@ -48,14 +49,17 @@ namespace Sonic4ModManager
         {
             for (int i = 0; i < listMods.SelectedIndices.Count; i++)
             {
-                var ind = listMods.SelectedIndices[i];
+                var index = listMods.SelectedIndices[i];
+                var insertTo = index;
+
                 switch (direction)
                 {
-                    case -1: if (ind != 0) listMods.MoveItem(ind, ind - 1); break;
-                    case  1: if (ind != listMods.Items.Count - 1) listMods.MoveItem(ind, ind + 1); break;
-                    case -2: listMods.MoveItem(ind, 0); break;
-                    case  2: listMods.MoveItem(ind, listMods.Items.Count - 1); break;
+                    case -1: if (index != 0) insertTo = index - 1; break;
+                    case  1: if (index != listMods.Items.Count - 1) insertTo = index + 1; break;
+                    case -2: insertTo = 0; break;
+                    case  2: insertTo = listMods.Items.Count - 1; break;
                 }
+                listMods.MoveItem(index, insertTo);                
             }
             listMods.Select();
 
@@ -128,16 +132,7 @@ namespace Sonic4ModManager
         private void bOpenExplorer_Click(object sender, EventArgs e)
         {
             if (Directory.Exists("mods"))
-            {
-                var localExplorer = "";
-                switch ((int) Environment.OSVersion.Platform)
-                {
-                    case 2: localExplorer = "explorer"; break; //Windows
-                    case 4: localExplorer = "xdg-open"; break; //Linux (with xdg)
-                    case 6: localExplorer = "open"; break;     //MacOS (not tested)
-                }
-                Process.Start(localExplorer, "mods");
-            }
+                MyDirectory.OpenInFileManager("mods");
             else
                 bOpenExplorer.Enabled = false;
         }

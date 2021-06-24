@@ -74,20 +74,24 @@ namespace Sonic4ModManager
             var originalExeBkp = Path.GetFileNameWithoutExtension(originalExe) + ".orig.exe";
             var originalLauncherBkp = Path.GetFileNameWithoutExtension(originalLauncher) + ".orig.exe";
 
+            //Original files
             renameList.Add((originalExe, originalExeBkp, false));
             renameList.Add((patchLauncher, originalExe, true));
             renameList.Add((originalLauncher, originalLauncherBkp, false));
             renameList.Add((managerLauncher, originalLauncher, true));
             renameList.Add((saveFileOrig, saveFileNew, false));
 
+            //Mod Loader files
             renameList.Add(("7z.exe", null, true));
             renameList.Add(("7z.dll", null, true));
             renameList.Add(("AMBPatcher.exe", null, true));
             renameList.Add(("CsbEditor.exe", null, true));
-            renameList.Add(("ManagerLauncher.exe", null, true));
             renameList.Add(("Mod Loader - Whats new.txt", null, true));
             renameList.Add(("README.md", null, true));
             renameList.Add(("SonicAudioLib.dll", null, true));
+
+            renameList.Add(("AMBPatcher.cfg", null, true));
+            renameList.Add(("CsbEditor.exe.config", null, true));
 
             return renameList;
         }
@@ -120,9 +124,8 @@ namespace Sonic4ModManager
             {
                 Process.Start("AMBPatcher.exe", "recover").WaitForExit();
 
-                if (options.DeleteAllModLoaderFiles)
-                    if (Directory.Exists("mods_sha"))
-                        Directory.Delete("mods_sha", true);
+                if (options.DeleteAllModLoaderFiles && Directory.Exists("mods_sha"))
+                    Directory.Delete("mods_sha", true);
             }
 
             if (options.UninstallAndDeleteOCMI)
@@ -141,19 +144,17 @@ namespace Sonic4ModManager
             {
                 foreach (var file in renameList)
                     if (file.modloaderFile && File.Exists(file.orig))
+                        if (!options.KeepSettings ||
+                            !(options.KeepSettings && (file.orig.EndsWith(".cfg") || file.orig.EndsWith(".config"))))
                         File.Delete(file.orig);
 
                 if (Directory.Exists("Mod Loader - licenses"))
                     Directory.Delete("Mod Loader - licenses", true);
 
-                //TODO: rewrite this as an executable command instead of file call
-                string[] bat =
-                {
-                    "taskkill /IM Sonic4ModManager.exe /F",
-                    "DEL Sonic4ModManager.exe",
-                    "DEL FinishInstallation.bat"
-                };
-                File.WriteAllLines("FinishInstallation.bat", bat);
+                var bat = "taskkill /IM Sonic4ModManager.exe /F\n" + 
+                    "DEL Sonic4ModManager.exe\n" +
+                    "DEL FinishInstallation.bat";
+                File.WriteAllText("FinishInstallation.bat", bat);
 
                 Process.Start("FinishInstallation.bat");
                 Environment.Exit(0);
@@ -162,28 +163,21 @@ namespace Sonic4ModManager
 
         public static void Upgrade(string dirToNewVersion)
         {
-            string myDir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
+            var myDir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
             if (Directory.Exists(dirToNewVersion))
             {
                 var installFrom = dirToNewVersion;
-                var status = GetInstallationStatus();
-                var argInstall = "";
+                var argInstall = GetInstallationStatus() == Status.Installed ? " --install" : "";
 
-                if (status == Status.Installed)
-                    argInstall = " --install";
+                var possibleInstallDir = Path.Combine(dirToNewVersion, "Sonic4ModLoader");
+                if (Directory.Exists(possibleInstallDir))
+                    installFrom = possibleInstallDir;
 
-                if (Directory.Exists(Path.Combine(dirToNewVersion, "Sonic4ModLoader")))
-                    installFrom = Path.Combine(installFrom, "Sonic4ModLoader");
+                Uninstall(new UninstallationOptions());
 
-                var options = new UninstallationOptions();
-                options.DeleteAllModLoaderFiles = true;
-                Uninstall(options);
-
-                var filesToMove = Directory.GetFileSystemEntries(installFrom).ToList();
-                filesToMove.Remove(Path.Combine(installFrom, "Sonic4ModManager.exe"));
-
-                foreach (var file in filesToMove)
+                foreach (var file in Directory.GetFileSystemEntries(installFrom))
                 {
+                    if (file.EndsWith("Sonic4ModManager.exe")) continue;
                     var myFile = Path.Combine(myDir, Path.GetFileName(file));
                     if (File.Exists(file))
                     {
@@ -198,15 +192,13 @@ namespace Sonic4ModManager
                     }
                 }
 
-                string[] bat =
-                {
-                    "taskkill /IM Sonic4ModManager.exe /F",
-                    "MOVE /Y \"" + installFrom + "\"\\Sonic4ModManager.exe \"" + myDir + "\"\\Sonic4ModManager.exe",
-                    "RMDIR /Q /S \"" + dirToNewVersion + "\"",
-                    "START \"\" /D \"" + myDir + "\" Sonic4ModManager.exe" + argInstall,
-                    "DEL FinishUpgrade.bat"
-                };
-                File.WriteAllLines("FinishUpgrade.bat", bat);
+                var bat = "taskkill /IM Sonic4ModManager.exe /F\n"+
+                    "MOVE /Y \"" + installFrom + "\"\\Sonic4ModManager.exe \"" + myDir + "\"\\Sonic4ModManager.exe\n"+
+                    "RMDIR /Q /S \"" + dirToNewVersion + "\"\n"+
+                    "START \"\" /D \"" + myDir + "\" Sonic4ModManager.exe" + argInstall + "\n" +
+                    "DEL FinishUpgrade.bat";
+
+                File.WriteAllText("FinishUpgrade.bat", bat);
                 Process.Start("FinishUpgrade.bat");
                 Environment.Exit(0);
             }

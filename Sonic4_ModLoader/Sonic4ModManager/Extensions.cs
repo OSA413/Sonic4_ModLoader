@@ -94,6 +94,7 @@ namespace Sonic4ModManager
 
         public static void MoveItem(this ListView lv, int index, int insertTo)
         {
+            if (index == insertTo) return;
             var item = lv.Items[index];
             lv.Items.RemoveAt(index);
             if (insertTo >= lv.Items.Count)
