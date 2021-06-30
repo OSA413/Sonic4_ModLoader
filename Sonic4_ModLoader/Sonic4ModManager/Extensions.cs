@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
@@ -7,88 +8,104 @@ namespace Sonic4ModManager
 {
     public static class Extensions
     {
+        public static bool IsEscaped(string text, int index)
+        {
+            if (index > 0 && text[index - 1] == '\\')
+                return !IsEscaped(text, index - 1);
+            return false;
+        }
+
+        public static bool Contains(this string s, string other, int index)
+        {
+            if (s.Length - index < other.Length) return false;
+            for (int i = 0; i < other.Length; i++)
+                if (s[index + i] != other[i])
+                    return false;
+            return true;
+        }
+
         //https://github.com/OSA413/Sonic4_ModLoader/blob/master/docs/Mod%20structure.md#description-formating
         public static void Format(this RichTextBox rtb)
         {
+            var markers = new List<String>();
+            var markersFormatting = new [] {"b", "i", "u", "strike"};
+            var markersAlignment = new [] {"l", "c", "r"};
+            foreach (var marker in markersFormatting.Union(markersAlignment))
+            {
+                markers.Add("[" + marker + "]");
+                if (markersFormatting.Contains(marker))
+                    markers.Add("[\\" + marker + "]");
+            }
+            var specialChars = new Dictionary<string, string> {{"\\n", "\n"}, {"\\t", "\t"}, {"\n* ", "\n • "}};
+            markers.AddRange(specialChars.Keys);
+
             rtb.ReadOnly = false;
-            rtb.Text = rtb.Text.Replace("\\n", "\n"); //Newline character
-            rtb.Text = rtb.Text.Replace("\\t", "\t"); //Tab character
-            rtb.Text = rtb.Text.Replace("\n* ", "\n • "); //Bullet character at the biginning of a line
             if (rtb.Text.StartsWith("* ")) rtb.Text = " • " + rtb.Text.Substring(2);
 
-            foreach (var i in new [] { "b", "i", "u", "strike" })
+            var tokens = new List<(int index, string token)>();
+            for (int i = 0; i < rtb.TextLength;)
             {
-                while (rtb.Text.Contains("[" + i + "]"))
-                {
-                    //Getting the list of all [i] and [\i]
-                    var ind = 0;
-
-                    var endList = new List<int>();
-                    while (rtb.Text.Substring(ind).Contains("[\\" + i + "]"))
+                var t = rtb.Text;
+                var prevTokensCount = tokens.Count;
+                foreach (var marker in markers)
+                    if (t.Contains(marker, i) && (marker[0] != '\\' || marker[0] == '\\' && IsEscaped(t, i + 1)))
                     {
-                        endList.Add(rtb.Text.Substring(ind).IndexOf("[\\" + i + "]") + ind);
-                        ind = endList[endList.Count - 1] + 1;
+                        tokens.Add((i, marker));
+                        break;
+                    }
+                
+                if (tokens.Count != prevTokensCount)
+                    i += tokens[tokens.Count - 1].token.Length;
+                else
+                    i++;
+            }
+
+            for (int i = 0; i < tokens.Count; i++)
+            {
+                if (markersFormatting.Contains(tokens[i].token))
+                {
+                    var endToken = "[\\" + tokens[i].token.Substring(1);
+                    var endIndex = tokens.FindIndex(i + 1, x => x.token == endToken) + endToken.Length;
+                    if (endIndex == -1 + endToken.Length) endIndex = rtb.TextLength - 1; 
+
+                    rtb.Select(tokens[i].index, endIndex - tokens[i].index);
+
+                    FontStyle newStyle = FontStyle.Regular;
+                    switch (tokens[i].token)
+                    {
+                        case "[b]": newStyle = FontStyle.Bold; break;
+                        case "[i]": newStyle = FontStyle.Italic; break;
+                        case "[u]": newStyle = FontStyle.Underline; break;
+                        case "[strike]": newStyle = FontStyle.Strikeout; break;
                     }
 
-                    var startInd = rtb.Text.IndexOf("[" + i + "]");
+                    rtb.SelectionFont = new Font(rtb.SelectionFont, newStyle | rtb.SelectionFont.Style);
+                }
 
-                    //Formating the original text
-                    if (endList.Count == 0)
-                        endList.Add(rtb.Text.Length);
-                    foreach (int j in endList)
+                else if (markersAlignment.Contains(tokens[i].token))
+                {
+                    rtb.Select(tokens[i].index, 3);
+
+                    switch (tokens[i].token)
                     {
-                        if (j > startInd)
-                        {
-                            for (int k = 0; k < j - startInd; k++)
-                            {
-                                rtb.Select(startInd + k, 1);
-
-                                FontStyle new_style = FontStyle.Regular;
-                                switch (i)
-                                {
-                                    case "b": new_style = FontStyle.Bold; break;
-                                    case "i": new_style = FontStyle.Italic; break;
-                                    case "u": new_style = FontStyle.Underline; break;
-                                    case "strike": new_style = FontStyle.Strikeout; break;
-                                }
-
-                                rtb.SelectionFont = new Font(rtb.SelectionFont, new_style | rtb.SelectionFont.Style);
-                            }
-
-                            rtb.Select(j, 3 + i.Length);
-                            rtb.SelectedText = "";
-                            rtb.Select(startInd, 2 + i.Length);
-                            rtb.SelectedText = "";
-
-                            break;
-                        }
+                        case "c": rtb.SelectionAlignment = HorizontalAlignment.Center; break;
+                        case "r": rtb.SelectionAlignment = HorizontalAlignment.Right; break;
+                        default: rtb.SelectionAlignment = HorizontalAlignment.Left; break;
                     }
                 }
             }
 
-            //Text alignment
-            while (rtb.Text.Contains("[l]") ||
-                   rtb.Text.Contains("[c]") ||
-                   rtb.Text.Contains("[r]"))
+            var offset = 0;
+            foreach (var token in tokens)
             {
-                var lInd = rtb.Text.Contains("[l]") ? rtb.Text.IndexOf("[l]") : rtb.Text.Length;
-                var cInd = rtb.Text.Contains("[c]") ? rtb.Text.IndexOf("[c]") : rtb.Text.Length;
-                var rInd = rtb.Text.Contains("[r]") ? rtb.Text.IndexOf("[r]") : rtb.Text.Length;
-
-                //Nearest tag
-                var ind = Math.Min(Math.Min(lInd, cInd), rInd);
-                var tag = rtb.Text[ind + 1].ToString();
-
-                rtb.Select(ind, 3);
-
-                switch (tag)
-                {
-                    case "c": rtb.SelectionAlignment = HorizontalAlignment.Center; break;
-                    case "r": rtb.SelectionAlignment = HorizontalAlignment.Right; break;
-                    default: rtb.SelectionAlignment = HorizontalAlignment.Left; break;
-                }
-                rtb.SelectedText = "";
+                var replacement = "";
+                rtb.Select(token.index - offset, token.token.Length);
+                if (specialChars.ContainsKey(token.token))
+                    replacement = specialChars[token.token];
+                rtb.SelectedText = replacement;
+                offset += token.token.Length;
             }
+            
             rtb.ReadOnly = true;
         }
 
