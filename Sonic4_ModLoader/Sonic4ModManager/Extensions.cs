@@ -62,31 +62,32 @@ namespace Sonic4ModManager
 
             for (int i = 0; i < tokens.Count; i++)
             {
-                if (markersFormatting.Contains(tokens[i].token))
+                var token = tokens[i].token.Substring(1, tokens[i].token.Length - 2);
+                if (markersFormatting.Contains(token))
                 {
                     var endToken = "[\\" + tokens[i].token.Substring(1);
-                    var endIndex = tokens.FindIndex(i + 1, x => x.token == endToken) + endToken.Length;
-                    if (endIndex == -1 + endToken.Length) endIndex = rtb.TextLength - 1; 
+                    var endIndex = tokens.FindIndex(i + 1, x => x.token == endToken);
+                    if (endIndex == -1) endIndex = rtb.TextLength; 
 
-                    rtb.Select(tokens[i].index, endIndex - tokens[i].index);
+                    rtb.Select(tokens[i].index, tokens[endIndex].index + tokens[endIndex].token.Length - tokens[i].index);
 
                     FontStyle newStyle = FontStyle.Regular;
-                    switch (tokens[i].token)
+                    switch (token)
                     {
-                        case "[b]": newStyle = FontStyle.Bold; break;
-                        case "[i]": newStyle = FontStyle.Italic; break;
-                        case "[u]": newStyle = FontStyle.Underline; break;
-                        case "[strike]": newStyle = FontStyle.Strikeout; break;
+                        case "b": newStyle = FontStyle.Bold; break;
+                        case "i": newStyle = FontStyle.Italic; break;
+                        case "u": newStyle = FontStyle.Underline; break;
+                        case "strike": newStyle = FontStyle.Strikeout; break;
                     }
 
                     rtb.SelectionFont = new Font(rtb.SelectionFont, newStyle | rtb.SelectionFont.Style);
                 }
 
-                else if (markersAlignment.Contains(tokens[i].token))
+                else if (markersAlignment.Contains(token))
                 {
                     rtb.Select(tokens[i].index, 3);
 
-                    switch (tokens[i].token)
+                    switch (token)
                     {
                         case "c": rtb.SelectionAlignment = HorizontalAlignment.Center; break;
                         case "r": rtb.SelectionAlignment = HorizontalAlignment.Right; break;
@@ -103,9 +104,8 @@ namespace Sonic4ModManager
                 if (specialChars.ContainsKey(token.token))
                     replacement = specialChars[token.token];
                 rtb.SelectedText = replacement;
-                offset += token.token.Length;
+                offset += token.token.Length - replacement.Length;
             }
-            
             rtb.ReadOnly = true;
         }
 
