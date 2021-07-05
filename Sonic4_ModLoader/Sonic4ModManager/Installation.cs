@@ -92,6 +92,7 @@ namespace Sonic4ModManager
 
             renameList.Add(("AMBPatcher.cfg", null, true));
             renameList.Add(("CsbEditor.exe.config", null, true));
+            renameList.Add(("ModManager.cfg", null, true));
 
             return renameList;
         }
@@ -104,7 +105,7 @@ namespace Sonic4ModManager
             {
                 var instructions = GetInstallationInstructions();
                 foreach (var i in instructions)
-                    if (File.Exists(i.orig) && !File.Exists(i.newName))
+                    if (File.Exists(i.orig) && i.newName != null && !File.Exists(i.newName))
                         File.Move(i.orig, i.newName);
 
                 Settings.Save();

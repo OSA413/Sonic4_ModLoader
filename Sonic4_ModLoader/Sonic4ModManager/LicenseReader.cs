@@ -9,6 +9,7 @@ namespace Sonic4ModManager
         public LicenseReader(string licenseFile)
         {
             InitializeComponent();
+            //TODO: read 7-zip's license from local installation if path specified in OCMI
 
             licenseFile = Path.Combine("Mod Loader - licenses", licenseFile);
             var license = "File \"" + licenseFile + "\" not found.";
