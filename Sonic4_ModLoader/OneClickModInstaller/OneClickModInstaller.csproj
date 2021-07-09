@@ -120,6 +120,12 @@
     <Compile Include="..\Common\ValueUpdater.cs">
       <Link>Common\ValueUpdater.cs</Link>
     </Compile>
+    <Compile Include="..\Common\Launcher.cs">
+      <Link>Common\Launcher.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\MyIO.cs">
+      <Link>Common\MyIO.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

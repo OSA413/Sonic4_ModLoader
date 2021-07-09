@@ -9,6 +9,8 @@ using System.Diagnostics;
 using System.Linq;
 
 using Common.Ini;
+using Common.MyIO;
+using Common.Launcher;
 using Common.ValueUpdater;
 
 namespace OneClickModInstaller
@@ -86,10 +88,8 @@ namespace OneClickModInstaller
                 text.Add("ExitLaunchManager="      + Convert.ToInt32(Settings.ExitLaunchManager));
 
                 text.Add("[Paths]");
-                foreach (string path in Settings.Paths.Keys)
-                {
+                foreach (var path in Settings.Paths.Keys)
                     text.Add(path + "=" + Settings.Paths[path]);
-                }
 
                 File.WriteAllLines("OneClickModInstaller.cfg", text);
             }
@@ -383,10 +383,8 @@ namespace OneClickModInstaller
         private void bUninstall_Click(object sender, EventArgs e)
         {
             if (GetGame.Short() == "dunno")
-            {
                 if (Reg.InstallationStatus()["ep1"] == 1)
                     Reg.Uninstall("ep1");
-            }
             else Reg.Uninstall();
 
             UpdateWindow();
@@ -454,31 +452,23 @@ namespace OneClickModInstaller
                         wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
 
                         //Download link goes here
-                        string url = URL.GetRedirect(archive_url);
+                        var url = URL.GetRedirect(archive_url);
                         
                         //Getting file name of the archive
                         if (Installation.ServerHost == "github")
-                        {
                             //GitHub's redirect link is something like a request rather than a file "path" on a server
                             Installation.ArchiveName = archive_url.Split('/')[archive_url.Split('/').Length - 1];
-                        }
                         else
-                        {
                             Installation.ArchiveName = url.Split('/')[url.Split('/').Length - 1];
-                        }
 
                         if (Installation.ServerHost == "gamebanana")
-                        {
                             //Well, it seems that GB's counter doesn't increase if you download
                             //the file directly from the redirect url. But I'm not sure that
                             //this works as well
                             url = archive_url;
-                        }
 
                         if (File.Exists(Installation.ArchiveName))
-                        {
                             File.Delete(Installation.ArchiveName);
-                        }
 
                         wc.DownloadFileAsync(new Uri(url), Installation.ArchiveName);
                     }
@@ -492,7 +482,6 @@ namespace OneClickModInstaller
             {
                 progressBar.Style = ProgressBarStyle.Marquee;
                 progressBar.Value = 0;
-                ;
             }));
 
             await Task.Run(() =>
@@ -521,7 +510,7 @@ namespace OneClickModInstaller
                     Installation.Status = "Idle";
                 }
 
-                int cont = -1;
+                var cont = -1;
 
                 if (!Directory.Exists(Installation.ArchiveDir))
                 {
@@ -565,7 +554,6 @@ namespace OneClickModInstaller
                     tcMain.Invoke(new MethodInvoker(delegate
                     {
                         ContinueInstallation();
-                        ;
                     }));
                 }
                 UpdateWindow();
@@ -603,7 +591,7 @@ namespace OneClickModInstaller
                  *  0 - ok (user selected destination directory)
                  *  -1 - break (user cancelled SelectRoots window)
                  */
-                int status = 1;
+                var status = 1;
                 var sr = new SelectRoots(Installation.ArchiveDir);
 
                 while (status > 0)
@@ -622,7 +610,7 @@ namespace OneClickModInstaller
                     else if (status == 2)
                     {
                         status = 1;
-                        string path = MyDirectory.Select("test", "dir");
+                        var path = MyDirectory.Select("test", "dir");
                         if (path != null)
                         {
                             Installation.CustomPath = path;
@@ -652,7 +640,7 @@ namespace OneClickModInstaller
             {
                 if (Installation.ModRoots.Length > 1)
                 {
-                    TooManyMods tmm_form = new TooManyMods(Installation.ModRoots, Installation.Platform);
+                    var tmm_form = new TooManyMods(Installation.ModRoots, Installation.Platform);
                     tmm_form.ShowDialog();
 
                     Installation.ModRoots = tmm_form.mods;
@@ -726,9 +714,7 @@ namespace OneClickModInstaller
                         File.Move(Installation.ArchiveName, Path.Combine(Settings.Paths["DownloadedArhives"], Installation.ArchiveName));
                     }
                     else
-                    {
                         File.Delete(Installation.ArchiveName);
-                    }
                 }
 
                 if (Settings.ExitLaunchManager)
@@ -743,7 +729,6 @@ namespace OneClickModInstaller
                 
                 tcMain.Invoke(new MethodInvoker(delegate {
                     UpdateWindow();
-                    ;
                 }));
             });
         }
@@ -782,20 +767,19 @@ namespace OneClickModInstaller
                     progressBar.Style = ProgressBarStyle.Blocks;
                     progressBar.Value = (int)(1000 * e.BytesReceived / e.TotalBytesToReceive);
                 }
-                ;
             }));
         }
 
         private void bIOEp1Visit_Click(object sender, EventArgs e)
         {
             if (Reg.InstallationStatus()["ep1"] < 1) return;
-            MyDirectory.OpenExplorer(Reg.InstallationLocation()["ep1"]);
+            MyDirectory.OpenInFileManager(Reg.InstallationLocation()["ep1"]);
         }
 
         private void bIOEp2Visit_Click(object sender, EventArgs e)
         {
             if (Reg.InstallationStatus()["ep2"] < 1) return;
-            MyDirectory.OpenExplorer(Reg.InstallationLocation()["ep2"]);
+            MyDirectory.OpenInFileManager(Reg.InstallationLocation()["ep2"]);
         }
 
         private void bIOEp1Uninstall_Click(object sender, EventArgs e)
@@ -819,21 +803,21 @@ namespace OneClickModInstaller
 
         private void bPath7z_Click(object sender, EventArgs e)
         {
-            string path = MyDirectory.Select("7z.exe", "7z");
+            var path = MyDirectory.Select("7z.exe", "7z");
             if (path != null)
                 tbPath7z.Text = path;
         }
 
         private void bPathCheatTables_Click(object sender, EventArgs e)
         {
-            string path = MyDirectory.Select("Cheat Tables", "dir");
+            var path = MyDirectory.Select("Cheat Tables", "dir");
             if (path != null)
                 tbPathCheatTables.Text = path;
         }
 
         private void bPathDownloadedArchives_Click(object sender, EventArgs e)
         {
-            string path = MyDirectory.Select("directory where you want to save downloaded archives", "dir");
+            var path = MyDirectory.Select("directory where you want to save downloaded archives", "dir");
             if (path != null)
                 tbDownloadedArchiveLocation.Text = path;
         }
@@ -879,22 +863,18 @@ namespace OneClickModInstaller
                 }
             }
             else
-            {
                 bModInstall.Enabled = false;
-            }
             PrepareInstallation();
         }
 
         private void bModPath_Click(object sender, EventArgs e)
         {
-            string path = MyDirectory.Select("mod", "arc/dir");
+            var path = MyDirectory.Select("mod", "arc/dir");
             if (path != null)
                 tbModURL.Text = path;
         }
 
-        private void linkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
+        private void linkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) =>
             Process.Start(((Control)sender).Text);
-        }
     }
 }

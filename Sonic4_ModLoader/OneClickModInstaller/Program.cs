@@ -9,6 +9,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
+using Common.MyIO;
+using Common.Launcher;
+
 namespace OneClickModInstaller
 {
     public static class Admin
@@ -19,8 +22,8 @@ namespace OneClickModInstaller
         {
             if (isAdmin == null)
             {
-                WindowsIdentity id = WindowsIdentity.GetCurrent();
-                WindowsPrincipal principal = new WindowsPrincipal(id);
+                var id = WindowsIdentity.GetCurrent();
+                var principal = new WindowsPrincipal(id);
                 isAdmin = principal.IsInRole(WindowsBuiltInRole.Administrator);
             }
             return (bool)isAdmin;
@@ -39,124 +42,87 @@ namespace OneClickModInstaller
         }
     }
 
-    public static class GetGame
-    {
-        public static string Full()
-        {
-            string where = "dunno";
-
-            if (File.Exists("Sonic_vis.exe") && File.Exists("SonicLauncher.exe"))
-                where = "Episode 1";
-            else if (File.Exists("Sonic.exe") && File.Exists("Launcher.exe"))
-                where = "Episode 2";
-
-            return where;
-        }
-
-        public static string Short()
-        {
-            string full = GetGame.Full();
-            switch (full)
-            {
-                case "Episode 1": return "ep1";
-                case "Episode 2": return "ep2";
-                default: return full;
-            }
-        }
-    }
-
     public static class Reg
     {
-        public static void FixPath(string game = null)
+        public static void FixPath(GAME? game = null)
         {
+            if (game == null) game = Launcher.GetCurrentGame();
+            if (game == GAME.Unknown) return;
+
+            var shrt = "";
+            if (game == GAME.Episode1) shrt = "ep1";
+            else if (game == GAME.Episode2) shrt = "ep2";
+
             if (Admin.AmI())
-            {
-                if (game == null)    { game = GetGame.Short(); }
-                if (game == "dunno") { return; }
-
-                string root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
-
-                Registry.SetValue(root_key + "\\Shell\\Open\\Command", "", "\"" + Assembly.GetEntryAssembly().Location + "\" \"%1\"");
-            }
+                Registry.SetValue("HKEY_CLASSES_ROOT\\sonic4mm" + shrt + "\\Shell\\Open\\Command",
+                    "", "\"" + Assembly.GetEntryAssembly().Location + "\" \"%1\"");
             else
-            {
-                string extra_arg = "";
-                if (game != null) { extra_arg = " " + game; }
+                Admin.RunAs("--fix " + shrt);
+        }
 
-                Admin.RunAs("--fix " + extra_arg);
+        public static void Install(GAME? game = null)
+        {
+            if (game == null) game = Launcher.GetCurrentGame();
+            if (game == GAME.Unknown) return;
+
+            var shrt = "";
+            if (game == GAME.Episode1) shrt = "ep1";
+            else if (game == GAME.Episode2) shrt = "ep2";
+            
+            if (Environment.OSVersion.Platform == PlatformID.Win32NT)
+            {
+                if (Admin.AmI())
+                {
+                    var root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + shrt;
+
+                    Registry.SetValue(root_key, "", "URL:OSA413's One-Click Installer protocol");
+                    Registry.SetValue(root_key, "URL Protocol", "");
+                    Registry.SetValue(root_key + "\\DefaultIcon", "", "OneClickModInstaller.exe");
+                    Registry.SetValue(root_key + "\\Shell\\Open\\Command", "", "\"" + Assembly.GetEntryAssembly().Location + "\" \"%1\"");
+                }
+                else
+                    Admin.RunAs("--install " + shrt);
+            }
+
+            //Not tested, redo
+            if (Environment.OSVersion.Platform == PlatformID.Unix)
+            {
+                var desktopFile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/.local/share/applications/sonic4mm" + shrt +".desktop";
+
+                File.WriteAllText(desktopFile
+                                , "[Desktop Entry]"
+                                + "\nType=Application"
+                                + "\nExec=mono \"" + Application.ExecutablePath + "\" %U"
+                                + "\nStartupNotify=true"
+                                + "\nTerminal=false"
+                                + "\nMimeType=x-scheme-handler/sonic4mm" + shrt
+                                + "\nName=One-Click Mod Installer"
+                                + "\nComment=OSA413's One-Click Mod Installer");
+
+                Process.Start("xdg-mime", "default sonic4mm" + shrt +".desktop x-scheme-handler/sonic4mm" + shrt +".desktop").WaitForExit();
             }
         }
 
-        public static void Install(string game = null)
+        public static void Uninstall(GAME? game = null)
         {
+            if (game == null) game = Launcher.GetCurrentGame();
+            if (game == GAME.Unknown) return;
 
-            if (game == null)    { game = GetGame.Short(); }
-            if (game == "dunno") { return; }
-            
-            switch ((int) Environment.OSVersion.Platform)
-            {
-                //Windows
-                case 2:
-                {
-                    if (Admin.AmI())
-                    {
-                        string root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
+            var shrt = "";
+            if (game == GAME.Episode1) shrt = "ep1";
+            else if (game == GAME.Episode2) shrt = "ep2";
 
-                        Registry.SetValue(root_key, "", "URL:OSA413's One-Click Installer protocol");
-                        Registry.SetValue(root_key, "URL Protocol", "");
-                        Registry.SetValue(root_key + "\\DefaultIcon", "", "OneClickModInstaller.exe");
-                        Registry.SetValue(root_key + "\\Shell\\Open\\Command", "", "\"" + Assembly.GetEntryAssembly().Location + "\" \"%1\"");
-                    }
-                    else
-                    {
-                        string extra_arg = "";
-                        if (game != null) { extra_arg = " " + game; }
-
-                        Admin.RunAs("--install " + extra_arg);
-                    }
-                } break;
-                
-                //Linux
-                case 4:
-                {
-                    string desktop_file = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/.local/share/applications/sonic4mm" + game +".desktop";
-
-                    File.WriteAllText(desktop_file
-                                    , "[Desktop Entry]"
-                                    + "\nType=Application"
-                                    + "\nExec=mono \"" + Application.ExecutablePath + "\" %U"
-                                    + "\nStartupNotify=true"
-                                    + "\nTerminal=false"
-                                    + "\nMimeType=x-scheme-handler/sonic4mm" + game
-                                    + "\nName=One-Click Mod Installer"
-                                    + "\nComment=OSA413's One-Click Mod Installer");
-
-                    Process.Start("xdg-mime", "default sonic4mm" + game +".desktop x-scheme-handler/sonic4mm" + game +".desktop").WaitForExit();
-                } break;
-            }            
-        }
-
-        public static void Uninstall(string game = null)
-        {
-            if (game == null) { game = GetGame.Short(); }
-            if (game == "dunno") { return; }
-
-            if (Reg.InstallationStatus()[game] == 0)
+            if (Reg.InstallationStatus()[shrt] == 0)
                 return;
             
-            string root_key = "sonic4mm" + game;
+            var root_key = "sonic4mm" + shrt;
             if (Admin.AmI())
             {
                 if (Registry.ClassesRoot.OpenSubKey(root_key) != null)
                     Registry.ClassesRoot.DeleteSubKeyTree(root_key);
             }
             else
-            {
-                string extra_arg = "";
-                if (game != null) { extra_arg = " " + game; }
-
-                Admin.RunAs("--uninstall " + extra_arg);
-            }
+                Admin.RunAs("--uninstall " + shrt);
         }
 
         public static Dictionary<string, int> InstallationStatus()
@@ -172,67 +138,47 @@ namespace OneClickModInstaller
 
             string[] games = { "ep1", "ep2"};
 
-            foreach (string game in games)
+            foreach (var game in games)
             {
-                int status = 0;
-                switch ((int) Environment.OSVersion.Platform)
+                var status = 0;
+                if (Environment.OSVersion.Platform == PlatformID.Win32NT)
                 {
-                    //Windows
-                    case 2:
-                    {
-                        string root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
+                    var root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
 
-                        if ((string)Registry.GetValue(root_key, "", null) == "URL:OSA413's One-Click Installer protocol")
-                        {
-                            if ((string)Registry.GetValue(root_key, "URL Protocol", null) == "")
-                            {
-                                if ((string)Registry.GetValue(root_key + "\\DefaultIcon", "", null) == "OneClickModInstaller.exe")
-                                {
-                                    if ((string)Registry.GetValue(root_key + "\\Shell\\Open\\Command", "", null) == "\"" + System.Reflection.Assembly.GetEntryAssembly().Location + "\" \"%1\"")
-                                    {
-                                        status = 1;
-                                    }
-                                    else status = 2;
-                                }
-                                else status = -1;
-                            }
+                    if ((string)Registry.GetValue(root_key, "", null) == "URL:OSA413's One-Click Installer protocol")
+                        if ((string)Registry.GetValue(root_key, "URL Protocol", null) == "")
+                            if ((string)Registry.GetValue(root_key + "\\DefaultIcon", "", null) == "OneClickModInstaller.exe")
+                                if ((string)Registry.GetValue(root_key + "\\Shell\\Open\\Command", "", null) == "\"" + System.Reflection.Assembly.GetEntryAssembly().Location + "\" \"%1\"")
+                                    status = 1;
+                                else status = 2;
                             else status = -1;
-                        }
-                    } break;
+                        else status = -1;
+                }
 
-                    //Linux
-                    case 4:
+                else if (Environment.OSVersion.Platform == PlatformID.Unix)
+                {
+                    var desktop_file = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/.local/share/applications/sonic4mm" + game +".desktop";
+                    var process = Process.Start(new ProcessStartInfo
                     {
-                        string desktop_file = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/.local/share/applications/sonic4mm" + game +".desktop";
-                        var process = Process.Start(new ProcessStartInfo
-                        {
-                            FileName = "xdg-mime",
-                            Arguments = "query default x-scheme-handler/sonic4mm" + game,
-                            RedirectStandardOutput = true,
-                            UseShellExecute = false
-                        });
+                        FileName = "xdg-mime",
+                        Arguments = "query default x-scheme-handler/sonic4mm" + game,
+                        RedirectStandardOutput = true,
+                        UseShellExecute = false
+                    });
 
-                        string output = process.StandardOutput.ReadToEnd();
+                    var output = process.StandardOutput.ReadToEnd();
 
-                        status = -1;
-                        if (output == "sonic4mm" + game + ".desktop\n")
-                        {
-                            if (File.Exists(desktop_file))
-                            {
-                                foreach (string line in File.ReadAllLines(desktop_file))
+                    status = -1;
+                    if (output == "sonic4mm" + game + ".desktop\n")
+                        if (File.Exists(desktop_file))
+                            foreach (string line in File.ReadAllLines(desktop_file))
+                                if (line.StartsWith("Exec="))
                                 {
-                                    if (line.StartsWith("Exec="))
-                                    {
-                                        status = 2;
-                                        if (line == "Exec=mono \"" + Application.ExecutablePath + "\" %U")
-                                            status = 1;
-                                        break;
-                                    }
+                                    status = 2;
+                                    if (line == "Exec=mono \"" + Application.ExecutablePath + "\" %U")
+                                        status = 1;
+                                    break;
                                 }
-                            }
-                        }
-
-                    } break;
                 }
                 statuses.Add(game, status);
             }
@@ -246,7 +192,7 @@ namespace OneClickModInstaller
 
             string[] games = { "ep1", "ep2" };
 
-            foreach (string game in games)
+            foreach (var game in games)
             {
                 string location = null;
                 switch ((int) Environment.OSVersion.Platform)
@@ -254,31 +200,22 @@ namespace OneClickModInstaller
                     //Windows
                     case 2:
                     {
-                        string root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
+                        var root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
                         location = (string)Registry.GetValue(root_key + "\\Shell\\Open\\Command", "", null);
 
                         if (location != null)
-                        {
-                            //This is to exclude double quotes and argument thing at the end
                             location = location.Substring(1, location.Length - 7);
-                        }
                     } break;
 
                     //Linux
                     case 4:
                     {
-                        string desktop_file = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/.local/share/applications/sonic4mm" + game +".desktop";
+                        var desktop_file = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/.local/share/applications/sonic4mm" + game +".desktop";
                         
                         if (File.Exists(desktop_file))
-                        {
                             foreach (string line in File.ReadAllLines(desktop_file))
-                            {
                                 if (line.StartsWith("Exec="))
-                                {
                                     location = line.Substring(12, line.Length - 16);
-                                }
-                            }
-                        }
                     } break;
                 }
 
@@ -301,112 +238,13 @@ namespace OneClickModInstaller
         }
     }
 
-    public static class MyFile
-    {
-        public static void DeleteAnyway(string file)
-        {
-            //Program crashes if it tries to delete a read-only file
-            File.SetAttributes(file, FileAttributes.Normal);
-            File.Delete(file);
-        }
-    }
-
-    public static class MyDirectory
-    {
-        //Same reason as for MyFile.DeleteAnyway
-        public static void DeleteRecursively(string dir)
-        {
-            foreach (string dirr in Directory.GetDirectories(dir))
-            {
-                MyDirectory.DeleteRecursively(dirr);
-            }
-
-            foreach (string file in Directory.GetFiles(dir))
-            {
-                MyFile.DeleteAnyway(file);
-            }
-
-            //Yes, directories also can be readonly
-            File.SetAttributes(dir, FileAttributes.Normal);
-            //If Explorer locks the folder, it will throw "UnauthorizedAccess" instead of "Directory not empty"
-            Directory.Delete(dir, true);
-        }
-
-        public static void OpenExplorer(string path)
-        {
-            if (File.Exists(path))
-                path = Path.GetDirectoryName(path);
-
-            string local_explorer = "";
-            switch ((int)Environment.OSVersion.Platform)
-            {
-                //Windows
-                case 2: local_explorer = "explorer"; break;
-                //Linux (with xdg)
-                case 4: local_explorer = "xdg-open"; break;
-                //MacOS (not tested)
-                case 6: local_explorer = "open"; break;
-            }
-
-            Process.Start(local_explorer, path);
-        }
-
-        public static string Select(string path_to, string type)
-        {
-            using (var ofd = new OpenFileDialog())
-            {
-                ofd.CheckPathExists = true;
-                ofd.Title = "Select path to " + path_to;
-
-                switch (type)
-                {
-                    case "dir":
-                        ofd.CheckFileExists =
-                        ofd.ValidateNames   = false;
-                        ofd.FileName = "[DIRECTORY]";
-                        break;
-                    case "file":
-                        ofd.Filter = "All files (*.*)|*.*";
-                        break;
-                    case "7z":
-                        ofd.Filter = "7z.exe|7z.exe|All files (*.*)|*.*";
-                        break;
-                    case "arc/dir":
-                        ofd.Filter = "Supported archives|*.7z;*.zip;*.rar|All files (*.*)|*.*";
-                        ofd.Title += " (Enter - to select current directory)";
-                        ofd.CheckFileExists =
-                        ofd.ValidateNames   = false;
-                        break;
-                }
-                
-                if (ofd.ShowDialog() == DialogResult.OK)
-                {
-                    switch (type)
-                    {
-                        case "dir":
-                            return Path.GetDirectoryName(ofd.FileName);
-                        case "arc/dir":
-                            if (ofd.FileName == "-" || !File.Exists(ofd.FileName))
-                                return Path.GetDirectoryName(ofd.FileName);
-                            return ofd.FileName;
-                        default:
-                            return ofd.FileName;
-                    }
-                }
-            }
-            return null;
-        }
-    }
-
     public static class ModArchive
     {
         public static bool IsFSCS()
         {
             //This checks if file system is case-sensitive
-            bool res;
-
             File.WriteAllText("case_sensitivity_test", "");
-            res = !File.Exists("CASE_SENSITIVITY_TEST");
+            var res = !File.Exists("CASE_SENSITIVITY_TEST");
             File.Delete("case_sensitivity_test");
             return res;
         }
@@ -433,33 +271,29 @@ namespace OneClickModInstaller
 
         public static int CheckFiles(string dir_name)
         {
-            string[] good_formats = "TXT,INI,DDS,TXB,AMA,AME,ZNO,ZNM,ZNV,DC,EV,RG,MD,MP,AT,DF,DI,PSH,VSH,LTS,XNM,MFS,SSS,GPB,MSG,AYK,ADX,AMB,CPK,CSB,PNG,CT,TGA".Split(',');
+            var good_formats = "TXT,INI,DDS,TXB,AMA,AME,ZNO,ZNM,ZNV,DC,EV,RG,MD,MP,AT,DF,DI,PSH,VSH,LTS,XNM,MFS,SSS,GPB,MSG,AYK,ADX,AMB,CPK,CSB,PNG,CT,TGA".Split(',');
 
-            string[] all_files = Directory.GetFiles(dir_name, "*", SearchOption.AllDirectories);
-            List<string> suspicious_files = new List<string>();
+            var all_files = Directory.GetFiles(dir_name, "*", SearchOption.AllDirectories);
+            var suspicious_files = new List<string>();
 
             foreach (string file in all_files)
             {
-                string file_short = file.Substring(dir_name.Length + 1);
+                var file_short = file.Substring(dir_name.Length + 1);
 
                 if (int.TryParse(Path.GetFileName(file_short), out int n) && file_short.Contains(Path.Combine("DEMO", "WORLDMAP", "WORLDMAP.AMB")))
-                {
                     continue;
-                }
-
-                int extension_len = Path.GetExtension(file_short).Length;
+ 
+                var extension_len = Path.GetExtension(file_short).Length;
                 if (extension_len != 0) extension_len = 1;
 
                 if (good_formats.Contains(Path.GetExtension(file_short).Substring(extension_len), StringComparer.OrdinalIgnoreCase))
-                {
                     continue;
-                }
 
                 suspicious_files.Add(file_short);
             }
 
 
-            int cont = 1;
+            var cont = 1;
             if (suspicious_files.Count != 0)
             {
                 cont = 0;
@@ -480,27 +314,25 @@ namespace OneClickModInstaller
 
         public static Tuple<string[], string> FindRoot(string dir_name)
         {
-            string platform = "???";
-            List<string> mod_roots = new List<string>();
+            var platform = "???";
+            var mod_roots = new List<string>();
 
-            string[] platforms = new string[] { "pc", "dolphin", "modloader" };
-            string[] game_folders_array = new string[] { "CUTSCENE,DEMO,G_COM,G_SS,G_EP1COM,G_EP1ZONE2,G_EP1ZONE3,G_EP1ZONE4,G_ZONE1,G_ZONE2,G_ZONE3,G_ZONE4,G_ZONEF,MSG,NNSTDSHADER,SOUND"
+            var platforms = new string[] { "pc", "dolphin", "modloader" };
+            var game_folders_array = new string[] { "CUTSCENE,DEMO,G_COM,G_SS,G_EP1COM,G_EP1ZONE2,G_EP1ZONE3,G_EP1ZONE4,G_ZONE1,G_ZONE2,G_ZONE3,G_ZONE4,G_ZONEF,MSG,NNSTDSHADER,SOUND"
                                                         , "WSNE8P,WSNP8P,WSNJ8P"
                                                         , "Sonic4ModLoader"};
 
             for (int i = 0; i < platforms.Length; i++)
             {
-                string[] game_folders = game_folders_array[i].Split(',');
+                var game_folders = game_folders_array[i].Split(',');
 
-                foreach (string folder in game_folders)
+                foreach (var folder in game_folders)
                 {
-                    foreach (string mod_folder in Directory.GetDirectories(dir_name, folder, SearchOption.AllDirectories))
+                    foreach (var mod_folder in Directory.GetDirectories(dir_name, folder, SearchOption.AllDirectories))
                     {
-                        string tmp_root = Path.GetDirectoryName(mod_folder);
+                        var tmp_root = Path.GetDirectoryName(mod_folder);
                         if (!mod_roots.Contains(tmp_root))
-                        {
                             mod_roots.Add(tmp_root);
-                        }
                     }
                 }
 
@@ -516,11 +348,11 @@ namespace OneClickModInstaller
 
         public static Tuple<string[], string> FindFiles(string dir_name)
         {
-            List<string> file_roots = new List<string>();
-            string type = "???";
+            var file_roots = new List<string>();
+            var type = "???";
 
-            string[] types      = new string[] { "CheatTables" };
-            string[] extensions = new string[] { "ct" };
+            var types      = new string[] { "CheatTables" };
+            var extensions = new string[] { "ct" };
 
             for (int i = 0; i < types.Length; i++)
             {
@@ -532,14 +364,12 @@ namespace OneClickModInstaller
                     if (type == "mixed") break;
                     foreach (string mod_file in Directory.GetFiles(dir_name, "*." + extension, SearchOption.AllDirectories))
                     {
-                        if (type == "???")    { type = types[i]; }
+                        if (type == "???")    type = types[i];
                         if (type != types[i]) { type = "mixed"; break; }
 
-                        string tmp_root = Path.GetDirectoryName(mod_file);
+                        var tmp_root = Path.GetDirectoryName(mod_file);
                         if (!file_roots.Contains(tmp_root))
-                        {
                             file_roots.Add(tmp_root);
-                        }
                     }
                 }
             }
@@ -559,15 +389,15 @@ namespace OneClickModInstaller
 
             Directory.CreateDirectory(destination);
 
-            foreach (string file in Directory.GetFiles(source))
+            foreach (var file in Directory.GetFiles(source))
             {
                 File.Copy(file, Path.Combine(destination, Path.GetFileName(file)), true);
                 File.SetAttributes(file, FileAttributes.Normal);
             }
 
-            foreach (string dir in Directory.GetDirectories(source))
+            foreach (var dir in Directory.GetDirectories(source))
             {
-                string dir_name = Path.GetFileName(dir);
+                var dir_name = Path.GetFileName(dir);
                 Directory.CreateDirectory(Path.Combine(destination, dir_name));
                 ModArchive.CopyAll(Path.Combine(source, dir_name), Path.Combine(destination, dir_name));
             }
@@ -602,9 +432,7 @@ namespace OneClickModInstaller
 
             //This will fix problems when you launch 1CMI from terminal
             if (!Application.ExecutablePath.Contains(Path.Combine("bin", "Debug")))
-            {
                 Environment.CurrentDirectory = Path.GetDirectoryName(Application.ExecutablePath);
-            }
 
             Application.Run(new UltimateWinForm(args));
         }
