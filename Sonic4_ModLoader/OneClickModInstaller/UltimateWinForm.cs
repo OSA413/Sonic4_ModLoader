@@ -252,7 +252,7 @@ namespace OneClickModInstaller
             //Current//
             ///////////
 
-            string current_game = GetGame.Short();
+            string current_game = Launcher.GetShortGame(Launcher.GetCurrentGame());
 
             if (Admin.AmI())
             {
@@ -283,7 +283,7 @@ namespace OneClickModInstaller
             }
             else
             {
-                lGameName.Text = "Sonic 4: " + GetGame.Full();
+                lGameName.Text = "Sonic 4: " + Launcher.GetShortGame(Launcher.GetCurrentGame());
                 int current_status = statuses[current_game];
 
                 bInstall.Enabled =
@@ -363,28 +363,22 @@ namespace OneClickModInstaller
 
         private void bInstall_Click(object sender, EventArgs e)
         {
-            if (GetGame.Short() == "dunno")
-            {
-                if (Reg.InstallationStatus()["ep1"] == 0)
-                    Reg.Install("ep1");
-            }
+            if (Launcher.GetCurrentGame() == GAME.Unknown && Reg.InstallationStatus()["ep1"] == 0)
+                Reg.Install(GAME.Episode1);
             else
-            {
-                switch (Reg.InstallationStatus()[GetGame.Short()])
+                switch (Reg.InstallationStatus()[Launcher.GetShortGame(Launcher.GetCurrentGame())])
                 {
                     case 2: Reg.FixPath(); break;
                     default: Reg.Install(); break;
                 }
-            }
 
             UpdateWindow();
         }
 
         private void bUninstall_Click(object sender, EventArgs e)
         {
-            if (GetGame.Short() == "dunno")
-                if (Reg.InstallationStatus()["ep1"] == 1)
-                    Reg.Uninstall("ep1");
+            if (Launcher.GetCurrentGame() == GAME.Unknown && Reg.InstallationStatus()["ep1"] == 1)
+                Reg.Uninstall(GAME.Episode1);
             else Reg.Uninstall();
 
             UpdateWindow();
@@ -784,13 +778,13 @@ namespace OneClickModInstaller
 
         private void bIOEp1Uninstall_Click(object sender, EventArgs e)
         {
-            Reg.Uninstall("ep1");
+            Reg.Uninstall(GAME.Episode1);
             UpdateWindow();
         }
 
         private void bIOEp2Uninstall_Click(object sender, EventArgs e)
         {
-            Reg.Uninstall("ep2");
+            Reg.Uninstall(GAME.Episode2);
             UpdateWindow();
         }
 

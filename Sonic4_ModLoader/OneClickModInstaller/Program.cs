@@ -48,10 +48,7 @@ namespace OneClickModInstaller
         {
             if (game == null) game = Launcher.GetCurrentGame();
             if (game == GAME.Unknown) return;
-
-            var shrt = "";
-            if (game == GAME.Episode1) shrt = "ep1";
-            else if (game == GAME.Episode2) shrt = "ep2";
+            var shrt = Launcher.GetShortGame(game);
 
             if (Admin.AmI())
                 Registry.SetValue("HKEY_CLASSES_ROOT\\sonic4mm" + shrt + "\\Shell\\Open\\Command",
@@ -64,10 +61,7 @@ namespace OneClickModInstaller
         {
             if (game == null) game = Launcher.GetCurrentGame();
             if (game == GAME.Unknown) return;
-
-            var shrt = "";
-            if (game == GAME.Episode1) shrt = "ep1";
-            else if (game == GAME.Episode2) shrt = "ep2";
+            var shrt = Launcher.GetShortGame(game);
             
             if (Environment.OSVersion.Platform == PlatformID.Win32NT)
             {
@@ -75,7 +69,7 @@ namespace OneClickModInstaller
                 {
                     var root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + shrt;
 
-                    Registry.SetValue(root_key, "", "URL:OSA413's One-Click Installer protocol");
+                    Registry.SetValue(root_key, "", "URL:OSA413's One-Click Mod Installer protocol");
                     Registry.SetValue(root_key, "URL Protocol", "");
                     Registry.SetValue(root_key + "\\DefaultIcon", "", "OneClickModInstaller.exe");
                     Registry.SetValue(root_key + "\\Shell\\Open\\Command", "", "\"" + Assembly.GetEntryAssembly().Location + "\" \"%1\"");
@@ -107,10 +101,7 @@ namespace OneClickModInstaller
         {
             if (game == null) game = Launcher.GetCurrentGame();
             if (game == GAME.Unknown) return;
-
-            var shrt = "";
-            if (game == GAME.Episode1) shrt = "ep1";
-            else if (game == GAME.Episode2) shrt = "ep2";
+            var shrt = Launcher.GetShortGame(game);
 
             if (Reg.InstallationStatus()[shrt] == 0)
                 return;
@@ -145,7 +136,7 @@ namespace OneClickModInstaller
                 {
                     var root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
 
-                    if ((string)Registry.GetValue(root_key, "", null) == "URL:OSA413's One-Click Installer protocol")
+                    if ((string)Registry.GetValue(root_key, "", null) == "URL:OSA413's One-Click Mod Installer protocol")
                         if ((string)Registry.GetValue(root_key, "URL Protocol", null) == "")
                             if ((string)Registry.GetValue(root_key + "\\DefaultIcon", "", null) == "OneClickModInstaller.exe")
                                 if ((string)Registry.GetValue(root_key + "\\Shell\\Open\\Command", "", null) == "\"" + System.Reflection.Assembly.GetEntryAssembly().Location + "\" \"%1\"")
@@ -419,14 +410,14 @@ namespace OneClickModInstaller
             //Now the 1CMI installation thing will be here
             if (args.Length > 0)
             {
-                string extra_arg = null;
-                if (args.Length > 1) extra_arg = args[1];
+                GAME? game = null;
+                if (args.Length > 1) game = Launcher.GetGameFromShort(args[1]);
 
                 switch (args[0])
                 {
-                    case "--install":   Reg.Install(extra_arg);   Environment.Exit(0); break;
-                    case "--uninstall": Reg.Uninstall(extra_arg); Environment.Exit(0); break;
-                    case "--fix":       Reg.FixPath(extra_arg);   Environment.Exit(0); break;
+                    case "--install":   Reg.Install(game);   Environment.Exit(0); break;
+                    case "--uninstall": Reg.Uninstall(game); Environment.Exit(0); break;
+                    case "--fix":       Reg.FixPath(game);   Environment.Exit(0); break;
                 }
             }
 

@@ -13,6 +13,18 @@ namespace Common.Launcher
     public static class Launcher
     {
         private static GAME? currentGame;
+        public static string GetShortGame(GAME? game)
+        {
+            if (game == GAME.Episode1) return "ep1";
+            if (game == GAME.Episode2) return "ep2";
+            return "";
+        }
+        public static GAME GetGameFromShort(string shrt)
+        {
+            if (shrt == "ep1") return GAME.Episode1;
+            if (shrt == "ep2") return GAME.Episode2;
+            return GAME.Unknown;
+        }
         public static GAME GetCurrentGame()
         {
             if (currentGame is null)
