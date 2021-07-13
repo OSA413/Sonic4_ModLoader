@@ -16,7 +16,8 @@ namespace Sonic4ModManager
             Installed,
             NotInstalled,
             FirstLaunch,
-            NotGameDirectory
+            NotGameDirectory,
+            NonSteam
         }
 
         public class UninstallationOptions
@@ -33,6 +34,8 @@ namespace Sonic4ModManager
 
             if (game == GAME.Unknown)
                 return Status.NotGameDirectory;
+            if (game == GAME.NonSteam)
+                return Status.NonSteam;
 
             if (game == GAME.Episode1)
                 if (File.Exists("Sonic_vis.orig.exe") && File.Exists("SonicLauncher.orig.exe"))

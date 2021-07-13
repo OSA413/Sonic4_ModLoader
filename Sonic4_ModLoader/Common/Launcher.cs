@@ -7,7 +7,8 @@ namespace Common.Launcher
     {
         Unknown,
         Episode1,
-        Episode2
+        Episode2,
+        NonSteam
     }
 
     public static class Launcher
@@ -34,13 +35,19 @@ namespace Common.Launcher
 
         public static GAME GetGame(string path = "")
         {
-            if (File.Exists(Path.Combine(path, "Sonic_vis.exe"))
-                && File.Exists(Path.Combine(path, "SonicLauncher.exe")))
-                return GAME.Episode1;
-            else if (File.Exists(Path.Combine(path, "Sonic.exe"))
-                && File.Exists(Path.Combine(path, "Launcher.exe")))
-                return GAME.Episode2;
-
+            if (File.Exists(Path.Combine(path, "Sonic.exe"))
+                || File.Exists(Path.Combine(path, "Launcher.exe"))
+                || File.Exists(Path.Combine(path, "Sonic_vis.exe"))
+                || File.Exists(Path.Combine(path, "SonicLauncher.exe")))
+            {
+                if (File.Exists(Path.Combine(path, "Sonic_vis.exe"))
+                    && File.Exists(Path.Combine(path, "SonicLauncher.exe")))
+                    return GAME.Episode1;
+                else if (File.Exists(Path.Combine(path, "Sonic.exe"))
+                    && File.Exists(Path.Combine(path, "Launcher.exe")))
+                    return GAME.Episode2;
+                return GAME.NonSteam;
+            }
             return GAME.Unknown;
         }
 

@@ -170,12 +170,13 @@ namespace Sonic4ModManager
             else if (status == Installation.Status.NotInstalled || status == Installation.Status.FirstLaunch)
                 bInstall.Enabled = true;
 
-            string statusText = "Current directory is not the game directory";
+            var statusText = "Current directory is not the game directory";
             switch (status)
             {
                 case Installation.Status.Installed: statusText = "Installed"; break;
                 case Installation.Status.NotInstalled:
                 case Installation.Status.FirstLaunch: statusText = "Not installed"; break;
+                case Installation.Status.NonSteam: statusText = "You are using non-Steam version of the game"; break;
             }
 
             label_Installation_status.Text = statusText;
