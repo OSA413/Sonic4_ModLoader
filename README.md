@@ -96,7 +96,7 @@ Note: if OCMI fails to find `7z.exe` in your path, it will try to use a copy tha
 Bugs reports and suggestions should be sent to GitHub's issues page of the Mod Loader:
 https://github.com/OSA413/Sonic4_ModLoader/issues
 
-For other types of discussions contact my on my [Twitter](https://twitter.com/OSA_413) or [Discussion page on GitHub](https://github.com/OSA413/Sonic4_ModLoader/discussions).
+For other types of discussions contact my on my [Twitter](https://twitter.com/OSA_413), [Discussion page on GitHub](https://github.com/OSA413/Sonic4_ModLoader/discussions), or [Join Sonic 4 Modding Discord server](https://discord.gg/WCp8BFyFxN).
 
 ## Useful documentation for modders
 * How to use AMBPatcher: `AMBPatcher.exe --help`
