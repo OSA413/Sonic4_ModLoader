@@ -203,7 +203,7 @@ namespace OneClickModInstaller
             //Overall//
             ///////////
 
-            var statuses  = Reg.InstallationStatus();
+            var statuses  = Reg.GetInstallationStatus();
             var locations = Reg.InstallationLocation();
 
             foreach (string key in statuses.Keys)
@@ -272,10 +272,10 @@ namespace OneClickModInstaller
 
                 switch (statuses["ep1"])
                 {
-                    case 0:
+                    case InstallationStatus.NotInstalled:
                         bInstall.Enabled = true;
                         break;
-                    case 1:
+                    case InstallationStatus.Installed:
                         lInstallationStatus.Text = "Installed as fake Episode 1 here";
                         bUninstall.Enabled = true;
                         break;
@@ -284,28 +284,28 @@ namespace OneClickModInstaller
             else
             {
                 lGameName.Text = "Sonic 4: " + Launcher.GetShortGame(Launcher.GetCurrentGame());
-                int current_status = statuses[current_game];
+                var current_status = statuses[current_game];
 
                 bInstall.Enabled =
                 bUninstall.Enabled = true;
 
                 switch (current_status)
                 {
-                    case 0:
+                    case InstallationStatus.NotInstalled:
                         lInstallationStatus.Text = "Not installed";
                         bInstall.Text = "Install";
                         bUninstall.Enabled = false;
                         break;
-                    case 1:
+                    case InstallationStatus.Installed:
                         lInstallationStatus.Text = "Installed";
                         bInstall.Enabled = false;
                         bInstall.Text = "Install";
                         break;
-                    case 2:
+                    case InstallationStatus.AnotherInstallationPresent:
                         lInstallationStatus.Text = "Another installation present";
                         bInstall.Text = "Fix registry path";
                         break;
-                    case -1:
+                    case InstallationStatus.ImproperlyInstalled:
                         lInstallationStatus.Text = "Requires reinstallation";
                         bInstall.Text = "Install";
                         break;
@@ -363,12 +363,12 @@ namespace OneClickModInstaller
 
         private void bInstall_Click(object sender, EventArgs e)
         {
-            if (Launcher.GetCurrentGame() == GAME.Unknown && Reg.InstallationStatus()["ep1"] == 0)
+            if (Launcher.GetCurrentGame() == GAME.Unknown && Reg.GetInstallationStatus()["ep1"] == InstallationStatus.NotInstalled)
                 Reg.Install(GAME.Episode1);
             else
-                switch (Reg.InstallationStatus()[Launcher.GetShortGame(Launcher.GetCurrentGame())])
+                switch (Reg.GetInstallationStatus()[Launcher.GetShortGame(Launcher.GetCurrentGame())])
                 {
-                    case 2: Reg.FixPath(); break;
+                    case InstallationStatus.AnotherInstallationPresent: Reg.FixPath(); break;
                     default: Reg.Install(); break;
                 }
 
@@ -377,7 +377,7 @@ namespace OneClickModInstaller
 
         private void bUninstall_Click(object sender, EventArgs e)
         {
-            if (Launcher.GetCurrentGame() == GAME.Unknown && Reg.InstallationStatus()["ep1"] == 1)
+            if (Launcher.GetCurrentGame() == GAME.Unknown && Reg.GetInstallationStatus()["ep1"] == InstallationStatus.Installed)
                 Reg.Uninstall(GAME.Episode1);
             else Reg.Uninstall();
 
@@ -766,13 +766,21 @@ namespace OneClickModInstaller
 
         private void bIOEp1Visit_Click(object sender, EventArgs e)
         {
-            if (Reg.InstallationStatus()["ep1"] < 1) return;
+            switch (Reg.GetInstallationStatus()["ep1"])
+            {
+                case InstallationStatus.NotInstalled: return;
+                case InstallationStatus.ImproperlyInstalled: return;
+            }
             MyDirectory.OpenInFileManager(Reg.InstallationLocation()["ep1"]);
         }
 
         private void bIOEp2Visit_Click(object sender, EventArgs e)
         {
-            if (Reg.InstallationStatus()["ep2"] < 1) return;
+            switch (Reg.GetInstallationStatus()["ep2"])
+            {
+                case InstallationStatus.NotInstalled: return;
+                case InstallationStatus.ImproperlyInstalled: return;
+            }
             MyDirectory.OpenInFileManager(Reg.InstallationLocation()["ep2"]);
         }
 

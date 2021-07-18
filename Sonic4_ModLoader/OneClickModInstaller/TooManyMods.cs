@@ -10,10 +10,8 @@ namespace OneClickModInstaller
         public TooManyMods(string[] list, string type = "pc")
         {
             InitializeComponent();
-            foreach (string file in list)
-            {
+            foreach (var file in list)
                 checkedListBox1.Items.Add(file, true);
-            }
 
             switch (type)
             {
@@ -27,9 +25,7 @@ namespace OneClickModInstaller
         {
             mods = new string[checkedListBox1.CheckedItems.Count];
             for (int i = 0; i < mods.Length; i++ )
-            {
                 mods[i] = checkedListBox1.CheckedItems[i].ToString();
-            }
         }
     }
 }

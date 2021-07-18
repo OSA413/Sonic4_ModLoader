@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 
 namespace OneClickModInstaller
 {
@@ -8,10 +7,8 @@ namespace OneClickModInstaller
         public Suspicious(string[] args)
         {
             InitializeComponent();
-            foreach (string file in args)
-            {
+            foreach (var file in args)
                 listView1.Items.Add(file);
-            }
             //Set width to the longest item size
             listView1.Columns[0].Width = -1;
         }
