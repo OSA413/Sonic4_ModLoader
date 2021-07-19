@@ -53,29 +53,25 @@ public class HandlerInstallerWindows : IHandlerInstaller<string>
             "", "\"" + Assembly.GetEntryAssembly().Location + "\" \"%1\"");
     }
 
-    public InstallationStatus GetInstallationStatus(string game)
+    public (InstallationStatus Status, string Location) GetInstallationStatus(string game)
     {
         var status = InstallationStatus.NotInstalled;
+        string location = null; 
         var root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
         if ((string)Registry.GetValue(root_key, "", null) == "URL:OSA413's One-Click Mod Installer protocol")
         {
             status = InstallationStatus.ImproperlyInstalled;
             if ((string)Registry.GetValue(root_key, "URL Protocol", null) == "")
                 if ((string)Registry.GetValue(root_key + "\\DefaultIcon", "", null) == "OneClickModInstaller.exe")
-                    if ((string)Registry.GetValue(root_key + "\\Shell\\Open\\Command", "", null) == "\"" + System.Reflection.Assembly.GetEntryAssembly().Location + "\" \"%1\"")
-                        status = InstallationStatus.Installed;
+                    location = (string)Registry.GetValue(root_key + "\\Shell\\Open\\Command", "", null);
         }
-
-        return status;
-    }
-
-    public string GetInstallationLocation(string game)
-    {
-        var root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
-        var location = (string)Registry.GetValue(root_key + "\\Shell\\Open\\Command", "", null);
-
         if (location != null)
             location = location.Substring(1, location.Length - 7);
-        return location;
+
+        status = InstallationStatus.AnotherInstallationPresent;
+        if (location == System.Reflection.Assembly.GetEntryAssembly().Location)
+            status = InstallationStatus.Installed;
+
+        return (status, location);
     }
 }

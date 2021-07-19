@@ -25,8 +25,7 @@ public interface IHandlerInstaller<T>
     void Install(T game);
     void Uninstall(T game);
     void FixPath(T game);
-    InstallationStatus GetInstallationStatus(T game);
-    string GetInstallationLocation(T game);
+    (InstallationStatus Status, string Location) GetInstallationStatus(T game);
 }
 
 public class HandlerInstallerWrapper : IHandlerInstaller<GAME?>
@@ -39,16 +38,20 @@ public class HandlerInstallerWrapper : IHandlerInstaller<GAME?>
 
     public HandlerInstallerWrapper()
     {
-        baseHandlerInstaller = new HandlerInstallerWindows();
+        switch (Environment.OSVersion.Platform)
+        {
+            case PlatformID.Win32NT: baseHandlerInstaller = new HandlerInstallerWindows(); break;
+            case PlatformID.Unix: baseHandlerInstaller = new HandlerInstallerLinux(); break;
+        }
     }
 
-    private void HandleIt(Action<string> f, GAME? game, string args)
+    private void HandleIt(Action<string> f, GAME? game, string args, bool noAdmin = false)
     {
         if (game == null) game = Launcher.GetCurrentGame();
         if (game == GAME.Unknown || game == GAME.NonSteam) return;
         var shrt = Launcher.GetShortGame(game);
 
-        if (RequiresAdmin() && !IsAdmin())
+        if (noAdmin || RequiresAdmin() && !IsAdmin())
             RestartAsAdmin(args + " " + shrt);
         else
             f(shrt);
@@ -59,20 +62,19 @@ public class HandlerInstallerWrapper : IHandlerInstaller<GAME?>
 
     public void Uninstall(GAME? game = null)
     {
-        if (GetInstallationStatus(game) != InstallationStatus.NotInstalled)
+        if (GetInstallationStatus(game).Item1 != InstallationStatus.NotInstalled)
             HandleIt(baseHandlerInstaller.Uninstall, game, "--uninstall");
     }
 
     public void FixPath(GAME? game = null) =>
         HandleIt(baseHandlerInstaller.FixPath, game, "--fix");
 
-    public InstallationStatus GetInstallationStatus(GAME? game = null)
+    public (InstallationStatus, string) GetInstallationStatus(GAME? game = null)
     {
-        return InstallationStatus.NotInstalled;
-    }
+        if (game == null) game = Launcher.GetCurrentGame();
+        if (game == GAME.Unknown || game == GAME.NonSteam) return (InstallationStatus.NotInstalled, null);
+        var shrt = Launcher.GetShortGame(game);
 
-    public string GetInstallationLocation(GAME? game = null)
-    {
-        return null;
+        return baseHandlerInstaller.GetInstallationStatus(shrt);
     }
 }

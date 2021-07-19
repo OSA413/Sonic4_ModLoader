@@ -23,6 +23,11 @@ namespace Common.MyIO
         }
         public static void CopyAll(string source, string destination)
         {
+            if (MyFileSystem.IsCaseSensitive())
+                if (source == destination) return;
+            else
+                if (source.ToLower() == destination.ToLower()) return;
+
             Directory.CreateDirectory(destination);
 
             foreach (var file in Directory.GetFiles(source))
@@ -107,6 +112,22 @@ namespace Common.MyIO
             //Program crashes if it tries to delete a read-only file
             File.SetAttributes(file, FileAttributes.Normal);
             File.Delete(file);
+        }
+    }
+
+    public static class MyFileSystem
+    {
+        private static bool? caseSensitive;
+        public static bool IsCaseSensitive()
+        {
+            if (caseSensitive == null)
+            {
+                var fileName = "case_sensitivity_test";
+                File.WriteAllText(fileName, "");
+                caseSensitive = !File.Exists(fileName.ToUpper());
+                File.Delete(fileName);
+            }
+            return (bool)caseSensitive;
         }
     }
 }

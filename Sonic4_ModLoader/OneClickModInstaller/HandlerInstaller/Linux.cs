@@ -40,9 +40,10 @@ public class HandlerInstallerLinux : IHandlerInstaller<string>
 
     }
 
-    public InstallationStatus GetInstallationStatus(string game)
+    public (InstallationStatus Status, string Location) GetInstallationStatus(string game)
     {
         var status = InstallationStatus.NotInstalled;
+        string location = null;
         var desktop_file = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/.local/share/applications/sonic4mm" + game +".desktop";
         var process = Process.Start(new ProcessStartInfo
         {
@@ -61,22 +62,12 @@ public class HandlerInstallerLinux : IHandlerInstaller<string>
                     if (line.StartsWith("Exec="))
                     {
                         status = InstallationStatus.AnotherInstallationPresent;
-                        if (line == "Exec=mono \"" + Application.ExecutablePath + "\" %U")
+                        location = line.Substring(12, line.Length - 16);
+                        if (location == Application.ExecutablePath)
                             status = InstallationStatus.Installed;
                         break;
                     }
 
-        return status;
-    }
-
-    public string GetInstallationLocation(string game)
-    {
-        var desktopFile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/.local/share/applications/sonic4mm" + game +".desktop";
-                    
-        if (File.Exists(desktopFile))
-            foreach (string line in File.ReadAllLines(desktopFile))
-                if (line.StartsWith("Exec="))
-                    return line.Substring(12, line.Length - 16);
-        return null;
+        return (status, location);
     }
 }

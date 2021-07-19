@@ -18,25 +18,9 @@ namespace OneClickModInstaller
             var statuses = new Dictionary<GAME, (InstallationStatus, string)>();
 
             foreach (GAME game in Enum.GetValues(typeof(GAME)))
-                statuses.Add(game, (GetInstallationStatus(game), null));
+                statuses.Add(game, Program.hiWrapper.GetInstallationStatus(game));
             
             return statuses;
-        }
-
-        public static Dictionary<string, string> InstallationLocation()
-        {
-            var locations = new Dictionary<string, string> { { "dunno", "" } };
-
-            string[] games = { "ep1", "ep2" };
-
-            foreach (var game in games)
-            {
-                var location = GetInstallationLocation();
-
-                locations.Add(game, location);
-            }
-
-            return locations;
         }
     }
 
@@ -54,15 +38,6 @@ namespace OneClickModInstaller
 
     public static class ModArchive
     {
-        public static bool IsFSCS()
-        {
-            //This checks if file system is case-sensitive
-            File.WriteAllText("case_sensitivity_test", "");
-            var res = !File.Exists("CASE_SENSITIVITY_TEST");
-            File.Delete("case_sensitivity_test");
-            return res;
-        }
-
         public static void Extract(string file, string path_to_7z = "7z.exe")
         {
             //Need 7-zip to work
@@ -192,36 +167,13 @@ namespace OneClickModInstaller
 
             return Tuple.Create(file_roots.ToArray(), type);
         }
-
-        //Copies everything from source to dest
-        public static void CopyAll(string source, string destination)
-        {
-            if (ModArchive.IsFSCS())
-                if (source == destination) return;
-            else
-                if (source.ToLower() == destination.ToLower()) return;
-
-            Directory.CreateDirectory(destination);
-
-            foreach (var file in Directory.GetFiles(source))
-            {
-                File.Copy(file, Path.Combine(destination, Path.GetFileName(file)), true);
-                File.SetAttributes(file, FileAttributes.Normal);
-            }
-
-            foreach (var dir in Directory.GetDirectories(source))
-            {
-                var dir_name = Path.GetFileName(dir);
-                Directory.CreateDirectory(Path.Combine(destination, dir_name));
-                ModArchive.CopyAll(Path.Combine(source, dir_name), Path.Combine(destination, dir_name));
-            }
-        }
     }
 
     static class Program
     {
-        [STAThread]
+        public static HandlerInstallerWrapper hiWrapper = new HandlerInstallerWrapper();
 
+        [STAThread]
         static void Main(string[] args)
         {
             Application.EnableVisualStyles();
