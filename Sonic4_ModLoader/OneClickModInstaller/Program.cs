@@ -1,5 +1,4 @@
-﻿using Microsoft.Win32;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -32,24 +31,7 @@ namespace OneClickModInstaller
 
             foreach (var game in games)
             {
-                string location = null;
-                if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-                {
-                    var root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
-                    location = (string)Registry.GetValue(root_key + "\\Shell\\Open\\Command", "", null);
-
-                    if (location != null)
-                        location = location.Substring(1, location.Length - 7);
-                }
-                else if (Environment.OSVersion.Platform == PlatformID.Unix)
-                {
-                    var desktop_file = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/.local/share/applications/sonic4mm" + game +".desktop";
-                    
-                    if (File.Exists(desktop_file))
-                        foreach (string line in File.ReadAllLines(desktop_file))
-                            if (line.StartsWith("Exec="))
-                                location = line.Substring(12, line.Length - 16);
-                }
+                var location = GetInstallationLocation();
 
                 locations.Add(game, location);
             }

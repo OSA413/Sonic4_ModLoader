@@ -1,52 +1,46 @@
+//TODO
+
 using System;
 using System.IO;
 using System.Windows.Forms;
 using System.Diagnostics;
 
-using Common.Launcher;
-
-public class HandlerInstallerLinux : IHandlerInstaller
+public class HandlerInstallerLinux : IHandlerInstaller<string>
 {
     public Platform SupportedPlatform() => Platform.Linux;
     public bool RequiresAdmin() => false;
     public bool IsAdmin() => false;
+    public void RestartAsAdmin(string game) {}
 
-    public void Install(GAME? game = null)
+    public void Install(string game)
     {
-        if (game == null) game = Launcher.GetCurrentGame();
-        if (game == GAME.Unknown) return;
-        var shrt = Launcher.GetShortGame(game);
-
         //Not tested, redo
-        if (Environment.OSVersion.Platform == PlatformID.Unix)
-        {
-            var desktopFile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/.local/share/applications/sonic4mm" + shrt +".desktop";
+        var desktopFile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/.local/share/applications/sonic4mm" + game +".desktop";
 
-            File.WriteAllText(desktopFile
-                            , "[Desktop Entry]"
-                            + "\nType=Application"
-                            + "\nExec=mono \"" + Application.ExecutablePath + "\" %U"
-                            + "\nStartupNotify=true"
-                            + "\nTerminal=false"
-                            + "\nMimeType=x-scheme-handler/sonic4mm" + shrt
-                            + "\nName=One-Click Mod Installer"
-                            + "\nComment=OSA413's One-Click Mod Installer");
+        File.WriteAllText(desktopFile
+                        , "[Desktop Entry]"
+                        + "\nType=Application"
+                        + "\nExec=mono \"" + Application.ExecutablePath + "\" %U"
+                        + "\nStartupNotify=true"
+                        + "\nTerminal=false"
+                        + "\nMimeType=x-scheme-handler/sonic4mm" + game
+                        + "\nName=One-Click Mod Installer"
+                        + "\nComment=OSA413's One-Click Mod Installer");
 
-            Process.Start("xdg-mime", "default sonic4mm" + shrt +".desktop x-scheme-handler/sonic4mm" + shrt +".desktop").WaitForExit();
-        }
+        Process.Start("xdg-mime", "default sonic4mm" + game +".desktop x-scheme-handler/sonic4mm" + game +".desktop").WaitForExit();
     }
 
-    public void Uninstall(GAME? game = null)
+    public void Uninstall(string game)
     {
 
     }
 
-    public void FixPath(GAME? game = null)
+    public void FixPath(string game)
     {
 
     }
 
-    public InstallationStatus GetInstallationStatus(GAME? game = null)
+    public InstallationStatus GetInstallationStatus(string game)
     {
         var status = InstallationStatus.NotInstalled;
         var desktop_file = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/.local/share/applications/sonic4mm" + game +".desktop";
@@ -75,8 +69,14 @@ public class HandlerInstallerLinux : IHandlerInstaller
         return status;
     }
 
-    public string GetInstallationLocation(GAME? game = null)
+    public string GetInstallationLocation(string game)
     {
+        var desktopFile = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/.local/share/applications/sonic4mm" + game +".desktop";
+                    
+        if (File.Exists(desktopFile))
+            foreach (string line in File.ReadAllLines(desktopFile))
+                if (line.StartsWith("Exec="))
+                    return line.Substring(12, line.Length - 16);
         return null;
     }
 }

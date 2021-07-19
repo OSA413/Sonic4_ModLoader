@@ -3,13 +3,12 @@ using System.Diagnostics;
 using System.Reflection;
 using Microsoft.Win32;
 using System.Security.Principal;
-using Common.Launcher;
 
-public class HandlerInstallerWindows : IHandlerInstaller
+public class HandlerInstallerWindows : IHandlerInstaller<string>
 {
-    private static bool? isAdmin;
-
-    public bool IsCurrentUserAdmin()
+    public Platform SupportedPlatform() => Platform.Windows;
+    public bool RequiresAdmin() => true;
+    public bool IsAdmin()
     {
         if (isAdmin == null)
         {
@@ -19,8 +18,8 @@ public class HandlerInstallerWindows : IHandlerInstaller
         }
         return (bool)isAdmin;
     }
-
-    public void RunAsAdmin(string args)
+    private static bool? isAdmin;
+    public void RestartAsAdmin(string args)
     {
         ProcessStartInfo startInfo = new ProcessStartInfo
         {
@@ -32,91 +31,51 @@ public class HandlerInstallerWindows : IHandlerInstaller
         Process.Start(startInfo).WaitForExit();
     }
 
-    public Platform SupportedPlatform() => Platform.Windows;
-    public bool RequiresAdmin() => true;
-    public bool IsAdmin()
+    public void Install(string game)
     {
-        return false;
+        var root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
+        Registry.SetValue(root_key, "", "URL:OSA413's One-Click Mod Installer protocol");
+        Registry.SetValue(root_key, "URL Protocol", "");
+        Registry.SetValue(root_key + "\\DefaultIcon", "", "OneClickModInstaller.exe");
+        Registry.SetValue(root_key + "\\Shell\\Open\\Command", "", "\"" + Assembly.GetEntryAssembly().Location + "\" \"%1\"");
     }
 
-    public void Install(GAME? game = null)
+    public void Uninstall(string game)
     {
-        if (game == null) game = Launcher.GetCurrentGame();
-        if (game == GAME.Unknown) return;
-        var shrt = Launcher.GetShortGame(game);
-        
-        if (Environment.OSVersion.Platform == PlatformID.Win32NT)
-        {
-            if (IsCurrentUserAdmin())
-            {
-                var root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + shrt;
-
-                Registry.SetValue(root_key, "", "URL:OSA413's One-Click Mod Installer protocol");
-                Registry.SetValue(root_key, "URL Protocol", "");
-                Registry.SetValue(root_key + "\\DefaultIcon", "", "OneClickModInstaller.exe");
-                Registry.SetValue(root_key + "\\Shell\\Open\\Command", "", "\"" + Assembly.GetEntryAssembly().Location + "\" \"%1\"");
-            }
-            else
-                RunAsAdmin("--install " + shrt);
-        }
+        var root_key = "sonic4mm" + game;
+        if (Registry.ClassesRoot.OpenSubKey(root_key) != null)
+            Registry.ClassesRoot.DeleteSubKeyTree(root_key);
     }
 
-    public void Uninstall(GAME? game = null)
+    public void FixPath(string game)
     {
-        if (game == null) game = Launcher.GetCurrentGame();
-        if (game == GAME.Unknown) return;
-        var shrt = Launcher.GetShortGame(game);
-
-        if (GetInstallationStatus(game) == InstallationStatus.NotInstalled)
-            return;
-        
-        if (IsCurrentUserAdmin())
-        {
-            var root_key = "sonic4mm" + shrt;
-            if (Registry.ClassesRoot.OpenSubKey(root_key) != null)
-                Registry.ClassesRoot.DeleteSubKeyTree(root_key);
-        }
-        else
-            RunAsAdmin("--uninstall " + shrt);
+        Registry.SetValue("HKEY_CLASSES_ROOT\\sonic4mm" + game + "\\Shell\\Open\\Command",
+            "", "\"" + Assembly.GetEntryAssembly().Location + "\" \"%1\"");
     }
 
-    public void FixPath(GAME? game = null)
-    {
-        if (game == null) game = Launcher.GetCurrentGame();
-        if (game == GAME.Unknown) return;
-        var shrt = Launcher.GetShortGame(game);
-
-        if (IsCurrentUserAdmin())
-            Registry.SetValue("HKEY_CLASSES_ROOT\\sonic4mm" + shrt + "\\Shell\\Open\\Command",
-                "", "\"" + Assembly.GetEntryAssembly().Location + "\" \"%1\"");
-        else
-            RunAsAdmin("--fix " + shrt);
-    }
-
-    public InstallationStatus GetInstallationStatus(GAME? game = null)
+    public InstallationStatus GetInstallationStatus(string game)
     {
         var status = InstallationStatus.NotInstalled;
-
-        if (game == null) game = Launcher.GetCurrentGame();
-        if (game == GAME.Unknown) return status;
-        var shrt = Launcher.GetShortGame(game);
-
-        var root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + shrt;
-
+        var root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
         if ((string)Registry.GetValue(root_key, "", null) == "URL:OSA413's One-Click Mod Installer protocol")
+        {
+            status = InstallationStatus.ImproperlyInstalled;
             if ((string)Registry.GetValue(root_key, "URL Protocol", null) == "")
                 if ((string)Registry.GetValue(root_key + "\\DefaultIcon", "", null) == "OneClickModInstaller.exe")
                     if ((string)Registry.GetValue(root_key + "\\Shell\\Open\\Command", "", null) == "\"" + System.Reflection.Assembly.GetEntryAssembly().Location + "\" \"%1\"")
                         status = InstallationStatus.Installed;
-                    else status = InstallationStatus.AnotherInstallationPresent;
-                else status = InstallationStatus.ImproperlyInstalled;
-            else status = InstallationStatus.ImproperlyInstalled;
+        }
 
         return status;
     }
 
-    public string GetInstallationLocation(GAME? game = null)
+    public string GetInstallationLocation(string game)
     {
-        return null;
+        var root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
+        var location = (string)Registry.GetValue(root_key + "\\Shell\\Open\\Command", "", null);
+
+        if (location != null)
+            location = location.Substring(1, location.Length - 7);
+        return location;
     }
 }
