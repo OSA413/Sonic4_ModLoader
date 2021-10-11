@@ -176,7 +176,6 @@ namespace Sonic4ModManager
                 case Installation.Status.Installed: statusText = "Installed"; break;
                 case Installation.Status.NotInstalled:
                 case Installation.Status.FirstLaunch: statusText = "Not installed"; break;
-                case Installation.Status.NonSteam: statusText = "You are using non-Steam version of the game"; break;
             }
 
             label_Installation_status.Text = statusText;

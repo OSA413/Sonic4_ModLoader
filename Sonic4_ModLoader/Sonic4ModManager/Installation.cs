@@ -16,8 +16,7 @@ namespace Sonic4ModManager
             Installed,
             NotInstalled,
             FirstLaunch,
-            NotGameDirectory,
-            NonSteam
+            NotGameDirectory
         }
 
         public class UninstallationOptions
@@ -34,15 +33,13 @@ namespace Sonic4ModManager
 
             if (game == GAME.Unknown)
                 return Status.NotGameDirectory;
-            if (game == GAME.NonSteam)
-                return Status.NonSteam;
 
             if (game == GAME.Episode1)
-                if (File.Exists("Sonic_vis.orig.exe") && File.Exists("SonicLauncher.orig.exe"))
+                if (File.Exists("SonicLauncher.orig.exe"))
                     return Status.Installed;
 
             else if (game == GAME.Episode2)
-                if (File.Exists("Sonic.orig.exe") && File.Exists("Launcher.orig.exe"))
+                if (File.Exists("Launcher.orig.exe"))
                     return Status.Installed;
 
             if (!File.Exists("ModManager.cfg"))
@@ -101,6 +98,7 @@ namespace Sonic4ModManager
                     if (File.Exists(i.orig) && i.newName != null && !File.Exists(i.newName))
                         File.Move(i.orig, i.newName);
 
+                Settings.PatcherDir = "AMBPatcher.exe";
                 Settings.Save();
             }
         }
@@ -113,6 +111,9 @@ namespace Sonic4ModManager
             foreach (var i in renameList)
                 if (File.Exists(i.newName) && !File.Exists(i.orig))
                     File.Move(i.newName, i.orig);
+
+            Settings.PatcherDir = "";
+            Settings.Save();
 
             if (options.RecoverOriginalFiles)
             {

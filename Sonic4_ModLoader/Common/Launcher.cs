@@ -7,8 +7,7 @@ namespace Common.Launcher
     {
         Unknown,
         Episode1,
-        Episode2,
-        NonSteam
+        Episode2
     }
 
     public static class Launcher
@@ -35,34 +34,26 @@ namespace Common.Launcher
 
         public static GAME GetGame(string path = "")
         {
-            if (File.Exists(Path.Combine(path, "Sonic.exe"))
-                || File.Exists(Path.Combine(path, "Launcher.exe"))
-                || File.Exists(Path.Combine(path, "Sonic_vis.exe"))
-                || File.Exists(Path.Combine(path, "SonicLauncher.exe")))
-            {
-                if (File.Exists(Path.Combine(path, "Sonic_vis.exe"))
-                    && File.Exists(Path.Combine(path, "SonicLauncher.exe")))
-                    return GAME.Episode1;
-                else if (File.Exists(Path.Combine(path, "Sonic.exe"))
-                    && File.Exists(Path.Combine(path, "Launcher.exe")))
-                    return GAME.Episode2;
-                return GAME.NonSteam;
-            }
+            if (File.Exists(Path.Combine(path, "SonicLauncher.exe")))
+                return GAME.Episode1;
+            else if (File.Exists(Path.Combine(path, "Launcher.exe")))
+                return GAME.Episode2;
+
             return GAME.Unknown;
         }
 
-        public static bool LaunchGame(bool launchOriginals = false)
+        public static bool LaunchGame()
         {
             var game = GetCurrentGame();
             if (game == GAME.Episode1)
             {
                 if (File.Exists("main.conf"))
-                    Process.Start(launchOriginals ? "Sonic_vis.orig.exe" : "Sonic_vis.exe");
+                    Process.Start("Sonic_vis.exe");
                 else
                     Process.Start("SonicLauncher.orig.exe");
             }
             else if (game == GAME.Episode2)
-                Process.Start(launchOriginals ? "Sonic.orig.exe" : "Sonic.exe");
+                Process.Start("Sonic.exe");
             else
                 return false;
             return true;
