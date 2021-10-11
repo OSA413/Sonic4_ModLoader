@@ -36,7 +36,12 @@ for dir in $(ls ./dependencies); do
 
     #Files
     for file in $(cat ./dependencies/$dir/files); do
-        cp "./dependencies/$dir/$file" "./dist/Sonic4ModLoader/$file"
+        if [[ $file == */. ]]
+        then
+            cp -r "./dependencies/$dir/$file" "./dist/Sonic4ModLoader/"
+        else
+            cp "./dependencies/$dir/$file" "./dist/Sonic4ModLoader/$file"
+        fi
     done
     
     #License
