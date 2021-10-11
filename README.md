@@ -67,6 +67,9 @@ Installation from a local archive/directory:
 
 ## Third party works
 
+* Alice Mod Loader by RadiantDerg under the MIT License.
+https://github.com/RadiantDerg/AliceModLoader
+
 * CsbEditor (from SonicAudioTools) by Skyth under the MIT License.
 https://github.com/blueskythlikesclouds/SonicAudioTools
 
