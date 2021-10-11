@@ -145,7 +145,7 @@ namespace Sonic4ModManager
                             if (File.Exists(file.orig))
                                 File.Delete(file.orig);
                             else if (Directory.Exists(file.orig))
-                                Directory.Delete("Mod Loader - licenses", true);
+                                Directory.Delete(file.orig, true);
                         }
 
                 var bat = "taskkill /IM Sonic4ModManager.exe /F\n" + 
