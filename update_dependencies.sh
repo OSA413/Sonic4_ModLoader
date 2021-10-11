@@ -15,7 +15,7 @@ msbuild SonicAudioTools.sln /p:Configuration=Release -m
 
 cp ./Release/CsbEditor.exe ./../../dependencies/SonicAudioTools/CsbEditor.exe
 cp ./Release/SonicAudioLib.dll ./../../dependencies/SonicAudioTools/SonicAudioLib.dll
-cp ./LICENSE ./../../dependencies/SonicAudioTools/LICENSE
+cp ./LICENSE.md ./../../dependencies/SonicAudioTools/LICENSE
 
 cd ..
 
@@ -32,3 +32,17 @@ echo https://sourceforge.net/projects/sevenzip/files/7-Zip/$version > ./../../de
 cp 7z.exe       ./../../dependencies/7-Zip/7z.exe
 cp 7z.dll       ./../../dependencies/7-Zip/7z.dll
 cp License.txt  ./../../dependencies/7-Zip/License.txt
+
+cd ..
+
+#AliceModLoader
+git clone --depth=1 https://github.com/RadiantDerg/AliceModLoader
+cd "AliceModLoader"
+
+cat ./LICENSE > ./../../dependencies/AliceModLoader/LICENSE
+echo "" >> ./../../dependencies/AliceModLoader/LICENSE
+cat ./docs/OpenSource.md >> ./../../dependencies/AliceModLoader/LICENSE
+cp -r ./UpdateServer ./../../dependencies/AliceModLoader
+rm ./../../dependencies/AliceModLoader/UpdateServer/update.ini
+
+cd ..
