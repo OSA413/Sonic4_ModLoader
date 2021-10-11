@@ -38,7 +38,7 @@ namespace Sonic4ModManager
                 if (File.Exists("SonicLauncher.orig.exe"))
                     return Status.Installed;
 
-            else if (game == GAME.Episode2)
+            if (game == GAME.Episode2)
                 if (File.Exists("Launcher.orig.exe"))
                     return Status.Installed;
 
