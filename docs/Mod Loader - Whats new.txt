@@ -1,3 +1,12 @@
+[c]Version: v0.1.5.0
+* [b]Added Alice Mod Loader by RadiantDerg[\b]
+* Mod Manager rewritten
+* Removed simple log generation from AMBPatcher
+* AMBPatcher should be able to read mobile files again
+
+[i]Note: One-Click Mod Installer bundled with this release belongs to v0.1.4.8 since it isn't rewritten yet.[\i]
+
+
 [c]Version: v0.1.4.8
 \t[b]AMB Patcher[\b]
 * [b]Significant performance update[\b]
