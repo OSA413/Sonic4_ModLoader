@@ -56,10 +56,13 @@
             this.bRecoverOriginalFiles = new System.Windows.Forms.Button();
             this.cb_AMBPatcher_sha_check = new System.Windows.Forms.CheckBox();
             this.tabAbout = new System.Windows.Forms.TabPage();
+            this.bRL_SAT = new System.Windows.Forms.Button();
+            this.label8 = new System.Windows.Forms.Label();
+            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
             this.bRL_7z = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.link7z = new System.Windows.Forms.LinkLabel();
-            this.bRL_SAT = new System.Windows.Forms.Button();
+            this.bRL_AML = new System.Windows.Forms.Button();
             this.bRL_S4ML = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.bOK = new System.Windows.Forms.Button();
@@ -87,13 +90,13 @@
             // linkSAT
             // 
             this.linkSAT.AutoSize = true;
-            this.linkSAT.Location = new System.Drawing.Point(29, 102);
+            this.linkSAT.Location = new System.Drawing.Point(29, 76);
             this.linkSAT.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.linkSAT.Name = "linkSAT";
-            this.linkSAT.Size = new System.Drawing.Size(363, 17);
+            this.linkSAT.Size = new System.Drawing.Size(310, 17);
             this.linkSAT.TabIndex = 3;
             this.linkSAT.TabStop = true;
-            this.linkSAT.Text = "https://github.com/blueskythlikesclouds/SonicAudioTools";
+            this.linkSAT.Text = "https://github.com/RadiantDerg/AliceModLoader";
             this.linkSAT.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkClicked);
             // 
             // linkMain
@@ -388,10 +391,13 @@
             // 
             // tabAbout
             // 
+            this.tabAbout.Controls.Add(this.bRL_SAT);
+            this.tabAbout.Controls.Add(this.label8);
+            this.tabAbout.Controls.Add(this.linkLabel1);
             this.tabAbout.Controls.Add(this.bRL_7z);
             this.tabAbout.Controls.Add(this.label4);
             this.tabAbout.Controls.Add(this.link7z);
-            this.tabAbout.Controls.Add(this.bRL_SAT);
+            this.tabAbout.Controls.Add(this.bRL_AML);
             this.tabAbout.Controls.Add(this.bRL_S4ML);
             this.tabAbout.Controls.Add(this.label2);
             this.tabAbout.Controls.Add(this.linkMain);
@@ -406,9 +412,42 @@
             this.tabAbout.Text = "About";
             this.tabAbout.UseVisualStyleBackColor = true;
             // 
+            // bRL_SAT
+            // 
+            this.bRL_SAT.Location = new System.Drawing.Point(348, 164);
+            this.bRL_SAT.Margin = new System.Windows.Forms.Padding(4);
+            this.bRL_SAT.Name = "bRL_SAT";
+            this.bRL_SAT.Size = new System.Drawing.Size(121, 28);
+            this.bRL_SAT.TabIndex = 10;
+            this.bRL_SAT.Text = "Read License";
+            this.bRL_SAT.UseVisualStyleBackColor = true;            
+            this.bRL_SAT.Click += new System.EventHandler(this.ReadLicense_Click);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(8, 128);
+            this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(404, 17);
+            this.label8.TabIndex = 8;
+            this.label8.Text = "CsbEditor (from SonicAudioTools) by Skyth under MIT License.";
+            // 
+            // linkLabel1
+            // 
+            this.linkLabel1.AutoSize = true;
+            this.linkLabel1.Location = new System.Drawing.Point(29, 144);
+            this.linkLabel1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.linkLabel1.Name = "linkLabel1";
+            this.linkLabel1.Size = new System.Drawing.Size(363, 17);
+            this.linkLabel1.TabIndex = 9;
+            this.linkLabel1.TabStop = true;
+            this.linkLabel1.Text = "https://github.com/blueskythlikesclouds/SonicAudioTools";
+            this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkClicked);
+            // 
             // bRL_7z
             // 
-            this.bRL_7z.Location = new System.Drawing.Point(348, 201);
+            this.bRL_7z.Location = new System.Drawing.Point(179, 206);
             this.bRL_7z.Margin = new System.Windows.Forms.Padding(4);
             this.bRL_7z.Name = "bRL_7z";
             this.bRL_7z.Size = new System.Drawing.Size(121, 28);
@@ -420,7 +459,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(8, 165);
+            this.label4.Location = new System.Drawing.Point(8, 185);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(202, 17);
@@ -430,7 +469,7 @@
             // link7z
             // 
             this.link7z.AutoSize = true;
-            this.link7z.Location = new System.Drawing.Point(29, 181);
+            this.link7z.Location = new System.Drawing.Point(29, 201);
             this.link7z.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.link7z.Name = "link7z";
             this.link7z.Size = new System.Drawing.Size(142, 17);
@@ -439,20 +478,20 @@
             this.link7z.Text = "https://www.7-zip.org/";
             this.link7z.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.LinkClicked);
             // 
-            // bRL_SAT
+            // bRL_AML
             // 
-            this.bRL_SAT.Location = new System.Drawing.Point(348, 122);
-            this.bRL_SAT.Margin = new System.Windows.Forms.Padding(4);
-            this.bRL_SAT.Name = "bRL_SAT";
-            this.bRL_SAT.Size = new System.Drawing.Size(121, 28);
-            this.bRL_SAT.TabIndex = 4;
-            this.bRL_SAT.Text = "Read License";
-            this.bRL_SAT.UseVisualStyleBackColor = true;
-            this.bRL_SAT.Click += new System.EventHandler(this.ReadLicense_Click);
+            this.bRL_AML.Location = new System.Drawing.Point(348, 96);
+            this.bRL_AML.Margin = new System.Windows.Forms.Padding(4);
+            this.bRL_AML.Name = "bRL_AML";
+            this.bRL_AML.Size = new System.Drawing.Size(121, 28);
+            this.bRL_AML.TabIndex = 4;
+            this.bRL_AML.Text = "Read License";
+            this.bRL_AML.UseVisualStyleBackColor = true;
+            this.bRL_AML.Click += new System.EventHandler(this.ReadLicense_Click);
             // 
             // bRL_S4ML
             // 
-            this.bRL_S4ML.Location = new System.Drawing.Point(348, 43);
+            this.bRL_S4ML.Location = new System.Drawing.Point(348, 28);
             this.bRL_S4ML.Margin = new System.Windows.Forms.Padding(4);
             this.bRL_S4ML.Name = "bRL_S4ML";
             this.bRL_S4ML.Size = new System.Drawing.Size(121, 28);
@@ -464,12 +503,12 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(8, 86);
+            this.label2.Location = new System.Drawing.Point(8, 60);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(404, 17);
+            this.label2.Size = new System.Drawing.Size(370, 17);
             this.label2.TabIndex = 3;
-            this.label2.Text = "CsbEditor (from SonicAudioTools) by Skyth under MIT License.";
+            this.label2.Text = "Alice Mod Loader by RadiantDerg under the MIT License.";
             // 
             // bOK
             // 
@@ -537,7 +576,7 @@
         private System.Windows.Forms.Button bOK;
         private System.Windows.Forms.Button bCancel;
         private System.Windows.Forms.TabPage tabAbout;
-        private System.Windows.Forms.Button bRL_SAT;
+        private System.Windows.Forms.Button bRL_AML;
         private System.Windows.Forms.Button bRL_S4ML;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.CheckBox cb_AMBPatcher_progress_bar;
@@ -563,5 +602,8 @@
         private System.Windows.Forms.NumericUpDown num_CsbEditor_MaxThreads;
         private System.Windows.Forms.CheckBox cb_CsbEditor_EnableThreading;
         private System.Windows.Forms.CheckBox cbKeepConfigs;
+        private System.Windows.Forms.Button bRL_SAT;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.LinkLabel linkLabel1;
     }
 }

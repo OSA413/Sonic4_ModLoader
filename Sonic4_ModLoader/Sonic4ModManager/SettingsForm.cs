@@ -187,9 +187,10 @@ namespace Sonic4ModManager
 
             switch (program)
             {
-                case "S4ML":    license = "LICENSE-Sonic4_ModLoader";  break;
-                case "SAT":     license = "LICENSE-SonicAudioTools";   break;
-                case "7z":      license = "LICENSE-7-Zip";             break;
+                case "S4ML": license = "LICENSE-Sonic4_ModLoader"; break;
+                case "AML": license = "LICENSE-AliceModLoader"; break;
+                case "SAT": license = "LICENSE-SonicAudioTools"; break;
+                case "7z": license = "LICENSE-7-Zip"; break;
             }
 
             if (license != "")
