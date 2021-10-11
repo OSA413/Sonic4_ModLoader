@@ -5,13 +5,11 @@ VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AMBPatcher", "AMBPatcher\AMBPatcher.csproj", "{D7144D36-9135-47F6-9F12-3690162FC2B5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PatchLauncher", "PatchLauncher\PatchLauncher.csproj", "{A0B686F2-4780-4D2D-BE28-000C6C7C0CE4}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sonic4ModManager", "Sonic4ModManager\Sonic4ModManager.csproj", "{8AF89A84-4EA0-43C2-9872-25834A7C55E5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ManagerLauncher", "ManagerLauncher\ManagerLauncher.csproj", "{C6AFDF59-4760-4E60-82B9-9D22E34CAF44}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OneClickModInstaller", "OneClickModInstaller\OneClickModInstaller.csproj", "{F993D5C4-5D52-4CC3-91E5-E5D7FA0357BA}"
+//Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OneClickModInstaller", "OneClickModInstaller\OneClickModInstaller.csproj", "{F993D5C4-5D52-4CC3-91E5-E5D7FA0357BA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{A162D9A2-BC90-4E86-BEC1-047DF1EEA5A3}"
 	ProjectSection(SolutionItems) = preProject

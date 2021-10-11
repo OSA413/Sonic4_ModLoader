@@ -56,34 +56,20 @@ namespace Sonic4ModManager
             var game = Launcher.GetCurrentGame();
             var renameList = new List<(string orig, string newName, bool modloaderFile)>();
 
-            var originalExe = "";
             var originalLauncher = "";
-            var patchLauncher = "PatchLauncher.exe";
             var managerLauncher = "ManagerLauncher.exe";
 
             if (game == GAME.Episode1)
-            {
-                originalExe = "Sonic_vis.exe";
                 originalLauncher = "SonicLauncher.exe";
-            }
             else if (game == GAME.Episode2)
-            {
-                originalExe = "Sonic.exe";
                 originalLauncher = "Launcher.exe";
-            }
 
-            var saveFileOrig = Path.GetFileNameWithoutExtension(originalExe) + "_save.dat";
-            var saveFileNew = Path.GetFileNameWithoutExtension(originalExe) + ".orig_save.dat";
-            var originalExeBkp = Path.GetFileNameWithoutExtension(originalExe) + ".orig.exe";
             var originalLauncherBkp = Path.GetFileNameWithoutExtension(originalLauncher) + ".orig.exe";
 
             //Original files
-            renameList.Add((originalExe, originalExeBkp, false));
-            renameList.Add((patchLauncher, originalExe, true));
             renameList.Add((originalLauncher, originalLauncherBkp, false));
             renameList.Add((managerLauncher, originalLauncher, true));
-            renameList.Add((saveFileOrig, saveFileNew, false));
-
+            
             //Mod Loader files
             renameList.Add(("7z.exe", null, true));
             renameList.Add(("7z.dll", null, true));
@@ -96,6 +82,10 @@ namespace Sonic4ModManager
             renameList.Add(("AMBPatcher.cfg", null, true));
             renameList.Add(("CsbEditor.exe.config", null, true));
             renameList.Add(("ModManager.cfg", null, true));
+
+            renameList.Add(("Mod Loader - licenses", null, true));
+            renameList.Add(("AML", null, true));
+            renameList.Add(("d3d9.dll", null, true));
 
             return renameList;
         }
@@ -147,13 +137,15 @@ namespace Sonic4ModManager
             if (options.DeleteAllModLoaderFiles)
             {
                 foreach (var file in renameList)
-                    if (file.modloaderFile && File.Exists(file.orig))
+                    if (file.modloaderFile && (File.Exists(file.orig) || Directory.Exists(file.orig)))
                         if (!options.KeepSettings ||
                             !(options.KeepSettings && (file.orig.EndsWith(".cfg") || file.orig.EndsWith(".config"))))
-                        File.Delete(file.orig);
-
-                if (Directory.Exists("Mod Loader - licenses"))
-                    Directory.Delete("Mod Loader - licenses", true);
+                        {
+                            if (File.Exists(file.orig))
+                                File.Delete(file.orig);
+                            else if (Directory.Exists(file.orig))
+                                Directory.Delete("Mod Loader - licenses", true);
+                        }
 
                 var bat = "taskkill /IM Sonic4ModManager.exe /F\n" + 
                     "DEL Sonic4ModManager.exe\n" +
