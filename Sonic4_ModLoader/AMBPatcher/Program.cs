@@ -84,13 +84,15 @@ namespace AMBPatcher
                 {
                     if (ShaChecker.ShaChanged(file_name, mod_files, mod_paths))
                     {
-                        AMB amb;
                         if (file_name == mod_files.FirstOrDefault())
-                            amb = new AMB(Path.Combine(mod_paths[0], mod_files[0]));
-                        else if (File.Exists(file_name + ".bkp"))
-                            amb = new AMB(file_name + ".bkp");
-                        else
-                            amb = new AMB(file_name);
+                        {
+                            var modFull = Path.Combine("mods", mod_paths[0], mod_files[0]);
+                            File.Copy(modFull, file_name, true);
+                            ShaChecker.ShaWrite(mod_files[0], modFull);
+                            return;
+                        }
+
+                        AMB amb = new AMB(File.Exists(file_name + ".bkp") ? file_name + ".bkp" : file_name);
                         amb.AmbPath = file_name;
 
                         for (int i = 0; i < mod_files.Count; i++)
