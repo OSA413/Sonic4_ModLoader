@@ -16,10 +16,8 @@ namespace OneClickModInstaller
         public static Dictionary<GAME, (InstallationStatus, string)> GetInstallationInfo()
         {
             var statuses = new Dictionary<GAME, (InstallationStatus, string)>();
-
             foreach (GAME game in Enum.GetValues(typeof(GAME)))
                 statuses.Add(game, Program.hiWrapper.GetInstallationStatus(game));
-            
             return statuses;
         }
     }
@@ -187,9 +185,9 @@ namespace OneClickModInstaller
 
                 switch (args[0])
                 {
-                    case "--install":   Reg.Install(game);   Environment.Exit(0); break;
-                    case "--uninstall": Reg.Uninstall(game); Environment.Exit(0); break;
-                    case "--fix":       Reg.FixPath(game);   Environment.Exit(0); break;
+                    case "--install":   hiWrapper.Install(game);   Environment.Exit(0); break;
+                    case "--uninstall": hiWrapper.Uninstall(game); Environment.Exit(0); break;
+                    case "--fix":       hiWrapper.FixPath(game);   Environment.Exit(0); break;
                 }
             }
 

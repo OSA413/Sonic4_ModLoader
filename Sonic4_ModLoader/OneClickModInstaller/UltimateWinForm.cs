@@ -203,10 +203,9 @@ namespace OneClickModInstaller
             //Overall//
             ///////////
 
-            var statuses  = Reg.GetInstallationStatus();
-            var locations = Reg.InstallationLocation();
+            var statuses  = Reg.GetInstallationInfo();
 
-            foreach (string key in statuses.Keys)
+            foreach (var key in statuses.Keys)
             {
                 Label  lIOStatus;
                 Label  lIOPath;
@@ -237,7 +236,7 @@ namespace OneClickModInstaller
                     bIOUninstall.Enabled =
                     bIOVisit.Enabled     = true;
 
-                    if (Admin.AmI()) bUninstall.Image = null;
+                    if (Program.hiWrapper.RequiresAdmin()) bUninstall.Image = null;
                 }
                 else
                 {
@@ -364,12 +363,12 @@ namespace OneClickModInstaller
         private void bInstall_Click(object sender, EventArgs e)
         {
             if (Launcher.GetCurrentGame() == GAME.Unknown && Reg.GetInstallationStatus()["ep1"] == InstallationStatus.NotInstalled)
-                Reg.Install(GAME.Episode1);
+                Program.hiWrapper.Install(GAME.Episode1);
             else
                 switch (Reg.GetInstallationStatus()[Launcher.GetShortGame(Launcher.GetCurrentGame())])
                 {
-                    case InstallationStatus.AnotherInstallationPresent: Reg.FixPath(); break;
-                    default: Reg.Install(); break;
+                    case InstallationStatus.AnotherInstallationPresent: Program.hiWrapper.FixPath(); break;
+                    default: Program.hiWrapper.Install(); break;
                 }
 
             UpdateWindow();
@@ -378,8 +377,8 @@ namespace OneClickModInstaller
         private void bUninstall_Click(object sender, EventArgs e)
         {
             if (Launcher.GetCurrentGame() == GAME.Unknown && Reg.GetInstallationStatus()["ep1"] == InstallationStatus.Installed)
-                Reg.Uninstall(GAME.Episode1);
-            else Reg.Uninstall();
+                Program.hiWrapper.Uninstall(GAME.Episode1);
+            else Program.hiWrapper.Uninstall();
 
             UpdateWindow();
         }
@@ -687,13 +686,13 @@ namespace OneClickModInstaller
                         MyDirectory.DeleteRecursively(dest);
                     
                     if (Installation.Platform != "???")
-                        ModArchive.CopyAll(mod, dest);
+                        MyDirectory.CopyAll(mod, dest);
                     else
                     {
                         if (File.Exists(Path.Combine(Installation.ArchiveDir, mod)))
                             File.Copy(Path.Combine(Installation.ArchiveDir, mod), Path.Combine(dest, Path.GetFileName(mod)));
                         else if (Directory.Exists(Path.Combine(Installation.ArchiveDir, mod)))
-                            ModArchive.CopyAll(Path.Combine(Installation.ArchiveDir, mod), Path.Combine(dest, Path.GetFileName(mod)));
+                            MyDirectory.CopyAll(Path.Combine(Installation.ArchiveDir, mod), Path.Combine(dest, Path.GetFileName(mod)));
                     }
                 }
 
@@ -786,13 +785,13 @@ namespace OneClickModInstaller
 
         private void bIOEp1Uninstall_Click(object sender, EventArgs e)
         {
-            Reg.Uninstall(GAME.Episode1);
+            Program.hiWrapper.Uninstall(GAME.Episode1);
             UpdateWindow();
         }
 
         private void bIOEp2Uninstall_Click(object sender, EventArgs e)
         {
-            Reg.Uninstall(GAME.Episode2);
+            Program.hiWrapper.Uninstall(GAME.Episode2);
             UpdateWindow();
         }
 
