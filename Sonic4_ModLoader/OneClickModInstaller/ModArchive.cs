@@ -1,0 +1,149 @@
+using System;
+using System.IO;
+using System.Linq;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Windows.Forms;
+
+using Common.MyIO;
+
+namespace OneClickModInstaller
+{
+    public enum ModType {
+        PC,
+        Dolphin,
+        Unknown
+    }
+    public static class ModArchive
+    {
+        public static void Extract(string file, string path_to_7z = "7z.exe")
+        {
+            //Need 7-zip to work
+            if (!File.Exists(path_to_7z))
+            {
+                //Try to use bundled copy if local not found
+                if (File.Exists("7z.exe"))
+                    path_to_7z = "7z.exe";
+                else
+                    return;
+            }
+
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                FileName = path_to_7z,
+                Arguments = "x \"" + file + "\" -o\"" + file + "_extracted" + "\""
+            };
+            Process.Start(startInfo).WaitForExit();
+        }
+
+        public static int CheckFiles(string dir_name)
+        {
+            var good_formats = "TXT,INI,DDS,TXB,AMA,AME,ZNO,ZNM,ZNV,DC,EV,RG,MD,MP,AT,DF,DI,PSH,VSH,LTS,XNM,MFS,SSS,GPB,MSG,AYK,ADX,AMB,CPK,CSB,PNG,CT,TGA".Split(',');
+
+            var all_files = Directory.GetFiles(dir_name, "*", SearchOption.AllDirectories);
+            var suspicious_files = new List<string>();
+
+            foreach (var file in all_files)
+            {
+                var file_short = file.Substring(dir_name.Length + 1);
+
+                if (int.TryParse(Path.GetFileName(file_short), out int n) && file_short.Contains(Path.Combine("DEMO", "WORLDMAP", "WORLDMAP.AMB")))
+                    continue;
+ 
+                var extension_len = Path.GetExtension(file_short).Length;
+                if (extension_len != 0) extension_len = 1;
+
+                if (good_formats.Contains(Path.GetExtension(file_short).Substring(extension_len), StringComparer.OrdinalIgnoreCase))
+                    continue;
+
+                suspicious_files.Add(file_short);
+            }
+
+
+            var cont = 1;
+            if (suspicious_files.Count != 0)
+            {
+                cont = 0;
+                var SuspiciousDialog = new Suspicious(suspicious_files.ToArray());
+
+                var result = SuspiciousDialog.ShowDialog();
+
+                //Continue
+                if (result != DialogResult.Cancel)
+                    cont = 1;
+
+                if (result == DialogResult.Yes)
+                    foreach (var file in suspicious_files)
+                        MyFile.DeleteAnyway(Path.Combine(dir_name, file));
+            }
+            return cont;
+        }
+
+        public static Tuple<string[], string> FindRoot(string dir_name)
+        {
+            var platform = "???";
+            var mod_roots = new List<string>();
+
+            var platforms = new string[] { "pc", "dolphin", "modloader" };
+            var game_folders_array = new string[] { "CUTSCENE,DEMO,G_COM,G_SS,G_EP1COM,G_EP1ZONE2,G_EP1ZONE3,G_EP1ZONE4,G_ZONE1,G_ZONE2,G_ZONE3,G_ZONE4,G_ZONEF,MSG,NNSTDSHADER,SOUND"
+                                                        , "WSNE8P,WSNP8P,WSNJ8P"
+                                                        , "Sonic4ModLoader"};
+
+            for (int i = 0; i < platforms.Length; i++)
+            {
+                var game_folders = game_folders_array[i].Split(',');
+
+                foreach (var folder in game_folders)
+                {
+                    foreach (var mod_folder in Directory.GetDirectories(dir_name, folder, SearchOption.AllDirectories))
+                    {
+                        var tmp_root = Path.GetDirectoryName(mod_folder);
+                        if (!mod_roots.Contains(tmp_root))
+                            mod_roots.Add(tmp_root);
+                    }
+                }
+
+                if (mod_roots.Count > 0)
+                {
+                    platform = platforms[i];
+                    break;
+                }
+            }
+
+            return Tuple.Create(mod_roots.ToArray(), platform);
+        }
+
+        public static Tuple<string[], string> FindFiles(string dir_name)
+        {
+            var file_roots = new List<string>();
+            var type = "???";
+
+            var types      = new string[] { "CheatTables" };
+            var extensions = new string[] { "ct" };
+
+            for (int i = 0; i < types.Length; i++)
+            {
+                if (type == "mixed") break;
+                string[] extensions_to_find = extensions[i].Split(',');
+
+                foreach (string extension in extensions_to_find)
+                {
+                    if (type == "mixed") break;
+                    foreach (string mod_file in Directory.GetFiles(dir_name, "*." + extension, SearchOption.AllDirectories))
+                    {
+                        if (type == "???")    type = types[i];
+                        if (type != types[i]) { type = "mixed"; break; }
+
+                        var tmp_root = Path.GetDirectoryName(mod_file);
+                        if (!file_roots.Contains(tmp_root))
+                            file_roots.Add(tmp_root);
+                    }
+                }
+            }
+            if (type == "mixed")
+                file_roots.RemoveRange(0, file_roots.Count);
+
+            return Tuple.Create(file_roots.ToArray(), type);
+        }
+    }
+}

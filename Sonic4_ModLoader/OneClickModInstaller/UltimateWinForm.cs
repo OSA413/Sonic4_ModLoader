@@ -10,6 +10,7 @@ using System.Linq;
 
 using Common.Ini;
 using Common.MyIO;
+using Common.URL;
 using Common.Launcher;
 using Common.ValueUpdater;
 
@@ -17,6 +18,8 @@ namespace OneClickModInstaller
 {
     public partial class UltimateWinForm:Form
     {
+
+        public static HandlerInstallerWrapper hiWrapper = Program.hiWrapper;
         //This class stores variables related to mod installation
         public static class Installation
         {
@@ -27,7 +30,7 @@ namespace OneClickModInstaller
             public static bool      Local;
             public static string    LastMod;
             public static string[]  ModRoots;
-            public static string    Platform;
+            public static ModType    Platform;
             public static string    Status;
             public static bool      FromArgs;
             public static string    CustomPath;
@@ -54,7 +57,6 @@ namespace OneClickModInstaller
                 Settings.ExitLaunchManager      = true;
 
                 Settings.Paths = new Dictionary<string, string>();
-                Settings.Paths.Add("CheatTables", "");
                 Settings.Paths.Add("7-Zip", "");
                 Settings.Paths.Add("DownloadedArhives", "mods_downloaded");
 
@@ -108,14 +110,12 @@ namespace OneClickModInstaller
 
             lType.Text = lModID.Text = lDownloadType.Text = lDownloadID.Text = null;
 
-            //Dealing with arguments
             if (args.Length > 0)
             {
                 //If this is not a 1-click installation call
                 if (!(args[0].StartsWith("sonic4mmep1:") ||
                     args[0].StartsWith("sonic4mmep2:")))
                 {
-                    //Drag&Drop mod installation
                     if (File.Exists(args[0])
                         || Directory.Exists(args[0])
                         || args[0].StartsWith("https://")
@@ -203,7 +203,7 @@ namespace OneClickModInstaller
             //Overall//
             ///////////
 
-            var statuses  = Reg.GetInstallationInfo();
+            var statuses  = hiWrapper.GetAllInstallationStatus();
 
             foreach (var key in statuses.Keys)
             {
@@ -214,13 +214,13 @@ namespace OneClickModInstaller
 
                 switch (key)
                 {
-                    case "ep1":
+                    case GAME.Episode1:
                         lIOStatus    = lIOEp1Stat;
                         lIOPath      = lIOEp1Path;
                         bIOUninstall = bIOEp1Uninstall;
                         bIOVisit     = bIOEp1Visit;
                         break;
-                    case "ep2":
+                    case GAME.Episode2:
                         lIOStatus    = lIOEp2Stat;
                         lIOPath      = lIOEp2Path;
                         bIOUninstall = bIOEp2Uninstall;
@@ -229,14 +229,14 @@ namespace OneClickModInstaller
                     default: continue;
                 }
 
-                if (statuses[key] > 0)
+                if (statuses[key].Status == InstallationStatus.NotInstalled)//?
                 {
                     lIOStatus.Text = "Installed";
-                    lIOPath.Text   = ("Path: " + locations[key]).Replace(' ', '\u2007');
+                    lIOPath.Text   = ("Path: " + statuses[key].Location).Replace(' ', '\u2007');
                     bIOUninstall.Enabled =
                     bIOVisit.Enabled     = true;
 
-                    if (Program.hiWrapper.RequiresAdmin()) bUninstall.Image = null;
+                    if (hiWrapper.RequiresAdmin()) bUninstall.Image = null;
                 }
                 else
                 {
@@ -251,16 +251,16 @@ namespace OneClickModInstaller
             //Current//
             ///////////
 
-            string current_game = Launcher.GetShortGame(Launcher.GetCurrentGame());
+            var currentGame = Launcher.GetCurrentGame();
 
-            if (Admin.AmI())
+            if (hiWrapper.IsAdmin())
             {
                 lInstallAdmin.Text = "";
                 bInstall.Image   =
                 bUninstall.Image = null;
             }
 
-            if (current_game == "dunno")
+            if (currentGame == GAME.Unknown)
             {
                 lGameName.Text           = "Not found";
                 lInstallationStatus.Text = "None";
@@ -269,7 +269,7 @@ namespace OneClickModInstaller
                 bInstall.Enabled   =
                 bUninstall.Enabled = false;
 
-                switch (statuses["ep1"])
+                switch (statuses[GAME.Episode1].Status)
                 {
                     case InstallationStatus.NotInstalled:
                         bInstall.Enabled = true;
@@ -283,12 +283,11 @@ namespace OneClickModInstaller
             else
             {
                 lGameName.Text = "Sonic 4: " + Launcher.GetShortGame(Launcher.GetCurrentGame());
-                var current_status = statuses[current_game];
 
                 bInstall.Enabled =
                 bUninstall.Enabled = true;
 
-                switch (current_status)
+                switch (statuses[currentGame].Status)
                 {
                     case InstallationStatus.NotInstalled:
                         lInstallationStatus.Text = "Not installed";
@@ -362,13 +361,14 @@ namespace OneClickModInstaller
 
         private void bInstall_Click(object sender, EventArgs e)
         {
-            if (Launcher.GetCurrentGame() == GAME.Unknown && Reg.GetInstallationStatus()["ep1"] == InstallationStatus.NotInstalled)
-                Program.hiWrapper.Install(GAME.Episode1);
+            if (Launcher.GetCurrentGame() == GAME.Unknown &&
+                hiWrapper.GetInstallationStatus(GAME.Episode1).Status == InstallationStatus.NotInstalled)
+                hiWrapper.Install(GAME.Episode1);
             else
-                switch (Reg.GetInstallationStatus()[Launcher.GetShortGame(Launcher.GetCurrentGame())])
+                switch (hiWrapper.GetInstallationStatus(Launcher.GetCurrentGame()).Status)
                 {
-                    case InstallationStatus.AnotherInstallationPresent: Program.hiWrapper.FixPath(); break;
-                    default: Program.hiWrapper.Install(); break;
+                    case InstallationStatus.AnotherInstallationPresent: hiWrapper.FixPath(); break;
+                    default: hiWrapper.Install(); break;
                 }
 
             UpdateWindow();
@@ -376,7 +376,8 @@ namespace OneClickModInstaller
 
         private void bUninstall_Click(object sender, EventArgs e)
         {
-            if (Launcher.GetCurrentGame() == GAME.Unknown && Reg.GetInstallationStatus()["ep1"] == InstallationStatus.Installed)
+            if (Launcher.GetCurrentGame() == GAME.Unknown &&
+                hiWrapper.GetInstallationStatus(GAME.Episode1).Status == InstallationStatus.Installed)
                 Program.hiWrapper.Uninstall(GAME.Episode1);
             else Program.hiWrapper.Uninstall();
 
@@ -397,6 +398,7 @@ namespace OneClickModInstaller
             }
             else if (Installation.Status == "Waiting for path")
             {
+                //?????????
                 if (Settings.Paths[Installation.Platform] != "")
                 {
                     bModInstall.Enabled = false;
@@ -445,7 +447,7 @@ namespace OneClickModInstaller
                         wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
 
                         //Download link goes here
-                        var url = URL.GetRedirect(archive_url);
+                        var url = URL.GetURLRedirect(archive_url);
                         
                         //Getting file name of the archive
                         if (Installation.ServerHost == "github")
@@ -765,22 +767,24 @@ namespace OneClickModInstaller
 
         private void bIOEp1Visit_Click(object sender, EventArgs e)
         {
-            switch (Reg.GetInstallationStatus()["ep1"])
+            var status = hiWrapper.GetInstallationStatus(GAME.Episode1);
+            switch (status.Status)
             {
                 case InstallationStatus.NotInstalled: return;
                 case InstallationStatus.ImproperlyInstalled: return;
             }
-            MyDirectory.OpenInFileManager(Reg.InstallationLocation()["ep1"]);
+            MyDirectory.OpenInFileManager(status.Location);
         }
 
         private void bIOEp2Visit_Click(object sender, EventArgs e)
         {
-            switch (Reg.GetInstallationStatus()["ep2"])
+            var status = hiWrapper.GetInstallationStatus(GAME.Episode2);
+            switch (status.Status)
             {
                 case InstallationStatus.NotInstalled: return;
                 case InstallationStatus.ImproperlyInstalled: return;
             }
-            MyDirectory.OpenInFileManager(Reg.InstallationLocation()["ep2"]);
+            MyDirectory.OpenInFileManager(status.Location);
         }
 
         private void bIOEp1Uninstall_Click(object sender, EventArgs e)

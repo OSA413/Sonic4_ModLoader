@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+
 using Common.Launcher;
 
 public enum Platform
@@ -48,7 +50,7 @@ public class HandlerInstallerWrapper : IHandlerInstaller<GAME?>
     private void HandleIt(Action<string> f, GAME? game, string args, bool noAdmin = false)
     {
         if (game == null) game = Launcher.GetCurrentGame();
-        if (game == GAME.Unknown || game == GAME.NonSteam) return;
+        if (game == GAME.Unknown) return;
         var shrt = Launcher.GetShortGame(game);
 
         if (noAdmin || RequiresAdmin() && !IsAdmin())
@@ -69,12 +71,20 @@ public class HandlerInstallerWrapper : IHandlerInstaller<GAME?>
     public void FixPath(GAME? game = null) =>
         HandleIt(baseHandlerInstaller.FixPath, game, "--fix");
 
-    public (InstallationStatus, string) GetInstallationStatus(GAME? game = null)
+    public (InstallationStatus Status, string Location) GetInstallationStatus(GAME? game = null)
     {
         if (game == null) game = Launcher.GetCurrentGame();
-        if (game == GAME.Unknown || game == GAME.NonSteam) return (InstallationStatus.NotInstalled, null);
+        if (game == GAME.Unknown) return (InstallationStatus.NotInstalled, null);
         var shrt = Launcher.GetShortGame(game);
 
         return baseHandlerInstaller.GetInstallationStatus(shrt);
+    }
+
+    public Dictionary<GAME, (InstallationStatus Status, string Location)> GetAllInstallationStatus()
+    {
+        var statuses = new Dictionary<GAME, (InstallationStatus, string)>();
+        foreach (GAME game in Enum.GetValues(typeof(GAME)))
+            statuses.Add(game, GetInstallationStatus(game));
+        return statuses;
     }
 }

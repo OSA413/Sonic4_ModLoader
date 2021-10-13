@@ -69,6 +69,7 @@
       <DependentUpon>Suspicious.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
+    <Compile Include="ModArchive.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TooManyMods.cs">
       <SubType>Form</SubType>
@@ -125,6 +126,9 @@
     </Compile>
     <Compile Include="..\Common\MyIO.cs">
       <Link>Common\MyIO.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\URL.cs">
+      <Link>Common\URL.cs</Link>
     </Compile>
   </ItemGroup>
   <ItemGroup>

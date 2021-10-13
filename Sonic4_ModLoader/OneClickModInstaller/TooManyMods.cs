@@ -7,18 +7,13 @@ namespace OneClickModInstaller
     {
         public string[] mods;
 
-        public TooManyMods(string[] list, string type = "pc")
+        public TooManyMods(string[] list, ModType type = ModType.PC)
         {
             InitializeComponent();
             foreach (var file in list)
                 checkedListBox1.Items.Add(file, true);
 
-            switch (type)
-            {
-                case "pc":      label1.Text = label1.Text.Replace("{0}", "mods");         break;
-                case "dolphin": label1.Text = label1.Text.Replace("{0}", "texture mods"); break;
-                case "ct":      label1.Text = label1.Text.Replace("{0}", "cheat tables"); break;
-            }
+            label1.Text = label1.Text.Replace("{0}", type == ModType.PC ? "mods" : "texture mods");
         }
 
         private void bContinue_Click(object sender, EventArgs e)
