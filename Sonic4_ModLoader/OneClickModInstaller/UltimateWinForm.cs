@@ -399,7 +399,7 @@ namespace OneClickModInstaller
             else if (Installation.Status == "Waiting for path")
             {
                 //?????????
-                if (Settings.Paths[Installation.Platform] != "")
+                if (Settings.Paths[Installation.Platform.ToString()] != "")
                 {
                     bModInstall.Enabled = false;
                     FinishInstallation();
@@ -531,17 +531,11 @@ namespace OneClickModInstaller
                     statusBar.Text = "Finding root directories...";
 
                     var FoundRootDirs = ModArchive.FindRoot(Installation.ArchiveDir);
-                    var FoundFiles    = ModArchive.FindFiles(Installation.ArchiveDir);
                     
-                    if (FoundRootDirs.Item2 != "???")
+                    if (FoundRootDirs.Item2 != ModType.Unknown)
                     {
                         Installation.ModRoots = FoundRootDirs.Item1;
                         Installation.Platform = FoundRootDirs.Item2;
-                    }
-                    else
-                    {
-                        Installation.ModRoots = FoundFiles.Item1;
-                        Installation.Platform = FoundFiles.Item2;
                     }
 
                     Installation.Status = "Ready to install";
@@ -558,7 +552,7 @@ namespace OneClickModInstaller
         public void ContinueInstallation()
         {
             progressBar.Style = ProgressBarStyle.Marquee;
-            if (Installation.Platform == "modloader")
+            if (Installation.Platform == ModType.ModLoader)
             {
                 File.Delete(Installation.ArchiveName);
                 var result = MessageBox.Show("One-Click Mod Installer detected a Mod Loader distributive. Do you want to replace the current version of Mod Loader with the downloaded one?"
@@ -578,7 +572,7 @@ namespace OneClickModInstaller
                     return;
                 }
             }
-            else if (Installation.Platform == "???")
+            else if (Installation.Platform == ModType.Unknown)
             {
                 //Status description
                 /*  1 - start (open SelectRoots window)
@@ -621,7 +615,7 @@ namespace OneClickModInstaller
                     return;
                 }
             }
-            else if (Installation.Platform == "mixed")
+            else if (Installation.Platform == ModType.Mixed)
             {
                 //TODO: think up a better explanation
                 MessageBox.Show("Looks like this thing is complicated, try to install it manually. bye"
@@ -641,9 +635,9 @@ namespace OneClickModInstaller
                     Installation.ModRoots = tmm_form.mods;
                 }
 
-                if (Settings.Paths.ContainsKey(Installation.Platform))
+                if (Settings.Paths.ContainsKey(Installation.Platform.ToString()))
                 {
-                    if (Settings.Paths[Installation.Platform] == "")
+                    if (Settings.Paths[Installation.Platform.ToString()] == "")
                     {
                         tcMain.SelectTab(tabSettings);
 
@@ -678,16 +672,16 @@ namespace OneClickModInstaller
                     
                     switch (Installation.Platform)
                     {
-                        case "pc":      dest = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "mods", Path.GetFileName(mod)); break;
-                        case "dolphin": dest = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Dolphin Emulator", "Load", "Textures"); break;
-                        case "???":     dest = Installation.CustomPath; break;
-                        default:        dest = Settings.Paths[Installation.Platform]; break;
+                        case ModType.PC:      dest = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "mods", Path.GetFileName(mod)); break;
+                        case ModType.Dolphin: dest = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Dolphin Emulator", "Load", "Textures"); break;
+                        case ModType.Unknown: dest = Installation.CustomPath; break;
+                        default:              dest = Settings.Paths[Installation.Platform.ToString()]; break;
                     }
                     
-                    if (Directory.Exists(dest) && Installation.Platform == "pc")
+                    if (Directory.Exists(dest) && Installation.Platform == ModType.PC)
                         MyDirectory.DeleteRecursively(dest);
                     
-                    if (Installation.Platform != "???")
+                    if (Installation.Platform != ModType.Unknown)
                         MyDirectory.CopyAll(mod, dest);
                     else
                     {
@@ -714,7 +708,7 @@ namespace OneClickModInstaller
 
                 if (Settings.ExitLaunchManager)
                 {
-                    if (Installation.Platform == "pc" && File.Exists("Sonic4ModManager.exe"))
+                    if (Installation.Platform == ModType.PC && File.Exists("Sonic4ModManager.exe"))
                         Process.Start("Sonic4ModManager.exe", "\"" + UltimateWinForm.Installation.LastMod + "\"");
                     Environment.Exit(0);
                 }

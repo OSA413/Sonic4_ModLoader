@@ -12,7 +12,14 @@ namespace OneClickModInstaller
     public enum ModType {
         PC,
         Dolphin,
+        ModLoader,
+        Mixed,
         Unknown
+    }
+
+    public enum ModInstallationStatus {
+        NotInstalled,
+
     }
     public static class ModArchive
     {
@@ -79,13 +86,13 @@ namespace OneClickModInstaller
             return cont;
         }
 
-        public static Tuple<string[], string> FindRoot(string dir_name)
+        public static Tuple<string[], ModType> FindRoot(string dir_name)
         {
-            var platform = "???";
+            var platform = ModType.Unknown;
             var mod_roots = new List<string>();
 
-            var platforms = new string[] { "pc", "dolphin", "modloader" };
-            var game_folders_array = new string[] { "CUTSCENE,DEMO,G_COM,G_SS,G_EP1COM,G_EP1ZONE2,G_EP1ZONE3,G_EP1ZONE4,G_ZONE1,G_ZONE2,G_ZONE3,G_ZONE4,G_ZONEF,MSG,NNSTDSHADER,SOUND"
+            var platforms = new [] { ModType.PC, ModType.Dolphin, ModType.ModLoader };
+            var game_folders_array = new [] { "CUTSCENE,DEMO,G_COM,G_SS,G_EP1COM,G_EP1ZONE2,G_EP1ZONE3,G_EP1ZONE4,G_ZONE1,G_ZONE2,G_ZONE3,G_ZONE4,G_ZONEF,MSG,NNSTDSHADER,SOUND"
                                                         , "WSNE8P,WSNP8P,WSNJ8P"
                                                         , "Sonic4ModLoader"};
 
@@ -111,39 +118,6 @@ namespace OneClickModInstaller
             }
 
             return Tuple.Create(mod_roots.ToArray(), platform);
-        }
-
-        public static Tuple<string[], string> FindFiles(string dir_name)
-        {
-            var file_roots = new List<string>();
-            var type = "???";
-
-            var types      = new string[] { "CheatTables" };
-            var extensions = new string[] { "ct" };
-
-            for (int i = 0; i < types.Length; i++)
-            {
-                if (type == "mixed") break;
-                string[] extensions_to_find = extensions[i].Split(',');
-
-                foreach (string extension in extensions_to_find)
-                {
-                    if (type == "mixed") break;
-                    foreach (string mod_file in Directory.GetFiles(dir_name, "*." + extension, SearchOption.AllDirectories))
-                    {
-                        if (type == "???")    type = types[i];
-                        if (type != types[i]) { type = "mixed"; break; }
-
-                        var tmp_root = Path.GetDirectoryName(mod_file);
-                        if (!file_roots.Contains(tmp_root))
-                            file_roots.Add(tmp_root);
-                    }
-                }
-            }
-            if (type == "mixed")
-                file_roots.RemoveRange(0, file_roots.Count);
-
-            return Tuple.Create(file_roots.ToArray(), type);
         }
     }
 }
