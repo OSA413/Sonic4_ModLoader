@@ -9,6 +9,7 @@ namespace Sonic4ModManager
 {
     static class Settings
     {
+        public static string ModLoaderVersion => Properties.Resources.version;
         public static string PatcherDir;
         public static int OnlineUpdateCheckPeriod;
         public static bool CheckOnlineUpdates;
@@ -26,6 +27,7 @@ namespace Sonic4ModManager
                 ValueUpdater.UpdateIfKeyPresent(cfg, "CheckOnlineUpdates", ref CheckOnlineUpdates);
             }
 
+            if (!File.Exists("AML/AliceML.ini")) return;
             var cfgAml = File.ReadAllLines("AML/AliceML.ini");
             for (int i = 0; i < cfgAml.Length; i++)
             {

@@ -84,6 +84,7 @@ namespace Sonic4ModManager
         public MainForm(string[] args)
         {
             InitializeComponent();
+            this.Text = "Sonic 4 Mod Loader [Version: " + Settings.ModLoaderVersion + "]";
             RefreshMods();
             
             var whatsNew = "Select a mod to read its description\n\n[c][b][i]What's new:[\\i][\\b]\n";
