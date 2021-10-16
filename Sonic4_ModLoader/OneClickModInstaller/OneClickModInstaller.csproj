@@ -69,7 +69,7 @@
       <DependentUpon>Forms\Suspicious.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
-    <Compile Include="ModInstallation\ModInstallation.cs" />
+    <Compile Include="ModInstallation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Forms\TooManyMods.cs">
       <SubType>Form</SubType>
