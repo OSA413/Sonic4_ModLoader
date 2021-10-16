@@ -829,7 +829,6 @@ namespace OneClickModInstaller
             chSaveDownloadedArchives.Checked = Settings.SaveDownloadedArchives;
             cbExitLaunchManager.Checked      = Settings.ExitLaunchManager;
             tbPath7z.Text                    = Settings.Paths["7-Zip"];
-            tbPathCheatTables.Text           = Settings.Paths["CheatTables"];
             tbDownloadedArchiveLocation.Text = Settings.Paths["DownloadedArhives"];
         }
 
