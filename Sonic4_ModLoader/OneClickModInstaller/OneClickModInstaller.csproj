@@ -56,37 +56,37 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SelectRoots.cs">
+    <Compile Include="Forms\SelectRoots.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SelectRoots.Designer.cs">
+    <Compile Include="Forms\SelectRoots.Designer.cs">
       <DependentUpon>SelectRoots.cs</DependentUpon>
     </Compile>
-    <Compile Include="Suspicious.cs">
+    <Compile Include="Forms\Suspicious.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Suspicious.Designer.cs">
+    <Compile Include="Forms\Suspicious.Designer.cs">
       <DependentUpon>Suspicious.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="ModArchive.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TooManyMods.cs">
+    <Compile Include="Forms\TooManyMods.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="TooManyMods.Designer.cs">
+    <Compile Include="Forms\TooManyMods.Designer.cs">
       <DependentUpon>TooManyMods.cs</DependentUpon>
     </Compile>
-    <Compile Include="UltimateWinForm.cs">
+    <Compile Include="Forms\UltimateWinForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UltimateWinForm.Designer.cs">
+    <Compile Include="Forms\UltimateWinForm.Designer.cs">
       <DependentUpon>UltimateWinForm.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="SelectRoots.resx">
+    <EmbeddedResource Include="Forms\SelectRoots.resx">
       <DependentUpon>SelectRoots.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Suspicious.resx">
+    <EmbeddedResource Include="Forms\Suspicious.resx">
       <DependentUpon>Suspicious.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -99,10 +99,10 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="TooManyMods.resx">
+    <EmbeddedResource Include="Forms\TooManyMods.resx">
       <DependentUpon>TooManyMods.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UltimateWinForm.resx">
+    <EmbeddedResource Include="Forms\UltimateWinForm.resx">
       <DependentUpon>UltimateWinForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.manifest" />
@@ -152,8 +152,6 @@
     <Content Include="icon.ico" />
     <None Include="icons\root-shield.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Common\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
