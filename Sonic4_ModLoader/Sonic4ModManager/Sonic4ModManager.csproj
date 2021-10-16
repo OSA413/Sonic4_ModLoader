@@ -139,6 +139,6 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>"bash $(ProjectDir)\generate-version.sh" || echo "Couldn't get version"</PreBuildEvent>
+    <PreBuildEvent>"bash $(ProjectDir)generate-version.sh" || echo "Couldn't get version"</PreBuildEvent>
   </PropertyGroup>
 </Project>
