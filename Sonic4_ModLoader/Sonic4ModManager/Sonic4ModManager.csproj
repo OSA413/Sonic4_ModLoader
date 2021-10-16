@@ -139,6 +139,6 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>python "$(ProjectDir)\generate_version.py"</PreBuildEvent>
+    <PreBuildEvent>"$(ProjectDir)\generate-version.sh" || echo "Couldn't get version"</PreBuildEvent>
   </PropertyGroup>
 </Project>
