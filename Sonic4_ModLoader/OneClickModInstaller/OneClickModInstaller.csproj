@@ -83,8 +83,12 @@
     <Compile Include="Forms\UltimateWinForm.Designer.cs">
       <DependentUpon>Forms\UltimateWinForm.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Properties\SelectRoots.resx" />
-    <EmbeddedResource Include="Properties\Suspicious.resx" />
+    <EmbeddedResource Include="Forms\SelectRoots.resx">
+      <DependentUpon>Forms\SelectRoots.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Suspicious.resx">
+      <DependentUpon>Forms\Suspicious.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -95,8 +99,12 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="Properties\TooManyMods.resx" />
-    <EmbeddedResource Include="Properties\UltimateWinForm.resx" />
+    <EmbeddedResource Include="Forms\TooManyMods.resx">
+      <DependentUpon>Forms\TooManyMods.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\UltimateWinForm.resx">
+      <DependentUpon>Forms\UltimateWinForm.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="app.manifest" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -144,6 +152,8 @@
     <Content Include="icon.ico" />
     <None Include="icons\root-shield.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Common\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
