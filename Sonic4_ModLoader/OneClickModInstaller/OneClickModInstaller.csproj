@@ -56,38 +56,38 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Forms\SelectRoots.cs">
+    <Compile Include="SelectRoots.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\SelectRoots.Designer.cs">
-      <DependentUpon>Forms\SelectRoots.cs</DependentUpon>
+    <Compile Include="SelectRoots.Designer.cs">
+      <DependentUpon>SelectRoots.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\Suspicious.cs">
+    <Compile Include="Suspicious.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Suspicious.Designer.cs">
-      <DependentUpon>Forms\Suspicious.cs</DependentUpon>
+    <Compile Include="Suspicious.Designer.cs">
+      <DependentUpon>Suspicious.cs</DependentUpon>
     </Compile>
     <Compile Include="Program.cs" />
-    <Compile Include="ModInstallation.cs" />
+    <Compile Include="ModArchive.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Forms\TooManyMods.cs">
+    <Compile Include="TooManyMods.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\TooManyMods.Designer.cs">
-      <DependentUpon>Forms\TooManyMods.cs</DependentUpon>
+    <Compile Include="TooManyMods.Designer.cs">
+      <DependentUpon>TooManyMods.cs</DependentUpon>
     </Compile>
-    <Compile Include="Forms\UltimateWinForm.cs">
+    <Compile Include="UltimateWinForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\UltimateWinForm.Designer.cs">
-      <DependentUpon>Forms\UltimateWinForm.cs</DependentUpon>
+    <Compile Include="UltimateWinForm.Designer.cs">
+      <DependentUpon>UltimateWinForm.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="Forms\SelectRoots.resx">
-      <DependentUpon>Forms\SelectRoots.cs</DependentUpon>
+    <EmbeddedResource Include="SelectRoots.resx">
+      <DependentUpon>SelectRoots.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\Suspicious.resx">
-      <DependentUpon>Forms\Suspicious.cs</DependentUpon>
+    <EmbeddedResource Include="Suspicious.resx">
+      <DependentUpon>Suspicious.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
@@ -99,11 +99,11 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="Forms\TooManyMods.resx">
-      <DependentUpon>Forms\TooManyMods.cs</DependentUpon>
+    <EmbeddedResource Include="TooManyMods.resx">
+      <DependentUpon>TooManyMods.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Forms\UltimateWinForm.resx">
-      <DependentUpon>Forms\UltimateWinForm.cs</DependentUpon>
+    <EmbeddedResource Include="UltimateWinForm.resx">
+      <DependentUpon>UltimateWinForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="app.manifest" />
     <None Include="Properties\Settings.settings">
