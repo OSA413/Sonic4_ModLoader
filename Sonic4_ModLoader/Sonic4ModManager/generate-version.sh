@@ -6,4 +6,4 @@ version="$(git describe --tags --abbrev=0)"
 
 [ $current_commit != $last_tag_commit ] && version=${current_commit:0:7}
 
-echo $version > version
+echo $version > version.txt
