@@ -21,12 +21,10 @@ cp "LICENSE" "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-Sonic4_ModLoa
 #EXEs
 cp "./Sonic4_ModLoader/AMBPatcher/bin/Release/AMBPatcher.exe" "./dist/Sonic4ModLoader/AMBPatcher.exe"
 cp "./Sonic4_ModLoader/ManagerLauncher/bin/Release/ManagerLauncher.exe" "./dist/Sonic4ModLoader/ManagerLauncher.exe"
-cp "./Sonic4_ModLoader/PatchLauncher/bin/Release/PatchLauncher.exe" "./dist/Sonic4ModLoader/PatchLauncher.exe"
 cp "./Sonic4_ModLoader/Sonic4ModManager/bin/Release/Sonic4ModManager.exe" "./dist/Sonic4ModLoader/Sonic4ModManager.exe"
 cp "./Sonic4_ModLoader/OneClickModInstaller/bin/Release/OneClickModInstaller.exe" "./dist/Sonic4ModLoader/OneClickModInstaller.exe"
-#READMEs
+#README
 cp "./README.md" "./dist/Sonic4ModLoader/README.md"
-pandoc -s -f gfm -t rtf -o "./dist/Sonic4ModLoader/README.rtf" "./README.md"
 #Change log
 cp "./docs/Mod Loader - Whats new.txt" "./dist/Sonic4ModLoader/Mod Loader - Whats new.txt"
 
