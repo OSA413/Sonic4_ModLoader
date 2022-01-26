@@ -2,6 +2,8 @@
 #please, keep all sh scripts in Unix new line (LF)
 cd "$(dirname "$0")"
 
+bash Sonic4_ModLoader/generate-version.sh
+
 echo "Compiling..."
 msbuild ./Sonic4_ModLoader/Sonic4_ModLoader.sln /p:Configuration=Release -m
 

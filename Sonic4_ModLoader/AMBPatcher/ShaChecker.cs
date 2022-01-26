@@ -7,7 +7,7 @@ namespace AMBPatcher
 {
     public static class ShaChecker
     {
-        public static SHA1CryptoServiceProvider SHAcsp = new SHA1CryptoServiceProvider();
+        public static HashAlgorithm SHAcsp = SHA1.Create();
         public static string Sha(byte[] file)
         {
             var hash = SHAcsp.ComputeHash(file);

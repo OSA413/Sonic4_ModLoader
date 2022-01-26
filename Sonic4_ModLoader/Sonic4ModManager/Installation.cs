@@ -160,7 +160,7 @@ namespace Sonic4ModManager
 
         public static void Upgrade(string dirToNewVersion)
         {
-            var myDir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
+            var myDir = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
             if (Directory.Exists(dirToNewVersion))
             {
                 var installFrom = dirToNewVersion;

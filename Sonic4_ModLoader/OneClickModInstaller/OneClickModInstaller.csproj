@@ -49,9 +49,4 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.0" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Remove="HandlerInstaller\IHandlerInstaller.cs" />
-    <Compile Remove="HandlerInstaller\Linux.cs" />
-    <Compile Remove="HandlerInstaller\Windows.cs" />
-  </ItemGroup>
 </Project>
