@@ -19,6 +19,7 @@ namespace Sonic4ModManager
             }
 
             Application.EnableVisualStyles();
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
             Application.SetCompatibleTextRenderingDefault(false);
 
             if (Installation.GetInstallationStatus() == Installation.Status.FirstLaunch)
