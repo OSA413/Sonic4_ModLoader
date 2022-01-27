@@ -10,8 +10,8 @@ except:
     pass
 from paths import *
 
-TEST_SUCCESS = "✔ OK"
-TEST_FAIL = "✖ Failed"
+TEST_SUCCESS = "✔ OK".encode("utf-8")
+TEST_FAIL = "✖ Failed".encode("utf-8")
 
 def sha256(x):
     if type(x) == str:
