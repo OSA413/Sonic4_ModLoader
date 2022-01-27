@@ -8,6 +8,7 @@ namespace AMBPatcher
 
         public static void PrintProgress(int i, int max_i, string title)
         {
+            return;
             if (!ProgressBar.Enabled || Console.WindowWidth <= 0) return;
 
             int barLen = Math.Min(50, Console.WindowWidth);
