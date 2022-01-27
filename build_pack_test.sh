@@ -22,9 +22,9 @@ echo "Copying new distribution files..."
 cp "LICENSE" "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-Sonic4_ModLoader"
 #EXEs
 cp "./Sonic4_ModLoader/AMBPatcher/bin/Release/net6.0/win-x64/publish/AMBPatcher.exe" "./dist/Sonic4ModLoader/AMBPatcher.exe"
-cp "./Sonic4_ModLoader/ManagerLauncher/bin/Release/net6.0-windows/publish/ManagerLauncher.exe" "./dist/Sonic4ModLoader/ManagerLauncher.exe"
-cp "./Sonic4_ModLoader/Sonic4ModManager/bin/Release/net6.0-windows/publish/Sonic4ModManager.exe" "./dist/Sonic4ModLoader/Sonic4ModManager.exe"
-cp "./Sonic4_ModLoader/OneClickModInstaller/bin/Release/net6.0-windows/publish/OneClickModInstaller.exe" "./dist/Sonic4ModLoader/OneClickModInstaller.exe"
+cp "./Sonic4_ModLoader/ManagerLauncher/bin/Release/net6.0-windows/win-x64/publish/ManagerLauncher.exe" "./dist/Sonic4ModLoader/ManagerLauncher.exe"
+cp "./Sonic4_ModLoader/Sonic4ModManager/bin/Release/net6.0-windows/win-x64/publish/Sonic4ModManager.exe" "./dist/Sonic4ModLoader/Sonic4ModManager.exe"
+cp "./Sonic4_ModLoader/OneClickModInstaller/bin/Release/net6.0-windows/win-x64/publish/OneClickModInstaller.exe" "./dist/Sonic4ModLoader/OneClickModInstaller.exe"
 #README
 cp "./README.md" "./dist/Sonic4ModLoader/README.md"
 #Change log
