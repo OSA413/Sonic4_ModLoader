@@ -122,10 +122,16 @@ if __name__ == "__main__":
         check = check_files(test, REBUILD_SHA=REBUILD_SHA)
 
         if check == 0:
-            print(TEST_SUCCESS + " (" + str(round(test_time, 4)) + "s)")
+            try:
+                print(TEST_SUCCESS + " (" + str(round(test_time, 4)) + "s)")
+            except:
+                print("SUCCESS (" + str(round(test_time, 4)) + "s)")
         elif check == 1:
             EXIT_CODE = 1
-            print(TEST_FAIL)
+            try:
+                print(TEST_FAIL)
+            except:
+                print("FAIL")
         elif check == 2:
             EXIT_CODE = 2
             print("? No SHA file")
