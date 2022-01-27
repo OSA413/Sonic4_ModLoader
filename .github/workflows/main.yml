@@ -26,9 +26,6 @@ jobs:
       - name: Update dependencies
         run: bash update_dependencies.sh
 
-      - name: Set Python UTF-8
-        run: set PYTHONIOENCODING=utf-8
-
       - name: Build
         run: bash build_pack_test.sh
         
