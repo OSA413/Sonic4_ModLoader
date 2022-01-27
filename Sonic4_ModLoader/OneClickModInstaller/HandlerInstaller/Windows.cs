@@ -1,6 +1,5 @@
 using System;
 using System.Diagnostics;
-using System.Reflection;
 using Microsoft.Win32;
 using System.Security.Principal;
 
@@ -37,7 +36,7 @@ public class HandlerInstallerWindows : IHandlerInstaller<string>
         Registry.SetValue(root_key, "", "URL:OSA413's One-Click Mod Installer protocol");
         Registry.SetValue(root_key, "URL Protocol", "");
         Registry.SetValue(root_key + "\\DefaultIcon", "", "OneClickModInstaller.exe");
-        Registry.SetValue(root_key + "\\Shell\\Open\\Command", "", "\"" + Assembly.GetEntryAssembly().Location + "\" \"%1\"");
+        Registry.SetValue(root_key + "\\Shell\\Open\\Command", "", "\"" + System.AppContext.BaseDirectory + "\" \"%1\"");
     }
 
     public void Uninstall(string game)
@@ -50,7 +49,7 @@ public class HandlerInstallerWindows : IHandlerInstaller<string>
     public void FixPath(string game)
     {
         Registry.SetValue("HKEY_CLASSES_ROOT\\sonic4mm" + game + "\\Shell\\Open\\Command",
-            "", "\"" + Assembly.GetEntryAssembly().Location + "\" \"%1\"");
+            "", "\"" + System.AppContext.BaseDirectory + "\" \"%1\"");
     }
 
     public (InstallationStatus Status, string Location) GetInstallationStatus(string game)
@@ -69,7 +68,7 @@ public class HandlerInstallerWindows : IHandlerInstaller<string>
             location = location.Substring(1, location.Length - 7);
 
         status = InstallationStatus.AnotherInstallationPresent;
-        if (location == System.Reflection.Assembly.GetEntryAssembly().Location)
+        if (location == System.AppContext.BaseDirectory)
             status = InstallationStatus.Installed;
 
         return (status, location);

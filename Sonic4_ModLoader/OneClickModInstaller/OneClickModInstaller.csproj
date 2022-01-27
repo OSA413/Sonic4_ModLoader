@@ -36,20 +36,12 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HandlerInstaller/IHandlerInstaller.cs" />
-    <Compile Include="HandlerInstaller/Windows.cs" />
-    <Compile Include="HandlerInstaller/Linux.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="ocmi_logo.png" />
     <Content Include="icon.ico" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="System.Data.DataSetExtensions" Version="4.5.0" />
-    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.3.261602">
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.0" />
   </ItemGroup>
 </Project>
