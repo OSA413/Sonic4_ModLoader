@@ -1,0 +1,60 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build-pack-win64:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'
+      - uses: actions/checkout@v2
+
+      - name: Update dependencies
+        run: bash update_dependencies.sh
+
+      - name: Build
+        run: bash build_pack_test.sh
+        
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Sonic 4 Mod Loader
+          path: dist/Sonic4ModLoader.7z
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Sonic 4 Mod Loader (without 7-Zip)
+          path: dist/Sonic4ModLoader_7zip-less.7z
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: SHA256 sums
+          path: dist/SHA256SUMS
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: AMBPatcher
+          path: dist/Sonic4ModLoader/AMBPatcher.exe
+  
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'
+      - uses: actions/checkout@v2
+
+      - name: Build AMBPatcher
+        run: |
+          dotnet publish Sonic4_ModLoader/AMBPatcher -c Release --self-contained --os linux
+          mkdir -p "./dist/Sonic4ModLoader/Mod Loader - licenses"
+          cp "./Sonic4_ModLoader/AMBPatcher/bin/Release/net6.0/linux-x64/publish/AMBPatcher" "./dist/Sonic4ModLoader/AMBPatcher.exe"
+
+      - name: Run tests
+        run: bash ./tests/run_tests.sh --no-crash
