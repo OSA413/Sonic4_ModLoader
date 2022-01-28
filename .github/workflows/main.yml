@@ -57,9 +57,9 @@ jobs:
 
       - name: Build AMBPatcher
         run: |
-          dotnet publish Sonic4_ModLoader/AMBPatcher -c Release
+          dotnet publish Sonic4_ModLoader/AMBPatcher -c Release --self-contained
           mkdir -p "./dist/Sonic4ModLoader/Mod Loader - licenses"
-          cp "./Sonic4_ModLoader/AMBPatcher/bin/Release/net6.0/win-x64/publish/AMBPatcher.exe" "./dist/Sonic4ModLoader/AMBPatcher.exe"
+          cp "./Sonic4_ModLoader/AMBPatcher/bin/Release/net6.0/linux-x64/publish/AMBPatcher" "./dist/Sonic4ModLoader/AMBPatcher.exe"
 
       - name: Run tests
         run: bash ./tests/run_tests.sh --no-crash
