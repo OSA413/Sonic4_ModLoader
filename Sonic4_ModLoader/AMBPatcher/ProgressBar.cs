@@ -8,7 +8,6 @@ namespace AMBPatcher
 
         public static void PrintProgress(int i, int max_i, string title)
         {
-            return;
             if (!ProgressBar.Enabled || Console.WindowWidth <= 0) return;
 
             int barLen = Math.Min(50, Console.WindowWidth);
@@ -32,7 +31,6 @@ namespace AMBPatcher
 
         public static void ClearLine()
         {
-            return;
             if (Console.WindowWidth <= 0) return;
             Console.CursorLeft = 0;
             Console.Write(new string(' ', Console.WindowWidth - 1));
@@ -41,14 +39,12 @@ namespace AMBPatcher
 
         public static void MoveCursorUp(int i = 2)
         {
-            return;
             if (!ProgressBar.Enabled) return;
             Console.CursorTop -= Math.Min(i, Console.CursorTop);
         }
 
         public static void MoveCursorDown(int i = 2)
         {
-            return;
             if (!ProgressBar.Enabled) return;
             Console.CursorTop += i;
         }
