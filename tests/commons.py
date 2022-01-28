@@ -47,7 +47,7 @@ def mono_or_wine():
         except:
             pass
 
-    return answer
+    return "dotnet"
 
 def make_path_abs(p):
     return os.path.abspath(PATHS[DIST]) + "/" + str(p)

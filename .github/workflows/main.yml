@@ -14,6 +14,7 @@ on:
 jobs:
   build-pack-win64:
     runs-on: windows-latest
+    if: false
     steps:
       - uses: actions/setup-dotnet@v1
         with:
