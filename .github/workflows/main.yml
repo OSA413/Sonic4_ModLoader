@@ -1,4 +1,4 @@
-name: Main
+name: Midday build
 
 on:
   push:
@@ -7,8 +7,6 @@ on:
   pull_request:
     branches:
      - "**"
-  release:
-    types: [published]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
