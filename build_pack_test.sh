@@ -66,12 +66,3 @@ echo "Archiving..."
 #7-Zip-less package
 cp "./dist/Sonic4ModLoader.7z" "./dist/Sonic4ModLoader_7zip-less.7z"
 7z d "./dist/Sonic4ModLoader_7zip-less.7z" "Sonic4ModLoader/Mod Loader - licenses/LICENSE-7-Zip" "Sonic4ModLoader/7z.exe" "Sonic4ModLoader/7z.dll"
-
-#Tests
-bash ./tests/run_tests.sh --no-crash
-
-EXIT_CODE="$?"
-#if [ "$EXIT_CODE" != "0" ]; then
-#    exit $EXIT_CODE
-#fi
-

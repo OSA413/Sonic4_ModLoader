@@ -12,21 +12,32 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  checkout:
     runs-on: windows-latest
-
     steps:
       - uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '6.0.x'
       - uses: actions/checkout@v2
 
+  dependencies:
+    needs: checkout
+    runs-on: windows-latest
+    steps:
       - name: Update dependencies
         run: bash update_dependencies.sh
 
+  build:
+    needs: checkout
+    runs-on: windows-latest
+    steps:
       - name: Build
         run: bash build_pack_test.sh
         
+  artifacts:
+    needs: [build, dependencies]
+    runs-on: windows-latest
+    steps:
       - uses: actions/upload-artifact@v2
         with:
           name: Sonic 4 Mod Loader
@@ -46,3 +57,10 @@ jobs:
         with:
           name: AMBPatcher
           path: dist/Sonic4ModLoader/AMBPatcher.exe
+  
+  tests:
+    needs: [build, dependencies]
+    runs-on: windows-latest
+    steps:
+      - name: Tests
+        run: bash ./tests/run_tests.sh --no-crash
