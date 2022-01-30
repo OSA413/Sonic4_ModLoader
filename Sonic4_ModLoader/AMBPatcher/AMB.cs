@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2021 Oleg "OSA413" Sokolov
+ * Copyright (c) 2018-2022 Oleg "OSA413" Sokolov
  * Licensed under the MIT License
  * https://github.com/OSA413/Sonic4_ModLoader/blob/master/LICENSE
  */
