@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 
 [assembly: AssemblyTitle("Sonic4ModManager")]
 [assembly: AssemblyDescription("Mod Manager for Sonic 4")]
@@ -9,3 +10,4 @@ using System.Runtime.InteropServices;
 
 [assembly: ComVisible(false)]
 [assembly: Guid("8af89a84-4ea0-43c2-9872-25834a7c55e5")]
+[assembly: SupportedOSPlatform("windows")]
