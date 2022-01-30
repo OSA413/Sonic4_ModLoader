@@ -15,7 +15,7 @@ FAQ: https://github.com/OSA413/Sonic4_ModLoader/blob/master/docs/FAQ.md
 * [How to use a copy of 7-Zip from your system](#third-party-works)
 * [How to automatically update Mod Loader](#how-to-automatically-update-mod-loader)
 * [Bug reporting and suggestions](#bug-reporting-and-suggestions)
-* [Useful documentation for modders](#useful-documentation-for-modders)
+* [Useful documentation for modders and contributors](#useful-documentation-for-modders-and-contributors)
 * [See also](#see-also)
 
 ## What is this?
@@ -96,19 +96,12 @@ Note: if OCMI fails to find `7z.exe` in your path, it will try to use a copy tha
 2. Press "Install"
 3. Agree to replace current version with the downloaded one.
 
-## Bug reporting and suggestions
-
-Bugs reports and suggestions should be sent to GitHub's issues page of the Mod Loader:
-https://github.com/OSA413/Sonic4_ModLoader/issues
-
-For other types of discussions contact my on my [Twitter](https://twitter.com/OSA_413), [Discussion page on GitHub](https://github.com/OSA413/Sonic4_ModLoader/discussions), or [Join Sonic 4 Modding Discord server](https://discord.gg/WCp8BFyFxN).
-
-## Useful documentation for modders
+## Useful documentation for modders and contributors
 * How to use AMBPatcher: `AMBPatcher.exe --help`
 * [Mod structure](https://github.com/OSA413/Sonic4_ModLoader/blob/master/docs/Mod%20structure.md)
 * [Description of file extensions](https://github.com/OSA413/Sonic4_Tools/blob/master/docs/File%20description.md)
-* [Tools by me + extra docs](https://github.com/OSA413/Sonic4_Tools)
-* [Mod examples](https://github.com/OSA413/Sonic4_ModLoader_examples)
+* [Modding as for its current state](https://gamebanana.com/tuts/14585)
+* [How to compile Mod Loader](https://github.com/OSA413/Sonic4_ModLoader/blob/master/docs/compile.md)
 
 ## See also
 

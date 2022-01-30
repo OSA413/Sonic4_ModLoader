@@ -1,6 +1,6 @@
 # Welcome to the FAQ of the Mod Loader!
 
-Can't find your question? Try to contact me somewhere on the Internet (please, don't use GitHub's issues for questions).
+Can't find your question? Try to contact me somewhere on the Internet.
 
 ----------------------------
 
@@ -24,11 +24,7 @@ This folder stores file hashes of enabled mods (you can select which SHA algorit
 
 ## I want to create a mod! Where should I start?
 
-[Mod Loader installation](https://github.com/OSA413/Sonic4_ModLoader/blob/master/docs/FAQ.md#how-do-i-install-mod-loader)
-
-[Description of file extensions](https://github.com/OSA413/Sonic4_Tools/blob/master/docs/File%20description.md)
-
-[Mod Examples](https://github.com/OSA413/Sonic4_ModLoader_examples)
+[See here.](https://github.com/OSA413/Sonic4_ModLoader#useful-documentation-for-modders-and-contributors)
 
 ## Linux?
 
@@ -40,4 +36,4 @@ Episode 2 should work rigth out of the box using Proton `4.11-2`.
 
 ## Roadmap?
 
-Check [Project page on GitHub](https://github.com/OSA413/Sonic4_ModLoader/projects). Sometimes I create a TODO list for the next stable version.
+Check [Project page on GitHub](https://github.com/OSA413/Sonic4_ModLoader/projects).

@@ -20,7 +20,7 @@ jobs:
         run: bash update_dependencies.sh
 
       - name: Build
-        run: bash build_pack_test.sh
+        run: bash build_pack.sh
         
       - uses: actions/upload-artifact@v2
         with:
