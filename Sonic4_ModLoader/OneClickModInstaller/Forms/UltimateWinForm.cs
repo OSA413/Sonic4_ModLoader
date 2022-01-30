@@ -872,7 +872,6 @@ namespace OneClickModInstaller
                 tbModURL.Text = path;
         }
 
-        private void linkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) =>
-            Process.Start(((Control)sender).Text);
+        private void linkLabel_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) => Process.Start(((Control)sender).Text);
     }
 }

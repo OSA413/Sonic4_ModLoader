@@ -1,5 +1,4 @@
 #!/bin/bash
-#please, keep all sh scripts in Unix new line (LF)
 cd "$(dirname "$0")"
 
 bash Sonic4_ModLoader/generate-version.sh

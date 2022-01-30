@@ -33,28 +33,11 @@ def clear_dir(d):
             if i.endswith(".gitignore"): continue
             os.remove(i)
 
-def mono_or_wine():
-    answer = ""
-    if os.name == "nt": return answer
-
-    try:
-        subprocess.check_output(["mono", "--version"])
-        answer = "mono"
-    except:
-        try:
-            subprocess.check_output(["wine", "--version"])
-            answer = "wine"
-        except:
-            pass
-
-    return ""
-
 def make_path_abs(p):
     return os.path.abspath(PATHS[DIST]) + "/" + str(p)
 
 def rebuild_paths():
     PATHS[AMBPATCHER] = make_path_abs(PATHS[AMBPATCHER])
-
 
 def copy_dir_recursively_shutil(src, dst):
     shutil.copytree(src, dst)

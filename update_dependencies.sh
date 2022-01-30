@@ -1,5 +1,4 @@
 #!/bin/bash
-#please, keep all sh scripts in Unix new line (LF)
 cd "$(dirname "$0")"
 
 rm -rf "dependencies_source"

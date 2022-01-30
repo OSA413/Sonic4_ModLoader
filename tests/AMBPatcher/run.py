@@ -15,7 +15,6 @@ import instructions
 import files_to_check
 
 MAIN_AMB = "test.amb"
-MONO = mono_or_wine()
 
 def run_test(test_name, NO_CRASH=False):
     test_sequence = instructions.get_test(test_name=test_name,
@@ -40,7 +39,6 @@ def run_test(test_name, NO_CRASH=False):
             else:
                 run_test(seq, NO_CRASH)
         else:
-            if MONO: seq.insert(0, MONO)
             if NO_CRASH:
                 try:
                     subprocess.check_output(seq)
