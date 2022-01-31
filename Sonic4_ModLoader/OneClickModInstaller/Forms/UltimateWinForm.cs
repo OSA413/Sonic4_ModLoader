@@ -4,21 +4,16 @@ using System.IO;
 using System.Net;
 using System.ComponentModel;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 
-using Common.Ini;
 using Common.MyIO;
 using Common.URL;
 using Common.Launcher;
-using Common.ValueUpdater;
 
 namespace OneClickModInstaller
 {
     public partial class UltimateWinForm:Form
     {
-
         public static HandlerInstallerWrapper hiWrapper = Program.hiWrapper;
         //This class stores variables related to mod installation
         public static class Installation
@@ -41,74 +36,13 @@ namespace OneClickModInstaller
             public static long      Total;
         }
 
-        public static class Settings
-        {
-            public static bool UseLocal7zip;
-            public static bool SaveDownloadedArchives;
-            public static bool ExitLaunchManager;
-
-            public static Dictionary<string, string> Paths;
-
-            public static void Load()
-            {
-                //Defaults
-                Settings.UseLocal7zip           = false;
-                Settings.SaveDownloadedArchives = false;
-                Settings.ExitLaunchManager      = true;
-
-                Settings.Paths = new Dictionary<string, string>();
-                Settings.Paths.Add("7-Zip", "");
-                Settings.Paths.Add("DownloadedArhives", "mods_downloaded");
-
-                var cfg = IniReader.Read("OneClickModInstaller.cfg");
-
-                if (cfg.ContainsKey(IniReader.DEFAULT_SECTION))
-                {
-                    var def = cfg[IniReader.DEFAULT_SECTION];
-                    ValueUpdater.UpdateIfKeyPresent(def, "UseLocal7zip", ref Settings.UseLocal7zip);
-                    ValueUpdater.UpdateIfKeyPresent(def, "SaveDownloadedArchives", ref Settings.SaveDownloadedArchives);
-                    ValueUpdater.UpdateIfKeyPresent(def, "ExitLaunchManager", ref Settings.ExitLaunchManager);
-                }
-
-                if (cfg.ContainsKey("Paths"))
-                {
-                    var cfgPaths = cfg["Paths"];
-                    foreach (var p in Settings.Paths.Keys.ToList())
-                    {
-                        ValueUpdater.UpdateIfKeyPresent(cfgPaths, p, Settings.Paths);
-                        Settings.Paths[p] = Settings.Paths[p].Replace("\\", "/");
-                    }
-                }
-            }
-
-            public static void Save()
-            {
-                var text = new List<string> { };
-
-                text.Add("UseLocal7zip="           + Convert.ToInt32(Settings.UseLocal7zip));
-                text.Add("SaveDownloadedArchives=" + Convert.ToInt32(Settings.SaveDownloadedArchives));
-                text.Add("ExitLaunchManager="      + Convert.ToInt32(Settings.ExitLaunchManager));
-
-                text.Add("[Paths]");
-                foreach (var path in Settings.Paths.Keys)
-                    text.Add(path + "=" + Settings.Paths[path]);
-
-                File.WriteAllLines("OneClickModInstaller.cfg", text);
-            }
-        }
-
         public UltimateWinForm(string[] args)
         {
             InitializeComponent();
-
-            Settings.Load();
-            fake_SettingsLoad();
-            Installation.Status = "Idle";
-            Installation.Local      =
-            Installation.FromDir    =
-            Installation.FromArgs   = false;
-
-            lType.Text = lModID.Text = lDownloadType.Text = lDownloadID.Text = null;
+            UpdateUI.AttachForm(this);
+            UpdateUI.Initial();
+            UpdateUI.Settings();
+            MessageBox.Show(this.DeviceDpi.ToString());
 
             if (args.Length > 0)
             {
@@ -131,13 +65,19 @@ namespace OneClickModInstaller
                 else
                 {
                     Installation.FromArgs = true;
-                    //a 1-lick installation call
+                    //a one-click installation call
                     //sonic4mmepx:url,mod_type,mod_id
                     tcMain.SelectTab(tabModInst);
                     var tmp_args = args[0].Substring(12).Split(',');
                     tbModURL.Text       = tmp_args[0];
-                    if (tmp_args.Length > 1) { lDownloadType.Text = "Mod type:"; lType.Text  = tmp_args[1]; }
-                    if (tmp_args.Length > 2) { lDownloadID.Text   = "Mod ID:";   lModID.Text = tmp_args[2]; }
+                    if (tmp_args.Length > 1) {
+                        lDownloadType.Text = "Mod type:";
+                        lType.Text  = tmp_args[1]; 
+                    }
+                    if (tmp_args.Length > 2) {
+                        lDownloadID.Text   = "Mod ID:";
+                        lModID.Text = tmp_args[2];
+                    }
 
                     PrepareInstallation();
                 }
@@ -819,17 +759,6 @@ namespace OneClickModInstaller
             var path = MyDirectory.Select("directory where you want to save downloaded archives", "dir");
             if (path != null)
                 tbDownloadedArchiveLocation.Text = path;
-        }
-
-        private void fake_SettingsLoad()
-        {
-            Settings.Load();
-
-            cbUseLocal7zip.Checked           = Settings.UseLocal7zip;
-            chSaveDownloadedArchives.Checked = Settings.SaveDownloadedArchives;
-            cbExitLaunchManager.Checked      = Settings.ExitLaunchManager;
-            tbPath7z.Text                    = Settings.Paths["7-Zip"];
-            tbDownloadedArchiveLocation.Text = Settings.Paths["DownloadedArhives"];
         }
 
         private void fake_SettingsSave(object sender, EventArgs e)

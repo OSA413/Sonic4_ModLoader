@@ -28,6 +28,7 @@ namespace OneClickModInstaller
             Application.EnableVisualStyles();
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
             Application.SetCompatibleTextRenderingDefault(false);
+            Settings.Load();
             Application.Run(new UltimateWinForm(args));
         }
     }

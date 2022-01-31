@@ -52,16 +52,16 @@
             this.lIOEp1Stat = new System.Windows.Forms.Label();
             this.lIOEp1Deco = new System.Windows.Forms.Label();
             this.tabModInst = new System.Windows.Forms.TabPage();
+            this.lType = new System.Windows.Forms.Label();
+            this.lDownloadType = new System.Windows.Forms.Label();
+            this.lDownloadID = new System.Windows.Forms.Label();
+            this.lModID = new System.Windows.Forms.Label();
             this.chSaveDownloadedArchives = new System.Windows.Forms.CheckBox();
             this.cbExitLaunchManager = new System.Windows.Forms.CheckBox();
             this.bModPath = new System.Windows.Forms.Button();
             this.tbModURL = new System.Windows.Forms.TextBox();
-            this.lType = new System.Windows.Forms.Label();
-            this.lDownloadType = new System.Windows.Forms.Label();
             this.lDownloadLink = new System.Windows.Forms.Label();
             this.lDownloadTrying = new System.Windows.Forms.Label();
-            this.lDownloadID = new System.Windows.Forms.Label();
-            this.lModID = new System.Windows.Forms.Label();
             this.bModInstall = new System.Windows.Forms.Button();
             this.tabSettings = new System.Windows.Forms.TabPage();
             this.tcSettings = new System.Windows.Forms.TabControl();
@@ -111,21 +111,23 @@
             this.tcMain.Controls.Add(this.tabModInst);
             this.tcMain.Controls.Add(this.tabSettings);
             this.tcMain.Controls.Add(this.tabAbout);
-            this.tcMain.ItemSize = new System.Drawing.Size(99, 18);
-            this.tcMain.Location = new System.Drawing.Point(12, 102);
+            this.tcMain.ItemSize = new System.Drawing.Size(99, 24);
+            this.tcMain.Location = new System.Drawing.Point(16, 157);
+            this.tcMain.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tcMain.Name = "tcMain";
             this.tcMain.SelectedIndex = 0;
-            this.tcMain.Size = new System.Drawing.Size(402, 200);
+            this.tcMain.Size = new System.Drawing.Size(536, 308);
             this.tcMain.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.tcMain.TabIndex = 1;
             // 
             // tabInstaller
             // 
             this.tabInstaller.Controls.Add(this.tcInstallation);
-            this.tabInstaller.Location = new System.Drawing.Point(4, 22);
+            this.tabInstaller.Location = new System.Drawing.Point(4, 28);
+            this.tabInstaller.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabInstaller.Name = "tabInstaller";
-            this.tabInstaller.Padding = new System.Windows.Forms.Padding(3);
-            this.tabInstaller.Size = new System.Drawing.Size(394, 174);
+            this.tabInstaller.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tabInstaller.Size = new System.Drawing.Size(528, 276);
             this.tabInstaller.TabIndex = 0;
             this.tabInstaller.Text = "Installer";
             this.tabInstaller.UseVisualStyleBackColor = true;
@@ -134,11 +136,12 @@
             // 
             this.tcInstallation.Controls.Add(this.tabCurrent);
             this.tcInstallation.Controls.Add(this.tabOverall);
-            this.tcInstallation.ItemSize = new System.Drawing.Size(195, 18);
+            this.tcInstallation.ItemSize = new System.Drawing.Size(195, 24);
             this.tcInstallation.Location = new System.Drawing.Point(0, 0);
+            this.tcInstallation.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tcInstallation.Name = "tcInstallation";
             this.tcInstallation.SelectedIndex = 0;
-            this.tcInstallation.Size = new System.Drawing.Size(394, 174);
+            this.tcInstallation.Size = new System.Drawing.Size(525, 268);
             this.tcInstallation.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.tcInstallation.TabIndex = 15;
             // 
@@ -151,10 +154,11 @@
             this.tabCurrent.Controls.Add(this.bInstall);
             this.tabCurrent.Controls.Add(this.lInstallationStatus);
             this.tabCurrent.Controls.Add(this.lInstallStatus);
-            this.tabCurrent.Location = new System.Drawing.Point(4, 22);
+            this.tabCurrent.Location = new System.Drawing.Point(4, 28);
+            this.tabCurrent.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabCurrent.Name = "tabCurrent";
-            this.tabCurrent.Padding = new System.Windows.Forms.Padding(3);
-            this.tabCurrent.Size = new System.Drawing.Size(386, 148);
+            this.tabCurrent.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tabCurrent.Size = new System.Drawing.Size(517, 236);
             this.tabCurrent.TabIndex = 0;
             this.tabCurrent.Text = "Current installation";
             this.tabCurrent.UseVisualStyleBackColor = true;
@@ -162,26 +166,29 @@
             // lGameName
             // 
             this.lGameName.AutoSize = true;
-            this.lGameName.Location = new System.Drawing.Point(110, 8);
+            this.lGameName.Location = new System.Drawing.Point(147, 12);
+            this.lGameName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lGameName.Name = "lGameName";
-            this.lGameName.Size = new System.Drawing.Size(124, 13);
+            this.lGameName.Size = new System.Drawing.Size(170, 20);
             this.lGameName.TabIndex = 21;
             this.lGameName.Text = "//Game name goes here";
             // 
             // lInstallGame
             // 
             this.lInstallGame.AutoSize = true;
-            this.lInstallGame.Location = new System.Drawing.Point(63, 8);
+            this.lInstallGame.Location = new System.Drawing.Point(84, 12);
+            this.lInstallGame.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lInstallGame.Name = "lInstallGame";
-            this.lInstallGame.Size = new System.Drawing.Size(41, 13);
+            this.lInstallGame.Size = new System.Drawing.Size(55, 20);
             this.lInstallGame.TabIndex = 20;
             this.lInstallGame.Text = "Game: ";
             // 
             // lInstallAdmin
             // 
-            this.lInstallAdmin.Location = new System.Drawing.Point(63, 44);
+            this.lInstallAdmin.Location = new System.Drawing.Point(84, 68);
+            this.lInstallAdmin.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lInstallAdmin.Name = "lInstallAdmin";
-            this.lInstallAdmin.Size = new System.Drawing.Size(256, 23);
+            this.lInstallAdmin.Size = new System.Drawing.Size(341, 35);
             this.lInstallAdmin.TabIndex = 19;
             this.lInstallAdmin.Text = "Installation requires administrator privileges.";
             this.lInstallAdmin.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -190,9 +197,10 @@
             // 
             this.bUninstall.Image = global::OneClickModInstaller.Properties.Resources.root_shield;
             this.bUninstall.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.bUninstall.Location = new System.Drawing.Point(63, 108);
+            this.bUninstall.Location = new System.Drawing.Point(84, 166);
+            this.bUninstall.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.bUninstall.Name = "bUninstall";
-            this.bUninstall.Size = new System.Drawing.Size(256, 32);
+            this.bUninstall.Size = new System.Drawing.Size(341, 49);
             this.bUninstall.TabIndex = 18;
             this.bUninstall.Text = "Uninstall";
             this.bUninstall.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
@@ -203,9 +211,10 @@
             // 
             this.bInstall.Image = global::OneClickModInstaller.Properties.Resources.root_shield;
             this.bInstall.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.bInstall.Location = new System.Drawing.Point(63, 70);
+            this.bInstall.Location = new System.Drawing.Point(84, 108);
+            this.bInstall.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.bInstall.Name = "bInstall";
-            this.bInstall.Size = new System.Drawing.Size(256, 32);
+            this.bInstall.Size = new System.Drawing.Size(341, 49);
             this.bInstall.TabIndex = 17;
             this.bInstall.Text = "Install/Fix";
             this.bInstall.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
@@ -215,18 +224,20 @@
             // lInstallationStatus
             // 
             this.lInstallationStatus.AutoSize = true;
-            this.lInstallationStatus.Location = new System.Drawing.Point(163, 21);
+            this.lInstallationStatus.Location = new System.Drawing.Point(217, 32);
+            this.lInstallationStatus.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lInstallationStatus.Name = "lInstallationStatus";
-            this.lInstallationStatus.Size = new System.Drawing.Size(148, 13);
+            this.lInstallationStatus.Size = new System.Drawing.Size(205, 20);
             this.lInstallationStatus.TabIndex = 16;
             this.lInstallationStatus.Text = "//Installation status goes here";
             // 
             // lInstallStatus
             // 
             this.lInstallStatus.AutoSize = true;
-            this.lInstallStatus.Location = new System.Drawing.Point(63, 21);
+            this.lInstallStatus.Location = new System.Drawing.Point(84, 32);
+            this.lInstallStatus.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lInstallStatus.Name = "lInstallStatus";
-            this.lInstallStatus.Size = new System.Drawing.Size(94, 13);
+            this.lInstallStatus.Size = new System.Drawing.Size(131, 20);
             this.lInstallStatus.TabIndex = 15;
             this.lInstallStatus.Text = "Installation status: ";
             // 
@@ -243,43 +254,48 @@
             this.tabOverall.Controls.Add(this.lIOEp1Stat);
             this.tabOverall.Controls.Add(this.lIOEp1Deco);
             this.tabOverall.Location = new System.Drawing.Point(4, 22);
+            this.tabOverall.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabOverall.Name = "tabOverall";
-            this.tabOverall.Padding = new System.Windows.Forms.Padding(3);
-            this.tabOverall.Size = new System.Drawing.Size(386, 148);
+            this.tabOverall.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tabOverall.Size = new System.Drawing.Size(517, 242);
             this.tabOverall.TabIndex = 1;
             this.tabOverall.Text = "Overall";
             this.tabOverall.UseVisualStyleBackColor = true;
             // 
             // lIOEp2Path
             // 
-            this.lIOEp2Path.Location = new System.Drawing.Point(8, 112);
+            this.lIOEp2Path.Location = new System.Drawing.Point(11, 172);
+            this.lIOEp2Path.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lIOEp2Path.Name = "lIOEp2Path";
-            this.lIOEp2Path.Size = new System.Drawing.Size(372, 26);
+            this.lIOEp2Path.Size = new System.Drawing.Size(496, 40);
             this.lIOEp2Path.TabIndex = 18;
             this.lIOEp2Path.Text = "Path:";
             // 
             // lIOEp2Stat
             // 
-            this.lIOEp2Stat.Location = new System.Drawing.Point(128, 88);
+            this.lIOEp2Stat.Location = new System.Drawing.Point(171, 135);
+            this.lIOEp2Stat.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lIOEp2Stat.Name = "lIOEp2Stat";
-            this.lIOEp2Stat.Size = new System.Drawing.Size(65, 13);
+            this.lIOEp2Stat.Size = new System.Drawing.Size(87, 20);
             this.lIOEp2Stat.TabIndex = 17;
             this.lIOEp2Stat.Text = "Not installed";
             this.lIOEp2Stat.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // lIOEp1Path
             // 
-            this.lIOEp1Path.Location = new System.Drawing.Point(8, 42);
+            this.lIOEp1Path.Location = new System.Drawing.Point(11, 65);
+            this.lIOEp1Path.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lIOEp1Path.Name = "lIOEp1Path";
-            this.lIOEp1Path.Size = new System.Drawing.Size(372, 26);
+            this.lIOEp1Path.Size = new System.Drawing.Size(496, 40);
             this.lIOEp1Path.TabIndex = 16;
             this.lIOEp1Path.Text = "Path:";
             // 
             // bIOEp2Visit
             // 
-            this.bIOEp2Visit.Location = new System.Drawing.Point(296, 78);
+            this.bIOEp2Visit.Location = new System.Drawing.Point(395, 120);
+            this.bIOEp2Visit.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.bIOEp2Visit.Name = "bIOEp2Visit";
-            this.bIOEp2Visit.Size = new System.Drawing.Size(84, 32);
+            this.bIOEp2Visit.Size = new System.Drawing.Size(112, 49);
             this.bIOEp2Visit.TabIndex = 15;
             this.bIOEp2Visit.Text = "Open location";
             this.bIOEp2Visit.UseVisualStyleBackColor = true;
@@ -289,9 +305,10 @@
             // 
             this.bIOEp2Uninstall.Image = global::OneClickModInstaller.Properties.Resources.root_shield;
             this.bIOEp2Uninstall.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.bIOEp2Uninstall.Location = new System.Drawing.Point(206, 78);
+            this.bIOEp2Uninstall.Location = new System.Drawing.Point(275, 120);
+            this.bIOEp2Uninstall.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.bIOEp2Uninstall.Name = "bIOEp2Uninstall";
-            this.bIOEp2Uninstall.Size = new System.Drawing.Size(84, 32);
+            this.bIOEp2Uninstall.Size = new System.Drawing.Size(112, 49);
             this.bIOEp2Uninstall.TabIndex = 14;
             this.bIOEp2Uninstall.Text = "Uninstall";
             this.bIOEp2Uninstall.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
@@ -300,9 +317,10 @@
             // 
             // bIOEp1Visit
             // 
-            this.bIOEp1Visit.Location = new System.Drawing.Point(296, 8);
+            this.bIOEp1Visit.Location = new System.Drawing.Point(395, 12);
+            this.bIOEp1Visit.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.bIOEp1Visit.Name = "bIOEp1Visit";
-            this.bIOEp1Visit.Size = new System.Drawing.Size(84, 32);
+            this.bIOEp1Visit.Size = new System.Drawing.Size(112, 49);
             this.bIOEp1Visit.TabIndex = 13;
             this.bIOEp1Visit.Text = "Open location";
             this.bIOEp1Visit.UseVisualStyleBackColor = true;
@@ -312,9 +330,10 @@
             // 
             this.bIOEp1Uninstall.Image = global::OneClickModInstaller.Properties.Resources.root_shield;
             this.bIOEp1Uninstall.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.bIOEp1Uninstall.Location = new System.Drawing.Point(206, 8);
+            this.bIOEp1Uninstall.Location = new System.Drawing.Point(275, 12);
+            this.bIOEp1Uninstall.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.bIOEp1Uninstall.Name = "bIOEp1Uninstall";
-            this.bIOEp1Uninstall.Size = new System.Drawing.Size(84, 32);
+            this.bIOEp1Uninstall.Size = new System.Drawing.Size(112, 49);
             this.bIOEp1Uninstall.TabIndex = 12;
             this.bIOEp1Uninstall.Text = "Uninstall";
             this.bIOEp1Uninstall.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
@@ -324,17 +343,19 @@
             // lIOEp2Deco
             // 
             this.lIOEp2Deco.AutoSize = true;
-            this.lIOEp2Deco.Location = new System.Drawing.Point(6, 88);
+            this.lIOEp2Deco.Location = new System.Drawing.Point(8, 135);
+            this.lIOEp2Deco.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lIOEp2Deco.Name = "lIOEp2Deco";
-            this.lIOEp2Deco.Size = new System.Drawing.Size(96, 13);
+            this.lIOEp2Deco.Size = new System.Drawing.Size(129, 20);
             this.lIOEp2Deco.TabIndex = 10;
             this.lIOEp2Deco.Text = "Sonic 4: Episode 2";
             // 
             // lIOEp1Stat
             // 
-            this.lIOEp1Stat.Location = new System.Drawing.Point(128, 18);
+            this.lIOEp1Stat.Location = new System.Drawing.Point(171, 28);
+            this.lIOEp1Stat.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lIOEp1Stat.Name = "lIOEp1Stat";
-            this.lIOEp1Stat.Size = new System.Drawing.Size(65, 13);
+            this.lIOEp1Stat.Size = new System.Drawing.Size(87, 20);
             this.lIOEp1Stat.TabIndex = 9;
             this.lIOEp1Stat.Text = "Not installed";
             this.lIOEp1Stat.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -342,9 +363,10 @@
             // lIOEp1Deco
             // 
             this.lIOEp1Deco.AutoSize = true;
-            this.lIOEp1Deco.Location = new System.Drawing.Point(8, 18);
+            this.lIOEp1Deco.Location = new System.Drawing.Point(11, 28);
+            this.lIOEp1Deco.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lIOEp1Deco.Name = "lIOEp1Deco";
-            this.lIOEp1Deco.Size = new System.Drawing.Size(96, 13);
+            this.lIOEp1Deco.Size = new System.Drawing.Size(129, 20);
             this.lIOEp1Deco.TabIndex = 8;
             this.lIOEp1Deco.Text = "Sonic 4: Episode 1";
             // 
@@ -362,19 +384,61 @@
             this.tabModInst.Controls.Add(this.lDownloadTrying);
             this.tabModInst.Controls.Add(this.bModInstall);
             this.tabModInst.Location = new System.Drawing.Point(4, 22);
+            this.tabModInst.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabModInst.Name = "tabModInst";
-            this.tabModInst.Padding = new System.Windows.Forms.Padding(3);
-            this.tabModInst.Size = new System.Drawing.Size(394, 174);
+            this.tabModInst.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tabModInst.Size = new System.Drawing.Size(528, 282);
             this.tabModInst.TabIndex = 1;
             this.tabModInst.Text = "Install mod";
             this.tabModInst.UseVisualStyleBackColor = true;
             // 
+            // lType
+            // 
+            this.lType.AutoSize = true;
+            this.lType.Location = new System.Drawing.Point(257, 74);
+            this.lType.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lType.Name = "lType";
+            this.lType.Size = new System.Drawing.Size(30, 20);
+            this.lType.TabIndex = 18;
+            this.lType.Text = "???";
+            // 
+            // lDownloadType
+            // 
+            this.lDownloadType.AutoSize = true;
+            this.lDownloadType.Location = new System.Drawing.Point(239, 54);
+            this.lDownloadType.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lDownloadType.Name = "lDownloadType";
+            this.lDownloadType.Size = new System.Drawing.Size(76, 20);
+            this.lDownloadType.TabIndex = 17;
+            this.lDownloadType.Text = "Mod type:";
+            // 
+            // lDownloadID
+            // 
+            this.lDownloadID.AutoSize = true;
+            this.lDownloadID.Location = new System.Drawing.Point(344, 54);
+            this.lDownloadID.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lDownloadID.Name = "lDownloadID";
+            this.lDownloadID.Size = new System.Drawing.Size(62, 20);
+            this.lDownloadID.TabIndex = 13;
+            this.lDownloadID.Text = "Mod ID:";
+            // 
+            // lModID
+            // 
+            this.lModID.AutoSize = true;
+            this.lModID.Location = new System.Drawing.Point(363, 74);
+            this.lModID.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lModID.Name = "lModID";
+            this.lModID.Size = new System.Drawing.Size(30, 20);
+            this.lModID.TabIndex = 12;
+            this.lModID.Text = "???";
+            // 
             // chSaveDownloadedArchives
             // 
             this.chSaveDownloadedArchives.AutoSize = true;
-            this.chSaveDownloadedArchives.Location = new System.Drawing.Point(9, 115);
+            this.chSaveDownloadedArchives.Location = new System.Drawing.Point(12, 177);
+            this.chSaveDownloadedArchives.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.chSaveDownloadedArchives.Name = "chSaveDownloadedArchives";
-            this.chSaveDownloadedArchives.Size = new System.Drawing.Size(155, 17);
+            this.chSaveDownloadedArchives.Size = new System.Drawing.Size(207, 24);
             this.chSaveDownloadedArchives.TabIndex = 22;
             this.chSaveDownloadedArchives.Text = "Save downloaded archives";
             this.chSaveDownloadedArchives.UseVisualStyleBackColor = true;
@@ -383,9 +447,10 @@
             // cbExitLaunchManager
             // 
             this.cbExitLaunchManager.AutoSize = true;
-            this.cbExitLaunchManager.Location = new System.Drawing.Point(9, 138);
+            this.cbExitLaunchManager.Location = new System.Drawing.Point(12, 212);
+            this.cbExitLaunchManager.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.cbExitLaunchManager.Name = "cbExitLaunchManager";
-            this.cbExitLaunchManager.Size = new System.Drawing.Size(185, 30);
+            this.cbExitLaunchManager.Size = new System.Drawing.Size(254, 44);
             this.cbExitLaunchManager.TabIndex = 21;
             this.cbExitLaunchManager.Text = "Launch Mod Manager (if PC mod)\r\nand Exit after installation";
             this.cbExitLaunchManager.UseVisualStyleBackColor = true;
@@ -393,9 +458,10 @@
             // 
             // bModPath
             // 
-            this.bModPath.Location = new System.Drawing.Point(356, 62);
+            this.bModPath.Location = new System.Drawing.Point(475, 95);
+            this.bModPath.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.bModPath.Name = "bModPath";
-            this.bModPath.Size = new System.Drawing.Size(32, 23);
+            this.bModPath.Size = new System.Drawing.Size(43, 35);
             this.bModPath.TabIndex = 20;
             this.bModPath.Text = "...";
             this.bModPath.UseVisualStyleBackColor = true;
@@ -403,73 +469,41 @@
             // 
             // tbModURL
             // 
-            this.tbModURL.Location = new System.Drawing.Point(9, 64);
+            this.tbModURL.Location = new System.Drawing.Point(12, 98);
+            this.tbModURL.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tbModURL.MaxLength = 512;
             this.tbModURL.Name = "tbModURL";
-            this.tbModURL.Size = new System.Drawing.Size(341, 20);
+            this.tbModURL.Size = new System.Drawing.Size(453, 27);
             this.tbModURL.TabIndex = 19;
             this.tbModURL.TextChanged += new System.EventHandler(this.tbModURL_TextChanged);
-            // 
-            // lType
-            // 
-            this.lType.AutoSize = true;
-            this.lType.Location = new System.Drawing.Point(193, 48);
-            this.lType.Name = "lType";
-            this.lType.Size = new System.Drawing.Size(25, 13);
-            this.lType.TabIndex = 18;
-            this.lType.Text = "???";
-            // 
-            // lDownloadType
-            // 
-            this.lDownloadType.AutoSize = true;
-            this.lDownloadType.Location = new System.Drawing.Point(179, 35);
-            this.lDownloadType.Name = "lDownloadType";
-            this.lDownloadType.Size = new System.Drawing.Size(54, 13);
-            this.lDownloadType.TabIndex = 17;
-            this.lDownloadType.Text = "Mod type:";
             // 
             // lDownloadLink
             // 
             this.lDownloadLink.AutoSize = true;
-            this.lDownloadLink.Location = new System.Drawing.Point(6, 48);
+            this.lDownloadLink.Location = new System.Drawing.Point(8, 74);
+            this.lDownloadLink.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lDownloadLink.Name = "lDownloadLink";
-            this.lDownloadLink.Size = new System.Drawing.Size(85, 13);
+            this.lDownloadLink.Size = new System.Drawing.Size(118, 20);
             this.lDownloadLink.TabIndex = 15;
             this.lDownloadLink.Text = "Path to the mod:";
             // 
             // lDownloadTrying
             // 
             this.lDownloadTrying.AutoSize = true;
-            this.lDownloadTrying.Location = new System.Drawing.Point(6, 13);
+            this.lDownloadTrying.Location = new System.Drawing.Point(8, 20);
+            this.lDownloadTrying.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lDownloadTrying.Name = "lDownloadTrying";
-            this.lDownloadTrying.Size = new System.Drawing.Size(140, 13);
+            this.lDownloadTrying.Size = new System.Drawing.Size(193, 20);
             this.lDownloadTrying.TabIndex = 14;
             this.lDownloadTrying.Text = "Enter a path or URL to mod.";
-            // 
-            // lDownloadID
-            // 
-            this.lDownloadID.AutoSize = true;
-            this.lDownloadID.Location = new System.Drawing.Point(258, 35);
-            this.lDownloadID.Name = "lDownloadID";
-            this.lDownloadID.Size = new System.Drawing.Size(45, 13);
-            this.lDownloadID.TabIndex = 13;
-            this.lDownloadID.Text = "Mod ID:";
-            // 
-            // lModID
-            // 
-            this.lModID.AutoSize = true;
-            this.lModID.Location = new System.Drawing.Point(272, 48);
-            this.lModID.Name = "lModID";
-            this.lModID.Size = new System.Drawing.Size(25, 13);
-            this.lModID.TabIndex = 12;
-            this.lModID.Text = "???";
             // 
             // bModInstall
             // 
             this.bModInstall.Enabled = false;
-            this.bModInstall.Location = new System.Drawing.Point(234, 125);
+            this.bModInstall.Location = new System.Drawing.Point(312, 192);
+            this.bModInstall.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.bModInstall.Name = "bModInstall";
-            this.bModInstall.Size = new System.Drawing.Size(128, 32);
+            this.bModInstall.Size = new System.Drawing.Size(171, 49);
             this.bModInstall.TabIndex = 11;
             this.bModInstall.Text = "Install";
             this.bModInstall.UseVisualStyleBackColor = true;
@@ -479,9 +513,10 @@
             // 
             this.tabSettings.Controls.Add(this.tcSettings);
             this.tabSettings.Location = new System.Drawing.Point(4, 22);
+            this.tabSettings.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabSettings.Name = "tabSettings";
-            this.tabSettings.Padding = new System.Windows.Forms.Padding(3);
-            this.tabSettings.Size = new System.Drawing.Size(394, 174);
+            this.tabSettings.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tabSettings.Size = new System.Drawing.Size(528, 282);
             this.tabSettings.TabIndex = 2;
             this.tabSettings.Text = "Settings";
             this.tabSettings.UseVisualStyleBackColor = true;
@@ -490,11 +525,12 @@
             // 
             this.tcSettings.Controls.Add(this.tPaths);
             this.tcSettings.Controls.Add(this.tOther);
-            this.tcSettings.ItemSize = new System.Drawing.Size(195, 18);
+            this.tcSettings.ItemSize = new System.Drawing.Size(195, 24);
             this.tcSettings.Location = new System.Drawing.Point(0, 0);
+            this.tcSettings.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tcSettings.Name = "tcSettings";
             this.tcSettings.SelectedIndex = 0;
-            this.tcSettings.Size = new System.Drawing.Size(394, 174);
+            this.tcSettings.Size = new System.Drawing.Size(525, 268);
             this.tcSettings.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.tcSettings.TabIndex = 3;
             // 
@@ -510,18 +546,20 @@
             this.tPaths.Controls.Add(this.tbPathCheatTables);
             this.tPaths.Controls.Add(this.label1);
             this.tPaths.Location = new System.Drawing.Point(4, 22);
+            this.tPaths.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tPaths.Name = "tPaths";
-            this.tPaths.Padding = new System.Windows.Forms.Padding(3);
-            this.tPaths.Size = new System.Drawing.Size(386, 148);
+            this.tPaths.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tPaths.Size = new System.Drawing.Size(517, 242);
             this.tPaths.TabIndex = 0;
             this.tPaths.Text = "Paths";
             this.tPaths.UseVisualStyleBackColor = true;
             // 
             // bPathDownloadedArchives
             // 
-            this.bPathDownloadedArchives.Location = new System.Drawing.Point(344, 105);
+            this.bPathDownloadedArchives.Location = new System.Drawing.Point(459, 162);
+            this.bPathDownloadedArchives.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.bPathDownloadedArchives.Name = "bPathDownloadedArchives";
-            this.bPathDownloadedArchives.Size = new System.Drawing.Size(32, 23);
+            this.bPathDownloadedArchives.Size = new System.Drawing.Size(43, 35);
             this.bPathDownloadedArchives.TabIndex = 11;
             this.bPathDownloadedArchives.Text = "...";
             this.bPathDownloadedArchives.UseVisualStyleBackColor = true;
@@ -530,27 +568,30 @@
             // tbDownloadedArchiveLocation
             // 
             this.tbDownloadedArchiveLocation.AllowDrop = true;
-            this.tbDownloadedArchiveLocation.Location = new System.Drawing.Point(6, 107);
+            this.tbDownloadedArchiveLocation.Location = new System.Drawing.Point(8, 165);
+            this.tbDownloadedArchiveLocation.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tbDownloadedArchiveLocation.MaxLength = 512;
             this.tbDownloadedArchiveLocation.Name = "tbDownloadedArchiveLocation";
-            this.tbDownloadedArchiveLocation.Size = new System.Drawing.Size(332, 20);
+            this.tbDownloadedArchiveLocation.Size = new System.Drawing.Size(441, 27);
             this.tbDownloadedArchiveLocation.TabIndex = 10;
             this.tbDownloadedArchiveLocation.TextChanged += new System.EventHandler(this.fake_SettingsSave);
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(6, 91);
+            this.label2.Location = new System.Drawing.Point(8, 140);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(171, 13);
+            this.label2.Size = new System.Drawing.Size(237, 20);
             this.label2.TabIndex = 9;
             this.label2.Text = "Downloaded archive save location";
             // 
             // bPathCheatTables
             // 
-            this.bPathCheatTables.Location = new System.Drawing.Point(344, 66);
+            this.bPathCheatTables.Location = new System.Drawing.Point(459, 102);
+            this.bPathCheatTables.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.bPathCheatTables.Name = "bPathCheatTables";
-            this.bPathCheatTables.Size = new System.Drawing.Size(32, 23);
+            this.bPathCheatTables.Size = new System.Drawing.Size(43, 35);
             this.bPathCheatTables.TabIndex = 8;
             this.bPathCheatTables.Text = "...";
             this.bPathCheatTables.UseVisualStyleBackColor = true;
@@ -559,9 +600,10 @@
             // cbUseLocal7zip
             // 
             this.cbUseLocal7zip.AutoSize = true;
-            this.cbUseLocal7zip.Location = new System.Drawing.Point(6, 6);
+            this.cbUseLocal7zip.Location = new System.Drawing.Point(8, 9);
+            this.cbUseLocal7zip.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.cbUseLocal7zip.Name = "cbUseLocal7zip";
-            this.cbUseLocal7zip.Size = new System.Drawing.Size(208, 17);
+            this.cbUseLocal7zip.Size = new System.Drawing.Size(292, 24);
             this.cbUseLocal7zip.TabIndex = 0;
             this.cbUseLocal7zip.Text = "Use a copy of 7-Zip from this computer";
             this.cbUseLocal7zip.UseVisualStyleBackColor = true;
@@ -570,9 +612,10 @@
             // bPath7z
             // 
             this.bPath7z.Enabled = false;
-            this.bPath7z.Location = new System.Drawing.Point(344, 27);
+            this.bPath7z.Location = new System.Drawing.Point(459, 42);
+            this.bPath7z.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.bPath7z.Name = "bPath7z";
-            this.bPath7z.Size = new System.Drawing.Size(32, 23);
+            this.bPath7z.Size = new System.Drawing.Size(43, 35);
             this.bPath7z.TabIndex = 7;
             this.bPath7z.Text = "...";
             this.bPath7z.UseVisualStyleBackColor = true;
@@ -582,29 +625,32 @@
             // 
             this.tbPath7z.AllowDrop = true;
             this.tbPath7z.Enabled = false;
-            this.tbPath7z.Location = new System.Drawing.Point(6, 29);
+            this.tbPath7z.Location = new System.Drawing.Point(8, 45);
+            this.tbPath7z.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tbPath7z.MaxLength = 512;
             this.tbPath7z.Name = "tbPath7z";
-            this.tbPath7z.Size = new System.Drawing.Size(332, 20);
+            this.tbPath7z.Size = new System.Drawing.Size(441, 27);
             this.tbPath7z.TabIndex = 1;
             this.tbPath7z.TextChanged += new System.EventHandler(this.fake_SettingsSave);
             // 
             // tbPathCheatTables
             // 
             this.tbPathCheatTables.AllowDrop = true;
-            this.tbPathCheatTables.Location = new System.Drawing.Point(6, 68);
+            this.tbPathCheatTables.Location = new System.Drawing.Point(8, 105);
+            this.tbPathCheatTables.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tbPathCheatTables.MaxLength = 512;
             this.tbPathCheatTables.Name = "tbPathCheatTables";
-            this.tbPathCheatTables.Size = new System.Drawing.Size(332, 20);
+            this.tbPathCheatTables.Size = new System.Drawing.Size(441, 27);
             this.tbPathCheatTables.TabIndex = 3;
             this.tbPathCheatTables.TextChanged += new System.EventHandler(this.fake_SettingsSave);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(6, 52);
+            this.label1.Location = new System.Drawing.Point(8, 80);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(70, 13);
+            this.label1.Size = new System.Drawing.Size(92, 20);
             this.label1.TabIndex = 2;
             this.label1.Text = "Cheat Tables";
             // 
@@ -613,9 +659,10 @@
             this.tOther.Controls.Add(this.label3);
             this.tOther.Controls.Add(this.label4);
             this.tOther.Location = new System.Drawing.Point(4, 22);
+            this.tOther.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tOther.Name = "tOther";
-            this.tOther.Padding = new System.Windows.Forms.Padding(3);
-            this.tOther.Size = new System.Drawing.Size(386, 148);
+            this.tOther.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tOther.Size = new System.Drawing.Size(517, 242);
             this.tOther.TabIndex = 1;
             this.tOther.Text = "Other";
             this.tOther.UseVisualStyleBackColor = true;
@@ -626,9 +673,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(165, 99);
+            this.label3.Location = new System.Drawing.Point(220, 152);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(36, 13);
+            this.label3.Size = new System.Drawing.Size(51, 20);
             this.label3.TabIndex = 0;
             this.label3.Text = "i hope";
             this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -639,10 +687,11 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 32.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label4.Location = new System.Drawing.Point(121, 48);
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 32.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label4.Location = new System.Drawing.Point(161, 74);
+            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(152, 51);
+            this.label4.Size = new System.Drawing.Size(190, 63);
             this.label4.TabIndex = 0;
             this.label4.Text = "Soon™";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -657,28 +706,31 @@
             this.tabAbout.Controls.Add(this.linkMain);
             this.tabAbout.Controls.Add(this.label6);
             this.tabAbout.Location = new System.Drawing.Point(4, 22);
+            this.tabAbout.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabAbout.Name = "tabAbout";
-            this.tabAbout.Padding = new System.Windows.Forms.Padding(3);
-            this.tabAbout.Size = new System.Drawing.Size(394, 174);
+            this.tabAbout.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.tabAbout.Size = new System.Drawing.Size(528, 282);
             this.tabAbout.TabIndex = 3;
             this.tabAbout.Text = "About";
             this.tabAbout.UseVisualStyleBackColor = true;
             // 
             // label8
             // 
-            this.label8.Location = new System.Drawing.Point(70, 86);
+            this.label8.Location = new System.Drawing.Point(93, 132);
+            this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(262, 30);
+            this.label8.Size = new System.Drawing.Size(349, 46);
             this.label8.TabIndex = 13;
             this.label8.Text = "Use Mod Manager to read licenses or view them in \"Mod Loader - licenses\" folder.";
             this.label8.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // label7
             // 
-            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.label7.Location = new System.Drawing.Point(6, 122);
+            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.label7.Location = new System.Drawing.Point(8, 188);
+            this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(382, 26);
+            this.label7.Size = new System.Drawing.Size(509, 40);
             this.label7.TabIndex = 11;
             this.label7.Text = "Special thanks to the Tango Desktop Project developers for their icons dedicated " +
     "to the Public Domain";
@@ -687,9 +739,10 @@
             // linkLabel1
             // 
             this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(126, 148);
+            this.linkLabel1.Location = new System.Drawing.Point(168, 228);
+            this.linkLabel1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.linkLabel1.Name = "linkLabel1";
-            this.linkLabel1.Size = new System.Drawing.Size(142, 13);
+            this.linkLabel1.Size = new System.Drawing.Size(198, 20);
             this.linkLabel1.TabIndex = 12;
             this.linkLabel1.TabStop = true;
             this.linkLabel1.Text = "http://tango.freedesktop.org";
@@ -698,18 +751,20 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(126, 49);
+            this.label5.Location = new System.Drawing.Point(168, 75);
+            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(151, 13);
+            this.label5.Size = new System.Drawing.Size(214, 20);
             this.label5.TabIndex = 9;
             this.label5.Text = "7-Zip Copyright (C) Igor Pavlov";
             // 
             // link7z
             // 
             this.link7z.AutoSize = true;
-            this.link7z.Location = new System.Drawing.Point(144, 62);
+            this.link7z.Location = new System.Drawing.Point(192, 95);
+            this.link7z.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.link7z.Name = "link7z";
-            this.link7z.Size = new System.Drawing.Size(115, 13);
+            this.link7z.Size = new System.Drawing.Size(159, 20);
             this.link7z.TabIndex = 10;
             this.link7z.TabStop = true;
             this.link7z.Text = "https://www.7-zip.org/";
@@ -718,9 +773,10 @@
             // linkMain
             // 
             this.linkMain.AutoSize = true;
-            this.linkMain.Location = new System.Drawing.Point(82, 27);
+            this.linkMain.Location = new System.Drawing.Point(109, 42);
+            this.linkMain.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.linkMain.Name = "linkMain";
-            this.linkMain.Size = new System.Drawing.Size(238, 13);
+            this.linkMain.Size = new System.Drawing.Size(324, 20);
             this.linkMain.TabIndex = 8;
             this.linkMain.TabStop = true;
             this.linkMain.Text = "https://github.com/OSA413/Sonic4_ModLoader";
@@ -729,19 +785,22 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(60, 14);
+            this.label6.Location = new System.Drawing.Point(80, 22);
+            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(283, 13);
+            this.label6.Size = new System.Drawing.Size(389, 20);
             this.label6.TabIndex = 7;
             this.label6.Text = "One-Click Mod Installer by OSA413 under the MIT License";
             // 
             // statusStrip1
             // 
+            this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.statusBar});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 325);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 508);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(426, 22);
+            this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 19, 0);
+            this.statusStrip1.Size = new System.Drawing.Size(568, 26);
             this.statusStrip1.SizingGrip = false;
             this.statusStrip1.TabIndex = 3;
             this.statusStrip1.Text = "statusStrip1";
@@ -749,39 +808,42 @@
             // statusBar
             // 
             this.statusBar.Name = "statusBar";
-            this.statusBar.Size = new System.Drawing.Size(103, 17);
+            this.statusBar.Size = new System.Drawing.Size(129, 20);
             this.statusBar.Text = "This is a status bar";
             // 
             // progressBar
             // 
-            this.progressBar.Location = new System.Drawing.Point(12, 306);
+            this.progressBar.Location = new System.Drawing.Point(16, 471);
+            this.progressBar.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.progressBar.MarqueeAnimationSpeed = 25;
             this.progressBar.Maximum = 1000;
             this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(402, 16);
+            this.progressBar.Size = new System.Drawing.Size(536, 25);
             this.progressBar.Step = 1;
             this.progressBar.TabIndex = 10;
             // 
             // pictureBox1
             // 
             this.pictureBox1.Image = global::OneClickModInstaller.Properties.Resources.ocmi_logo;
-            this.pictureBox1.Location = new System.Drawing.Point(12, 12);
+            this.pictureBox1.Location = new System.Drawing.Point(16, 18);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(402, 84);
+            this.pictureBox1.Size = new System.Drawing.Size(536, 129);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             // 
             // UltimateWinForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(426, 347);
+            this.ClientSize = new System.Drawing.Size(568, 534);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.tcMain);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.progressBar);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.MaximizeBox = false;
             this.Name = "UltimateWinForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
