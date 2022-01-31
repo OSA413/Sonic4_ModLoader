@@ -1,6 +1,6 @@
 ﻿namespace ManagerLauncher
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         /// Обязательная переменная конструктора.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.bManager = new System.Windows.Forms.Button();
             this.bConf = new System.Windows.Forms.Button();
             this.bPlay = new System.Windows.Forms.Button();
@@ -42,7 +42,7 @@
             this.bManager.TabIndex = 2;
             this.bManager.Text = "Launch Mod Manager";
             this.bManager.UseVisualStyleBackColor = true;
-            this.bManager.Click += new System.EventHandler(this.bManager_Click);
+            this.bManager.Click += new System.EventHandler(this.bManagerClick);
             // 
             // bConf
             // 
@@ -52,7 +52,7 @@
             this.bConf.TabIndex = 1;
             this.bConf.Text = "Launch Configuration Tool";
             this.bConf.UseVisualStyleBackColor = true;
-            this.bConf.Click += new System.EventHandler(this.bConf_Click);
+            this.bConf.Click += new System.EventHandler(this.bConfClick);
             // 
             // bPlay
             // 
@@ -62,7 +62,7 @@
             this.bPlay.TabIndex = 3;
             this.bPlay.Text = "Play";
             this.bPlay.UseVisualStyleBackColor = true;
-            this.bPlay.Click += new System.EventHandler(this.bPlay_Click);
+            this.bPlay.Click += new System.EventHandler(this.bPlayClick);
             // 
             // Form1
             // 
@@ -75,7 +75,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
-            this.Name = "Form1";
+            this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Manager Launcher";
             this.ResumeLayout(false);
