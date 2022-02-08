@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Windows.Forms;
 
-using Common.Launcher;
-
 namespace OneClickModInstaller
 {
     static class Program
@@ -12,24 +10,12 @@ namespace OneClickModInstaller
         [STAThread]
         static void Main(string[] args)
         {
-            if (args.Length > 0)
-            {
-                GAME? game = null;
-                if (args.Length > 1) game = Launcher.GetGameFromShort(args[1]);
-
-                switch (args[0])
-                {
-                    case "--install":   hiWrapper.Install(game);   Environment.Exit(0); break;
-                    case "--uninstall": hiWrapper.Uninstall(game); Environment.Exit(0); break;
-                    case "--fix":       hiWrapper.FixPath(game);   Environment.Exit(0); break;
-                }
-            }
-
+            ArgsHandler.Handle(args);
             Application.EnableVisualStyles();
             Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
             Application.SetCompatibleTextRenderingDefault(false);
             Settings.Load();
-            Application.Run(new UltimateWinForm(args));
+            Application.Run(new UltimateWinForm());
         }
     }
 }

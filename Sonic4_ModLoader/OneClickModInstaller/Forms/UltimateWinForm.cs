@@ -36,54 +36,14 @@ namespace OneClickModInstaller
             public static long      Total;
         }
 
-        public UltimateWinForm(string[] args)
+        public UltimateWinForm()
         {
             InitializeComponent();
             UpdateUI.AttachForm(this);
             UpdateUI.Initial();
             UpdateUI.Settings();
-            MessageBox.Show(this.DeviceDpi.ToString());
 
-            if (args.Length > 0)
-            {
-                //If this is not a 1-click installation call
-                if (!(args[0].StartsWith("sonic4mmep1:") ||
-                    args[0].StartsWith("sonic4mmep2:")))
-                {
-                    if (File.Exists(args[0])
-                        || Directory.Exists(args[0])
-                        || args[0].StartsWith("https://")
-                        || args[0].StartsWith("http://"))
-                    {
-                        Installation.FromArgs = true;
-                        tbModURL.Text     = args[0];
-                        tcMain.SelectTab(tabModInst);
-
-                        PrepareInstallation();
-                    }
-                }
-                else
-                {
-                    Installation.FromArgs = true;
-                    //a one-click installation call
-                    //sonic4mmepx:url,mod_type,mod_id
-                    tcMain.SelectTab(tabModInst);
-                    var tmp_args = args[0].Substring(12).Split(',');
-                    tbModURL.Text       = tmp_args[0];
-                    if (tmp_args.Length > 1) {
-                        lDownloadType.Text = "Mod type:";
-                        lType.Text  = tmp_args[1]; 
-                    }
-                    if (tmp_args.Length > 2) {
-                        lDownloadID.Text   = "Mod ID:";
-                        lModID.Text = tmp_args[2];
-                    }
-
-                    PrepareInstallation();
-                }
-            }
-
-            if (Installation.FromArgs)
+            if (ArgsHandler.ModArgs != null)
                 statusBar.Text = "A wild installation button appeared!";
             UpdateWindow();
         }
