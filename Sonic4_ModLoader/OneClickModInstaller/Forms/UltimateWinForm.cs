@@ -86,15 +86,8 @@ namespace OneClickModInstaller
             }
         }
 
-        private void UpdateWindow(bool begin = true)
+        private void UpdateWindow()
         {
-            if (begin)
-                if (tcMain.InvokeRequired)
-                    tcMain.Invoke(new MethodInvoker(delegate { UpdateWindow(false); ; }));
-                else UpdateWindow(false);
-
-            if (begin) return;
-
             ////////////////
             //Installaller//
             ////////////////
