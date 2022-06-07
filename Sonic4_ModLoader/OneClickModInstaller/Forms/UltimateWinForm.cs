@@ -19,7 +19,7 @@ namespace OneClickModInstaller
         public static class Installation
         {
             public static string    Link;
-            public static string    ServerHost;
+            public static Downloader.ServerHost    ServerHost;
             public static string    ArchiveName;
             public static string    ArchiveDir;
             public static bool      Local;
@@ -71,17 +71,17 @@ namespace OneClickModInstaller
                 if (Installation.Link.Contains("gamebanana.com"))
                 {
                     lDownloadTrying.Text = lDownloadTrying.Text.Replace("{1}", "GameBanana");
-                    Installation.ServerHost = "gamebanana";
+                    Installation.ServerHost = Downloader.ServerHost.GameBanana;
                 }
                 else if (Installation.Link.Contains("github.com"))
                 {
                     lDownloadTrying.Text = lDownloadTrying.Text.Replace("{1}", "GitHub");
-                    Installation.ServerHost = "github";
+                    Installation.ServerHost = Downloader.ServerHost.GitHub;
                 }
                 else
                 {
                     lDownloadTrying.Text = lDownloadTrying.Text.Replace("{1}", "the Internet");
-                    Installation.ServerHost = "else";
+                    Installation.ServerHost = Downloader.ServerHost.Other;
                 }
             }
         }
@@ -157,21 +157,8 @@ namespace OneClickModInstaller
             {
                 lGameName.Text           = "Not found";
                 lInstallationStatus.Text = "None";
-                bInstall.Text            = "Install as fake Episode 1";
-                bUninstall.Text          = "Uninstall fake Episode 1";
                 bInstall.Enabled   =
                 bUninstall.Enabled = false;
-
-                switch (statuses[GAME.Episode1].Status)
-                {
-                    case InstallationStatus.NotInstalled:
-                        bInstall.Enabled = true;
-                        break;
-                    case InstallationStatus.Installed:
-                        lInstallationStatus.Text = "Installed as fake Episode 1 here";
-                        bUninstall.Enabled = true;
-                        break;
-                }
             }
             else
             {
@@ -254,26 +241,18 @@ namespace OneClickModInstaller
 
         private void bInstall_Click(object sender, EventArgs e)
         {
-            if (Launcher.GetCurrentGame() == GAME.Unknown &&
-                hiWrapper.GetInstallationStatus(GAME.Episode1).Status == InstallationStatus.NotInstalled)
-                hiWrapper.Install(GAME.Episode1);
-            else
-                switch (hiWrapper.GetInstallationStatus(Launcher.GetCurrentGame()).Status)
-                {
-                    case InstallationStatus.AnotherInstallationPresent: hiWrapper.FixPath(); break;
-                    default: hiWrapper.Install(); break;
-                }
+            switch (hiWrapper.GetInstallationStatus(Launcher.GetCurrentGame()).Status)
+            {
+                case InstallationStatus.AnotherInstallationPresent: hiWrapper.FixPath(); break;
+                default: hiWrapper.Install(); break;
+            }
 
             UpdateWindow();
         }
 
         private void bUninstall_Click(object sender, EventArgs e)
         {
-            if (Launcher.GetCurrentGame() == GAME.Unknown &&
-                hiWrapper.GetInstallationStatus(GAME.Episode1).Status == InstallationStatus.Installed)
-                Program.hiWrapper.Uninstall(GAME.Episode1);
-            else Program.hiWrapper.Uninstall();
-
+            Program.hiWrapper.Uninstall();
             UpdateWindow();
         }
 
@@ -343,13 +322,13 @@ namespace OneClickModInstaller
                         var url = URL.GetURLRedirect(archive_url);
                         
                         //Getting file name of the archive
-                        if (Installation.ServerHost == "github")
+                        if (Installation.ServerHost == Downloader.ServerHost.GitHub)
                             //GitHub's redirect link is something like a request rather than a file "path" on a server
                             Installation.ArchiveName = archive_url.Split('/')[archive_url.Split('/').Length - 1];
                         else
                             Installation.ArchiveName = url.Split('/')[url.Split('/').Length - 1];
 
-                        if (Installation.ServerHost == "gamebanana")
+                        if (Installation.ServerHost == Downloader.ServerHost.GameBanana)
                             //Well, it seems that GB's counter doesn't increase if you download
                             //the file directly from the redirect url. But I'm not sure that
                             //this works as well
