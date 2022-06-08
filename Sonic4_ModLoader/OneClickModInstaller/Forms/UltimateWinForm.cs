@@ -45,7 +45,7 @@ namespace OneClickModInstaller
 
             if (ArgsHandler.ModArgs != null)
                 statusBar.Text = "A wild installation button appeared!";
-            UpdateWindow();
+            //UpdateWindow();
         }
 
         private void PrepareInstallation()
@@ -295,7 +295,7 @@ namespace OneClickModInstaller
 
         async public void StartInstallation()
         {
-            await Task.Run(() =>
+            await Task.Run((Action)(() =>
             {
                 string archive_url = Installation.Link;
                 if (Installation.Link.EndsWith("/"))
@@ -340,7 +340,7 @@ namespace OneClickModInstaller
                         wc.DownloadFileAsync(new Uri(url), Installation.ArchiveName);
                     }
                 }
-            });
+            }));
         }
 
         async public void DoTheRest()
