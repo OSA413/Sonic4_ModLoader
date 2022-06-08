@@ -110,7 +110,7 @@ namespace OneClickModInstaller
                 }
                 else
                 {
-                    form.lGameName.Text = "Sonic 4: " + Launcher.GetShortGame(Launcher.GetCurrentGame());
+                    form.lGameName.Text = "Sonic 4: " + Launcher.GetFullGame(Launcher.GetCurrentGame());
 
                     form.bInstall.Enabled =
                     form.bUninstall.Enabled = true;

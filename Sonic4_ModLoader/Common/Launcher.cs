@@ -13,6 +13,12 @@ namespace Common.Launcher
     public static class Launcher
     {
         private static GAME? currentGame;
+        public static string GetFullGame(GAME? game)
+        {
+            if (game == GAME.Episode1) return "Episode 1";
+            if (game == GAME.Episode2) return "Episode 2";
+            return "";
+        }
         public static string GetShortGame(GAME? game)
         {
             if (game == GAME.Episode1) return "ep1";
@@ -27,7 +33,7 @@ namespace Common.Launcher
         }
         public static GAME GetCurrentGame()
         {
-            if (currentGame is null)
+            if (currentGame is null) 
                 currentGame = GetGame();
             return (GAME)currentGame;
         }
@@ -45,6 +51,7 @@ namespace Common.Launcher
         public static bool LaunchGame()
         {
             var game = GetCurrentGame();
+            if (game == GAME.Unknown) return false;
             if (game == GAME.Episode1)
             {
                 if (File.Exists("main.conf"))
@@ -54,47 +61,38 @@ namespace Common.Launcher
             }
             else if (game == GAME.Episode2)
                 Process.Start("Sonic.exe");
-            else
-                return false;
             return true;
         }
 
         public static bool LaunchConfig()
         {
             var game = GetCurrentGame();
+            if (game == GAME.Unknown) return false;
             if (game == GAME.Episode1)
                 Process.Start("SonicLauncher.orig.exe");
             else if (game == GAME.Episode2)
                 Process.Start("Launcher.orig.exe");
-            else
-                return false;
             return true;
         }
 
         public static bool LaunchModManager()
         {
-            if (File.Exists("Sonic4ModManager.exe"))
-                Process.Start("Sonic4ModManager.exe");
-            else
-                return false;
+            if (!File.Exists("Sonic4ModManager.exe")) return false;
+            Process.Start("Sonic4ModManager.exe");
             return true;
         }
 
         public static bool LaunchCsbEditor(string args="")
         {
-            if (File.Exists("CsbEditor.exe"))
-                Process.Start("CsbEditor.exe", args).WaitForExit();
-            else
-                return false;
+            if (!File.Exists("CsbEditor.exe")) return false;
+            Process.Start("CsbEditor.exe", args).WaitForExit();
             return true;
         }
 
         public static bool LaunchAMBPatcher(string args="")
         {
-            if (File.Exists("AMBPatcher.exe"))
-                Process.Start("AMBPatcher.exe", args).WaitForExit();
-            else
-                return false;
+            if (!File.Exists("AMBPatcher.exe")) return false;
+            Process.Start("AMBPatcher.exe", args).WaitForExit();
             return true;
         }
     }
