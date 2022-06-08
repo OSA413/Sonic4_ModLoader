@@ -24,9 +24,9 @@ public class HandlerInstallerWindows : IHandlerInstaller<string>
         {
             FileName = AppDomain.CurrentDomain.FriendlyName,
             Arguments = args,
-            Verb = "runas"
+            Verb = "runas",
+            UseShellExecute = true,
         };
-        
         Process.Start(startInfo).WaitForExit();
     }
 

@@ -89,12 +89,7 @@ namespace OneClickModInstaller
 
         private void bInstall_Click(object sender, EventArgs e)
         {
-            switch (hiWrapper.GetInstallationStatus(Launcher.GetCurrentGame()).Status)
-            {
-                case InstallationStatus.AnotherInstallationPresent: hiWrapper.FixPath(); break;
-                default: hiWrapper.Install(); break;
-            }
-
+            hiWrapper.Install();
             UpdateUI.CurrentGame();
             UpdateUI.GlobalGameStatus();
         }
