@@ -69,11 +69,9 @@
             this.bPathDownloadedArchives = new System.Windows.Forms.Button();
             this.tbDownloadedArchiveLocation = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
-            this.bPathCheatTables = new System.Windows.Forms.Button();
             this.cbUseLocal7zip = new System.Windows.Forms.CheckBox();
             this.bPath7z = new System.Windows.Forms.Button();
             this.tbPath7z = new System.Windows.Forms.TextBox();
-            this.tbPathCheatTables = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.tOther = new System.Windows.Forms.TabPage();
             this.label3 = new System.Windows.Forms.Label();
@@ -89,7 +87,7 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.statusBar = new System.Windows.Forms.ToolStripStatusLabel();
             this.progressBar = new System.Windows.Forms.ProgressBar();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.logo = new System.Windows.Forms.PictureBox();
             this.tcMain.SuspendLayout();
             this.tabInstaller.SuspendLayout();
             this.tcInstallation.SuspendLayout();
@@ -102,7 +100,7 @@
             this.tOther.SuspendLayout();
             this.tabAbout.SuspendLayout();
             this.statusStrip1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.logo)).BeginInit();
             this.SuspendLayout();
             // 
             // tcMain
@@ -112,11 +110,11 @@
             this.tcMain.Controls.Add(this.tabSettings);
             this.tcMain.Controls.Add(this.tabAbout);
             this.tcMain.ItemSize = new System.Drawing.Size(99, 24);
-            this.tcMain.Location = new System.Drawing.Point(16, 157);
+            this.tcMain.Location = new System.Drawing.Point(16, 115);
             this.tcMain.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tcMain.Name = "tcMain";
             this.tcMain.SelectedIndex = 0;
-            this.tcMain.Size = new System.Drawing.Size(536, 308);
+            this.tcMain.Size = new System.Drawing.Size(501, 308);
             this.tcMain.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.tcMain.TabIndex = 1;
             // 
@@ -127,7 +125,7 @@
             this.tabInstaller.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabInstaller.Name = "tabInstaller";
             this.tabInstaller.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.tabInstaller.Size = new System.Drawing.Size(528, 276);
+            this.tabInstaller.Size = new System.Drawing.Size(493, 276);
             this.tabInstaller.TabIndex = 0;
             this.tabInstaller.Text = "Installer";
             this.tabInstaller.UseVisualStyleBackColor = true;
@@ -137,11 +135,11 @@
             this.tcInstallation.Controls.Add(this.tabCurrent);
             this.tcInstallation.Controls.Add(this.tabOverall);
             this.tcInstallation.ItemSize = new System.Drawing.Size(195, 24);
-            this.tcInstallation.Location = new System.Drawing.Point(0, 0);
+            this.tcInstallation.Location = new System.Drawing.Point(-7, 0);
             this.tcInstallation.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tcInstallation.Name = "tcInstallation";
             this.tcInstallation.SelectedIndex = 0;
-            this.tcInstallation.Size = new System.Drawing.Size(525, 268);
+            this.tcInstallation.Size = new System.Drawing.Size(504, 280);
             this.tcInstallation.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.tcInstallation.TabIndex = 15;
             // 
@@ -158,7 +156,7 @@
             this.tabCurrent.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabCurrent.Name = "tabCurrent";
             this.tabCurrent.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.tabCurrent.Size = new System.Drawing.Size(517, 236);
+            this.tabCurrent.Size = new System.Drawing.Size(496, 248);
             this.tabCurrent.TabIndex = 0;
             this.tabCurrent.Text = "Current installation";
             this.tabCurrent.UseVisualStyleBackColor = true;
@@ -185,7 +183,7 @@
             // 
             // lInstallAdmin
             // 
-            this.lInstallAdmin.Location = new System.Drawing.Point(84, 68);
+            this.lInstallAdmin.Location = new System.Drawing.Point(82, 68);
             this.lInstallAdmin.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lInstallAdmin.Name = "lInstallAdmin";
             this.lInstallAdmin.Size = new System.Drawing.Size(341, 35);
@@ -197,7 +195,7 @@
             // 
             this.bUninstall.Image = global::OneClickModInstaller.Properties.Resources.root_shield;
             this.bUninstall.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.bUninstall.Location = new System.Drawing.Point(84, 166);
+            this.bUninstall.Location = new System.Drawing.Point(82, 166);
             this.bUninstall.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.bUninstall.Name = "bUninstall";
             this.bUninstall.Size = new System.Drawing.Size(341, 49);
@@ -211,7 +209,7 @@
             // 
             this.bInstall.Image = global::OneClickModInstaller.Properties.Resources.root_shield;
             this.bInstall.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.bInstall.Location = new System.Drawing.Point(84, 108);
+            this.bInstall.Location = new System.Drawing.Point(82, 108);
             this.bInstall.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.bInstall.Name = "bInstall";
             this.bInstall.Size = new System.Drawing.Size(341, 49);
@@ -253,11 +251,11 @@
             this.tabOverall.Controls.Add(this.lIOEp2Deco);
             this.tabOverall.Controls.Add(this.lIOEp1Stat);
             this.tabOverall.Controls.Add(this.lIOEp1Deco);
-            this.tabOverall.Location = new System.Drawing.Point(4, 22);
+            this.tabOverall.Location = new System.Drawing.Point(4, 28);
             this.tabOverall.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabOverall.Name = "tabOverall";
             this.tabOverall.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.tabOverall.Size = new System.Drawing.Size(517, 242);
+            this.tabOverall.Size = new System.Drawing.Size(496, 248);
             this.tabOverall.TabIndex = 1;
             this.tabOverall.Text = "Overall";
             this.tabOverall.UseVisualStyleBackColor = true;
@@ -383,11 +381,11 @@
             this.tabModInst.Controls.Add(this.lDownloadLink);
             this.tabModInst.Controls.Add(this.lDownloadTrying);
             this.tabModInst.Controls.Add(this.bModInstall);
-            this.tabModInst.Location = new System.Drawing.Point(4, 22);
+            this.tabModInst.Location = new System.Drawing.Point(4, 28);
             this.tabModInst.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabModInst.Name = "tabModInst";
             this.tabModInst.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.tabModInst.Size = new System.Drawing.Size(528, 282);
+            this.tabModInst.Size = new System.Drawing.Size(493, 276);
             this.tabModInst.TabIndex = 1;
             this.tabModInst.Text = "Install mod";
             this.tabModInst.UseVisualStyleBackColor = true;
@@ -512,11 +510,11 @@
             // tabSettings
             // 
             this.tabSettings.Controls.Add(this.tcSettings);
-            this.tabSettings.Location = new System.Drawing.Point(4, 22);
+            this.tabSettings.Location = new System.Drawing.Point(4, 28);
             this.tabSettings.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabSettings.Name = "tabSettings";
             this.tabSettings.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.tabSettings.Size = new System.Drawing.Size(528, 282);
+            this.tabSettings.Size = new System.Drawing.Size(493, 276);
             this.tabSettings.TabIndex = 2;
             this.tabSettings.Text = "Settings";
             this.tabSettings.UseVisualStyleBackColor = true;
@@ -539,17 +537,15 @@
             this.tPaths.Controls.Add(this.bPathDownloadedArchives);
             this.tPaths.Controls.Add(this.tbDownloadedArchiveLocation);
             this.tPaths.Controls.Add(this.label2);
-            this.tPaths.Controls.Add(this.bPathCheatTables);
             this.tPaths.Controls.Add(this.cbUseLocal7zip);
             this.tPaths.Controls.Add(this.bPath7z);
             this.tPaths.Controls.Add(this.tbPath7z);
-            this.tPaths.Controls.Add(this.tbPathCheatTables);
             this.tPaths.Controls.Add(this.label1);
-            this.tPaths.Location = new System.Drawing.Point(4, 22);
+            this.tPaths.Location = new System.Drawing.Point(4, 28);
             this.tPaths.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tPaths.Name = "tPaths";
             this.tPaths.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.tPaths.Size = new System.Drawing.Size(517, 242);
+            this.tPaths.Size = new System.Drawing.Size(517, 236);
             this.tPaths.TabIndex = 0;
             this.tPaths.Text = "Paths";
             this.tPaths.UseVisualStyleBackColor = true;
@@ -585,17 +581,6 @@
             this.label2.Size = new System.Drawing.Size(237, 20);
             this.label2.TabIndex = 9;
             this.label2.Text = "Downloaded archive save location";
-            // 
-            // bPathCheatTables
-            // 
-            this.bPathCheatTables.Location = new System.Drawing.Point(459, 102);
-            this.bPathCheatTables.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.bPathCheatTables.Name = "bPathCheatTables";
-            this.bPathCheatTables.Size = new System.Drawing.Size(43, 35);
-            this.bPathCheatTables.TabIndex = 8;
-            this.bPathCheatTables.Text = "...";
-            this.bPathCheatTables.UseVisualStyleBackColor = true;
-            this.bPathCheatTables.Click += new System.EventHandler(this.bPathCheatTables_Click);
             // 
             // cbUseLocal7zip
             // 
@@ -633,36 +618,22 @@
             this.tbPath7z.TabIndex = 1;
             this.tbPath7z.TextChanged += new System.EventHandler(this.fake_SettingsSave);
             // 
-            // tbPathCheatTables
-            // 
-            this.tbPathCheatTables.AllowDrop = true;
-            this.tbPathCheatTables.Location = new System.Drawing.Point(8, 105);
-            this.tbPathCheatTables.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.tbPathCheatTables.MaxLength = 512;
-            this.tbPathCheatTables.Name = "tbPathCheatTables";
-            this.tbPathCheatTables.Size = new System.Drawing.Size(441, 27);
-            this.tbPathCheatTables.TabIndex = 3;
-            this.tbPathCheatTables.TextChanged += new System.EventHandler(this.fake_SettingsSave);
-            // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(8, 80);
-            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label1.Location = new System.Drawing.Point(0, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(92, 20);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "Cheat Tables";
+            this.label1.Size = new System.Drawing.Size(100, 23);
+            this.label1.TabIndex = 12;
             // 
             // tOther
             // 
             this.tOther.Controls.Add(this.label3);
             this.tOther.Controls.Add(this.label4);
-            this.tOther.Location = new System.Drawing.Point(4, 22);
+            this.tOther.Location = new System.Drawing.Point(4, 28);
             this.tOther.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tOther.Name = "tOther";
             this.tOther.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.tOther.Size = new System.Drawing.Size(517, 242);
+            this.tOther.Size = new System.Drawing.Size(517, 236);
             this.tOther.TabIndex = 1;
             this.tOther.Text = "Other";
             this.tOther.UseVisualStyleBackColor = true;
@@ -705,11 +676,11 @@
             this.tabAbout.Controls.Add(this.link7z);
             this.tabAbout.Controls.Add(this.linkMain);
             this.tabAbout.Controls.Add(this.label6);
-            this.tabAbout.Location = new System.Drawing.Point(4, 22);
+            this.tabAbout.Location = new System.Drawing.Point(4, 28);
             this.tabAbout.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabAbout.Name = "tabAbout";
             this.tabAbout.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.tabAbout.Size = new System.Drawing.Size(528, 282);
+            this.tabAbout.Size = new System.Drawing.Size(493, 276);
             this.tabAbout.TabIndex = 3;
             this.tabAbout.Text = "About";
             this.tabAbout.UseVisualStyleBackColor = true;
@@ -797,10 +768,10 @@
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.statusBar});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 508);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 463);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Padding = new System.Windows.Forms.Padding(1, 0, 19, 0);
-            this.statusStrip1.Size = new System.Drawing.Size(568, 26);
+            this.statusStrip1.Size = new System.Drawing.Size(530, 26);
             this.statusStrip1.SizingGrip = false;
             this.statusStrip1.TabIndex = 3;
             this.statusStrip1.Text = "statusStrip1";
@@ -813,33 +784,33 @@
             // 
             // progressBar
             // 
-            this.progressBar.Location = new System.Drawing.Point(16, 471);
+            this.progressBar.Location = new System.Drawing.Point(16, 433);
             this.progressBar.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.progressBar.MarqueeAnimationSpeed = 25;
             this.progressBar.Maximum = 1000;
             this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(536, 25);
+            this.progressBar.Size = new System.Drawing.Size(501, 25);
             this.progressBar.Step = 1;
             this.progressBar.TabIndex = 10;
             // 
-            // pictureBox1
+            // logo
             // 
-            this.pictureBox1.Image = global::OneClickModInstaller.Properties.Resources.ocmi_logo;
-            this.pictureBox1.Location = new System.Drawing.Point(16, 18);
-            this.pictureBox1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(536, 129);
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
+            this.logo.Image = global::OneClickModInstaller.Properties.Resources.ocmi_logo;
+            this.logo.Location = new System.Drawing.Point(16, 14);
+            this.logo.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.logo.Name = "logo";
+            this.logo.Size = new System.Drawing.Size(501, 91);
+            this.logo.TabIndex = 0;
+            this.logo.TabStop = false;
             // 
             // UltimateWinForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(568, 534);
+            this.ClientSize = new System.Drawing.Size(530, 489);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.tcMain);
-            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.logo);
             this.Controls.Add(this.progressBar);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -867,7 +838,7 @@
             this.tabAbout.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.logo)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -875,7 +846,7 @@
 
         #endregion
 
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.PictureBox logo;
         private System.Windows.Forms.TabControl tcMain;
         private System.Windows.Forms.TabPage tabInstaller;
         private System.Windows.Forms.TabPage tabModInst;
@@ -914,9 +885,7 @@
         private System.Windows.Forms.TabControl tcSettings;
         private System.Windows.Forms.TabPage tPaths;
         private System.Windows.Forms.TabPage tOther;
-        private System.Windows.Forms.Button bPathCheatTables;
         private System.Windows.Forms.Button bPath7z;
-        private System.Windows.Forms.TextBox tbPathCheatTables;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox tbPath7z;
         private System.Windows.Forms.CheckBox cbUseLocal7zip;

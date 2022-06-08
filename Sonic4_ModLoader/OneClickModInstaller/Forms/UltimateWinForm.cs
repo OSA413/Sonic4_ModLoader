@@ -527,14 +527,7 @@ namespace OneClickModInstaller
         {
             var path = MyDirectory.Select("7z.exe", "7z");
             if (path != null)
-                tbPath7z.Text = path;
-        }
-
-        private void bPathCheatTables_Click(object sender, EventArgs e)
-        {
-            var path = MyDirectory.Select("Cheat Tables", "dir");
-            if (path != null)
-                tbPathCheatTables.Text = path;
+                tbPath7z.Text = path ?? tbPath7z.Text;
         }
 
         private void bPathDownloadedArchives_Click(object sender, EventArgs e)
@@ -552,7 +545,6 @@ namespace OneClickModInstaller
                 case "chSaveDownloadedArchives":    Settings.SaveDownloadedArchives     = chSaveDownloadedArchives.Checked; break;
                 case "cbExitLaunchManager":         Settings.ExitLaunchManager          = cbExitLaunchManager.Checked;      break;
                 case "tbPath7z":                    Settings.Paths["7-Zip"]             = tbPath7z.Text;                    break;
-                case "tbPathCheatTables":           Settings.Paths["CheatTables"]       = tbPathCheatTables.Text;           break;
                 case "tbDownloadedArchiveLocation": Settings.Paths["DownloadedArhives"] = tbDownloadedArchiveLocation.Text; break;
             }
             Settings.Save();
