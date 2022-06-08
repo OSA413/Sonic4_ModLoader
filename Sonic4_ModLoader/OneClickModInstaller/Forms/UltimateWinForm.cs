@@ -42,10 +42,11 @@ namespace OneClickModInstaller
             UpdateUI.AttachForm(this);
             UpdateUI.Initial();
             UpdateUI.Settings();
+            UpdateUI.CurrentGame();
+            UpdateUI.GlobalGameStatus();
 
             if (ArgsHandler.ModArgs != null)
                 statusBar.Text = "A wild installation button appeared!";
-            //UpdateWindow();
         }
 
         private void PrepareInstallation()
@@ -86,159 +87,6 @@ namespace OneClickModInstaller
             }
         }
 
-        private void UpdateWindow()
-        {
-            ////////////////
-            //Installaller//
-            ////////////////
-
-            ///////////
-            //Overall//
-            ///////////
-
-            var statuses  = hiWrapper.GetAllInstallationStatus();
-
-            foreach (var key in statuses.Keys)
-            {
-                Label  lIOStatus;
-                Label  lIOPath;
-                Button bIOUninstall;
-                Button bIOVisit;
-
-                switch (key)
-                {
-                    case GAME.Episode1:
-                        lIOStatus    = lIOEp1Stat;
-                        lIOPath      = lIOEp1Path;
-                        bIOUninstall = bIOEp1Uninstall;
-                        bIOVisit     = bIOEp1Visit;
-                        break;
-                    case GAME.Episode2:
-                        lIOStatus    = lIOEp2Stat;
-                        lIOPath      = lIOEp2Path;
-                        bIOUninstall = bIOEp2Uninstall;
-                        bIOVisit     = bIOEp2Visit;
-                        break;
-                    default: continue;
-                }
-
-                if (statuses[key].Status == InstallationStatus.NotInstalled)//?
-                {
-                    lIOStatus.Text = "Installed";
-                    lIOPath.Text   = ("Path: " + statuses[key].Location).Replace(' ', '\u2007');
-                    bIOUninstall.Enabled =
-                    bIOVisit.Enabled     = true;
-
-                    if (hiWrapper.RequiresAdmin()) bUninstall.Image = null;
-                }
-                else
-                {
-                    lIOStatus.Text = "Not installed";
-                    lIOPath.Text   = "";
-                    bIOUninstall.Enabled =
-                    bIOVisit.Enabled     = false;
-                }
-            }
-
-            ///////////
-            //Current//
-            ///////////
-
-            var currentGame = Launcher.GetCurrentGame();
-
-            if (hiWrapper.IsAdmin())
-            {
-                lInstallAdmin.Text = "";
-                bInstall.Image   =
-                bUninstall.Image = null;
-            }
-
-            if (currentGame == GAME.Unknown)
-            {
-                lGameName.Text           = "Not found";
-                lInstallationStatus.Text = "None";
-                bInstall.Enabled   =
-                bUninstall.Enabled = false;
-            }
-            else
-            {
-                lGameName.Text = "Sonic 4: " + Launcher.GetShortGame(Launcher.GetCurrentGame());
-
-                bInstall.Enabled =
-                bUninstall.Enabled = true;
-
-                switch (statuses[currentGame].Status)
-                {
-                    case InstallationStatus.NotInstalled:
-                        lInstallationStatus.Text = "Not installed";
-                        bInstall.Text = "Install";
-                        bUninstall.Enabled = false;
-                        break;
-                    case InstallationStatus.Installed:
-                        lInstallationStatus.Text = "Installed";
-                        bInstall.Enabled = false;
-                        bInstall.Text = "Install";
-                        break;
-                    case InstallationStatus.AnotherInstallationPresent:
-                        lInstallationStatus.Text = "Another installation present";
-                        bInstall.Text = "Fix registry path";
-                        break;
-                    case InstallationStatus.ImproperlyInstalled:
-                        lInstallationStatus.Text = "Requires reinstallation";
-                        bInstall.Text = "Install";
-                        break;
-                }
-            }
-
-            ////////////////////
-            //Mod Installation//
-            ////////////////////
-            
-            bModPath.Enabled    =
-            bModInstall.Enabled = false;
-            bModInstall.Text    = "Install";
-            tbModURL.ReadOnly   = Installation.FromArgs;
-            progressBar.Style   = ProgressBarStyle.Blocks;
-
-            switch (Installation.Status)
-            {
-                case "Idle":
-                case "Cancelled":
-                    bModPath.Enabled    = !Installation.FromArgs;
-                    bModInstall.Enabled = true;
-                    break;
-                case "Waiting for path":
-                    tbModURL.ReadOnly   =
-                    bModInstall.Enabled = true;
-                    bModInstall.Text    = "Continue installation";
-                    break;
-                case "Mod is complicated":
-                    bModPath.Enabled    = !Installation.FromArgs;
-                    break;
-                case "Installed":
-                    if (!Installation.FromArgs)
-                    {
-                        bModPath.Enabled    =
-                        bModInstall.Enabled = true;
-                    }
-                    else if (Installation.Local)
-                        bModInstall.Enabled = true;
-                    break;
-                case "Server error":
-                    bModInstall.Text    = "Retry";
-                    bModInstall.Enabled = true;
-                    tbModURL.ReadOnly   = Installation.FromArgs;
-                    bModPath.Enabled    = !Installation.FromArgs;
-                    break;
-            }
-
-            if (!Installation.FromArgs)
-            {
-                if (bModInstall.Enabled)
-                    tbModURL_TextChanged(null, null);
-            }
-        }
-
         private void bInstall_Click(object sender, EventArgs e)
         {
             switch (hiWrapper.GetInstallationStatus(Launcher.GetCurrentGame()).Status)
@@ -247,13 +95,16 @@ namespace OneClickModInstaller
                 default: hiWrapper.Install(); break;
             }
 
-            UpdateWindow();
+            UpdateUI.CurrentGame();
+            UpdateUI.GlobalGameStatus();
         }
 
         private void bUninstall_Click(object sender, EventArgs e)
         {
             Program.hiWrapper.Uninstall();
-            UpdateWindow();
+
+            UpdateUI.CurrentGame();
+            UpdateUI.GlobalGameStatus();
         }
 
         private void bModInstall_Click(object sender, EventArgs e)
@@ -289,13 +140,13 @@ namespace OneClickModInstaller
                 Installation.Status = "Server error";
                 statusBar.Text      = "Couldn't download full file (server error)";
                 File.Delete(Installation.ArchiveName);
-                UpdateWindow();
+                UpdateUI.ModInstallation();
             }
         }
 
         async public void StartInstallation()
         {
-            await Task.Run((Action)(() =>
+            await Task.Run((() =>
             {
                 string archive_url = Installation.Link;
                 if (Installation.Link.EndsWith("/"))
@@ -417,7 +268,7 @@ namespace OneClickModInstaller
                         ContinueInstallation();
                     }));
                 }
-                UpdateWindow();
+                UpdateUI.ModInstallation();
             });
         }
 
@@ -519,7 +370,7 @@ namespace OneClickModInstaller
                                       , MessageBoxButtons.OK
                                       , MessageBoxIcon.Information);
                         Installation.Status = "Waiting for path";
-                        UpdateWindow();
+                        UpdateUI.ModInstallation();
                     }
                 }
             }
@@ -589,7 +440,7 @@ namespace OneClickModInstaller
                 Installation.Status = "Installed";
                 
                 tcMain.Invoke(new MethodInvoker(delegate {
-                    UpdateWindow();
+                    UpdateUI.ModInstallation();
                 }));
             });
         }
@@ -656,13 +507,13 @@ namespace OneClickModInstaller
         private void bIOEp1Uninstall_Click(object sender, EventArgs e)
         {
             Program.hiWrapper.Uninstall(GAME.Episode1);
-            UpdateWindow();
+            UpdateUI.GlobalGameStatus();
         }
 
         private void bIOEp2Uninstall_Click(object sender, EventArgs e)
         {
             Program.hiWrapper.Uninstall(GAME.Episode2);
-            UpdateWindow();
+            UpdateUI.GlobalGameStatus();
         }
 
         private void cbUseLocal7zip_CheckedChanged(object sender, EventArgs e)
