@@ -64,12 +64,13 @@ public class HandlerInstallerWindows : IHandlerInstaller<string>
                 if ((string)Registry.GetValue(root_key + "\\DefaultIcon", "", null) == "OneClickModInstaller.exe")
                     location = (string)Registry.GetValue(root_key + "\\Shell\\Open\\Command", "", null);
         }
-        if (location != null)
-            location = location.Substring(1, location.Length - 7);
 
-        status = InstallationStatus.AnotherInstallationPresent;
+        location = location?.Substring(1, location.Length - 7);
+
         if (location == System.AppContext.BaseDirectory)
             status = InstallationStatus.Installed;
+        else if (location != null)
+            status = InstallationStatus.AnotherInstallationPresent;
 
         return (status, location);
     }
