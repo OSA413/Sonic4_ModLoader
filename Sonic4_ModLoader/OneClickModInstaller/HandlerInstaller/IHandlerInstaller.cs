@@ -13,7 +13,6 @@ public enum InstallationStatus
 {
     NotInstalled,
     Installed,
-    ImproperlyInstalled,
     AnotherInstallationPresent
 }
 

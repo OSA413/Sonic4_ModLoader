@@ -480,22 +480,14 @@ namespace OneClickModInstaller
         private void bIOEp1Visit_Click(object sender, EventArgs e)
         {
             var status = hiWrapper.GetInstallationStatus(GAME.Episode1);
-            switch (status.Status)
-            {
-                case InstallationStatus.NotInstalled: return;
-                case InstallationStatus.ImproperlyInstalled: return;
-            }
+            if (status.Status == InstallationStatus.NotInstalled) return;
             MyDirectory.OpenInFileManager(status.Location);
         }
 
         private void bIOEp2Visit_Click(object sender, EventArgs e)
         {
             var status = hiWrapper.GetInstallationStatus(GAME.Episode2);
-            switch (status.Status)
-            {
-                case InstallationStatus.NotInstalled: return;
-                case InstallationStatus.ImproperlyInstalled: return;
-            }
+            if (status.Status == InstallationStatus.NotInstalled) return;
             MyDirectory.OpenInFileManager(status.Location);
         }
 

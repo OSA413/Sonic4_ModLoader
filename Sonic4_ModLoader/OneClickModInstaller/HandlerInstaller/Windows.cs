@@ -36,7 +36,7 @@ public class HandlerInstallerWindows : IHandlerInstaller<string>
         Registry.SetValue(root_key, "", "URL:OSA413's One-Click Mod Installer protocol");
         Registry.SetValue(root_key, "URL Protocol", "");
         Registry.SetValue(root_key + "\\DefaultIcon", "", "OneClickModInstaller.exe");
-        Registry.SetValue(root_key + "\\Shell\\Open\\Command", "", "\"" + System.AppContext.BaseDirectory + "\" \"%1\"");
+        Registry.SetValue(root_key + "\\Shell\\Open\\Command", "", "\"" + AppContext.BaseDirectory + "\" \"%1\"");
     }
 
     public void Uninstall(string game)
@@ -49,25 +49,16 @@ public class HandlerInstallerWindows : IHandlerInstaller<string>
     public void FixPath(string game)
     {
         Registry.SetValue("HKEY_CLASSES_ROOT\\sonic4mm" + game + "\\Shell\\Open\\Command",
-            "", "\"" + System.AppContext.BaseDirectory + "\" \"%1\"");
+            "", "\"" + AppContext.BaseDirectory + "\" \"%1\"");
     }
 
     public (InstallationStatus Status, string Location) GetInstallationStatus(string game)
     {
         var status = InstallationStatus.NotInstalled;
-        string location = null; 
         var root_key = "HKEY_CLASSES_ROOT\\sonic4mm" + game;
-        if ((string)Registry.GetValue(root_key, "", null) == "URL:OSA413's One-Click Mod Installer protocol")
-        {
-            status = InstallationStatus.ImproperlyInstalled;
-            if ((string)Registry.GetValue(root_key, "URL Protocol", null) == "")
-                if ((string)Registry.GetValue(root_key + "\\DefaultIcon", "", null) == "OneClickModInstaller.exe")
-                    location = (string)Registry.GetValue(root_key + "\\Shell\\Open\\Command", "", null);
-        }
+        var location = ((string)Registry.GetValue(root_key + "\\Shell\\Open\\Command", "", null))?[1..^6];
 
-        location = location?.Substring(1, location.Length - 7);
-
-        if (location == System.AppContext.BaseDirectory)
+        if (location == AppContext.BaseDirectory)
             status = InstallationStatus.Installed;
         else if (location != null)
             status = InstallationStatus.AnotherInstallationPresent;

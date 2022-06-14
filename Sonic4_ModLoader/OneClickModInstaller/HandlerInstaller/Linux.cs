@@ -55,7 +55,6 @@ public class HandlerInstallerLinux : IHandlerInstaller<string>
 
         var output = process.StandardOutput.ReadToEnd();
 
-        status = InstallationStatus.ImproperlyInstalled;
         if (output == "sonic4mm" + game + ".desktop\n")
             if (File.Exists(desktop_file))
                 foreach (string line in File.ReadAllLines(desktop_file))

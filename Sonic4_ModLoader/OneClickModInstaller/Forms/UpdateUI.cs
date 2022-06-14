@@ -131,10 +131,6 @@ namespace OneClickModInstaller
                             form.lInstallationStatus.Text = "Another installation present";
                             form.bInstall.Text = "Fix registry path";
                             break;
-                        case InstallationStatus.ImproperlyInstalled:
-                            form.lInstallationStatus.Text = "Requires reinstallation";
-                            form.bInstall.Text = "Install";
-                            break;
                     }
                 }
             }
