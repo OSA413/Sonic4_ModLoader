@@ -87,20 +87,14 @@ namespace OneClickModInstaller
             }
         }
 
-        private void bInstall_Click(object sender, EventArgs e)
+        private void UnInstallAndUpdateStatus(Action<GAME?> d, GAME? game = null)
         {
-            hiWrapper.Install();
+            d(game);
             UpdateUI.CurrentGame();
             UpdateUI.GlobalGameStatus();
         }
-
-        private void bUninstall_Click(object sender, EventArgs e)
-        {
-            Program.hiWrapper.Uninstall();
-
-            UpdateUI.CurrentGame();
-            UpdateUI.GlobalGameStatus();
-        }
+        private void bInstall_Click(object sender, EventArgs e) => UnInstallAndUpdateStatus(hiWrapper.Install);
+        private void bUninstall_Click(object sender, EventArgs e) => UnInstallAndUpdateStatus(hiWrapper.Uninstall);
 
         private void bModInstall_Click(object sender, EventArgs e)
         {
@@ -158,6 +152,7 @@ namespace OneClickModInstaller
                 else
                 {
                     statusBar.Text = "Connecting to the server...";
+                    Downloader.Download(archive_url, fake_DoTheRest, wc_DownloadProgressChanged);
                     using (WebClient wc = new WebClient())
                     {
                         bModInstall.Enabled = false;
@@ -477,31 +472,22 @@ namespace OneClickModInstaller
             }));
         }
 
-        private void bIOEp1Visit_Click(object sender, EventArgs e)
+        private void VisitIfInstalled(GAME game)
         {
-            var status = hiWrapper.GetInstallationStatus(GAME.Episode1);
+            var status = hiWrapper.GetInstallationStatus(game);
             if (status.Status == InstallationStatus.NotInstalled) return;
             MyDirectory.OpenInFileManager(status.Location);
         }
+        private void bIOEp1Visit_Click(object sender, EventArgs e) => VisitIfInstalled(GAME.Episode1);
+        private void bIOEp2Visit_Click(object sender, EventArgs e) => VisitIfInstalled(GAME.Episode2);
 
-        private void bIOEp2Visit_Click(object sender, EventArgs e)
+        private void Uninstall(GAME game)
         {
-            var status = hiWrapper.GetInstallationStatus(GAME.Episode2);
-            if (status.Status == InstallationStatus.NotInstalled) return;
-            MyDirectory.OpenInFileManager(status.Location);
-        }
-
-        private void bIOEp1Uninstall_Click(object sender, EventArgs e)
-        {
-            Program.hiWrapper.Uninstall(GAME.Episode1);
+            Program.hiWrapper.Uninstall(game);
             UpdateUI.GlobalGameStatus();
         }
-
-        private void bIOEp2Uninstall_Click(object sender, EventArgs e)
-        {
-            Program.hiWrapper.Uninstall(GAME.Episode2);
-            UpdateUI.GlobalGameStatus();
-        }
+        private void bIOEp1Uninstall_Click(object sender, EventArgs e) => Uninstall(GAME.Episode1);
+        private void bIOEp2Uninstall_Click(object sender, EventArgs e) => Uninstall(GAME.Episode2);
 
         private void cbUseLocal7zip_CheckedChanged(object sender, EventArgs e)
         {
