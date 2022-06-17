@@ -23,11 +23,11 @@ namespace OneClickModInstaller
         {
             string output;
 
-            var host = Downloader.ServerHost.Other;
+            var host = ServerHost.Other;
             if (inputURL.Contains("gamebanana.com"))
-                host = Downloader.ServerHost.GameBanana;
+                host = ServerHost.GameBanana;
             else if (inputURL.Contains("github.com"))
-                host = Downloader.ServerHost.GitHub;
+                host = ServerHost.GitHub;
 
             using WebClient wc = new();
             wc.DownloadFileCompleted += new AsyncCompletedEventHandler(then);
@@ -37,13 +37,13 @@ namespace OneClickModInstaller
             var url = URL.GetURLRedirect(inputURL);
 
             //Getting file name of the archive
-            if (host == Downloader.ServerHost.GitHub)
+            if (host == ServerHost.GitHub)
                 //GitHub's redirect link is something like a request rather than a file "path" on a server
                 output = url.Split('/')[^1];
             else
                 output = url.Split('/')[^1];
 
-            if (host == Downloader.ServerHost.GameBanana)
+            if (host == ServerHost.GameBanana)
                 //Well, it seems that GB's counter doesn't increase if you download
                 //the file directly from the redirect url. But I'm not sure that
                 //this works as well

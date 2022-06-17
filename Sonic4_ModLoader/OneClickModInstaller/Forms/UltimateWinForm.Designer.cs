@@ -109,23 +109,22 @@
             this.tcMain.Controls.Add(this.tabModInst);
             this.tcMain.Controls.Add(this.tabSettings);
             this.tcMain.Controls.Add(this.tabAbout);
-            this.tcMain.ItemSize = new System.Drawing.Size(99, 24);
             this.tcMain.Location = new System.Drawing.Point(16, 115);
             this.tcMain.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tcMain.Name = "tcMain";
+            this.tcMain.Padding = new System.Drawing.Point(32, 3);
             this.tcMain.SelectedIndex = 0;
             this.tcMain.Size = new System.Drawing.Size(501, 308);
-            this.tcMain.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.tcMain.TabIndex = 1;
             // 
             // tabInstaller
             // 
             this.tabInstaller.Controls.Add(this.tcInstallation);
-            this.tabInstaller.Location = new System.Drawing.Point(4, 28);
+            this.tabInstaller.Location = new System.Drawing.Point(4, 29);
             this.tabInstaller.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabInstaller.Name = "tabInstaller";
             this.tabInstaller.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.tabInstaller.Size = new System.Drawing.Size(493, 276);
+            this.tabInstaller.Size = new System.Drawing.Size(493, 275);
             this.tabInstaller.TabIndex = 0;
             this.tabInstaller.Text = "Installer";
             this.tabInstaller.UseVisualStyleBackColor = true;
@@ -134,13 +133,12 @@
             // 
             this.tcInstallation.Controls.Add(this.tabCurrent);
             this.tcInstallation.Controls.Add(this.tabOverall);
-            this.tcInstallation.ItemSize = new System.Drawing.Size(195, 24);
             this.tcInstallation.Location = new System.Drawing.Point(-7, 0);
             this.tcInstallation.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tcInstallation.Name = "tcInstallation";
+            this.tcInstallation.Padding = new System.Drawing.Point(32, 3);
             this.tcInstallation.SelectedIndex = 0;
             this.tcInstallation.Size = new System.Drawing.Size(504, 280);
-            this.tcInstallation.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.tcInstallation.TabIndex = 15;
             // 
             // tabCurrent
@@ -152,11 +150,11 @@
             this.tabCurrent.Controls.Add(this.bInstall);
             this.tabCurrent.Controls.Add(this.lInstallationStatus);
             this.tabCurrent.Controls.Add(this.lInstallStatus);
-            this.tabCurrent.Location = new System.Drawing.Point(4, 28);
+            this.tabCurrent.Location = new System.Drawing.Point(4, 29);
             this.tabCurrent.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabCurrent.Name = "tabCurrent";
             this.tabCurrent.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.tabCurrent.Size = new System.Drawing.Size(496, 248);
+            this.tabCurrent.Size = new System.Drawing.Size(496, 247);
             this.tabCurrent.TabIndex = 0;
             this.tabCurrent.Text = "Current installation";
             this.tabCurrent.UseVisualStyleBackColor = true;
@@ -251,11 +249,11 @@
             this.tabOverall.Controls.Add(this.lIOEp2Deco);
             this.tabOverall.Controls.Add(this.lIOEp1Stat);
             this.tabOverall.Controls.Add(this.lIOEp1Deco);
-            this.tabOverall.Location = new System.Drawing.Point(4, 28);
+            this.tabOverall.Location = new System.Drawing.Point(4, 29);
             this.tabOverall.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabOverall.Name = "tabOverall";
             this.tabOverall.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.tabOverall.Size = new System.Drawing.Size(496, 248);
+            this.tabOverall.Size = new System.Drawing.Size(496, 247);
             this.tabOverall.TabIndex = 1;
             this.tabOverall.Text = "Overall";
             this.tabOverall.UseVisualStyleBackColor = true;
@@ -271,10 +269,10 @@
             // 
             // lIOEp2Stat
             // 
-            this.lIOEp2Stat.Location = new System.Drawing.Point(171, 135);
+            this.lIOEp2Stat.Location = new System.Drawing.Point(145, 135);
             this.lIOEp2Stat.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lIOEp2Stat.Name = "lIOEp2Stat";
-            this.lIOEp2Stat.Size = new System.Drawing.Size(87, 20);
+            this.lIOEp2Stat.Size = new System.Drawing.Size(97, 20);
             this.lIOEp2Stat.TabIndex = 17;
             this.lIOEp2Stat.Text = "Not installed";
             this.lIOEp2Stat.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -290,7 +288,7 @@
             // 
             // bIOEp2Visit
             // 
-            this.bIOEp2Visit.Location = new System.Drawing.Point(395, 120);
+            this.bIOEp2Visit.Location = new System.Drawing.Point(376, 121);
             this.bIOEp2Visit.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.bIOEp2Visit.Name = "bIOEp2Visit";
             this.bIOEp2Visit.Size = new System.Drawing.Size(112, 49);
@@ -303,7 +301,7 @@
             // 
             this.bIOEp2Uninstall.Image = global::OneClickModInstaller.Properties.Resources.root_shield;
             this.bIOEp2Uninstall.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.bIOEp2Uninstall.Location = new System.Drawing.Point(275, 120);
+            this.bIOEp2Uninstall.Location = new System.Drawing.Point(256, 121);
             this.bIOEp2Uninstall.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.bIOEp2Uninstall.Name = "bIOEp2Uninstall";
             this.bIOEp2Uninstall.Size = new System.Drawing.Size(112, 49);
@@ -315,7 +313,7 @@
             // 
             // bIOEp1Visit
             // 
-            this.bIOEp1Visit.Location = new System.Drawing.Point(395, 12);
+            this.bIOEp1Visit.Location = new System.Drawing.Point(376, 12);
             this.bIOEp1Visit.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.bIOEp1Visit.Name = "bIOEp1Visit";
             this.bIOEp1Visit.Size = new System.Drawing.Size(112, 49);
@@ -328,7 +326,7 @@
             // 
             this.bIOEp1Uninstall.Image = global::OneClickModInstaller.Properties.Resources.root_shield;
             this.bIOEp1Uninstall.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.bIOEp1Uninstall.Location = new System.Drawing.Point(275, 12);
+            this.bIOEp1Uninstall.Location = new System.Drawing.Point(256, 12);
             this.bIOEp1Uninstall.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.bIOEp1Uninstall.Name = "bIOEp1Uninstall";
             this.bIOEp1Uninstall.Size = new System.Drawing.Size(112, 49);
@@ -350,10 +348,10 @@
             // 
             // lIOEp1Stat
             // 
-            this.lIOEp1Stat.Location = new System.Drawing.Point(171, 28);
+            this.lIOEp1Stat.Location = new System.Drawing.Point(148, 28);
             this.lIOEp1Stat.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lIOEp1Stat.Name = "lIOEp1Stat";
-            this.lIOEp1Stat.Size = new System.Drawing.Size(87, 20);
+            this.lIOEp1Stat.Size = new System.Drawing.Size(97, 20);
             this.lIOEp1Stat.TabIndex = 9;
             this.lIOEp1Stat.Text = "Not installed";
             this.lIOEp1Stat.TextAlign = System.Drawing.ContentAlignment.TopCenter;
@@ -381,11 +379,11 @@
             this.tabModInst.Controls.Add(this.lDownloadLink);
             this.tabModInst.Controls.Add(this.lDownloadTrying);
             this.tabModInst.Controls.Add(this.bModInstall);
-            this.tabModInst.Location = new System.Drawing.Point(4, 28);
+            this.tabModInst.Location = new System.Drawing.Point(4, 29);
             this.tabModInst.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabModInst.Name = "tabModInst";
             this.tabModInst.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.tabModInst.Size = new System.Drawing.Size(493, 276);
+            this.tabModInst.Size = new System.Drawing.Size(493, 275);
             this.tabModInst.TabIndex = 1;
             this.tabModInst.Text = "Install mod";
             this.tabModInst.UseVisualStyleBackColor = true;
@@ -456,7 +454,7 @@
             // 
             // bModPath
             // 
-            this.bModPath.Location = new System.Drawing.Point(475, 95);
+            this.bModPath.Location = new System.Drawing.Point(440, 98);
             this.bModPath.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.bModPath.Name = "bModPath";
             this.bModPath.Size = new System.Drawing.Size(43, 35);
@@ -471,7 +469,7 @@
             this.tbModURL.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tbModURL.MaxLength = 512;
             this.tbModURL.Name = "tbModURL";
-            this.tbModURL.Size = new System.Drawing.Size(453, 27);
+            this.tbModURL.Size = new System.Drawing.Size(420, 27);
             this.tbModURL.TabIndex = 19;
             this.tbModURL.TextChanged += new System.EventHandler(this.tbModURL_TextChanged);
             // 
@@ -510,11 +508,11 @@
             // tabSettings
             // 
             this.tabSettings.Controls.Add(this.tcSettings);
-            this.tabSettings.Location = new System.Drawing.Point(4, 28);
+            this.tabSettings.Location = new System.Drawing.Point(4, 29);
             this.tabSettings.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabSettings.Name = "tabSettings";
             this.tabSettings.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.tabSettings.Size = new System.Drawing.Size(493, 276);
+            this.tabSettings.Size = new System.Drawing.Size(493, 275);
             this.tabSettings.TabIndex = 2;
             this.tabSettings.Text = "Settings";
             this.tabSettings.UseVisualStyleBackColor = true;
@@ -528,7 +526,7 @@
             this.tcSettings.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tcSettings.Name = "tcSettings";
             this.tcSettings.SelectedIndex = 0;
-            this.tcSettings.Size = new System.Drawing.Size(525, 268);
+            this.tcSettings.Size = new System.Drawing.Size(493, 275);
             this.tcSettings.SizeMode = System.Windows.Forms.TabSizeMode.Fixed;
             this.tcSettings.TabIndex = 3;
             // 
@@ -545,14 +543,14 @@
             this.tPaths.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tPaths.Name = "tPaths";
             this.tPaths.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.tPaths.Size = new System.Drawing.Size(517, 236);
+            this.tPaths.Size = new System.Drawing.Size(485, 243);
             this.tPaths.TabIndex = 0;
             this.tPaths.Text = "Paths";
             this.tPaths.UseVisualStyleBackColor = true;
             // 
             // bPathDownloadedArchives
             // 
-            this.bPathDownloadedArchives.Location = new System.Drawing.Point(459, 162);
+            this.bPathDownloadedArchives.Location = new System.Drawing.Point(434, 161);
             this.bPathDownloadedArchives.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.bPathDownloadedArchives.Name = "bPathDownloadedArchives";
             this.bPathDownloadedArchives.Size = new System.Drawing.Size(43, 35);
@@ -568,7 +566,7 @@
             this.tbDownloadedArchiveLocation.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tbDownloadedArchiveLocation.MaxLength = 512;
             this.tbDownloadedArchiveLocation.Name = "tbDownloadedArchiveLocation";
-            this.tbDownloadedArchiveLocation.Size = new System.Drawing.Size(441, 27);
+            this.tbDownloadedArchiveLocation.Size = new System.Drawing.Size(418, 27);
             this.tbDownloadedArchiveLocation.TabIndex = 10;
             this.tbDownloadedArchiveLocation.TextChanged += new System.EventHandler(this.fake_SettingsSave);
             // 
@@ -597,7 +595,7 @@
             // bPath7z
             // 
             this.bPath7z.Enabled = false;
-            this.bPath7z.Location = new System.Drawing.Point(459, 42);
+            this.bPath7z.Location = new System.Drawing.Point(434, 41);
             this.bPath7z.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.bPath7z.Name = "bPath7z";
             this.bPath7z.Size = new System.Drawing.Size(43, 35);
@@ -614,7 +612,7 @@
             this.tbPath7z.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tbPath7z.MaxLength = 512;
             this.tbPath7z.Name = "tbPath7z";
-            this.tbPath7z.Size = new System.Drawing.Size(441, 27);
+            this.tbPath7z.Size = new System.Drawing.Size(418, 27);
             this.tbPath7z.TabIndex = 1;
             this.tbPath7z.TextChanged += new System.EventHandler(this.fake_SettingsSave);
             // 
@@ -676,18 +674,18 @@
             this.tabAbout.Controls.Add(this.link7z);
             this.tabAbout.Controls.Add(this.linkMain);
             this.tabAbout.Controls.Add(this.label6);
-            this.tabAbout.Location = new System.Drawing.Point(4, 28);
+            this.tabAbout.Location = new System.Drawing.Point(4, 29);
             this.tabAbout.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tabAbout.Name = "tabAbout";
             this.tabAbout.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.tabAbout.Size = new System.Drawing.Size(493, 276);
+            this.tabAbout.Size = new System.Drawing.Size(493, 275);
             this.tabAbout.TabIndex = 3;
             this.tabAbout.Text = "About";
             this.tabAbout.UseVisualStyleBackColor = true;
             // 
             // label8
             // 
-            this.label8.Location = new System.Drawing.Point(93, 132);
+            this.label8.Location = new System.Drawing.Point(76, 132);
             this.label8.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(349, 46);
@@ -698,7 +696,7 @@
             // label7
             // 
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label7.Location = new System.Drawing.Point(8, 188);
+            this.label7.Location = new System.Drawing.Point(-4, 188);
             this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(509, 40);
@@ -710,7 +708,7 @@
             // linkLabel1
             // 
             this.linkLabel1.AutoSize = true;
-            this.linkLabel1.Location = new System.Drawing.Point(168, 228);
+            this.linkLabel1.Location = new System.Drawing.Point(151, 228);
             this.linkLabel1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.linkLabel1.Name = "linkLabel1";
             this.linkLabel1.Size = new System.Drawing.Size(198, 20);
@@ -722,7 +720,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(168, 75);
+            this.label5.Location = new System.Drawing.Point(143, 75);
             this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(214, 20);
@@ -732,7 +730,7 @@
             // link7z
             // 
             this.link7z.AutoSize = true;
-            this.link7z.Location = new System.Drawing.Point(192, 95);
+            this.link7z.Location = new System.Drawing.Point(171, 95);
             this.link7z.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.link7z.Name = "link7z";
             this.link7z.Size = new System.Drawing.Size(159, 20);
@@ -744,7 +742,7 @@
             // linkMain
             // 
             this.linkMain.AutoSize = true;
-            this.linkMain.Location = new System.Drawing.Point(109, 42);
+            this.linkMain.Location = new System.Drawing.Point(88, 42);
             this.linkMain.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.linkMain.Name = "linkMain";
             this.linkMain.Size = new System.Drawing.Size(324, 20);
@@ -756,7 +754,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(80, 22);
+            this.label6.Location = new System.Drawing.Point(56, 22);
             this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(389, 20);

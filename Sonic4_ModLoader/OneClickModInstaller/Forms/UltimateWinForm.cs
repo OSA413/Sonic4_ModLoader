@@ -153,33 +153,6 @@ namespace OneClickModInstaller
                 {
                     statusBar.Text = "Connecting to the server...";
                     Downloader.Download(archive_url, fake_DoTheRest, wc_DownloadProgressChanged);
-                    using (WebClient wc = new WebClient())
-                    {
-                        bModInstall.Enabled = false;
-                        wc.DownloadFileCompleted += new AsyncCompletedEventHandler(fake_DoTheRest);
-                        wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(wc_DownloadProgressChanged);
-
-                        //Download link goes here
-                        var url = URL.GetURLRedirect(archive_url);
-                        
-                        //Getting file name of the archive
-                        if (Installation.ServerHost == Downloader.ServerHost.GitHub)
-                            //GitHub's redirect link is something like a request rather than a file "path" on a server
-                            Installation.ArchiveName = archive_url.Split('/')[archive_url.Split('/').Length - 1];
-                        else
-                            Installation.ArchiveName = url.Split('/')[url.Split('/').Length - 1];
-
-                        if (Installation.ServerHost == Downloader.ServerHost.GameBanana)
-                            //Well, it seems that GB's counter doesn't increase if you download
-                            //the file directly from the redirect url. But I'm not sure that
-                            //this works as well
-                            url = archive_url;
-
-                        if (File.Exists(Installation.ArchiveName))
-                            File.Delete(Installation.ArchiveName);
-
-                        wc.DownloadFileAsync(new Uri(url), Installation.ArchiveName);
-                    }
                 }
             }));
         }
