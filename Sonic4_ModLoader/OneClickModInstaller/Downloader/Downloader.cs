@@ -19,40 +19,39 @@ namespace OneClickModInstaller
             Other
         }
 
-        public static void Download(string inputURL, Action<object, AsyncCompletedEventArgs> then, Action<object, DownloadProgressChangedEventArgs> onProgress)
+        public static string GetFileNameFromServer(string url, ServerHost? host=null)
         {
-            string output;
+            if (host == null) host = GetServerHost(url);
+            if (host == ServerHost.GitHub)
+                return url.Split('/')[^1];
+            return url.Split('/')[^1];
+        }
 
-            var host = ServerHost.Other;
-            if (inputURL.Contains("gamebanana.com"))
-                host = ServerHost.GameBanana;
-            else if (inputURL.Contains("github.com"))
-                host = ServerHost.GitHub;
+        public static ServerHost GetServerHost(string url)
+        {
+            if (url.Contains("gamebanana.com"))
+                return ServerHost.GameBanana;
+            else if (url.Contains("github.com"))
+                return ServerHost.GitHub;
+            return ServerHost.Other;
+        }
+
+        public static string Download(string inputURL, Action<object, AsyncCompletedEventArgs> then, Action<object, DownloadProgressChangedEventArgs> onProgress)
+        {
+            var host = GetServerHost(inputURL);
 
             using WebClient wc = new();
             wc.DownloadFileCompleted += new AsyncCompletedEventHandler(then);
             wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(onProgress);
 
-            //Download link goes here
             var url = URL.GetURLRedirect(inputURL);
-
-            //Getting file name of the archive
-            if (host == ServerHost.GitHub)
-                //GitHub's redirect link is something like a request rather than a file "path" on a server
-                output = url.Split('/')[^1];
-            else
-                output = url.Split('/')[^1];
-
-            if (host == ServerHost.GameBanana)
-                //Well, it seems that GB's counter doesn't increase if you download
-                //the file directly from the redirect url. But I'm not sure that
-                //this works as well
-                url = inputURL;
+            var output = GetFileNameFromServer(url);
 
             if (File.Exists(output))
                 File.Delete(output);
 
             wc.DownloadFileAsync(new Uri(url), output);
+            return output;
         }
     }
 }

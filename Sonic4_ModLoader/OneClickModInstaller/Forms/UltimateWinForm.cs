@@ -138,8 +138,8 @@ namespace OneClickModInstaller
             await Task.Run((() =>
             {
                 string archive_url = Installation.Link;
-                if (Installation.Link.EndsWith("/"))
-                    Installation.Link = Installation.Link.Substring(Installation.Link.Length - 1);
+                //if (Installation.Link.EndsWith("/"))
+                //    Installation.Link = Installation.Link.Substring(Installation.Link.Length - 1);
 
                 if (File.Exists(archive_url) || Directory.Exists(archive_url))
                 {
@@ -152,7 +152,7 @@ namespace OneClickModInstaller
                 else
                 {
                     statusBar.Text = "Connecting to the server...";
-                    Downloader.Download(archive_url, fake_DoTheRest, wc_DownloadProgressChanged);
+                    Installation.ArchiveName = Downloader.Download(archive_url, fake_DoTheRest, wc_DownloadProgressChanged);
                 }
             }));
         }
@@ -183,12 +183,6 @@ namespace OneClickModInstaller
                         else
                             ModArchive.Extract(Installation.ArchiveName);
                     }
-                }
-
-                if (File.Exists(Installation.ArchiveDir))
-                {
-                    statusBar.Text = "Couldn't extract archive";
-                    Installation.Status = "Idle";
                 }
 
                 var cont = -1;

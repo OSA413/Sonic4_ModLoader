@@ -137,49 +137,54 @@ namespace OneClickModInstaller
 
             public static void ModInstallation()
             {
-                form.bModPath.Enabled =
-                form.bModInstall.Enabled = false;
-                form.bModInstall.Text = "Install";
-                form.tbModURL.ReadOnly = Installation.FromArgs;
-                form.progressBar.Style = ProgressBarStyle.Blocks;
-
-                switch (Installation.Status)
+                form.Invoke(new MethodInvoker(delegate
                 {
-                    case "Idle":
-                    case "Cancelled":
-                        form.bModPath.Enabled = !Installation.FromArgs;
-                        form.bModInstall.Enabled = true;
-                        break;
-                    case "Waiting for path":
-                        form.tbModURL.ReadOnly =
-                        form.bModInstall.Enabled = true;
-                        form.bModInstall.Text = "Continue installation";
-                        break;
-                    case "Mod is complicated":
-                        form.bModPath.Enabled = !Installation.FromArgs;
-                        break;
-                    case "Installed":
-                        if (!Installation.FromArgs)
-                        {
-                            form.bModPath.Enabled =
-                            form.bModInstall.Enabled = true;
-                        }
-                        else if (Installation.Local)
-                            form.bModInstall.Enabled = true;
-                        break;
-                    case "Server error":
-                        form.bModInstall.Text = "Retry";
-                        form.bModInstall.Enabled = true;
-                        form.tbModURL.ReadOnly = Installation.FromArgs;
-                        form.bModPath.Enabled = !Installation.FromArgs;
-                        break;
-                }
+                    form.progressBar.Style = ProgressBarStyle.Marquee;
+                    form.progressBar.Value = 0;
+                    form.bModPath.Enabled =
+                    form.bModInstall.Enabled = false;
+                    form.bModInstall.Text = "Install";
+                    form.tbModURL.ReadOnly = Installation.FromArgs;
+                    form.progressBar.Style = ProgressBarStyle.Blocks;
 
-                if (!Installation.FromArgs)
-                {
-                    if (form.bModInstall.Enabled)
-                        form.tbModURL_TextChanged(null, null);
-                }
+                    switch (Installation.Status)
+                    {
+                        case "Idle":
+                        case "Cancelled":
+                            form.bModPath.Enabled = !Installation.FromArgs;
+                            form.bModInstall.Enabled = true;
+                            break;
+                        case "Waiting for path":
+                            form.tbModURL.ReadOnly =
+                            form.bModInstall.Enabled = true;
+                            form.bModInstall.Text = "Continue installation";
+                            break;
+                        case "Mod is complicated":
+                            form.bModPath.Enabled = !Installation.FromArgs;
+                            break;
+                        case "Installed":
+                            if (!Installation.FromArgs)
+                            {
+                                form.bModPath.Enabled =
+                                form.bModInstall.Enabled = true;
+                            }
+                            else if (Installation.Local)
+                                form.bModInstall.Enabled = true;
+                            break;
+                        case "Server error":
+                            form.bModInstall.Text = "Retry";
+                            form.bModInstall.Enabled = true;
+                            form.tbModURL.ReadOnly = Installation.FromArgs;
+                            form.bModPath.Enabled = !Installation.FromArgs;
+                            break;
+                    }
+
+                    if (!Installation.FromArgs)
+                    {
+                        if (form.bModInstall.Enabled)
+                            form.tbModURL_TextChanged(null, null);
+                    }
+                }));
             }
 
             public static void Settings() {

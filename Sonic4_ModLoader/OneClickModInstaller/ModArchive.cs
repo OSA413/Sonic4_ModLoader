@@ -25,12 +25,12 @@ namespace OneClickModInstaller
     {
         public static void Extract(string file, string path_to_7z = "7z.exe")
         {
-            //Need 7-zip to work
             if (!File.Exists(path_to_7z))
             {
-                //Try to use bundled copy if local not found
                 if (File.Exists("7z.exe"))
                     path_to_7z = "7z.exe";
+                else if (File.Exists(@"C:\Program Files\7-Zip\7z.exe"))
+                    path_to_7z = @"C:\Program Files\7-Zip\7z.exe";
                 else
                     return;
             }
