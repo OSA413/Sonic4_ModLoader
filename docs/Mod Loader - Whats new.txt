@@ -1,3 +1,11 @@
+[c]Version: v0.1.6.0
+* Switched to .Net 6 (it's good, HiDPI and other modern features, and sad, you can't run WinForms on Linux/Mono, at the same time)
+* Alice Mod Loader by RadiantDerg updated to 0.2.6!
+* AML: Configurable Episode 1 internal resolution!
+* AML: Early feature of file redirection to `<GameDir>/#Work/` folder. More info here: https://twitter.com/RadiantDerg/status/1534442487716134912
+* One-Click Mod Installer was fixed to an acceptable state (mod installation and one-click integation should work).
+[i]For Wine/Proton supported version, see v0.1.5.1[\i]
+
 [c]Version: v0.1.5.1
 * Added version to Mod Manager's header
 * Updated Alice Mod Loader by RadiantDerg
