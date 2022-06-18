@@ -44,9 +44,13 @@ namespace OneClickModInstaller
             UpdateUI.Settings();
             UpdateUI.CurrentGame();
             UpdateUI.GlobalGameStatus();
-
+            
             if (ArgsHandler.ModArgs != null)
+            {
                 statusBar.Text = "A wild installation button appeared!";
+                tcMain.SelectedTab = tabModInst;
+                tbModURL.Text = ArgsHandler.ModArgs.Path;
+            }
         }
 
         private void PrepareInstallation()
@@ -138,8 +142,6 @@ namespace OneClickModInstaller
             await Task.Run((() =>
             {
                 string archive_url = Installation.Link;
-                //if (Installation.Link.EndsWith("/"))
-                //    Installation.Link = Installation.Link.Substring(Installation.Link.Length - 1);
 
                 if (File.Exists(archive_url) || Directory.Exists(archive_url))
                 {

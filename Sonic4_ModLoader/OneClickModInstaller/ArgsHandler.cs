@@ -34,8 +34,8 @@ namespace OneClickModInstaller {
                     string type = null;
                     var id = 0;
                     if (modArgs.Length > 0) path = modArgs[0];
-                    if (modArgs.Length > 0) type = modArgs[1];
-                    if (modArgs.Length > 0) id = Convert.ToInt32(modArgs[2]);
+                    if (modArgs.Length > 1) type = modArgs[1];
+                    if (modArgs.Length > 2) id = Convert.ToInt32(modArgs[2]);
                     ModArgs = new ModArgs(path, type, id);
                 }
             }
