@@ -341,10 +341,16 @@ namespace OneClickModInstaller
 
         async public void FinishInstallation()
         {
-            progressBar.Style = ProgressBarStyle.Marquee;
+            tcMain.Invoke(new MethodInvoker(delegate
+            {
+                progressBar.Style = ProgressBarStyle.Marquee;
+            }));
             await Task.Run(() =>
             {
-                statusBar.Text = "Installing downloaded mod...";
+                tcMain.Invoke(new MethodInvoker(delegate
+                {
+                    statusBar.Text = "Installing downloaded mod...";
+                }));
 
                 foreach (string mod in Installation.ModRoots)
                 {
@@ -393,8 +399,11 @@ namespace OneClickModInstaller
                     Environment.Exit(0);
                 }
 
-                statusBar.Text = "Mod installation complete!";
-                Installation.Status = "Installed";
+                tcMain.Invoke(new MethodInvoker(delegate
+                {
+                    statusBar.Text = "Mod installation complete!";
+                    Installation.Status = "Installed";
+                }));
                 
                 tcMain.Invoke(new MethodInvoker(delegate {
                     UpdateUI.ModInstallation();
