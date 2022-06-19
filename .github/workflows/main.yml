@@ -21,7 +21,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.1
+        run: echo "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\bin" >> $GITHUB_PATH
 
       - name: Update dependencies
         run: bash update_dependencies.sh
