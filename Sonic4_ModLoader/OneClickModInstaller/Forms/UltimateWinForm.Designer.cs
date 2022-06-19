@@ -631,7 +631,7 @@
             this.tOther.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.tOther.Name = "tOther";
             this.tOther.Padding = new System.Windows.Forms.Padding(4, 5, 4, 5);
-            this.tOther.Size = new System.Drawing.Size(517, 236);
+            this.tOther.Size = new System.Drawing.Size(485, 243);
             this.tOther.TabIndex = 1;
             this.tOther.Text = "Other";
             this.tOther.UseVisualStyleBackColor = true;
