@@ -13,7 +13,7 @@ git clone --depth=1 https://github.com/blueskythlikesclouds/SonicAudioTools
 cd "SonicAudioTools"
 nuget restore SonicAudioTools.sln
 [ "$?" != "0" ] && EXIT_CODE=1
-"C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\bin\msbuild\msbuild" SonicAudioTools.sln /p:Configuration=Release -m
+msbuild.exe SonicAudioTools.sln /p:Configuration=Release -m
 [ "$?" != "0" ] && EXIT_CODE=1
 
 cp ./Release/CsbEditor.exe ./../../dependencies/SonicAudioTools/CsbEditor.exe
