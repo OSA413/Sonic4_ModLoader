@@ -4,6 +4,8 @@ Looking for midday builds? Get it from [GitHub Actions](https://github.com/OSA41
 
 Note for Linux users: [v0.1.5.1](https://github.com/OSA413/Sonic4_ModLoader/releases/tag/v0.1.5.1) is the last version that works with Mono (and probably Wine/Proton).
 
+For x86 builds, see [GitHub Actions](https://github.com/OSA413/Sonic4_ModLoader/actions).
+
 Join our [Sonic 4 Modding Discord server](https://discord.gg/WCp8BFyFxN)
 
 FAQ: https://github.com/OSA413/Sonic4_ModLoader/blob/master/docs/FAQ.md
