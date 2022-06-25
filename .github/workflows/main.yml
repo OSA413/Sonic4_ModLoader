@@ -65,3 +65,35 @@ jobs:
 
       - name: Run tests
         run: bash ./tests/run_tests.sh --no-crash
+
+  build-pack-win86:
+    runs-on: windows-2019
+    steps:
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'
+      - uses: actions/checkout@v2
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
+
+      - name: Update dependencies
+        run: bash update_dependencies.sh
+
+      - name: Build
+        run: bash build_pack_x86.sh
+        
+      - uses: actions/upload-artifact@v2
+        with:
+          name: Sonic 4 Mod Loader (x86)
+          path: dist/Sonic4ModLoader.7z
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: SHA256 sums (x86)
+          path: dist/SHA256SUMS
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: AMBPatcher (x86)
+          path: dist/Sonic4ModLoader/AMBPatcher.exe
