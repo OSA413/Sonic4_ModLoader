@@ -13,7 +13,7 @@ cd "SonicAudioTools"
 url=$(curl -LIs -w %{url_effective} -o /dev/null https://github.com/blueskythlikesclouds/SonicAudioTools/releases/latest)
 [ "$?" != "0" ] && EXIT_CODE=1
 version=$(basename $url)
-curl https://github.com/blueskythlikesclouds/SonicAudioTools/releases/download/$version/SonicAudioTools.7z > SonicAudioTools.7z
+curl -L https://github.com/blueskythlikesclouds/SonicAudioTools/releases/download/$version/SonicAudioTools.7z > SonicAudioTools.7z
 [ "$?" != "0" ] && EXIT_CODE=1
 curl https://raw.githubusercontent.com/blueskythlikesclouds/SonicAudioTools/master/LICENSE.md > LICENSE.md
 [ "$?" != "0" ] && EXIT_CODE=1
