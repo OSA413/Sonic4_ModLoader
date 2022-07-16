@@ -18,7 +18,7 @@ curl -L https://github.com/blueskythlikesclouds/SonicAudioTools/releases/downloa
 curl https://raw.githubusercontent.com/blueskythlikesclouds/SonicAudioTools/master/LICENSE.md > LICENSE.md
 [ "$?" != "0" ] && EXIT_CODE=1
 7z e SonicAudioTools.7z CsbEditor.exe SonicAudioLib.dll
-
+ls
 cp ./CsbEditor.exe ./../../dependencies/SonicAudioTools/CsbEditor.exe
 [ "$?" != "0" ] && EXIT_CODE=1
 cp ./SonicAudioLib.dll ./../../dependencies/SonicAudioTools/SonicAudioLib.dll
