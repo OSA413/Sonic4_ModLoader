@@ -95,5 +95,12 @@ namespace Common.Launcher
             Process.Start("AMBPatcher.exe", args).WaitForExit();
             return true;
         }
+
+        public static bool LauchOCMI(string args = "")
+        {
+            if (!File.Exists("OneClickModInstaller.exe")) return false;
+            Process.Start("OneClickModInstaller.exe", args);
+            return true;
+        }
     }
 }

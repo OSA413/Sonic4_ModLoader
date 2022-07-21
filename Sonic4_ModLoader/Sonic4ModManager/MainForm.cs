@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows.Forms;
 
 using Common.Mods;
 using Common.Launcher;
 using Common.MyIO;
+using System.Net.Http;
 
 namespace Sonic4ModManager
 {
@@ -31,6 +33,31 @@ namespace Sonic4ModManager
                 item.SubItems.Add(mod.Path);
                 item.Checked = mod.Enabled;
                 listMods.Items.Add(item);
+            }
+        }
+
+        async public void CheckUpdates()
+        {
+            using var client = new HttpClient(new HttpClientHandler {AllowAutoRedirect = false});
+            using var response = await client.GetAsync("https://github.com/OSA413/Sonic4_ModLoader/releases/latest", HttpCompletionOption.ResponseContentRead);
+            var finalUrl = response.Headers.GetValues("Location").First();
+
+            using var client1 = new HttpClient();
+
+            var content = await (await client.GetAsync(finalUrl)).Content.ReadAsStringAsync();
+            var targetIndex = content.IndexOf("class=\"markdown-body");
+            var beginning = content.LastIndexOf("<div", targetIndex);
+            beginning = content.IndexOf(">", beginning) + 1;
+            var changeLog = content[beginning..content.IndexOf("</div>", targetIndex)];
+            var latestVersion = Path.GetFileName(finalUrl);
+
+            if (Settings.ModLoaderVersion != latestVersion)
+            {
+                var result = MessageBox.Show(changeLog + "\n\nWould you like to update?",
+                    "Mod Loader "+latestVersion+" is now available!", MessageBoxButtons.YesNo);
+                if (result == DialogResult.Yes)
+                    if (!Launcher.LauchOCMI("https://github.com/OSA413/Sonic4_ModLoader/releases/download/" + latestVersion + "/Sonic4ModLoader.7z"))
+                        MessageBox.Show("Couldn't open One-Click Mod Installer");
             }
         }
 
@@ -84,6 +111,7 @@ namespace Sonic4ModManager
         public MainForm(string[] args)
         {
             InitializeComponent();
+            CheckUpdates();
             this.Text = "Sonic 4 Mod Loader [Version: " + Settings.ModLoaderVersion + "]";
             RefreshMods();
             

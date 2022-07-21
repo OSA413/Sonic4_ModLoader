@@ -33,8 +33,8 @@ namespace Sonic4ModManager
             {
                 if (cfgAml[i].StartsWith("PatcherDir="))
                 {
-                    PatcherDir = cfgAml[i].Substring("PatcherDir=\"".Length);
-                    PatcherDir = PatcherDir.Substring(0, PatcherDir.Length - 1);
+                    PatcherDir = cfgAml[i]["PatcherDir=\"".Length..];
+                    PatcherDir = PatcherDir[0..^1];
                     break;
                 }
             }
