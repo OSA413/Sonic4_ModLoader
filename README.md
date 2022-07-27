@@ -2,6 +2,8 @@
 
 Looking for midday builds? Get it from [GitHub Actions](https://github.com/OSA413/Sonic4_ModLoader/actions)! [![Main](https://github.com/OSA413/Sonic4_ModLoader/actions/workflows/main.yml/badge.svg)](https://github.com/OSA413/Sonic4_ModLoader/actions/workflows/main.yml)
 
+In order to run it, you need [.Net 6 Desktop](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) and [.Net Framework 4.5.2 Desktop](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net452) installed.
+
 Note for Linux users: [v0.1.5.1](https://github.com/OSA413/Sonic4_ModLoader/releases/tag/v0.1.5.1) is the last version that works with Mono (and probably Wine/Proton).
 
 For x86 builds, see [GitHub Actions](https://github.com/OSA413/Sonic4_ModLoader/actions). Note that x64 is the main supported platform.
