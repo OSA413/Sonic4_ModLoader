@@ -56,8 +56,12 @@ namespace Sonic4ModManager
                 var result = MessageBox.Show(changeLog + "\n\nWould you like to update?",
                     "Mod Loader "+latestVersion+" is now available!", MessageBoxButtons.YesNo);
                 if (result == DialogResult.Yes)
-                    if (!Launcher.LauchOCMI("https://github.com/OSA413/Sonic4_ModLoader/releases/download/" + latestVersion + "/Sonic4ModLoader.7z"))
+                {
+                    if (Launcher.LauchOCMI("https://github.com/OSA413/Sonic4_ModLoader/releases/download/" + latestVersion + "/Sonic4ModLoader.7z"))
+                        Application.Exit();
+                    else
                         MessageBox.Show("Couldn't open One-Click Mod Installer");
+                }
             }
         }
 
