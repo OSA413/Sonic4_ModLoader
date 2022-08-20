@@ -24,5 +24,10 @@ namespace OneClickModInstaller
         //User will be offered to redownload it
         public long Recieved;
         public long Total;
+
+        public ModInstallationInstance(ModArgs args)
+        {
+            if (args == null) return;
+        }
     }
 }

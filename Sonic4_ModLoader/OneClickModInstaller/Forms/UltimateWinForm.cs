@@ -15,11 +15,12 @@ namespace OneClickModInstaller
     public partial class UltimateWinForm:Form
     {
         public static HandlerInstallerWrapper hiWrapper = Program.hiWrapper;
-        public static ModInstallationInstance currentModInstallation = new ModInstallationInstance();
+        public ModInstallationInstance currentModInstallation;
 
         public UltimateWinForm()
         {
             InitializeComponent();
+            currentModInstallation = new (ArgsHandler.ModArgs);
             UpdateUI.AttachForm(this);
             UpdateUI.Initial();
             UpdateUI.Settings();
@@ -32,6 +33,8 @@ namespace OneClickModInstaller
                 tcMain.SelectedTab = tabModInst;
                 tbModURL.Text = ArgsHandler.ModArgs.Path;
             }
+
+
         }
 
         private void PrepareInstallation()
@@ -367,7 +370,7 @@ namespace OneClickModInstaller
                 if (Settings.ExitLaunchManager)
                 {
                     if (currentModInstallation.Platform == ModType.PC && File.Exists("Sonic4ModManager.exe"))
-                        Process.Start("Sonic4ModManager.exe", "\"" + UltimateWinForm.currentModInstallation.LastMod + "\"");
+                        Process.Start("Sonic4ModManager.exe", "\"" + currentModInstallation.LastMod + "\"");
                     Environment.Exit(0);
                 }
 

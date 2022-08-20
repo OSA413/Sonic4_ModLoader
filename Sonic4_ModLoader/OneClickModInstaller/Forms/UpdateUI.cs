@@ -19,10 +19,10 @@ namespace OneClickModInstaller
             public static void AttachForm(UltimateWinForm form) => UpdateUI.form = form;
 
             public static void Initial() {
-                UltimateWinForm.Installation.Status = "Idle";
-                UltimateWinForm.Installation.Local      =
-                UltimateWinForm.Installation.FromDir    =
-                UltimateWinForm.Installation.FromArgs   = false;
+                form.currentModInstallation.Status = "Idle";
+                form.currentModInstallation.Local      =
+                form.currentModInstallation.FromDir    =
+                form.currentModInstallation.FromArgs   = false;
 
                 
                 form.lType.Text =
@@ -36,10 +36,10 @@ namespace OneClickModInstaller
                 form.lModID.Text =
                 form.lDownloadType.Text =
                 form.lDownloadID.Text = null;
-                UltimateWinForm.Installation.Status = "Idle";
-                UltimateWinForm.Installation.Local      =
-                UltimateWinForm.Installation.FromDir    =
-                UltimateWinForm.Installation.FromArgs   = false;
+                form.currentModInstallation.Status = "Idle";
+                form.currentModInstallation.Local      =
+                form.currentModInstallation.FromDir    =
+                form.currentModInstallation.FromArgs   = false;
             }
 
             public static void GlobalGameStatus()
@@ -144,14 +144,14 @@ namespace OneClickModInstaller
                     form.bModPath.Enabled =
                     form.bModInstall.Enabled = false;
                     form.bModInstall.Text = "Install";
-                    form.tbModURL.ReadOnly = Installation.FromArgs;
+                    form.tbModURL.ReadOnly = form.currentModInstallation.FromArgs;
                     form.progressBar.Style = ProgressBarStyle.Blocks;
 
-                    switch (Installation.Status)
+                    switch (form.currentModInstallation.Status)
                     {
                         case "Idle":
                         case "Cancelled":
-                            form.bModPath.Enabled = !Installation.FromArgs;
+                            form.bModPath.Enabled = !form.currentModInstallation.FromArgs;
                             form.bModInstall.Enabled = true;
                             break;
                         case "Waiting for path":
@@ -160,26 +160,26 @@ namespace OneClickModInstaller
                             form.bModInstall.Text = "Continue installation";
                             break;
                         case "Mod is complicated":
-                            form.bModPath.Enabled = !Installation.FromArgs;
+                            form.bModPath.Enabled = !form.currentModInstallation.FromArgs;
                             break;
                         case "Installed":
-                            if (!Installation.FromArgs)
+                            if (!form.currentModInstallation.FromArgs)
                             {
                                 form.bModPath.Enabled =
                                 form.bModInstall.Enabled = true;
                             }
-                            else if (Installation.Local)
+                            else if (form.currentModInstallation.Local)
                                 form.bModInstall.Enabled = true;
                             break;
                         case "Server error":
                             form.bModInstall.Text = "Retry";
                             form.bModInstall.Enabled = true;
-                            form.tbModURL.ReadOnly = Installation.FromArgs;
-                            form.bModPath.Enabled = !Installation.FromArgs;
+                            form.tbModURL.ReadOnly = form.currentModInstallation.FromArgs;
+                            form.bModPath.Enabled = !form.currentModInstallation.FromArgs;
                             break;
                     }
 
-                    if (!Installation.FromArgs)
+                    if (!form.currentModInstallation.FromArgs)
                     {
                         if (form.bModInstall.Enabled)
                             form.tbModURL_TextChanged(null, null);
