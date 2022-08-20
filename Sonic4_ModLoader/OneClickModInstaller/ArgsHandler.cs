@@ -26,7 +26,7 @@ namespace OneClickModInstaller {
                     || args[0].StartsWith("http://"))
                     ModArgs = new ModArgs(args[0]);
 
-                if ((args[0].StartsWith("sonic4mmep1:") || args[0].StartsWith("sonic4mmep2:")))
+                if (args[0].StartsWith("sonic4mmep1:") || args[0].StartsWith("sonic4mmep2:"))
                 {
                     //sonic4mmepx:url,mod_type,mod_id
                     var modArgs = args[0].Substring(12).Split(',');

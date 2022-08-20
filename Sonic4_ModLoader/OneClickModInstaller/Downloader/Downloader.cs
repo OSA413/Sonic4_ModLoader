@@ -10,7 +10,7 @@ using System.IO;
 
 namespace OneClickModInstaller
 {
-    public static class Downloader
+    public class Downloader
     {
         public enum ServerHost
         {
