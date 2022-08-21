@@ -106,20 +106,17 @@ namespace OneClickModInstaller
 
         public bool ExtractMod()
         {
-            if (!mod.FromDir)
+            mod.ArchiveDir = mod.ArchiveName + "_extracted";
+
+            if (File.Exists(mod.ArchiveName))
             {
-                mod.ArchiveDir = mod.ArchiveName + "_extracted";
+                if (Directory.Exists(mod.ArchiveName + "_extracted"))
+                    MyDirectory.DeleteRecursively(mod.ArchiveName + "_extracted");
 
-                if (File.Exists(mod.ArchiveName))
-                {
-                    if (Directory.Exists(mod.ArchiveName + "_extracted"))
-                        MyDirectory.DeleteRecursively(mod.ArchiveName + "_extracted");
-
-                    if (Settings.UseLocal7zip)
-                        ModArchive.Extract(mod.ArchiveName, Settings.Paths["7-Zip"]);
-                    else
-                        ModArchive.Extract(mod.ArchiveName);
-                }
+                if (Settings.UseLocal7zip)
+                    ModArchive.Extract(mod.ArchiveName, Settings.Paths["7-Zip"]);
+                else
+                    ModArchive.Extract(mod.ArchiveName);
             }
             return true;
         }

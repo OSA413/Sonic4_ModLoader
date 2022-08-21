@@ -11,6 +11,18 @@ namespace OneClickModInstaller
         public List<string>  output;
         public static string startPath;
 
+        public static string GetIconByExtension(string extension) => extension switch
+        {
+            //https://github.com/OSA413/Sonic4_Tools/blob/master/docs/File%20description.md
+            "PNG" or "DDS" or "GVR" or "PVR" or "JPG" or "GIF" or "BMP" or "TGA" => "image-x-generic",
+            "7Z" or "ZIP" or "RAR" or "AMB" or "CPK" or "ACB" or "CSB" => "package-x-generic",
+            "WAV" or "MP3" or "FLAC" or "ADX" => "audio-x-generic",
+            "EXE" or "DLL" => "application-x-executable",
+            "BAT" or "COM" or "PY" or "SH" or "CT" or "CFG" or "INI" => "text-x-script",
+            "TXT" or "RTF" => "text-x-generic",
+            _ => "image-missing"
+        };
+
         public SelectRoots(string dirName)
         {
             startPath = dirName;
@@ -47,36 +59,7 @@ namespace OneClickModInstaller
                         if (Directory.Exists(Path.Combine(dirName, Path.Combine(shortFileParts.Take(i+1).ToArray()))))
                             imageKey = "folder";
                         else if (extension.Length > 0)
-                        {
-                            switch (extension.Substring(1))
-                            {
-                                //https://github.com/OSA413/Sonic4_Tools/blob/master/docs/File%20description.md
-
-                                //Images
-                                case "PNG": case "DDS": case "GVR": case "PVR": case "JPG": case "GIF": case "BMP": case "TGA":
-                                    imageKey = "image-x-generic"; break;
-
-                                //Archives and containers
-                                case "7Z": case "ZIP": case "RAR": case "AMB": case "CPK": case "ACB": case "CSB":
-                                    imageKey = "package-x-generic"; break;
-
-                                //Sound and music
-                                case "WAV": case "MP3": case "FLAC": case "ADX":
-                                    imageKey = "audio-x-generic"; break;
-
-                                //Executables
-                                case "EXE": case "DLL":
-                                    imageKey = "application-x-executable"; break;
-
-                                //Scripts
-                                case "BAT": case "COM": case "PY": case "SH": case "CT": case "CFG": case "INI":
-                                    imageKey = "text-x-script"; break;
-
-                                //Text
-                                case "TXT": case "RTF":
-                                    imageKey = "text-x-generic"; break;
-                            }
-                        }
+                            imageKey = GetIconByExtension(extension.Substring(1));
 
                         root.Add(filePart, filePart);
                         root[filePart].ImageKey = root[filePart].SelectedImageKey = imageKey;
