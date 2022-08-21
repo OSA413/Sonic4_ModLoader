@@ -15,12 +15,12 @@ namespace OneClickModInstaller
     public partial class UltimateWinForm:Form
     {
         public static HandlerInstallerWrapper hiWrapper = Program.hiWrapper;
-        public ModInstallationInstance currentModInstallation;
+        public ModInstallationInstance mod;
 
         public UltimateWinForm()
         {
             InitializeComponent();
-            currentModInstallation = new (ArgsHandler.ModArgs);
+            mod = new (ArgsHandler.ModArgs);
             UpdateUI.AttachForm(this);
             UpdateUI.Initial();
             UpdateUI.Settings();
@@ -43,34 +43,34 @@ namespace OneClickModInstaller
             {
                 lDownloadTrying.Text = lDownloadTrying.Text = "You are trying to install a mod from hard drive." + Environment.NewLine + "Aren't you?";
                 lDownloadLink.Text = "Path to the mod:";
-                currentModInstallation.Link   = tbModURL.Text;
-                currentModInstallation.Local  = true;
-                currentModInstallation.FromDir= false;
+                mod.Link   = tbModURL.Text;
+                mod.Local  = true;
+                mod.FromDir= false;
                 if (Directory.Exists(tbModURL.Text))
-                    currentModInstallation.FromDir  = true;
+                    mod.FromDir  = true;
             }
             else if (tbModURL.Text.StartsWith("https://") || tbModURL.Text.StartsWith("http://"))
             {
                 lDownloadTrying.Text = lDownloadTrying.Text = "You are trying to download a mod from {1}." + Environment.NewLine + "Aren't you?";
                 lDownloadLink.Text  = "Download link:";
-                currentModInstallation.Link   = tbModURL.Text;
-                currentModInstallation.Local  = false;
-                currentModInstallation.FromDir= false;
+                mod.Link   = tbModURL.Text;
+                mod.Local  = false;
+                mod.FromDir= false;
 
-                if (currentModInstallation.Link.Contains("gamebanana.com"))
+                if (mod.Link.Contains("gamebanana.com"))
                 {
                     lDownloadTrying.Text = lDownloadTrying.Text.Replace("{1}", "GameBanana");
-                    currentModInstallation.ServerHost = Downloader.ServerHost.GameBanana;
+                    mod.ServerHost = Downloader.ServerHost.GameBanana;
                 }
-                else if (currentModInstallation.Link.Contains("github.com"))
+                else if (mod.Link.Contains("github.com"))
                 {
                     lDownloadTrying.Text = lDownloadTrying.Text.Replace("{1}", "GitHub");
-                    currentModInstallation.ServerHost = Downloader.ServerHost.GitHub;
+                    mod.ServerHost = Downloader.ServerHost.GitHub;
                 }
                 else
                 {
                     lDownloadTrying.Text = lDownloadTrying.Text.Replace("{1}", "the Internet");
-                    currentModInstallation.ServerHost = Downloader.ServerHost.Other;
+                    mod.ServerHost = Downloader.ServerHost.Other;
                 }
             }
         }
@@ -86,10 +86,10 @@ namespace OneClickModInstaller
 
         private void bModInstall_Click(object sender, EventArgs e)
         {
-            if (currentModInstallation.Status == "Idle"
-                || currentModInstallation.Status == "Cancelled"
-                || currentModInstallation.Status == "Installed"
-                || currentModInstallation.Status == "Server error")
+            if (mod.Status == ModInstallationStatus.Beginning
+                || mod.Status == ModInstallationStatus.Cancelled
+                || mod.Status == ModInstallationStatus.Installed
+                || mod.Status == ModInstallationStatus.ServerError)
             {
                 tbModURL.ReadOnly   = true;
                 bModPath.Enabled    =
@@ -100,13 +100,13 @@ namespace OneClickModInstaller
 
         public void fake_DoTheRest(object sender, AsyncCompletedEventArgs e)
         {
-            if (currentModInstallation.Total == -1 || currentModInstallation.Recieved == currentModInstallation.Total)
+            if (mod.Total == -1 || mod.Recieved == mod.Total)
                 DoTheRest();
             else
             {
-                currentModInstallation.Status = "Server error";
+                mod.Status = ModInstallationStatus.ServerError;
                 statusBar.Text      = "Couldn't download full file (server error)";
-                File.Delete(currentModInstallation.ArchiveName);
+                File.Delete(mod.ArchiveName);
                 UpdateUI.ModInstallation();
             }
         }
@@ -115,20 +115,20 @@ namespace OneClickModInstaller
         {
             await Task.Run((() =>
             {
-                string archive_url = currentModInstallation.Link;
+                string archive_url = mod.Link;
 
                 if (File.Exists(archive_url) || Directory.Exists(archive_url))
                 {
-                    if (currentModInstallation.FromDir)
-                        currentModInstallation.ArchiveDir = archive_url;
+                    if (mod.FromDir)
+                        mod.ArchiveDir = archive_url;
                     else
-                        currentModInstallation.ArchiveName = archive_url;
+                        mod.ArchiveName = archive_url;
                     DoTheRest();
                 }
                 else
                 {
                     statusBar.Text = "Connecting to the server...";
-                    currentModInstallation.ArchiveName = Downloader.Download(archive_url, fake_DoTheRest, wc_DownloadProgressChanged);
+                    mod.ArchiveName = Downloader.Download(archive_url, fake_DoTheRest, wc_DownloadProgressChanged);
                 }
             }));
         }
@@ -143,58 +143,58 @@ namespace OneClickModInstaller
 
             await Task.Run(() =>
             {
-                if (!currentModInstallation.FromDir)
+                if (!mod.FromDir)
                 {
                     statusBar.Text = "Extracting downloaded archive...";
 
-                    currentModInstallation.ArchiveDir = currentModInstallation.ArchiveName + "_extracted";
+                    mod.ArchiveDir = mod.ArchiveName + "_extracted";
 
-                    if (File.Exists(currentModInstallation.ArchiveName))
+                    if (File.Exists(mod.ArchiveName))
                     {
-                        if (Directory.Exists(currentModInstallation.ArchiveName + "_extracted"))
-                            MyDirectory.DeleteRecursively(currentModInstallation.ArchiveName + "_extracted");
+                        if (Directory.Exists(mod.ArchiveName + "_extracted"))
+                            MyDirectory.DeleteRecursively(mod.ArchiveName + "_extracted");
 
                         if (Settings.UseLocal7zip)
-                            ModArchive.Extract(currentModInstallation.ArchiveName, Settings.Paths["7-Zip"]);
+                            ModArchive.Extract(mod.ArchiveName, Settings.Paths["7-Zip"]);
                         else
-                            ModArchive.Extract(currentModInstallation.ArchiveName);
+                            ModArchive.Extract(mod.ArchiveName);
                     }
                 }
 
                 var cont = -1;
 
-                if (!Directory.Exists(currentModInstallation.ArchiveDir))
+                if (!Directory.Exists(mod.ArchiveDir))
                 {
                     statusBar.Text = "Couldn't extract archive";
-                    currentModInstallation.Status = "Idle";
+                    mod.Status = ModInstallationStatus.Downloaded;
                     if (!(File.Exists("7z.exe") || (File.Exists(Settings.Paths["7-Zip"]) && Settings.UseLocal7zip)))
                         statusBar.Text += " (7-Zip not found)";
                 }
                 else
                 {
                     statusBar.Text = "Checking extracted files...";
-                    cont = ModArchive.CheckFiles(currentModInstallation.ArchiveDir);
+                    cont = ModArchive.CheckFiles(mod.ArchiveDir);
                 }
                 
                 if (cont == 0)
                 {
-                    MyDirectory.DeleteRecursively(currentModInstallation.ArchiveDir);
+                    MyDirectory.DeleteRecursively(mod.ArchiveDir);
                     statusBar.Text = "Installation was cancelled";
-                    currentModInstallation.Status = "Cancelled";
+                    mod.Status = ModInstallationStatus.Cancelled;
                 }
                 else if (cont == 1)
                 {
                     statusBar.Text = "Finding root directories...";
 
-                    var FoundRootDirs = ModArchive.FindRoot(currentModInstallation.ArchiveDir);
+                    var FoundRootDirs = ModArchive.FindRoot(mod.ArchiveDir);
                     
                     if (FoundRootDirs.Item2 != ModType.Unknown)
                     {
-                        currentModInstallation.ModRoots = FoundRootDirs.Item1;
-                        currentModInstallation.Platform = FoundRootDirs.Item2;
+                        mod.ModRoots = FoundRootDirs.Item1;
+                        mod.Platform = FoundRootDirs.Item2;
                     }
 
-                    currentModInstallation.Status = "Ready to install";
+                    mod.Status = ModInstallationStatus.Scanned;
 
                     tcMain.Invoke(new MethodInvoker(delegate
                     {
@@ -208,9 +208,9 @@ namespace OneClickModInstaller
         public void ContinueInstallation()
         {
             progressBar.Style = ProgressBarStyle.Marquee;
-            if (currentModInstallation.Platform == ModType.ModLoader)
+            if (mod.Platform == ModType.ModLoader)
             {
-                File.Delete(currentModInstallation.ArchiveName);
+                File.Delete(mod.ArchiveName);
                 var result = MessageBox.Show("One-Click Mod Installer detected a Mod Loader distributive. Do you want to replace the current version of Mod Loader with the downloaded one?"
                                   , "Mod Loader update"
                                   , MessageBoxButtons.YesNo
@@ -218,16 +218,16 @@ namespace OneClickModInstaller
 
                 if (result == DialogResult.Yes)
                 {
-                    Process.Start("Sonic4ModManager", "--upgrade \"" + currentModInstallation.ArchiveDir + "\"");
+                    Process.Start("Sonic4ModManager", "--upgrade \"" + mod.ArchiveDir + "\"");
                     Application.Exit();
                 }
                 else
                 {
-                    currentModInstallation.Status = "Cancelled";
+                    mod.Status = ModInstallationStatus.Cancelled;
                     statusBar.Text = "Installation was cancelled";
                 }
             }
-            else if (currentModInstallation.Platform == ModType.Unknown)
+            else if (mod.Platform == ModType.Unknown)
             {
                 //Status description
                 /*  1 - start (open SelectRoots window)
@@ -236,7 +236,7 @@ namespace OneClickModInstaller
                  *  -1 - break (user cancelled SelectRoots window)
                  */
                 var status = 1;
-                var sr = new SelectRoots(currentModInstallation.ArchiveDir);
+                var sr = new SelectRoots(mod.ArchiveDir);
 
                 while (status > 0)
                 {
@@ -246,8 +246,8 @@ namespace OneClickModInstaller
                         if (sr.ShowDialog() == DialogResult.Yes)
                         {
                             status = 2;
-                            currentModInstallation.ModRoots = sr.output.ToArray();
-                            if (currentModInstallation.ModRoots.Length == 0)
+                            mod.ModRoots = sr.output.ToArray();
+                            if (mod.ModRoots.Length == 0)
                                 status = -1;
                         }
                     }
@@ -257,7 +257,7 @@ namespace OneClickModInstaller
                         var path = MyDirectory.Select("test", "dir");
                         if (path != null)
                         {
-                            currentModInstallation.CustomPath = path;
+                            mod.CustomPath = path;
                             status = 0;
                         }
                     }
@@ -265,52 +265,53 @@ namespace OneClickModInstaller
 
                 if (status == -1)
                 {
-                    currentModInstallation.Status = "Cancelled";
+                    mod.Status = ModInstallationStatus.Cancelled;
                     statusBar.Text = "Installation was cancelled";
                     return;
                 }
             }
-            else if (currentModInstallation.Platform == ModType.Mixed)
+            else if (mod.Platform == ModType.Mixed)
             {
                 //TODO: think up a better explanation
                 MessageBox.Show("Looks like this thing is complicated, try to install it manually. bye"
                               , "Couldn't install the mod"
                               , MessageBoxButtons.OK
                               , MessageBoxIcon.Exclamation);
-                currentModInstallation.Status = "Mod is complicated";
+                mod.Status = ModInstallationStatus.ModIsComplicated;
                 return;
             }
             else
             {
-                if (currentModInstallation.ModRoots.Length > 1)
+                if (mod.ModRoots.Length > 1)
                 {
-                    var tmm_form = new TooManyMods(currentModInstallation.ModRoots, currentModInstallation.Platform);
+                    var tmm_form = new TooManyMods(mod.ModRoots, mod.Platform);
                     tmm_form.ShowDialog();
 
-                    currentModInstallation.ModRoots = tmm_form.mods;
+                    mod.ModRoots = tmm_form.mods;
                 }
 
-                if (Settings.Paths.ContainsKey(currentModInstallation.Platform.ToString()))
+                if (Settings.Paths.ContainsKey(mod.Platform.ToString()))
                 {
-                    if (Settings.Paths[currentModInstallation.Platform.ToString()] == "")
+                    if (Settings.Paths[mod.Platform.ToString()] == "")
                     {
-                        tcMain.SelectTab(tabSettings);
+                        /*tcMain.SelectTab(tabSettings);
 
                         MessageBox.Show("Looks like the mod you installed requires a special path to be installed to.\nPlease, specify "
-                                      + currentModInstallation.Platform + "\nand then press the \"Continue Installation\" button in the \"Download\" tab."
+                                      + mod.Platform + "\nand then press the \"Continue Installation\" button in the \"Download\" tab."
                                       , "Please specify a path"
                                       , MessageBoxButtons.OK
                                       , MessageBoxIcon.Information);
-                        currentModInstallation.Status = "Waiting for path";
-                        UpdateUI.ModInstallation();
+                        mod.Status = "Waiting for path";
+                        UpdateUI.ModInstallation();*/
+                        MessageBox.Show("That thing REALLY happened");
                     }
                 }
             }
             
-            if (currentModInstallation.ModRoots.Length > 0)
-                currentModInstallation.LastMod = Path.GetFileName(currentModInstallation.ModRoots[0]);
+            if (mod.ModRoots.Length > 0)
+                mod.LastMod = Path.GetFileName(mod.ModRoots[0]);
 
-            if (currentModInstallation.Status == "Ready to install")
+            if (mod.Status == ModInstallationStatus.Scanned)
                 FinishInstallation();
         }
 
@@ -327,57 +328,57 @@ namespace OneClickModInstaller
                     statusBar.Text = "Installing downloaded mod...";
                 }));
 
-                foreach (string mod in currentModInstallation.ModRoots)
+                foreach (string mod in mod.ModRoots)
                 {
                     string dest;
                     
-                    switch (currentModInstallation.Platform)
+                    switch (this.mod.Platform)
                     {
                         case ModType.PC:      dest = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "mods", Path.GetFileName(mod)); break;
                         case ModType.Dolphin: dest = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "Dolphin Emulator", "Load", "Textures"); break;
-                        case ModType.Unknown: dest = currentModInstallation.CustomPath; break;
-                        default:              dest = Settings.Paths[currentModInstallation.Platform.ToString()]; break;
+                        case ModType.Unknown: dest = this.mod.CustomPath; break;
+                        default:              dest = Settings.Paths[this.mod.Platform.ToString()]; break;
                     }
                     
-                    if (Directory.Exists(dest) && currentModInstallation.Platform == ModType.PC)
+                    if (Directory.Exists(dest) && this.mod.Platform == ModType.PC)
                         MyDirectory.DeleteRecursively(dest);
                     
-                    if (currentModInstallation.Platform != ModType.Unknown)
+                    if (this.mod.Platform != ModType.Unknown)
                         MyDirectory.CopyAll(mod, dest);
                     else
                     {
-                        if (File.Exists(Path.Combine(currentModInstallation.ArchiveDir, mod)))
-                            File.Copy(Path.Combine(currentModInstallation.ArchiveDir, mod), Path.Combine(dest, Path.GetFileName(mod)));
-                        else if (Directory.Exists(Path.Combine(currentModInstallation.ArchiveDir, mod)))
-                            MyDirectory.CopyAll(Path.Combine(currentModInstallation.ArchiveDir, mod), Path.Combine(dest, Path.GetFileName(mod)));
+                        if (File.Exists(Path.Combine(this.mod.ArchiveDir, mod)))
+                            File.Copy(Path.Combine(this.mod.ArchiveDir, mod), Path.Combine(dest, Path.GetFileName(mod)));
+                        else if (Directory.Exists(Path.Combine(this.mod.ArchiveDir, mod)))
+                            MyDirectory.CopyAll(Path.Combine(this.mod.ArchiveDir, mod), Path.Combine(dest, Path.GetFileName(mod)));
                     }
                 }
 
-                if (!currentModInstallation.FromDir)
-                    MyDirectory.DeleteRecursively(currentModInstallation.ArchiveDir);
+                if (!mod.FromDir)
+                    MyDirectory.DeleteRecursively(mod.ArchiveDir);
 
-                if (File.Exists(currentModInstallation.ArchiveName) && !currentModInstallation.Local)
+                if (File.Exists(mod.ArchiveName) && !mod.Local)
                 {
                     if (Settings.SaveDownloadedArchives)
                     {
                         Directory.CreateDirectory(Settings.Paths["DownloadedArhives"]);
-                        File.Move(currentModInstallation.ArchiveName, Path.Combine(Settings.Paths["DownloadedArhives"], currentModInstallation.ArchiveName));
+                        File.Move(mod.ArchiveName, Path.Combine(Settings.Paths["DownloadedArhives"], mod.ArchiveName));
                     }
                     else
-                        File.Delete(currentModInstallation.ArchiveName);
+                        File.Delete(mod.ArchiveName);
                 }
 
                 if (Settings.ExitLaunchManager)
                 {
-                    if (currentModInstallation.Platform == ModType.PC && File.Exists("Sonic4ModManager.exe"))
-                        Process.Start("Sonic4ModManager.exe", "\"" + currentModInstallation.LastMod + "\"");
+                    if (mod.Platform == ModType.PC && File.Exists("Sonic4ModManager.exe"))
+                        Process.Start("Sonic4ModManager.exe", "\"" + mod.LastMod + "\"");
                     Environment.Exit(0);
                 }
 
                 tcMain.Invoke(new MethodInvoker(delegate
                 {
                     statusBar.Text = "Mod installation complete!";
-                    currentModInstallation.Status = "Installed";
+                    mod.Status = ModInstallationStatus.Installed;
                 }));
                 
                 tcMain.Invoke(new MethodInvoker(delegate {
@@ -392,8 +393,8 @@ namespace OneClickModInstaller
             int divider;
             long total;
 
-            currentModInstallation.Recieved   = e.BytesReceived;
-            currentModInstallation.Total      = e.TotalBytesToReceive;
+            mod.Recieved   = e.BytesReceived;
+            mod.Total      = e.TotalBytesToReceive;
             
             total = e.TotalBytesToReceive;
             if (e.TotalBytesToReceive == -1)
@@ -482,7 +483,7 @@ namespace OneClickModInstaller
                 || tbModURL.Text.StartsWith("http://"))
             {
                 bModInstall.Enabled = true;
-                if (currentModInstallation.FromArgs)
+                if (mod.FromArgs)
                 {
                     tbModURL.ReadOnly   = true;
                     bModPath.Enabled    = false;

@@ -17,10 +17,6 @@ namespace OneClickModInstaller
         Unknown
     }
 
-    public enum ModInstallationStatus {
-        NotInstalled,
-
-    }
     public static class ModArchive
     {
         public static void Extract(string file, string path_to_7z = "7z.exe")

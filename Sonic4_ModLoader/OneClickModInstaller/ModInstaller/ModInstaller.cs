@@ -8,5 +8,6 @@ namespace OneClickModInstaller
 {
     public class ModInstaller
     {
+
     }
 }

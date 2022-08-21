@@ -6,6 +6,22 @@ using System.Threading.Tasks;
 
 namespace OneClickModInstaller
 {
+    public enum ModInstallationStatus
+    {
+        Beginning,
+        Downloading,
+        ServerError,
+        Downloaded,
+        Extracting,
+        Extracted,
+        Scanning,
+        Scanned,
+        Installing,
+        Installed,
+        Cancelled,
+        ModIsComplicated
+    }
+
     public class ModInstallationInstance
     {
         public string Link;
@@ -16,7 +32,6 @@ namespace OneClickModInstaller
         public string LastMod;
         public string[] ModRoots;
         public ModType Platform;
-        public string Status;
         public string CustomPath;
         public bool FromDir;
         //Sometimes server may break connection when file is not fully downloaded
@@ -31,12 +46,20 @@ namespace OneClickModInstaller
         public readonly ModArgs Args;
         public readonly bool Locked = false;
 
-        public ModInstallationInstance(ModArgs args)
+        public ModInstallationStatus Status;// { get; private set; }
+
+        public ModInstallationInstance(ModArgs args = null)
         {
+            Status = ModInstallationStatus.Beginning;
             if (args == null) return;
             Args = args;
             Link = Args.Path;
             Locked = true;
+        }
+
+        public void Download()
+        {
+
         }
     }
 }
