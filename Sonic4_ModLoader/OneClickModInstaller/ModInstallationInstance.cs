@@ -151,6 +151,13 @@ namespace OneClickModInstaller
                     mod.Platform = FoundRootDirs.Item2;
                 }
 
+                if (ModRoots.Length > 1)
+                {
+                    var tmm = new TooManyMods(ModRoots);
+                    tmm.ShowDialog();
+                    ModRoots = tmm.mods;
+                }
+
                 Status = ModInstallationStatus.Scanned;
             }
             return true;
@@ -208,51 +215,22 @@ namespace OneClickModInstaller
                     return;
                 }
             }
-            else if (mod.Type == ModType.Mixed)
-            {
-                //TODO: think up a better explanation
-                MessageBox.Show("Looks like this thing is complicated, try to install it manually. bye"
-                                , "Couldn't install the mod"
-                                , MessageBoxButtons.OK
-                                , MessageBoxIcon.Exclamation);
-                Status = ModInstallationStatus.ModIsComplicated;
-                return;
-            }
-            else
-            {
-                if (ModRoots.Length > 1)
-                {
-                    var tmm = new TooManyMods(ModRoots);
-                    tmm.ShowDialog();
-                    ModRoots = tmm.mods;
-                }
-            }
-
-            Status = ModInstallationStatus.Scanned;
         }
 
         public bool InstallFromModRoots()
         {
-            var lastMod = ModRoots.First();
             foreach (var mod in ModRoots)
             {
-                string dest = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "mods", Path.GetFileName(mod.root));
+                var dest = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "mods", Path.GetFileName(mod.root));
 
                 if (Directory.Exists(dest) && mod.Platform == ModType.PC)
                     MyDirectory.DeleteRecursively(dest);
 
                 if (mod.Platform != ModType.Unknown)
-                {
                     MyDirectory.CopyAll(mod.root, dest);
-                    lastMod = mod;
-                }
             }
-            Status = ModInstallationStatus.Installed;
 
-            if (Settings.ExitLaunchManager)
-                if (lastMod.Platform == ModType.PC)
-                    if (Launcher.LaunchModManager("\"" + Path.GetFileName(lastMod.root) + "\""))            
-                        Environment.Exit(0);
+            Status = ModInstallationStatus.Installed;
             return true;
         }
     }
