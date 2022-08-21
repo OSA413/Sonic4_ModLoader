@@ -12,14 +12,20 @@ namespace OneClickModInstaller
 {
     public class Downloader
     {
+        public ServerHost Host;
+        //Sometimes server may break connection when file is not fully downloaded
+        //User will be offered to redownload it
+        public long Recieved;
+        public long Total;
+
         public enum ServerHost
         {
+            Unknown,
             GameBanana,
             GitHub,
-            Other
         }
 
-        public static string GetFileNameFromServer(string url, ServerHost? host=null)
+        public string GetFileNameFromServer(string url, ServerHost? host=null)
         {
             if (host == null) host = GetServerHost(url);
             if (host == ServerHost.GitHub)
@@ -29,14 +35,14 @@ namespace OneClickModInstaller
 
         public static ServerHost GetServerHost(string url)
         {
-            if (url.Contains("gamebanana.com"))
+            if (url.StartsWith("https://gamebanana.com"))
                 return ServerHost.GameBanana;
-            else if (url.Contains("github.com"))
+            else if (url.StartsWith("https://github.com"))
                 return ServerHost.GitHub;
-            return ServerHost.Other;
+            return ServerHost.Unknown;
         }
 
-        public static string Download(string inputURL, Action<object, AsyncCompletedEventArgs> then, Action<object, DownloadProgressChangedEventArgs> onProgress)
+        public string Download(string inputURL, Action<object, AsyncCompletedEventArgs> then, Action<object, DownloadProgressChangedEventArgs> onProgress)
         {
             var host = GetServerHost(inputURL);
 

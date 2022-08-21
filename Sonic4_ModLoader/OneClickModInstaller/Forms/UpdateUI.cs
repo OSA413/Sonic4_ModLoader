@@ -27,6 +27,13 @@ namespace OneClickModInstaller
                 form.lModID.Text =
                 form.lDownloadType.Text =
                 form.lDownloadID.Text = null;
+
+                if (ArgsHandler.ModArgs != null)
+                {
+                    form.statusBar.Text = "A wild installation button appeared!";
+                    form.tcMain.SelectedTab = form.tabModInst;
+                    form.tbModURL.Text = ArgsHandler.ModArgs.Path;
+                }
             }
 
             public static void ModInfo() {

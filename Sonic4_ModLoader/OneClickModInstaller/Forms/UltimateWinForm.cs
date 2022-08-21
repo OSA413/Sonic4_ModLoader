@@ -26,15 +26,6 @@ namespace OneClickModInstaller
             UpdateUI.Settings();
             UpdateUI.CurrentGame();
             UpdateUI.GlobalGameStatus();
-            
-            if (ArgsHandler.ModArgs != null)
-            {
-                statusBar.Text = "A wild installation button appeared!";
-                tcMain.SelectedTab = tabModInst;
-                tbModURL.Text = ArgsHandler.ModArgs.Path;
-            }
-
-
         }
 
         private void PrepareInstallation()
@@ -58,20 +49,11 @@ namespace OneClickModInstaller
                 mod.FromDir= false;
 
                 if (mod.Link.Contains("gamebanana.com"))
-                {
                     lDownloadTrying.Text = lDownloadTrying.Text.Replace("{1}", "GameBanana");
-                    mod.ServerHost = Downloader.ServerHost.GameBanana;
-                }
                 else if (mod.Link.Contains("github.com"))
-                {
                     lDownloadTrying.Text = lDownloadTrying.Text.Replace("{1}", "GitHub");
-                    mod.ServerHost = Downloader.ServerHost.GitHub;
-                }
                 else
-                {
                     lDownloadTrying.Text = lDownloadTrying.Text.Replace("{1}", "the Internet");
-                    mod.ServerHost = Downloader.ServerHost.Other;
-                }
             }
         }
 
@@ -100,7 +82,7 @@ namespace OneClickModInstaller
 
         public void fake_DoTheRest(object sender, AsyncCompletedEventArgs e)
         {
-            if (mod.Total == -1 || mod.Recieved == mod.Total)
+            if (mod.Downloader.Total == -1 || mod.Downloader.Recieved == mod.Downloader.Total)
                 DoTheRest();
             else
             {
@@ -128,7 +110,7 @@ namespace OneClickModInstaller
                 else
                 {
                     statusBar.Text = "Connecting to the server...";
-                    mod.ArchiveName = Downloader.Download(archive_url, fake_DoTheRest, wc_DownloadProgressChanged);
+                    mod.ArchiveName = mod.Downloader.Download(archive_url, fake_DoTheRest, wc_DownloadProgressChanged);
                 }
             }));
         }
@@ -393,8 +375,8 @@ namespace OneClickModInstaller
             int divider;
             long total;
 
-            mod.Recieved   = e.BytesReceived;
-            mod.Total      = e.TotalBytesToReceive;
+            mod.Downloader.Recieved   = e.BytesReceived;
+            mod.Downloader.Total      = e.TotalBytesToReceive;
             
             total = e.TotalBytesToReceive;
             if (e.TotalBytesToReceive == -1)
