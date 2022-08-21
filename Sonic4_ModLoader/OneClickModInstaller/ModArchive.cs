@@ -11,7 +11,6 @@ namespace OneClickModInstaller
 {
     public enum ModType {
         PC,
-        Dolphin,
         ModLoader,
         Mixed,
         Unknown
@@ -82,14 +81,14 @@ namespace OneClickModInstaller
             return cont;
         }
 
-        public static Tuple<string[], ModType> FindRoot(string dir_name)
+        public static (string, ModType)[] FindRoot(string dir_name)
         {
             var platform = ModType.Unknown;
             var mod_roots = new List<string>();
 
-            var platforms = new [] { ModType.PC, ModType.Dolphin, ModType.ModLoader };
+            var platforms = new [] { ModType.PC, ModType.ModLoader };
             var game_folders_array = new [] { "CUTSCENE,DEMO,G_COM,G_SS,G_EP1COM,G_EP1ZONE2,G_EP1ZONE3,G_EP1ZONE4,G_ZONE1,G_ZONE2,G_ZONE3,G_ZONE4,G_ZONEF,MSG,NNSTDSHADER,SOUND"
-                                                        , "WSNE8P,WSNP8P,WSNJ8P"
+                                                        //, "WSNE8P,WSNP8P,WSNJ8P"
                                                         , "Sonic4ModLoader"};
 
             for (int i = 0; i < platforms.Length; i++)
@@ -113,7 +112,7 @@ namespace OneClickModInstaller
                 }
             }
 
-            return Tuple.Create(mod_roots.ToArray(), platform);
+            return mod_roots.Select(x => (x, platform)).ToArray();
         }
     }
 }

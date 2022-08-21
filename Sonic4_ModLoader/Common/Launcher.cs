@@ -75,10 +75,10 @@ namespace Common.Launcher
             return true;
         }
 
-        public static bool LaunchModManager()
+        public static bool LaunchModManager(string args = "")
         {
             if (!File.Exists("Sonic4ModManager.exe")) return false;
-            Process.Start("Sonic4ModManager.exe");
+            Process.Start("Sonic4ModManager.exe", args);
             return true;
         }
 

@@ -19,10 +19,6 @@ namespace OneClickModInstaller
             public static void AttachForm(UltimateWinForm form) => UpdateUI.form = form;
 
             public static void Initial() {
-                form.mod.Local      =
-                form.mod.FromDir    = false;
-
-                
                 form.lType.Text =
                 form.lModID.Text =
                 form.lDownloadType.Text =
@@ -41,8 +37,6 @@ namespace OneClickModInstaller
                 form.lModID.Text =
                 form.lDownloadType.Text =
                 form.lDownloadID.Text = null;
-                form.mod.Local      =
-                form.mod.FromDir    = false;
             }
 
             public static void GlobalGameStatus()
@@ -166,8 +160,6 @@ namespace OneClickModInstaller
                                 form.bModPath.Enabled =
                                 form.bModInstall.Enabled = true;
                             }
-                            else if (form.mod.Local)
-                                form.bModInstall.Enabled = true;
                             break;
                         case ModInstallationStatus.ServerError:
                             form.bModInstall.Text = "Retry";
