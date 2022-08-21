@@ -5,7 +5,7 @@ using Common.Launcher;
 namespace OneClickModInstaller {
     
     public static class ArgsHandler {
-
+        public static bool NoGUI { get; private set; }
         public static ModArgs ModArgs {get; private set;}
         public static void Handle(string[] args) {
             if (args.Length > 0)
@@ -19,17 +19,20 @@ namespace OneClickModInstaller {
                     case "--uninstall": Program.hiWrapper.Uninstall(game); Environment.Exit(0); break;
                     case "--fix":       Program.hiWrapper.FixPath(game);   Environment.Exit(0); break;
                 }
-                
-                if (File.Exists(args[0])
-                    || Directory.Exists(args[0])
-                    || args[0].StartsWith("https://")
-                    || args[0].StartsWith("http://"))
-                    ModArgs = new ModArgs(args[0]);
 
-                if (args[0].StartsWith("sonic4mmep1:") || args[0].StartsWith("sonic4mmep2:"))
+                NoGUI = args[0] == "--no-gui";
+                var arg = args[^1];
+
+                if (File.Exists(arg)
+                    || Directory.Exists(arg)
+                    || arg.StartsWith("https://")
+                    || arg.StartsWith("http://"))
+                    ModArgs = new ModArgs(arg);
+
+                if (arg.StartsWith("sonic4mmep1:") || arg.StartsWith("sonic4mmep2:"))
                 {
                     //sonic4mmepx:url,mod_type,mod_id
-                    var modArgs = args[0].Substring(12).Split(',');
+                    var modArgs = arg[12..].Split(',');
                     string path = null;
                     string type = null;
                     var id = 0;

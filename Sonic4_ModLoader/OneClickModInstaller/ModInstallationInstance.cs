@@ -86,7 +86,6 @@ namespace OneClickModInstaller
 
         public bool Prepare()
         {
-            if (Locked) return false;
             var info = GetInformationFromLink(Link);
             if (!info.Correct) return false;
             Locked = true;

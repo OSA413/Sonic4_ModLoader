@@ -13,11 +13,20 @@ namespace OneClickModInstaller
         {
             Directory.SetCurrentDirectory(Path.GetDirectoryName(Application.ExecutablePath));
             ArgsHandler.Handle(args);
-            Application.EnableVisualStyles();
-            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-            Application.SetCompatibleTextRenderingDefault(false);
             Settings.Load();
-            Application.Run(new UltimateWinForm());
+
+            if (ArgsHandler.NoGUI)
+            {
+                var mod = new ModInstallationInstance(ArgsHandler.ModArgs);
+                mod.ContinueInstallation();
+            }
+            else
+            {
+                Application.EnableVisualStyles();
+                Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+                Application.SetCompatibleTextRenderingDefault(false);
+                Application.Run(new UltimateWinForm());
+            }
         }
     }
 }
