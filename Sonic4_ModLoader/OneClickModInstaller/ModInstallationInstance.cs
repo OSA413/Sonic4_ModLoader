@@ -26,7 +26,8 @@ namespace OneClickModInstaller
 
     public class ModInstallationInstance
     {
-        public string Link;
+        private string link;
+        public string Link { get => link; set { if (!Locked) link = value; } }
         public (string root, ModType Platform)[] ModRoots;
         private string currentPath;
 
@@ -61,28 +62,50 @@ namespace OneClickModInstaller
             return (Link: url, Correct: false, FromArchive: false, FromDir: false, Host: 0);
         }
 
-        public void Prepare(string link)
+        public void ContinueInstallation()
         {
-            if (Locked) return;
-            var info = GetInformationFromLink(link);
-            if (!info.Correct) return;
+            while (DoNextStep())
+                ContinueInstallation();
+        }
+
+        public bool DoNextStep() => Status switch
+        {
+            ModInstallationStatus.Beginning => Prepare(),
+            ModInstallationStatus.Downloading => Download(),
+            ModInstallationStatus.Downloaded => ExtractMod(),
+            ModInstallationStatus.Extracted => FindRoots(),
+            ModInstallationStatus.Scanned => InstallFromModRoots(),
+            ModInstallationStatus.ServerError => throw new NotImplementedException(),
+            ModInstallationStatus.Extracting => throw new NotImplementedException(),
+            ModInstallationStatus.Scanning => throw new NotImplementedException(),
+            ModInstallationStatus.Installing => throw new NotImplementedException(),
+            ModInstallationStatus.Installed => throw new NotImplementedException(),
+            ModInstallationStatus.ModIsComplicated => throw new NotImplementedException(),
+            _ => false,
+        };
+
+        public bool Prepare()
+        {
+            if (Locked) return false;
+            var info = GetInformationFromLink(Link);
+            if (!info.Correct) return false;
             Locked = true;
             initialInfo = info;
-            Link = link;
 
             Status = ModInstallationStatus.Downloading;
             if (info.FromArchive)
                 Status = ModInstallationStatus.Downloaded;
             else if (info.FromDir)
                 Status = ModInstallationStatus.Extracted;
+            return true;
         }
 
-        public void Download()
+        public bool Download()
         {
-
+            return false;
         }
 
-        public void ExtractMod()
+        public bool ExtractMod()
         {
             if (!mod.FromDir)
             {
@@ -99,9 +122,10 @@ namespace OneClickModInstaller
                         ModArchive.Extract(mod.ArchiveName);
                 }
             }
+            return true;
         }
 
-        public void FindRoots()
+        public bool FindRoots()
         {
             var cont = -1;
 
@@ -130,6 +154,7 @@ namespace OneClickModInstaller
 
                 Status = ModInstallationStatus.Scanned;
             }
+            return true;
         }
 
         public void HowToInstallByType((ModType Type, string SelectRoots) mod)
@@ -207,7 +232,7 @@ namespace OneClickModInstaller
             Status = ModInstallationStatus.Scanned;
         }
 
-        public void InstallFromModRoots()
+        public bool InstallFromModRoots()
         {
             var lastMod = ModRoots.First();
             foreach (var mod in ModRoots)
@@ -229,6 +254,7 @@ namespace OneClickModInstaller
                 if (lastMod.Platform == ModType.PC)
                     if (Launcher.LaunchModManager("\"" + Path.GetFileName(lastMod.root) + "\""))            
                         Environment.Exit(0);
+            return true;
         }
     }
 }
