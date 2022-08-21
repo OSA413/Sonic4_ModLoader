@@ -82,7 +82,7 @@ namespace OneClickModInstaller
 
         }
 
-        public void ExtractAndFindRoots()
+        public void ExtractMod()
         {
             if (!mod.FromDir)
             {
@@ -99,7 +99,10 @@ namespace OneClickModInstaller
                         ModArchive.Extract(mod.ArchiveName);
                 }
             }
+        }
 
+        public void FindRoots()
+        {
             var cont = -1;
 
             //Check this branch
@@ -117,13 +120,11 @@ namespace OneClickModInstaller
             }
             else if (cont == 1)
             {
-                statusBar.Text = "Finding root directories...";
-
                 var FoundRootDirs = ModArchive.FindRoot(mod.ArchiveDir);
 
                 if (FoundRootDirs.Item2 != ModType.Unknown)
                 {
-                    mod.ModRoots = FoundRootDirs.Item1;
+                    ModRoots = FoundRootDirs.Item1;
                     mod.Platform = FoundRootDirs.Item2;
                 }
 
@@ -131,9 +132,9 @@ namespace OneClickModInstaller
             }
         }
 
-        public void HowToInstallByType()
+        public void HowToInstallByType((ModType Type, string SelectRoots) mod)
         {
-            if (mod.Platform == ModType.ModLoader)
+            if (mod.Type == ModType.ModLoader)
             {
                 File.Delete(mod.ArchiveName);
                 {
@@ -141,7 +142,7 @@ namespace OneClickModInstaller
                     Application.Exit();
                 }
             }
-            else if (mod.Platform == ModType.Unknown)
+            else if (mod.Type == ModType.Unknown)
             {
                 //Status description
                 /*  1 - start (open SelectRoots window)
@@ -160,8 +161,8 @@ namespace OneClickModInstaller
                         if (sr.ShowDialog() == DialogResult.Yes)
                         {
                             status = 2;
-                            mod.ModRoots = sr.output.ToArray();
-                            if (mod.ModRoots.Length == 0)
+                            ModRoots = sr.output.ToArray();
+                            if (ModRoots.Length == 0)
                                 status = -1;
                         }
                     }
@@ -183,7 +184,7 @@ namespace OneClickModInstaller
                     return;
                 }
             }
-            else if (mod.Platform == ModType.Mixed)
+            else if (mod.Type == ModType.Mixed)
             {
                 //TODO: think up a better explanation
                 MessageBox.Show("Looks like this thing is complicated, try to install it manually. bye"
@@ -195,34 +196,15 @@ namespace OneClickModInstaller
             }
             else
             {
-                if (mod.ModRoots.Length > 1)
+                if (ModRoots.Length > 1)
                 {
-                    var tmm_form = new TooManyMods(mod.ModRoots, mod.Platform);
-                    tmm_form.ShowDialog();
-
-                    mod.ModRoots = tmm_form.mods;
-                }
-
-                if (Settings.Paths.ContainsKey(mod.Platform.ToString()))
-                {
-                    if (Settings.Paths[mod.Platform.ToString()] == "")
-                    {
-                        /*tcMain.SelectTab(tabSettings);
-
-                        MessageBox.Show("Looks like the mod you installed requires a special path to be installed to.\nPlease, specify "
-                                        + mod.Platform + "\nand then press the \"Continue Installation\" button in the \"Download\" tab."
-                                        , "Please specify a path"
-                                        , MessageBoxButtons.OK
-                                        , MessageBoxIcon.Information);
-                        mod.Status = "Waiting for path";
-                        UpdateUI.ModInstallation();*/
-                        MessageBox.Show("That thing REALLY happened");
-                    }
+                    var tmm = new TooManyMods(ModRoots);
+                    tmm.ShowDialog();
+                    ModRoots = tmm.mods;
                 }
             }
 
-            if (Status == ModInstallationStatus.Scanned)
-                FinishInstallation();
+            Status = ModInstallationStatus.Scanned;
         }
 
         public void InstallFromModRoots()
