@@ -147,7 +147,6 @@ namespace OneClickModInstaller
                     switch (form.mod.Status)
                     {
                         case ModInstallationStatus.Beginning:
-                        case ModInstallationStatus.Cancelled:
                             form.bModPath.Enabled = !form.mod.FromArgs;
                             form.bModInstall.Enabled = true;
                             break;

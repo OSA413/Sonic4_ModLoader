@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.IO;
 using System.Windows.Forms;
-using System.Threading.Tasks;
 
 using Common.MyIO;
 using Common.Launcher;
@@ -22,25 +21,25 @@ namespace OneClickModInstaller
         Scanned,
         Installing,
         Installed,
-        Cancelled,
         ModIsComplicated
     }
 
     public class ModInstallationInstance
     {
         public string Link;
-        public string LastMod;
         public (string root, ModType Platform)[] ModRoots;
         private string currentPath;
 
         public Downloader Downloader = new ();
         public ModInstaller Installer;
 
+        private (string Link, bool Correct, bool FromArchive, bool FromDir, Downloader.ServerHost Host) initialInfo;
         public bool FromArgs => Args != null;
         public readonly ModArgs Args;
         public bool Locked = false;
 
         public ModInstallationStatus Status;// { get; private set; }
+        public bool Cancelled;// { get; private set; }
 
         public ModInstallationInstance(ModArgs args = null)
         {
@@ -51,22 +50,24 @@ namespace OneClickModInstaller
             Locked = true;
         }
 
-        public static (bool Correct, bool FromArchive, bool FromDir, Downloader.ServerHost Host) GetInformationFromLink(string url)
+        public static (string Link, bool Correct, bool FromArchive, bool FromDir, Downloader.ServerHost Host) GetInformationFromLink(string url)
         {
             if (File.Exists(url))
-                return (Correct: true, FromArchive: true, FromDir: false, Host: Downloader.ServerHost.Unknown);
+                return (Link: url, Correct: true, FromArchive: true, FromDir: false, Host: Downloader.ServerHost.Unknown);
             else if (Directory.Exists(url))
-                return (Correct: true, FromArchive: false, FromDir: true, Host: Downloader.ServerHost.Unknown);
+                return (Link: url, Correct: true, FromArchive: false, FromDir: true, Host: Downloader.ServerHost.Unknown);
             else if (url.StartsWith("https://"))
-                return (Correct: true, FromArchive: false, FromDir: false, Host: Downloader.GetServerHost(url));
-            return (Correct: false, FromArchive: false, FromDir: false, Host: 0);
+                return (Link: url, Correct: true, FromArchive: false, FromDir: false, Host: Downloader.GetServerHost(url));
+            return (Link: url, Correct: false, FromArchive: false, FromDir: false, Host: 0);
         }
 
         public void Prepare(string link)
         {
+            if (Locked) return;
             var info = GetInformationFromLink(link);
             if (!info.Correct) return;
             Locked = true;
+            initialInfo = info;
             Link = link;
 
             Status = ModInstallationStatus.Downloading;
@@ -85,8 +86,6 @@ namespace OneClickModInstaller
         {
             if (!mod.FromDir)
             {
-                statusBar.Text = "Extracting downloaded archive...";
-
                 mod.ArchiveDir = mod.ArchiveName + "_extracted";
 
                 if (File.Exists(mod.ArchiveName))
@@ -103,24 +102,18 @@ namespace OneClickModInstaller
 
             var cont = -1;
 
+            //Check this branch
             if (!Directory.Exists(mod.ArchiveDir))
             {
-                statusBar.Text = "Couldn't extract archive";
-                mod.Status = ModInstallationStatus.Downloaded;
-                if (!(File.Exists("7z.exe") || (File.Exists(Settings.Paths["7-Zip"]) && Settings.UseLocal7zip)))
-                    statusBar.Text += " (7-Zip not found)";
+                Status = ModInstallationStatus.Downloaded;
             }
             else
-            {
-                statusBar.Text = "Checking extracted files...";
                 cont = ModArchive.CheckFiles(mod.ArchiveDir);
-            }
 
             if (cont == 0)
             {
                 MyDirectory.DeleteRecursively(mod.ArchiveDir);
-                statusBar.Text = "Installation was cancelled";
-                mod.Status = ModInstallationStatus.Cancelled;
+                Cancelled = true;
             }
             else if (cont == 1)
             {
@@ -134,35 +127,18 @@ namespace OneClickModInstaller
                     mod.Platform = FoundRootDirs.Item2;
                 }
 
-                mod.Status = ModInstallationStatus.Scanned;
-
-                tcMain.Invoke(new MethodInvoker(delegate
-                {
-                    ContinueInstallation();
-                }));
+                Status = ModInstallationStatus.Scanned;
             }
         }
 
-        //Rename
-        public void ContinueInstallation()
+        public void HowToInstallByType()
         {
             if (mod.Platform == ModType.ModLoader)
             {
                 File.Delete(mod.ArchiveName);
-                var result = MessageBox.Show("One-Click Mod Installer detected a Mod Loader distributive. Do you want to replace the current version of Mod Loader with the downloaded one?"
-                                    , "Mod Loader update"
-                                    , MessageBoxButtons.YesNo
-                                    , MessageBoxIcon.Question);
-
-                if (result == DialogResult.Yes)
                 {
-                    Process.Start("Sonic4ModManager", "--upgrade \"" + mod.ArchiveDir + "\"");
+                    Launcher.LaunchModManager("--upgrade \"" + mod.ArchiveDir + "\"");
                     Application.Exit();
-                }
-                else
-                {
-                    mod.Status = ModInstallationStatus.Cancelled;
-                    statusBar.Text = "Installation was cancelled";
                 }
             }
             else if (mod.Platform == ModType.Unknown)
@@ -203,8 +179,7 @@ namespace OneClickModInstaller
 
                 if (status == -1)
                 {
-                    mod.Status = ModInstallationStatus.Cancelled;
-                    statusBar.Text = "Installation was cancelled";
+                    Cancelled = true;
                     return;
                 }
             }
@@ -215,7 +190,7 @@ namespace OneClickModInstaller
                                 , "Couldn't install the mod"
                                 , MessageBoxButtons.OK
                                 , MessageBoxIcon.Exclamation);
-                mod.Status = ModInstallationStatus.ModIsComplicated;
+                Status = ModInstallationStatus.ModIsComplicated;
                 return;
             }
             else
@@ -246,10 +221,7 @@ namespace OneClickModInstaller
                 }
             }
 
-            if (mod.ModRoots.Length > 0)
-                mod.LastMod = Path.GetFileName(mod.ModRoots[0].root);
-
-            if (mod.Status == ModInstallationStatus.Scanned)
+            if (Status == ModInstallationStatus.Scanned)
                 FinishInstallation();
         }
 

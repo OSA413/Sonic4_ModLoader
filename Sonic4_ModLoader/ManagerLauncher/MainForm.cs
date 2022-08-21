@@ -16,6 +16,6 @@ namespace ManagerLauncher
 
         private void bPlayClick(object sender, EventArgs e) => ClickExitWrapper(Launcher.LaunchGame);
         private void bConfClick(object sender, EventArgs e) => ClickExitWrapper(Launcher.LaunchConfig);
-        private void bManagerClick(object sender, EventArgs e) => ClickExitWrapper(Launcher.LaunchModManager);
+        private void bManagerClick(object sender, EventArgs e) => ClickExitWrapper(() => Launcher.LaunchModManager());
     }
 }

@@ -62,8 +62,9 @@ namespace OneClickModInstaller
 
         private void bModInstall_Click(object sender, EventArgs e)
         {
+            //TODO: change
             if (mod.Status == ModInstallationStatus.Beginning
-                || mod.Status == ModInstallationStatus.Cancelled
+                || mod.Cancelled == true
                 || mod.Status == ModInstallationStatus.Installed
                 || mod.Status == ModInstallationStatus.ServerError)
             {
