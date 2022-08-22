@@ -188,20 +188,9 @@ namespace OneClickModInstaller
                         status = -1;
                         if (sr.ShowDialog() == DialogResult.Yes)
                         {
-                            status = 2;
                             ModRoots = sr.output.ToArray();
                             if (ModRoots.Length == 0)
                                 status = -1;
-                        }
-                    }
-                    else if (status == 2)
-                    {
-                        status = 1;
-                        var path = MyDirectory.Select("test", "dir");
-                        if (path != null)
-                        {
-                            mod.CustomPath = path;
-                            status = 0;
                         }
                     }
                 }
