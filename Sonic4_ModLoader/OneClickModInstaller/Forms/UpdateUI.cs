@@ -9,6 +9,7 @@ using System.Diagnostics;
 using Common.MyIO;
 using Common.URL;
 using Common.Launcher;
+using System.Drawing;
 
 namespace OneClickModInstaller
 {
@@ -37,6 +38,12 @@ namespace OneClickModInstaller
                 form.lModID.Text =
                 form.lDownloadType.Text =
                 form.lDownloadID.Text = null;
+            }
+
+            public static void Status(string text)
+            {
+                form.statusBar.Text = text;
+                Console.WriteLine(text);
             }
 
             public static void GlobalGameStatus()

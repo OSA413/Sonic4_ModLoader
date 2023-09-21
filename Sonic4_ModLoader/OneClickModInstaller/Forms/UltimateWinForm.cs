@@ -62,7 +62,6 @@ namespace OneClickModInstaller
 
         private void bModInstall_Click(object sender, EventArgs e)
         {
-            //TODO: change
             if (mod.Status == ModInstallationStatus.Beginning
                 || mod.Cancelled == true
                 || mod.Status == ModInstallationStatus.Installed
@@ -71,7 +70,14 @@ namespace OneClickModInstaller
                 tbModURL.ReadOnly   = true;
                 bModPath.Enabled    =
                 bModInstall.Enabled = false;
-                //StartInstallation();
+                mod.Status = ModInstallationStatus.Beginning;
+
+                UpdateUI.Status(mod.Status.ToString());
+                while (mod.DoNextStep())
+                {
+                    mod.ContinueInstallation();
+                    UpdateUI.Status(mod.Status.ToString());
+                }
             }
         }
 

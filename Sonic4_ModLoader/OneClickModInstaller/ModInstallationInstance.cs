@@ -78,12 +78,12 @@ namespace OneClickModInstaller
             ModInstallationStatus.Downloaded => ExtractMod(),
             ModInstallationStatus.Extracted => FindRoots(),
             ModInstallationStatus.Scanned => InstallFromModRoots(),
-            ModInstallationStatus.ServerError => throw new NotImplementedException(),
-            ModInstallationStatus.Extracting => throw new NotImplementedException(),
-            ModInstallationStatus.Scanning => throw new NotImplementedException(),
-            ModInstallationStatus.Installing => throw new NotImplementedException(),
-            ModInstallationStatus.Installed => throw new NotImplementedException(),
-            ModInstallationStatus.ModIsComplicated => throw new NotImplementedException(),
+            ModInstallationStatus.ServerError => false,
+            ModInstallationStatus.Extracting => false,
+            ModInstallationStatus.Scanning => false,
+            ModInstallationStatus.Installing => false,
+            ModInstallationStatus.Installed => false,
+            ModInstallationStatus.ModIsComplicated => false,
             _ => false,
         };
 
@@ -96,9 +96,15 @@ namespace OneClickModInstaller
 
             Status = ModInstallationStatus.Downloading;
             if (info.FromArchive)
+            {
+                ModArchivePath = Link;
                 Status = ModInstallationStatus.Downloaded;
+            }
             else if (info.FromDir)
+            {
+                ModDirectory = Link;
                 Status = ModInstallationStatus.Extracted;
+            }
             return true;
         }
 
@@ -109,7 +115,7 @@ namespace OneClickModInstaller
 
         public bool ExtractMod()
         {
-            ModDirectory = Path.GetFileNameWithoutExtension(ModArchivePath) + "_extracted";
+            ModDirectory = ModArchivePath + "_extracted";
 
             if (Directory.Exists(ModDirectory))
                 MyDirectory.DeleteRecursively(ModDirectory);
@@ -118,6 +124,8 @@ namespace OneClickModInstaller
                 ModArchive.Extract(ModArchivePath, Settings.Paths["7-Zip"]);
             else
                 ModArchive.Extract(ModArchivePath);
+
+            Status = ModInstallationStatus.Extracted;
             return true;
         }
 
