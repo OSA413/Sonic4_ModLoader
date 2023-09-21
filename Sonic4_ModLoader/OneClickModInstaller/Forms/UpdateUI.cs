@@ -67,7 +67,7 @@ namespace OneClickModInstaller
                         default: continue;
                     }
 
-                    if (statuses[key].Status == InstallationStatus.NotInstalled)//?
+                    if (statuses[key].Status != InstallationStatus.NotInstalled)//?
                     {
                         lIOStatus.Text = "Installed";
                         lIOPath.Text = ("Path: " + statuses[key].Location);//.Replace(' ', '\u2007');
