@@ -39,6 +39,9 @@ namespace OneClickModInstaller
         public readonly ModArgs Args;
         public bool Locked = false;
 
+        public string ModDirectory;
+        public string ModArchivePath;
+
         public ModInstallationStatus Status;// { get; private set; }
         public bool Cancelled;// { get; private set; }
 
@@ -106,18 +109,15 @@ namespace OneClickModInstaller
 
         public bool ExtractMod()
         {
-            mod.ArchiveDir = mod.ArchiveName + "_extracted";
+            ModDirectory = Path.GetFileNameWithoutExtension(ModArchivePath) + "_extracted";
 
-            if (File.Exists(mod.ArchiveName))
-            {
-                if (Directory.Exists(mod.ArchiveName + "_extracted"))
-                    MyDirectory.DeleteRecursively(mod.ArchiveName + "_extracted");
+            if (Directory.Exists(ModDirectory))
+                MyDirectory.DeleteRecursively(ModDirectory);
 
-                if (Settings.UseLocal7zip)
-                    ModArchive.Extract(mod.ArchiveName, Settings.Paths["7-Zip"]);
-                else
-                    ModArchive.Extract(mod.ArchiveName);
-            }
+            if (Settings.UseLocal7zip)
+                ModArchive.Extract(ModArchivePath, Settings.Paths["7-Zip"]);
+            else
+                ModArchive.Extract(ModArchivePath);
             return true;
         }
 
@@ -126,27 +126,23 @@ namespace OneClickModInstaller
             var cont = -1;
 
             //Check this branch
-            if (!Directory.Exists(mod.ArchiveDir))
+            if (!Directory.Exists(ModDirectory))
             {
                 Status = ModInstallationStatus.Downloaded;
             }
             else
-                cont = ModArchive.CheckFiles(mod.ArchiveDir);
+                cont = ModArchive.CheckFiles(ModDirectory);
 
             if (cont == 0)
             {
-                MyDirectory.DeleteRecursively(mod.ArchiveDir);
+                MyDirectory.DeleteRecursively(ModDirectory);
                 Cancelled = true;
             }
             else if (cont == 1)
             {
-                var FoundRootDirs = ModArchive.FindRoot(mod.ArchiveDir);
+                var FoundRootDirs = ModArchive.FindRoot(ModDirectory);
 
-                if (FoundRootDirs.Item2 != ModType.Unknown)
-                {
-                    ModRoots = FoundRootDirs.Item1;
-                    mod.Platform = FoundRootDirs.Item2;
-                }
+                ModRoots = FoundRootDirs;
 
                 if (ModRoots.Length > 1)
                 {
@@ -164,9 +160,9 @@ namespace OneClickModInstaller
         {
             if (mod.Type == ModType.ModLoader)
             {
-                File.Delete(mod.ArchiveName);
+                File.Delete(ModArchivePath);
                 {
-                    Launcher.LaunchModManager("--upgrade \"" + mod.ArchiveDir + "\"");
+                    Launcher.LaunchModManager("--upgrade \"" + ModDirectory + "\"");
                     Application.Exit();
                 }
             }
@@ -178,8 +174,8 @@ namespace OneClickModInstaller
                     *  0 - ok (user selected destination directory)
                     *  -1 - break (user cancelled SelectRoots window)
                     */
-                var status = 1;
-                var sr = new SelectRoots(mod.ArchiveDir);
+                /*var status = 1;
+                var sr = new SelectRoots(ModArchivePath);
 
                 while (status > 0)
                 {
@@ -199,7 +195,8 @@ namespace OneClickModInstaller
                 {
                     Cancelled = true;
                     return;
-                }
+                }*/
+                return;
             }
         }
 
