@@ -6,6 +6,8 @@ using System.Windows.Forms;
 
 using Common.MyIO;
 using Common.Launcher;
+using System.ComponentModel;
+using System.Net;
 
 namespace OneClickModInstaller
 {
@@ -31,7 +33,7 @@ namespace OneClickModInstaller
         public (string root, ModType Platform)[] ModRoots;
         private string currentPath;
 
-        public Downloader Downloader = new ();
+        public Downloader Downloader = new();
         public ModInstaller Installer;
 
         private (string Link, bool Correct, bool FromArchive, bool FromDir, Downloader.ServerHost Host) initialInfo;
@@ -108,8 +110,15 @@ namespace OneClickModInstaller
             return true;
         }
 
+        public void afterDownload(object o, AsyncCompletedEventArgs e) {
+            Status = ModInstallationStatus.Downloaded;
+            ContinueInstallation();
+        }
+
+
         public bool Download()
         {
+            Downloader.Download(Link, afterDownload, (object o, DownloadProgressChangedEventArgs e) => { });
             return false;
         }
 

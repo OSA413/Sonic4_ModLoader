@@ -16,6 +16,7 @@ namespace OneClickModInstaller
     {
         public static HandlerInstallerWrapper hiWrapper = Program.hiWrapper;
         public ModInstallationInstance mod;
+        public Downloader Downloader = new();
 
         public UltimateWinForm()
         {
@@ -72,14 +73,43 @@ namespace OneClickModInstaller
                 bModInstall.Enabled = false;
                 mod.Status = ModInstallationStatus.Beginning;
 
-                UpdateUI.Status(mod.Status.ToString());
-                while (mod.DoNextStep())
+                while (DoNextStep())
                 {
-                    mod.ContinueInstallation();
                     UpdateUI.Status(mod.Status.ToString());
                 }
             }
         }
+
+        public void ContinueAFterDownload(object o, AsyncCompletedEventArgs e)
+        {
+            mod.Status = ModInstallationStatus.Downloaded;
+            while (DoNextStep())
+            {
+                UpdateUI.Status(mod.Status.ToString());
+            }
+        }
+
+        public bool Download()
+        {
+            Downloader.Download(mod.Link, ContinueAFterDownload, wc_DownloadProgressChanged);
+            return false;
+        }
+
+        public bool DoNextStep() => mod.Status switch
+        {
+            ModInstallationStatus.Beginning => mod.Prepare(),
+            ModInstallationStatus.Downloading => Download(),
+            ModInstallationStatus.Downloaded => mod.ExtractMod(),
+            ModInstallationStatus.Extracted => mod.FindRoots(),
+            ModInstallationStatus.Scanned => mod.InstallFromModRoots(),
+            ModInstallationStatus.ServerError => false,
+            ModInstallationStatus.Extracting => false,
+            ModInstallationStatus.Scanning => false,
+            ModInstallationStatus.Installing => false,
+            ModInstallationStatus.Installed => false,
+            ModInstallationStatus.ModIsComplicated => false,
+            _ => false,
+        };
 
         void wc_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
