@@ -73,29 +73,33 @@ namespace OneClickModInstaller
                 bModInstall.Enabled = false;
                 mod.Status = ModInstallationStatus.Beginning;
 
-                while (DoNextStep())
-                {
-                    UpdateUI.Status(mod.Status.ToString());
-                }
+                while (DoNextStep()) {}
             }
         }
 
         public void ContinueAFterDownload(object o, AsyncCompletedEventArgs e)
         {
             mod.Status = ModInstallationStatus.Downloaded;
-            while (DoNextStep())
-            {
-                UpdateUI.Status(mod.Status.ToString());
-            }
+            while (DoNextStep()) {}
         }
 
         public bool Download()
         {
-            Downloader.Download(mod.Link, ContinueAFterDownload, wc_DownloadProgressChanged);
+            var output = Downloader.Download(mod.Link, ContinueAFterDownload, wc_DownloadProgressChanged);
+            mod.ModArchivePath = output;
             return false;
         }
 
-        public bool DoNextStep() => mod.Status switch
+        public bool DoNextStep()
+        {
+            UpdateUI.Status(mod.Status.ToString());
+            var result = _DoNextStep();
+            if (result == false)
+                UpdateUI.Status(mod.Status.ToString());
+            return result;
+        }
+
+        public bool _DoNextStep() => mod.Status switch
         {
             ModInstallationStatus.Beginning => mod.Prepare(),
             ModInstallationStatus.Downloading => Download(),

@@ -118,7 +118,8 @@ namespace OneClickModInstaller
 
         public bool Download()
         {
-            Downloader.Download(Link, afterDownload, (object o, DownloadProgressChangedEventArgs e) => { });
+            var output = Downloader.Download(Link, afterDownload, (object o, DownloadProgressChangedEventArgs e) => { });
+            ModArchivePath = output;
             return false;
         }
 
