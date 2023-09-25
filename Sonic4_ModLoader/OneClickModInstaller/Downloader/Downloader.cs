@@ -7,6 +7,7 @@ using System.Net;
 using Common.URL;
 using System.ComponentModel;
 using System.IO;
+using Windows.Web.Http.HttpClient;
 
 namespace OneClickModInstaller
 {
@@ -45,8 +46,10 @@ namespace OneClickModInstaller
         public string Download(string inputURL, Action<object, AsyncCompletedEventArgs> then, Action<object, DownloadProgressChangedEventArgs> onProgress)
         {
             var host = GetServerHost(inputURL);
-
+            
+            #pragma warning disable SYSLIB0014
             using WebClient wc = new();
+            #pragma warning restore SYSLIB0014
             wc.DownloadFileCompleted += new AsyncCompletedEventHandler(then);
             wc.DownloadProgressChanged += new DownloadProgressChangedEventHandler(onProgress);
 
