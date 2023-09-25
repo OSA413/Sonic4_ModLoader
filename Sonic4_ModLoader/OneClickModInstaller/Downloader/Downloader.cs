@@ -7,7 +7,6 @@ using System.Net;
 using Common.URL;
 using System.ComponentModel;
 using System.IO;
-using Windows.Web.Http.HttpClient;
 
 namespace OneClickModInstaller
 {
