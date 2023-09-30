@@ -73,14 +73,17 @@ namespace OneClickModInstaller
                 bModInstall.Enabled = false;
                 mod.Status = ModInstallationStatus.Beginning;
 
-                while (DoNextStep()) {}
+                ContinueInstallation();
             }
         }
 
         public void ContinueAFterDownload(object o, AsyncCompletedEventArgs e)
         {
-            mod.Status = ModInstallationStatus.Downloaded;
-            while (DoNextStep()) {}
+            if (Downloader.Total != -1 && Downloader.Recieved != Downloader.Total)
+                mod.Status = ModInstallationStatus.ServerError;
+            else
+                mod.Status = ModInstallationStatus.Downloaded;
+            ContinueInstallation();
         }
 
         public bool Download()
@@ -88,6 +91,11 @@ namespace OneClickModInstaller
             var output = Downloader.Download(mod.Link, ContinueAFterDownload, wc_DownloadProgressChanged);
             mod.ModArchivePath = output;
             return false;
+        }
+
+        public void ContinueInstallation()
+        {
+            while (DoNextStep()) { }
         }
 
         public bool DoNextStep()
@@ -101,19 +109,18 @@ namespace OneClickModInstaller
 
         public bool _DoNextStep() => mod.Status switch
         {
-            ModInstallationStatus.Beginning => mod.Prepare(),
             ModInstallationStatus.Downloading => Download(),
-            ModInstallationStatus.Downloaded => mod.ExtractMod(),
-            ModInstallationStatus.Extracted => mod.FindRoots(),
-            ModInstallationStatus.Scanned => mod.InstallFromModRoots(),
-            ModInstallationStatus.ServerError => false,
-            ModInstallationStatus.Extracting => false,
-            ModInstallationStatus.Scanning => false,
-            ModInstallationStatus.Installing => false,
-            ModInstallationStatus.Installed => false,
-            ModInstallationStatus.ModIsComplicated => false,
-            _ => false,
+            ModInstallationStatus.Installed => ExitLaunchManager(),
+            _ => mod.DoNextStep(),
         };
+
+        public bool ExitLaunchManager()
+        {
+            if (cbExitLaunchManager.Checked)
+                if (Launcher.LaunchModManager())
+                    Application.Exit();
+            return false;
+        }
 
         void wc_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {

@@ -157,9 +157,6 @@ namespace OneClickModInstaller
                             form.bModPath.Enabled = !form.mod.FromArgs;
                             form.bModInstall.Enabled = true;
                             break;
-                        case ModInstallationStatus.ModIsComplicated:
-                            form.bModPath.Enabled = !form.mod.FromArgs;
-                            break;
                         case ModInstallationStatus.Installed:
                             if (!form.mod.FromArgs)
                             {

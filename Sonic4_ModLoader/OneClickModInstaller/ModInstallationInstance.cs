@@ -17,13 +17,9 @@ namespace OneClickModInstaller
         Downloading,
         ServerError,
         Downloaded,
-        Extracting,
         Extracted,
-        Scanning,
         Scanned,
-        Installing,
         Installed,
-        ModIsComplicated
     }
 
     public class ModInstallationInstance
@@ -81,11 +77,7 @@ namespace OneClickModInstaller
             ModInstallationStatus.Extracted => FindRoots(),
             ModInstallationStatus.Scanned => InstallFromModRoots(),
             ModInstallationStatus.ServerError => false,
-            ModInstallationStatus.Extracting => false,
-            ModInstallationStatus.Scanning => false,
-            ModInstallationStatus.Installing => false,
             ModInstallationStatus.Installed => false,
-            ModInstallationStatus.ModIsComplicated => false,
             _ => false,
         };
 
