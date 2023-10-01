@@ -38,7 +38,7 @@ namespace OneClickModInstaller
             Process.Start(startInfo).WaitForExit();
         }
 
-        public static int CheckFiles(string dir_name)
+        public static bool CheckFiles(string dir_name)
         {
             var good_formats = "TXT,INI,DDS,TXB,AMA,AME,ZNO,ZNM,ZNV,DC,EV,RG,MD,MP,AT,DF,DI,PSH,VSH,LTS,XNM,MFS,SSS,GPB,MSG,AYK,ADX,AMB,CPK,CSB,PNG,CT,TGA".Split(',');
 
@@ -62,23 +62,23 @@ namespace OneClickModInstaller
             }
 
 
-            var cont = 1;
+            var continuee = true;
             if (suspicious_files.Count != 0)
             {
-                cont = 0;
+                continuee = false;
                 var SuspiciousDialog = new Suspicious(suspicious_files.ToArray());
 
                 var result = SuspiciousDialog.ShowDialog();
 
                 //Continue
                 if (result != DialogResult.Cancel)
-                    cont = 1;
+                    continuee = true;
 
                 if (result == DialogResult.Yes)
                     foreach (var file in suspicious_files)
                         MyFile.DeleteAnyway(Path.Combine(dir_name, file));
             }
-            return cont;
+            return continuee;
         }
 
         public static (string, ModType)[] FindRoot(string dir_name)

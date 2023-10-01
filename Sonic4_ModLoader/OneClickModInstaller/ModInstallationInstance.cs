@@ -133,36 +133,28 @@ namespace OneClickModInstaller
 
         public bool FindRoots()
         {
-            var cont = -1;
+            var continuee = ModArchive.CheckFiles(ModDirectory);
 
-            //Check this branch
-            if (!Directory.Exists(ModDirectory))
+            if (!continuee)
             {
-                Status = ModInstallationStatus.Downloaded;
-            }
-            else
-                cont = ModArchive.CheckFiles(ModDirectory);
-
-            if (cont == 0)
-            {
-                MyDirectory.DeleteRecursively(ModDirectory);
+                if (!initialInfo.FromDir)
+                    MyDirectory.DeleteRecursively(ModDirectory);
                 Cancelled = true;
+                return false;
             }
-            else if (cont == 1)
+
+            var FoundRootDirs = ModArchive.FindRoot(ModDirectory);
+
+            ModRoots = FoundRootDirs;
+
+            if (ModRoots.Length > 1)
             {
-                var FoundRootDirs = ModArchive.FindRoot(ModDirectory);
-
-                ModRoots = FoundRootDirs;
-
-                if (ModRoots.Length > 1)
-                {
-                    var tmm = new TooManyMods(ModRoots);
-                    tmm.ShowDialog();
-                    ModRoots = tmm.mods;
-                }
-
-                Status = ModInstallationStatus.Scanned;
+                var tmm = new TooManyMods(ModRoots);
+                tmm.ShowDialog();
+                ModRoots = tmm.mods;
             }
+
+            Status = ModInstallationStatus.Scanned;
             return true;
         }
 
@@ -170,14 +162,13 @@ namespace OneClickModInstaller
         {
             if (mod.Type == ModType.ModLoader)
             {
-                File.Delete(ModArchivePath);
-                {
-                    Launcher.LaunchModManager("--upgrade \"" + ModDirectory + "\"");
-                    Application.Exit();
-                }
+                Launcher.LaunchModManager("--upgrade \"" + ModDirectory + "\"");
+                Application.Exit();
             }
             else if (mod.Type == ModType.Unknown)
             {
+                //Makes no sence to select roots in the last step, this needs to be moved in the step after scanning
+
                 //Status description
                 /*  1 - start (open SelectRoots window)
                     *  2 - continue (choose destination directory)
