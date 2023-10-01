@@ -19,6 +19,7 @@ namespace OneClickModInstaller
         Downloaded,
         Extracted,
         Scanned,
+        FoundRoots,
         Installed,
     }
 
@@ -74,8 +75,9 @@ namespace OneClickModInstaller
             ModInstallationStatus.Beginning => Prepare(),
             ModInstallationStatus.Downloading => Download(),
             ModInstallationStatus.Downloaded => ExtractMod(),
-            ModInstallationStatus.Extracted => FindRoots(),
-            ModInstallationStatus.Scanned => InstallFromModRoots(),
+            ModInstallationStatus.Extracted => CheckFiles(),
+            ModInstallationStatus.Scanned => FindRoots(),
+            ModInstallationStatus.FoundRoots => InstallFromModRoots(),
             ModInstallationStatus.ServerError => false,
             ModInstallationStatus.Installed => false,
             _ => false,
@@ -131,21 +133,24 @@ namespace OneClickModInstaller
             return true;
         }
 
-        public bool FindRoots()
+        public bool CheckFiles()
         {
-            var continuee = ModArchive.CheckFiles(ModDirectory);
+            var result = ModArchive.CheckFiles(ModDirectory);
 
-            if (!continuee)
+            if (!result)
             {
                 if (!initialInfo.FromDir)
                     MyDirectory.DeleteRecursively(ModDirectory);
                 Cancelled = true;
-                return false;
             }
 
-            var FoundRootDirs = ModArchive.FindRoot(ModDirectory);
+            Status = ModInstallationStatus.Scanned;
+            return result;
+        }
 
-            ModRoots = FoundRootDirs;
+        public bool FindRoots()
+        {
+            ModRoots = ModArchive.FindRoot(ModDirectory);
 
             if (ModRoots.Length > 1)
             {
@@ -154,7 +159,7 @@ namespace OneClickModInstaller
                 ModRoots = tmm.mods;
             }
 
-            Status = ModInstallationStatus.Scanned;
+            Status = ModInstallationStatus.FoundRoots;
             return true;
         }
 
