@@ -184,7 +184,7 @@ namespace OneClickModInstaller
                     *  0 - ok (user selected destination directory)
                     *  -1 - break (user cancelled SelectRoots window)
                     */
-                /*var status = 1;
+                var status = 1;
                 var sr = new SelectRoots(ModArchivePath);
 
                 while (status > 0)
@@ -194,7 +194,7 @@ namespace OneClickModInstaller
                         status = -1;
                         if (sr.ShowDialog() == DialogResult.Yes)
                         {
-                            ModRoots = sr.output.ToArray();
+                            ModRoots = sr.output.Select(x => (root: x, Platform: ModType.PC)).ToArray();
                             if (ModRoots.Length == 0)
                                 status = -1;
                         }
@@ -205,7 +205,7 @@ namespace OneClickModInstaller
                 {
                     Cancelled = true;
                     return;
-                }*/
+                }
                 return;
             }
         }
