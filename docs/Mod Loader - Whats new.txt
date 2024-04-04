@@ -1,3 +1,6 @@
+[c]Version: v0.1.6.2p1
+* AMBPatcher: Previously though-to-be ignored flags in AMB enumeration section are now correctly transferred from original file to the modded one when patching AMB. This makes UI elements (mostly texts) in Episode 2 properly moddable.
+
 [c]Version: v0.1.6.0
 * Switched to .Net 6 (it's good, HiDPI and other modern features, and sad, you can't run WinForms on Linux/Mono, at the same time)
 * Alice Mod Loader by RadiantDerg updated to 0.3.0!
