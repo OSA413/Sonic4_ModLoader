@@ -145,6 +145,8 @@ public class AMB
             newObj.RealName = hasNames ? ReadString(source, namePtr + 0x20 * i) : i.ToString();
             newObj.Name = MakeNameSafe(newObj.RealName);
             newObj.ParentAMB = this;
+            newObj.Flag1 = BitConverter.ToInt32(source, listPtr + (0x10 + shift) * i + 8 + shift);
+            newObj.Flag2 = BitConverter.ToInt32(source, listPtr + (0x10 + shift) * i + 12 + shift);
             if (IsSourceAMB(objPtr))
                 newObj.Amb = new AMB(source, objPtr, AmbPath + "\\" + newObj.Name);
             Objects.Add(newObj);
@@ -178,6 +180,8 @@ public class AMB
         {
             Array.Copy(BitConverter.GetBytes(pointers.data), 0, result, pointers.list, 4);
             Array.Copy(BitConverter.GetBytes(o.LengthNice), 0, result, pointers.list + 4, 4);
+            Array.Copy(BitConverter.GetBytes(o.Flag1), 0, result, pointers.list + 8, 4);
+            Array.Copy(BitConverter.GetBytes(o.Flag2), 0, result, pointers.list + 12, 4);
 
             var oWrite = o.Write();
             Array.Copy(oWrite, 0, result, pointers.data, o.Length);
@@ -302,6 +306,9 @@ public class BinaryObject
     public bool isAMB { get => Amb != null; }
     public AMB Amb;
     public AMB ParentAMB;
+
+    public Int32 Flag1;
+    public Int32 Flag2;
 
     public byte[] Source {get; private set;}
     //TODO: use uint
