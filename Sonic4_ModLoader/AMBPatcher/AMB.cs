@@ -256,7 +256,10 @@ public class AMB
 
     public void Replace(BinaryObject bo, int targetIndex)
     {
-        bo.RealName = Objects[targetIndex].RealName;
+        var prev = Objects[targetIndex];
+        bo.RealName = prev.RealName;
+        bo.Flag1 = prev.Flag1;
+        bo.Flag2 = prev.Flag2;
         Objects[targetIndex] = bo;
     }
 
