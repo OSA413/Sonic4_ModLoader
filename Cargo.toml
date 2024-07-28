@@ -1,0 +1,18 @@
+[package]
+name = "test"
+description = "test"
+version = "0.0.0"
+edition = "2021"
+authors = ["Oleg \"OSA413\" Sokolov"]
+repository = "https://github.com/OSA413/Sonic4_ModLoader"
+homepage = "https://github.com/OSA413/Sonic4_ModLoader"
+license = "MIT"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+adw = { version = "0.7", package = "libadwaita", features = ["v1_5"] }
+gtk = { version = "0.9", package = "gtk4", features = ["v4_12"] }
+
+[build-dependencies]
+glib-build-tools = "0.20"
