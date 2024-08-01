@@ -16,3 +16,11 @@ gtk = { version = "0.9", package = "gtk4", features = ["v4_12"] }
 
 [build-dependencies]
 glib-build-tools = "0.20"
+
+[[bin]]
+name="example"
+path="src/example/main.rs"
+
+[[bin]]
+name="ManagerLauncher"
+path="src/ManagerLauncher/main.rs"
