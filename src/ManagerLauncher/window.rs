@@ -59,21 +59,21 @@ impl ModloaderWindow {
     fn setup_actions(&self) {
         let action_play = ActionEntry::builder("play")
             .activate(move |_window: &Self, _action, _parameter| {
-                print!("Hello world")
+                println!("Hello world")
             })
             .build();
 
         let action_launch_config_tool = ActionEntry::builder("launch_config_tool")
-        .activate(move |_window: &Self, _action, _parameter| {
-            print!("Hello world")
-        })
-        .build();
+            .activate(move |_window: &Self, _action, _parameter| {
+                println!("Hello world")
+            })
+            .build();
 
         let action_launch_mod_manager = ActionEntry::builder("launch_mod_manager")
-        .activate(move |_window: &Self, _action, _parameter| {
-            print!("Hello world")
-        })
-        .build();
+            .activate(move |_window: &Self, _action, _parameter| {
+                println!("Hello world")
+            })
+            .build();
 
         self.add_action_entries([action_play, action_launch_config_tool, action_launch_mod_manager]);
     }
