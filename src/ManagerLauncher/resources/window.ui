@@ -25,7 +25,6 @@
   </menu>
   <template class="ManagerLauncher" parent="GtkApplicationWindow">
     <property name="title">ManagerLauncher</property>
-    <property name="width-request">360</property>
     <child type="titlebar">
       <object class="GtkHeaderBar">
         <child type ="end">
@@ -47,9 +46,27 @@
         <property name="spacing">12</property>
         <property name="halign">center</property>
         <child>
-          <object class="GtkButton" id="button">
-            <property name="label">test</property>
-            <property name="action-name"></property>
+          <object class="GtkButton" id="button_play">
+            <property name="label">Play</property>
+            <property name="action-name">win.play</property>
+            <property name="height-request">120</property>
+            <property name="width-request">360</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="button_launch_config_tool">
+            <property name="label">Launch Configuration Tool</property>
+            <property name="action-name">win.launch_config_tool</property>
+            <property name="height-request">120</property>
+            <property name="width-request">360</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="button_launch_mod_manager">
+            <property name="label">Launch Mod Manager</property>
+            <property name="action-name">win.launch_mod_manager</property>
+            <property name="height-request">120</property>
+            <property name="width-request">360</property>
           </object>
         </child>
       </object>

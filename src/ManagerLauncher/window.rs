@@ -1,5 +1,5 @@
 use adw::subclass::prelude::*;
-use gtk::{gio, glib};
+use gtk::{gio::{self, ActionEntry}, glib, prelude::ActionMapExtManual};
 
 mod imp {
     use super::*;
@@ -8,9 +8,11 @@ mod imp {
     #[template(resource = "/Sonic4ModLoader/ManagerLauncher/window.ui")]
     pub struct ModloaderWindow {
         #[template_child]
-        pub gtk_box: TemplateChild<gtk::Box>,
+        pub button_play: TemplateChild<gtk::Button>,
         #[template_child]
-        pub button: TemplateChild<gtk::Button>,
+        pub button_launch_config_tool: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub button_launch_mod_manager: TemplateChild<gtk::Button>,
     }
 
     #[glib::object_subclass]
@@ -28,7 +30,13 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for ModloaderWindow {}
+    impl ObjectImpl for ModloaderWindow {
+        fn constructed(&self) {
+            self.parent_constructed();
+            self.obj().setup_actions();
+        }
+    }
+
     impl WidgetImpl for ModloaderWindow {}
     impl WindowImpl for ModloaderWindow {}
     impl ApplicationWindowImpl for ModloaderWindow {}
@@ -46,5 +54,27 @@ impl ModloaderWindow {
         glib::Object::builder()
             .property("application", application)
             .build()
+    }
+
+    fn setup_actions(&self) {
+        let action_play = ActionEntry::builder("play")
+            .activate(move |_window: &Self, _action, _parameter| {
+                print!("Hello world")
+            })
+            .build();
+
+        let action_launch_config_tool = ActionEntry::builder("launch_config_tool")
+        .activate(move |_window: &Self, _action, _parameter| {
+            print!("Hello world")
+        })
+        .build();
+
+        let action_launch_mod_manager = ActionEntry::builder("launch_mod_manager")
+        .activate(move |_window: &Self, _action, _parameter| {
+            print!("Hello world")
+        })
+        .build();
+
+        self.add_action_entries([action_play, action_launch_config_tool, action_launch_mod_manager]);
     }
 }
