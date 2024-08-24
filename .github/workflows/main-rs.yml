@@ -1,4 +1,4 @@
-name: Midday build
+name: Midday build rs
 
 on:
   push:
@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-pack-win64:
+  build-pack-win64-rs:
     runs-on: windows-2019
     steps:
       - uses: actions/setup-dotnet@v1
