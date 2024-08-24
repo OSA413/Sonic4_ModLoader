@@ -13,7 +13,7 @@ on:
 
 jobs:
   build-pack-win64-rs:
-    runs-on: windows-2019
+    runs-on: windows-2022
     steps:
       - uses: actions/checkout@v2
 
@@ -21,10 +21,10 @@ jobs:
         with:
           python-version: '3.12'
 
-      # - name: Add msbuild to PATH
-      #   uses: microsoft/setup-msbuild@v1.1
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
 
-      - run: winget install Microsoft.VisualStudio.2022.BuildTools -e --source winget --silent --override "--wait --quiet --add ProductLang En-us --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended"
+      # - run: winget install Microsoft.VisualStudio.2022.BuildTools -e --source winget --silent --override "--wait --quiet --add ProductLang En-us --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended"
 
       - run: py -3.12 -m pip install --user pipx
       - run: py -3.12 -m pipx ensurepath
