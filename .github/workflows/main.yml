@@ -40,7 +40,7 @@ jobs:
         run: bash update_dependencies.sh
 
       - name: Build Rust
-        run: cargo build
+        run: cargo build --release
 
       - name: Build .Net
         run: bash build.sh

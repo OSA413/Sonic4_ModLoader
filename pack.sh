@@ -46,7 +46,38 @@ done
 
 # Rust
 cargo install copydeps
+cp ./target/release/ManagerLauncher.exe ./dist/Sonic4ModLoader/ModManager.exe
+copydeps --search-dir C:/gtk-build/gtk/x64/release/bin ./dist/Sonic4ModLoader/ModManager.exe
 
+# License - GTK4
+dependenciesGtk=$'
+cairo
+fribidi
+gtk4
+harfbuzz
+libadwaita
+libepoxy
+libffi
+libjpeg-turbo
+libpng
+pango
+pcre2
+pixman
+tiff
+zlib
+'
+
+while IFS= read -r dep; do
+    if [[ $dep != "" ]]; then 
+        cp "C:/gtk-build/gtk/x64/release/share/doc/$dep/COPYING" "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-"$dep || \
+        cp "C:/gtk-build/gtk/x64/release/share/doc/$dep/LICENSE" "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-"$dep || \
+        cp "C:/gtk-build/gtk/x64/release/share/doc/$dep/LICENSE.md" "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-"$dep".md" || \
+        cp "C:/gtk-build/gtk/x64/release/share/doc/$dep/README" "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-"$dep || \
+        cp "C:/gtk-build/gtk/x64/release/share/doc/$dep/manual/html/project/license.html" "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-"$dep".html"
+    fi
+done <<< "$dependenciesGtk"
+
+# SHA256SUMS
 echo "Creating SHA256SUMS..."
 cd dist
 find * -type f -exec sha256sum {} \; >> "SHA256SUMS"
