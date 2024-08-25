@@ -24,13 +24,11 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
 
-      # - run: winget install Microsoft.VisualStudio.2022.BuildTools -e --source winget --silent --override "--wait --quiet --add ProductLang En-us --add Microsoft.VisualStudio.Workload.VCTools --includeRecommended"
-
       - run: py -3.12 -m pip install --user pipx
       - run: py -3.12 -m pipx ensurepath
       - run: pipx install gvsbuild
       - run: gvsbuild build gtk4
-      - run: $env:Path += ";C:\gtk-build\gtk\x64\release\bin"
+      - run: echo "C:\gtk-build\gtk\x64\release\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Update dependencies
         run: bash update_dependencies.sh
