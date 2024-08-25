@@ -27,7 +27,7 @@ jobs:
       - run: py -3.12 -m pip install --user pipx
       - run: py -3.12 -m pipx ensurepath
       - run: pipx install gvsbuild
-      - run: gvsbuild build gtk4
+      - run: gvsbuild build gtk4 libadwaita librsvg
       - run: echo "C:\gtk-build\gtk\x64\release\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Update dependencies
