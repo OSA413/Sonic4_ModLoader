@@ -13,7 +13,7 @@ on:
 
 jobs:
   build-pack-win64:
-    runs-on: windows-2019
+    runs-on: windows-2022
     steps:
       - uses: actions/setup-dotnet@v1
         with:
@@ -23,11 +23,30 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
 
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.12'
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
+
+      - run: py -3.12 -m pip install --user pipx
+      - run: py -3.12 -m pipx ensurepath
+      - run: pipx install gvsbuild
+      - run: gvsbuild build gtk4 libadwaita librsvg
+      - run: echo "C:\gtk-build\gtk\x64\release\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
       - name: Update dependencies
         run: bash update_dependencies.sh
 
-      - name: Build
-        run: bash build_pack.sh
+      - name: Build Rust
+        run: cargo build
+
+      - name: Build .Net
+        run: bash build.sh
+
+      - name: Pack
+        run: bash pack.sh
         
       - uses: actions/upload-artifact@v2
         with:
@@ -65,35 +84,3 @@ jobs:
 
       - name: Run tests
         run: bash ./tests/run_tests.sh --no-crash
-
-  build-pack-win86:
-    runs-on: windows-2019
-    steps:
-      - uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '6.0.x'
-      - uses: actions/checkout@v2
-
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.1
-
-      - name: Update dependencies
-        run: bash update_dependencies.sh
-
-      - name: Build
-        run: bash build_pack_x86.sh
-        
-      - uses: actions/upload-artifact@v2
-        with:
-          name: Sonic 4 Mod Loader (without 7-Zip) (x86)
-          path: dist/Sonic4ModLoader_7zip-less.7z
-
-      - uses: actions/upload-artifact@v2
-        with:
-          name: SHA256 sums (x86)
-          path: dist/SHA256SUMS
-
-      - uses: actions/upload-artifact@v2
-        with:
-          name: AMBPatcher (x86)
-          path: dist/Sonic4ModLoader/AMBPatcher.exe

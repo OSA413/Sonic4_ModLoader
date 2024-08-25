@@ -1,16 +1,6 @@
 #!/bin/bash
 cd "$(dirname "$0")"
 
-bash Sonic4_ModLoader/generate-version.sh
-
-echo "Compiling..."
-dotnet publish Sonic4_ModLoader -c Release -m --runtime win-x86 --no-self-contained
-
-EXIT_CODE="$?"
-if [ "$EXIT_CODE" != "0" ]; then
-    exit $EXIT_CODE
-fi
-
 echo "Removing old distribution package..."
 rm -rf "./dist"
 mkdir -p "./dist/Sonic4ModLoader/Mod Loader - licenses"
@@ -20,10 +10,10 @@ echo "Copying new distribution files..."
 #License
 cp "LICENSE" "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-Sonic4_ModLoader"
 #EXEs
-cp "./Sonic4_ModLoader/AMBPatcher/bin/Release/net6.0/win-x86/publish/AMBPatcher.exe" "./dist/Sonic4ModLoader/AMBPatcher.exe"
-cp "./Sonic4_ModLoader/ManagerLauncher/bin/Release/net6.0-windows/win-x86/publish/ManagerLauncher.exe" "./dist/Sonic4ModLoader/ManagerLauncher.exe"
-cp "./Sonic4_ModLoader/Sonic4ModManager/bin/Release/net6.0-windows/win-x86/publish/Sonic4ModManager.exe" "./dist/Sonic4ModLoader/Sonic4ModManager.exe"
-cp "./Sonic4_ModLoader/OneClickModInstaller/bin/Release/net6.0-windows/win-x86/publish/OneClickModInstaller.exe" "./dist/Sonic4ModLoader/OneClickModInstaller.exe"
+cp "./Sonic4_ModLoader/AMBPatcher/bin/Release/net6.0/win-x64/publish/AMBPatcher.exe" "./dist/Sonic4ModLoader/AMBPatcher.exe"
+cp "./Sonic4_ModLoader/ManagerLauncher/bin/Release/net6.0-windows/win-x64/publish/ManagerLauncher.exe" "./dist/Sonic4ModLoader/ManagerLauncher.exe"
+cp "./Sonic4_ModLoader/Sonic4ModManager/bin/Release/net6.0-windows/win-x64/publish/Sonic4ModManager.exe" "./dist/Sonic4ModLoader/Sonic4ModManager.exe"
+cp "./Sonic4_ModLoader/OneClickModInstaller/bin/Release/net6.0-windows/win-x64/publish/OneClickModInstaller.exe" "./dist/Sonic4ModLoader/OneClickModInstaller.exe"
 #README
 cp "./README.md" "./dist/Sonic4ModLoader/README.md"
 #Change log
@@ -54,6 +44,9 @@ for dir in $(ls ./dependencies); do
     done
 done
 
+# Rust
+cargo install copydeps
+
 echo "Creating SHA256SUMS..."
 cd dist
 find * -type f -exec sha256sum {} \; >> "SHA256SUMS"
@@ -65,3 +58,4 @@ echo "Archiving..."
 #7-Zip-less package
 cp "./dist/Sonic4ModLoader.7z" "./dist/Sonic4ModLoader_7zip-less.7z"
 7z d "./dist/Sonic4ModLoader_7zip-less.7z" "Sonic4ModLoader/Mod Loader - licenses/LICENSE-7-Zip" "Sonic4ModLoader/7z.exe" "Sonic4ModLoader/7z.dll"
+
