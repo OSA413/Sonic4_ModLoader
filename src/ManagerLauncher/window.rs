@@ -1,5 +1,6 @@
 use adw::subclass::prelude::*;
 use gtk::{gio::{self, ActionEntry}, glib, prelude::ActionMapExtManual};
+use std::process;
 
 mod imp {
     use super::*;
@@ -59,19 +60,31 @@ impl ModloaderWindow {
     fn setup_actions(&self) {
         let action_play = ActionEntry::builder("play")
             .activate(move |_window: &Self, _action, _parameter| {
-                println!("Hello world")
+                let res = common::Launcher::launch_game();
+                match res {
+                    Ok(_) => process::exit(0),
+                    Err(_) => {},
+                }
             })
             .build();
 
         let action_launch_config_tool = ActionEntry::builder("launch_config_tool")
             .activate(move |_window: &Self, _action, _parameter| {
-                println!("Hello world")
+                let res = common::Launcher::launch_config();
+                match res {
+                    Ok(_) => process::exit(0),
+                    Err(_) => {},
+                }
             })
             .build();
 
         let action_launch_mod_manager = ActionEntry::builder("launch_mod_manager")
             .activate(move |_window: &Self, _action, _parameter| {
-                println!("Hello world")
+                let res = common::Launcher::launch_mod_manager(vec![]);
+                match res {
+                    Ok(_) => process::exit(0),
+                    Err(_) => {},
+                }
             })
             .build();
 
