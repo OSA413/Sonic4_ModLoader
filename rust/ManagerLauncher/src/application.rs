@@ -1,4 +1,4 @@
-use gtk::prelude::*;
+use gtk::{prelude::*, License};
 use adw::subclass::prelude::*;
 use gtk::{gio, glib};
 
@@ -12,7 +12,7 @@ mod imp {
 
     #[glib::object_subclass]
     impl ObjectSubclass for ModloaderApplication {
-        const NAME: &'static str = "ModloaderApplication";
+        const NAME: &'static str = "ManagerLauncherApplication";
         type Type = super::ModloaderApplication;
         type ParentType = adw::Application;
     }
@@ -78,12 +78,13 @@ impl ModloaderApplication {
         let window = self.active_window().unwrap();
         let about = adw::AboutWindow::builder()
             .transient_for(&window)
-            .application_name("modloader")
-            .application_icon("org.gnome.Example")
+            .application_name("Manager Launcher")
+            .license_type(License::MitX11)
+            // .application_icon("org.gnome.Example")
             .developer_name("OSA413")
             .version(common::config::VERSION)
             .developers(vec!["OSA413"])
-            .copyright("© 2024 OSA413")
+            .copyright("© 2018-2024 OSA413")
             .build();
 
         about.present();

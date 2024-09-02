@@ -11,7 +11,7 @@
     </item>
   </menu>
   <template class="ManagerLauncher" parent="GtkApplicationWindow">
-    <property name="title">ManagerLauncher</property>
+    <property name="title">Manager Launcher</property>
     <child type="titlebar">
       <object class="GtkHeaderBar">
         <child type ="end">
