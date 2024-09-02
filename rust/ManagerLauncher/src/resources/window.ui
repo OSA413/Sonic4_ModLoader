@@ -3,25 +3,12 @@
   <menu id="main-menu">
     <item>
       <attribute name="label" translatable="yes">_Close window</attribute>
-      <attribute name="action">window.close</attribute>
+      <attribute name="action">app.quit</attribute>
     </item>
     <item>
-      <attribute name="label" translatable="yes">_Toggle button frame</attribute>
-      <attribute name="action">win.button-frame</attribute>
+      <attribute name="label" translatable="yes">About</attribute>
+      <attribute name="action">app.about</attribute>
     </item>
-    <section>
-      <attribute name="label" translatable="yes">Orientation</attribute>
-      <item>
-        <attribute name="label" translatable="yes">_Horizontal</attribute>
-        <attribute name="action">win.orientation</attribute>
-        <attribute name="target">Horizontal</attribute>
-      </item>
-      <item>
-        <attribute name="label" translatable="yes">_Vertical</attribute>
-        <attribute name="action">win.orientation</attribute>
-        <attribute name="target">Vertical</attribute>
-      </item>
-    </section>
   </menu>
   <template class="ManagerLauncher" parent="GtkApplicationWindow">
     <property name="title">ManagerLauncher</property>
