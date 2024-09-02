@@ -39,11 +39,11 @@ jobs:
       - name: Update dependencies
         run: bash update_dependencies.sh
 
-      - name: Build Rust
-        run: cargo build --release
-
       - name: Build .Net
         run: bash build.sh
+
+      - name: Build Rust
+        run: cargo build --release
 
       - name: Pack
         run: bash pack.sh

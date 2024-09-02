@@ -47,7 +47,7 @@ done
 # Rust
 cargo install copydeps
 cp ./target/release/ManagerLauncher.exe ./dist/Sonic4ModLoader/ManagerLauncher.exe
-copydeps --search-dir C:/gtk-build/gtk/x64/release/bin ./dist/Sonic4ModLoader/ModManager.exe
+copydeps --search-dir C:/gtk-build/gtk/x64/release/bin ./dist/Sonic4ModLoader/ManagerLauncher.exe
 
 # License - GTK4
 dependenciesGtk=$'
