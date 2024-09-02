@@ -4,25 +4,27 @@ Looking for midday builds? Get it from [GitHub Actions](https://github.com/OSA41
 
 In order to run it, you need [.Net 6 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) and [.Net Framework 4.5.2 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net452) installed.
 
-Note for Linux users: [v0.1.5.1](https://github.com/OSA413/Sonic4_ModLoader/releases/tag/v0.1.5.1) is the last version that works with Mono (and probably Wine/Proton).
+In order to run the games you will also need [Microsoft Visual C++ 2015 Redistributable](https://www.microsoft.com/en-us/download/details.aspx?id=52685) and [Latest Microsoft Visual C++ Redistributable](https://learn.microsoft.com/en-gb/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-microsoft-visual-c-redistributable-version) **both x86 and x64 for both packages**.
 
-For x86 builds, see [GitHub Actions](https://github.com/OSA413/Sonic4_ModLoader/actions). Note that x64 is the main supported platform.
+Note for Linux users: [v0.1.5.1](https://github.com/OSA413/Sonic4_ModLoader/releases/tag/v0.1.5.1) is the last version that works with Mono (and probably Wine/Proton) (as for 2023).
 
 Join our [Sonic 4 Modding Discord server](https://discord.gg/WCp8BFyFxN)
 
 FAQ: https://github.com/OSA413/Sonic4_ModLoader/blob/master/docs/FAQ.md
 
 **Table of content:**
-* [What is this?](#what-is-this)
-* [How to install the Mod Loader](#how-to-install-the-mod-loader)
-* [How to uninstall the Mod Loader](#how-to-uninstall-the-mod-loader)
-* [How to install mods](#how-to-install-mods)
-* [Third party works](#third-party-works)
-* [How to use a copy of 7-Zip from your system](#third-party-works)
-* [How to automatically update Mod Loader](#how-to-automatically-update-mod-loader)
-* [Bug reporting and suggestions](#bug-reporting-and-suggestions)
-* [Useful documentation for modders and contributors](#useful-documentation-for-modders-and-contributors)
-* [See also](#see-also)
+- [Sonic 4 Mod Loader](#sonic-4-mod-loader)
+  - [What is this?](#what-is-this)
+  - [How to install the Mod Loader](#how-to-install-the-mod-loader)
+  - [How to uninstall the Mod Loader](#how-to-uninstall-the-mod-loader)
+  - [How to install mods](#how-to-install-mods)
+    - [Manually](#manually)
+    - [Automatically](#automatically)
+  - [Third party works](#third-party-works)
+  - [How to use copy of 7-Zip from your system](#how-to-use-copy-of-7-zip-from-your-system)
+  - [How to automatically update Mod Loader](#how-to-automatically-update-mod-loader)
+  - [Useful documentation for modders and contributors](#useful-documentation-for-modders-and-contributors)
+  - [See also](#see-also)
 
 ## What is this?
 
