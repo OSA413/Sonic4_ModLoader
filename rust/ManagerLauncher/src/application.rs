@@ -81,7 +81,7 @@ impl ModloaderApplication {
             .application_name("modloader")
             .application_icon("org.gnome.Example")
             .developer_name("OSA413")
-            // .version(VERSION)
+            .version(common::config::VERSION)
             .developers(vec!["OSA413"])
             .copyright("© 2024 OSA413")
             .build();
