@@ -85,6 +85,9 @@ https://github.com/blueskythlikesclouds/SonicAudioTools
 [(License)](https://7-zip.org/license.txt)
 https://7-zip.org
 
+* GTK4 by GTK Team/GNOME under the LGPLv2.1+ license
+https://gtk.org/
+
 ## How to use copy of 7-Zip from your system
 
 1. Launch One-Click Mod Installer
