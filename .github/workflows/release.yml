@@ -29,7 +29,13 @@ jobs:
       - run: py -3.12 -m pip install --user pipx
       - run: py -3.12 -m pipx ensurepath
       - run: pipx install gvsbuild
-      - run: gvsbuild build gtk4 libadwaita librsvg
+      # Remove when fixed https://github.com/wingtk/gvsbuild/issues/1436#issuecomment-2424106992
+      - run: |
+          py -m venv .venv
+          .\.venv\Scripts\activate.ps1
+          py -m pip install gvsbuild
+          gvsbuild build gtk4 librsvg
+      # - run: gvsbuild build gtk4 libadwaita librsvg
       - run: echo "C:\gtk-build\gtk\x64\release\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Update dependencies
