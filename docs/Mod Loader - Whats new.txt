@@ -1,3 +1,7 @@
+[c]Version: v0.1.7.0
+* Rewrote Manager Launcher in Rust with GTK4
+* This release should also include security update for 7-Zip
+
 [c]Version: v0.1.6.2p1
 * AMBPatcher: Previously though-to-be ignored flags in AMB enumeration section are now correctly transferred from original file to the modded one when patching AMB. This makes UI elements (mostly texts) in Episode 2 properly moddable.
 
