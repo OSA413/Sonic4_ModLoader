@@ -44,22 +44,22 @@ jobs:
       - name: Pack
         run: bash pack.sh
         
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: Sonic 4 Mod Loader
           path: dist/Sonic4ModLoader.7z
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: Sonic 4 Mod Loader (without 7-Zip)
           path: dist/Sonic4ModLoader_7zip-less.7z
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: SHA256 sums
           path: dist/SHA256SUMS
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v4
         with:
           name: AMBPatcher
           path: dist/Sonic4ModLoader/AMBPatcher.exe
