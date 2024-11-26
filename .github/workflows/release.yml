@@ -9,7 +9,7 @@ on:
 
 jobs:
   build-pack-win64:
-    runs-on: windows-2019
+    runs-on: windows-2022
     steps:
       - uses: actions/setup-dotnet@v1
         with:
@@ -19,11 +19,30 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
 
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.12'
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
+
+      - run: py -3.12 -m pip install --user pipx
+      - run: py -3.12 -m pipx ensurepath
+      - run: pipx install gvsbuild
+      - run: gvsbuild build gtk4 libadwaita librsvg
+      - run: echo "C:\gtk-build\gtk\x64\release\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
       - name: Update dependencies
         run: bash update_dependencies.sh
 
-      - name: Build
-        run: bash build_pack.sh
+      - name: Build .Net
+        run: bash build.sh
+
+      - name: Build Rust
+        run: cargo build --release
+
+      - name: Pack
+        run: bash pack.sh
         
       - uses: actions/upload-artifact@v2
         with:
