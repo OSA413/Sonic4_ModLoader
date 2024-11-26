@@ -115,7 +115,7 @@ namespace Sonic4ModManager
         public MainForm(string[] args)
         {
             InitializeComponent();
-            CheckUpdates();
+            // CheckUpdates();
             this.Text = "Sonic 4 Mod Loader [Version: " + Settings.ModLoaderVersion + "]";
             RefreshMods();
             
