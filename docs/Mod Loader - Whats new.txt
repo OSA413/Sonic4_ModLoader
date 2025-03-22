@@ -1,3 +1,7 @@
+[c]Version: v0.1.7.1
+* Updated rewritten ManagerLauncher to properly work with Steam (fix for Episode 2)
+* Simplified CI/CD, now distributions are shipped as zip files
+
 [c]Version: v0.1.7.0
 * Rewrote Manager Launcher in Rust with GTK4
 * This release should also include security update for 7-Zip

@@ -84,7 +84,7 @@ impl ModloaderApplication {
             .developer_name("OSA413")
             .version(common::config::VERSION)
             .developers(vec!["OSA413"])
-            .copyright("© 2018-2024 OSA413")
+            .copyright("© 2018-2025 OSA413")
             .build();
 
         about.present();

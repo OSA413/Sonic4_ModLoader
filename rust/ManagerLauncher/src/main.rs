@@ -23,5 +23,6 @@ fn main() -> glib::ExitCode {
     // exits. Upon return, we have our exit code to return to the shell. (This
     // is the code you see when you do `echo $?` after running a command in a
     // terminal.
-    app.run()
+    let args: [&str; 0] = [];
+    app.run_with_args(&args)
 }

@@ -8,7 +8,6 @@ fn main() {
         "ManagerLauncher.gresource",
     );
 
-    // TODO: make sure to include the icon only to specified bins
     if env::var_os("CARGO_CFG_WINDOWS").is_some() {
         WindowsResource::new()
             .set_icon("../../icon.ico")
