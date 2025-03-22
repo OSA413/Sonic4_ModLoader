@@ -30,8 +30,8 @@ jobs:
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v1.1
 
-      - run: py -3.12 -m pip install --user pipx
-      - run: py -3.12 -m pipx ensurepath
+      - run: py -3.13 -m pip install --user pipx
+      - run: py -3.13 -m pipx ensurepath
       - run: pipx install gvsbuild
       # Remove when fixed https://github.com/wingtk/gvsbuild/issues/1436#issuecomment-2424106992
       - run: |
