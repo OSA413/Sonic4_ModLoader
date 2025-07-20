@@ -82,7 +82,7 @@ impl ModloaderApplication {
             .license_type(License::MitX11)
             // .application_icon("org.gnome.Example")
             .developer_name("OSA413")
-            .version(common::config::VERSION)
+            .version(common::global::VERSION)
             .developers(vec!["OSA413"])
             .copyright("© 2018-2025 OSA413")
             .build();

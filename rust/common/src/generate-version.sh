@@ -8,5 +8,5 @@ version="$(git describe --tags --abbrev=0)"
 
 # echo $version > version
 
-cp ./config.rs.in ./config.rs
-sed -i -e "s/@VERSION@/\"$version\"/g" ./config.rs
+cp ./global.rs.in ./global.rs
+sed -i -e "s/@VERSION@/\"$version\"/g" ./global.rs
