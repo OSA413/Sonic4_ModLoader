@@ -10,7 +10,7 @@ pub struct GTKConfig {
 
 impl GTKConfig {
     pub fn load_config() -> Result<GTKConfig, Box<dyn Error>> {
-        let config_content = fs::read_to_string("gtk4_config.json").expect("Could not read config file");
+        let config_content = fs::read_to_string("gtk4_config.json")?;
         let config: GTKConfig = serde_json::from_str(&config_content)?;
         Ok(config)
     }
