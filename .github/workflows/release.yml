@@ -72,7 +72,7 @@ jobs:
           files: |
             dist/Sonic4ModLoader/AMBPatcher.exe
             dist/SHA256SUMS
-            dist
+            dist/Sonic4ModLoader.zip
   
   tests:
     runs-on: ubuntu-latest
