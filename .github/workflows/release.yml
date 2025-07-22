@@ -53,8 +53,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: Sonic 4 Mod Loader
-          path: dist
-          compression-level: 9
+          path: dist/Sonic4ModLoader.zip
 
       - uses: actions/upload-artifact@v4
         with:
