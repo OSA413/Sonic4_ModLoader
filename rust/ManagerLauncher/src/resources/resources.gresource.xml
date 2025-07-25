@@ -2,6 +2,6 @@
 <gresources>
   <gresource prefix="/Sonic4ModLoader/ManagerLauncher/">
     <file compressed="true" preprocess="xml-stripblanks">window.ui</file>
-    <file compressed="true" alias="icon.svg">../../../../icon.svg</file>
+    <file compressed="true" preprocess="xml-stripblanks" alias="icon.svg">../../../../icon.svg</file>
   </gresource>
 </gresources>
