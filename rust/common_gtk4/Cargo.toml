@@ -1,0 +1,11 @@
+[package]
+name = "common_gtk4"
+edition = "2021"
+authors = ["Oleg \"OSA413\" Sokolov"]
+repository = "https://github.com/OSA413/Sonic4_ModLoader"
+homepage = "https://github.com/OSA413/Sonic4_ModLoader"
+license = "MIT"
+
+[dependencies]
+gtk = { version = "0.9", package = "gtk4", features = ["v4_12"] }
+common = { path = "../common" }
