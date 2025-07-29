@@ -1,5 +1,5 @@
 use gtk::{prelude::*, License};
-use adw::subclass::prelude::*;
+use adw::{prelude::AdwDialogExt, subclass::prelude::*};
 use gtk::{gio, glib};
 
 use crate::ModloaderWindow;
@@ -79,9 +79,8 @@ impl ModloaderApplication {
         let icon_theme = gtk::IconTheme::for_display(&gtk::gdk::Display::default().unwrap());
         gtk::IconTheme::add_resource_path(&icon_theme, "/Sonic4ModLoader/ManagerLauncher/");
 
-        let window = self.active_window().unwrap();
-        let about = adw::AboutWindow::builder()
-            .transient_for(&window)
+        let window = self.active_window();                
+        let about = adw::AboutDialog::builder()
             .application_name("Manager Launcher")
             .license_type(License::MitX11)
             .application_icon("icon")
@@ -90,9 +89,11 @@ impl ModloaderApplication {
             .developers(vec!["Oleg \"OSA413\" Sokolov"])
             .artists(vec!["Oleg \"OSA413\" Sokolov"])
             .website("https://github.com/OSA413/Sonic4_ModLoader")
+            .issue_url("https://github.com/OSA413/Sonic4_ModLoader/issues")
+            // .support_url("https://discord.gg/WCp8BFyFxN")
             .copyright("© 2018-2025 Oleg \"OSA413\" Sokolov")
             .build();
 
-        about.present();
+        about.present(window.as_ref());
     }
 }
