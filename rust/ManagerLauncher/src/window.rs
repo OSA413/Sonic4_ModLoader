@@ -47,7 +47,15 @@ mod imp {
 glib::wrapper! {
     pub struct ModloaderWindow(ObjectSubclass<imp::ModloaderWindow>)
         @extends gtk::Widget, gtk::Window, gtk::ApplicationWindow, adw::ApplicationWindow,
-        @implements gio::ActionGroup, gio::ActionMap;
+        @implements 
+            gio::ActionGroup,
+            gio::ActionMap,
+            gtk::ConstraintTarget,
+            gtk::Buildable,
+            gtk::Accessible,
+            gtk::ShortcutManager,
+            gtk::Root,
+            gtk::Native;
 }
 
 impl ModloaderWindow {
