@@ -77,6 +77,9 @@ while IFS= read -r dep; do
     fi
 done <<< "$dependenciesGtk"
 
+mkdir -p "./dist/Sonic4ModLoader/lib"
+mv "./dist/Sonic4ModLoader/gdk_pixbuf-2.0-0.dll" "./dist/Sonic4ModLoader/lib/gdk_pixbuf-2.0-0.dll"
+
 # SHA256SUMS
 echo "Creating SHA256SUMS..."
 cd dist
