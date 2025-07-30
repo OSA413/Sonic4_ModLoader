@@ -46,8 +46,6 @@ mod imp {
 
             let icon_theme = gtk::IconTheme::for_display(&gtk::gdk::Display::default().unwrap());
             gtk::IconTheme::add_resource_path(&icon_theme, "/Sonic4ModLoader/ManagerLauncher/");
-            gtk::IconTheme::add_search_path(&icon_theme, "");
-            gtk::IconTheme::add_search_path(&icon_theme, "lib");
         }
     }
 
