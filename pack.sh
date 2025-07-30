@@ -45,9 +45,17 @@ for dir in $(ls ./dependencies); do
 done
 
 # Rust
+mkdir -p "./dist/Sonic4ModLoader/bin"
 cargo install copydeps
-cp ./target/release/ManagerLauncher.exe ./dist/Sonic4ModLoader/ManagerLauncher.exe
-copydeps --search-dir C:/gtk-build/gtk/x64/release/bin ./dist/Sonic4ModLoader/ManagerLauncher.exe
+cp ./target/release/ManagerLauncher.exe ./dist/Sonic4ModLoader/bin/ManagerLauncher.exe
+copydeps --search-dir C:/gtk-build/gtk/x64/release/bin ./dist/Sonic4ModLoader/bin/ManagerLauncher.exe
+
+# GTK4 icon files
+mkdir -p "./dist/Sonic4ModLoader/share/glib-2.0/schemas/"
+cp C:/gtk-build/gtk/x64/release/share/glib-2.0/schemas/gschemas.compiled ./dist/Sonic4ModLoader/share/glib-2.0/schemas/gschemas.compiled
+mkdir -p "./dist/Sonic4ModLoader/lib/gdk-pixbuf-2.0/2.10.0/loaders/"
+cp C:/gtk-build/gtk/x64/release/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache ./dist/Sonic4ModLoader/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache
+cp C:/gtk-build/gtk/x64/release/lib/gdk-pixbuf-2.0/2.10.0/loaders/pixbufloader_svg.dll ./dist/Sonic4ModLoader/lib/gdk-pixbuf-2.0/2.10.0/loaders/pixbufloader_svg.dll
 
 # License - GTK4
 dependenciesGtk=$'
