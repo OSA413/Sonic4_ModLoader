@@ -43,6 +43,11 @@ mod imp {
 
             // Ask the window manager/compositor to present the window
             window.present();
+
+            let icon_theme = gtk::IconTheme::for_display(&gtk::gdk::Display::default().unwrap());
+            gtk::IconTheme::add_resource_path(&icon_theme, "/Sonic4ModLoader/ManagerLauncher/");
+            gtk::IconTheme::add_search_path(&icon_theme, "");
+            gtk::IconTheme::add_search_path(&icon_theme, "lib");
         }
     }
 
@@ -75,10 +80,6 @@ impl ModloaderApplication {
     }
 
     fn show_about(&self) {
-        // TODO: move this to a better place
-        let icon_theme = gtk::IconTheme::for_display(&gtk::gdk::Display::default().unwrap());
-        gtk::IconTheme::add_resource_path(&icon_theme, "/Sonic4ModLoader/ManagerLauncher/");
-
         let window = self.active_window();                
         let about = adw::AboutDialog::builder()
             .application_name("Manager Launcher")
