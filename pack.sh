@@ -71,6 +71,7 @@ libadwaita
 libepoxy
 libffi
 libjpeg-turbo
+librsvg
 libpng
 pango
 pcre2
@@ -82,6 +83,7 @@ zlib
 while IFS= read -r dep; do
     if [[ $dep != "" ]]; then 
         cp "C:/gtk-build/gtk/x64/release/share/doc/$dep/COPYING" "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-"$dep || \
+        cp "C:/gtk-build/gtk/x64/release/share/doc/$dep/COPYING.LIB" "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-"$dep || \
         cp "C:/gtk-build/gtk/x64/release/share/doc/$dep/LICENSE" "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-"$dep || \
         cp "C:/gtk-build/gtk/x64/release/share/doc/$dep/LICENSE.md" "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-"$dep".md" || \
         cp "C:/gtk-build/gtk/x64/release/share/doc/$dep/README" "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-"$dep || \
