@@ -24,7 +24,7 @@ namespace Sonic4ModManager
             return true;
         }
 
-        //https://github.com/OSA413/Sonic4_ModLoader/blob/master/docs/Mod%20structure.md#description-formating
+        //https://github.com/OSA413/Sonic4_ModLoader/blob/main/docs/Mod%20structure.md#description-formating
         public static void Format(this RichTextBox rtb)
         {
             var markers = new List<String>();

@@ -10,7 +10,7 @@ Note for Linux users: [v0.1.5.1](https://github.com/OSA413/Sonic4_ModLoader/rele
 
 Join our [Sonic 4 Modding Discord server](https://discord.gg/WCp8BFyFxN)
 
-FAQ: https://github.com/OSA413/Sonic4_ModLoader/blob/master/docs/FAQ.md
+FAQ: https://github.com/OSA413/Sonic4_ModLoader/blob/main/docs/FAQ.md
 
 **Table of content:**
 - [Sonic 4 Mod Loader](#sonic-4-mod-loader)
@@ -109,10 +109,10 @@ Note: if OCMI fails to find `7z.exe` in your path, it will try to use a copy tha
 
 ## Useful documentation for modders and contributors
 * How to use AMBPatcher: `AMBPatcher.exe --help`
-* [Mod structure](https://github.com/OSA413/Sonic4_ModLoader/blob/master/docs/Mod%20structure.md)
+* [Mod structure](https://github.com/OSA413/Sonic4_ModLoader/blob/main/docs/Mod%20structure.md)
 * [Description of file extensions](https://github.com/OSA413/Sonic4_Tools/blob/master/docs/File%20description.md)
 * [Modding as for its current state](https://gamebanana.com/tuts/14585)
-* [How to compile Mod Loader](https://github.com/OSA413/Sonic4_ModLoader/blob/master/docs/compile.md)
+* [How to compile Mod Loader](https://github.com/OSA413/Sonic4_ModLoader/blob/main/docs/compile.md)
 
 ## See also
 
