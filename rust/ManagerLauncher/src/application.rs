@@ -41,11 +41,12 @@ mod imp {
                 window.upcast()
             };
 
-            // Ask the window manager/compositor to present the window
-            window.present();
-
             let icon_theme = gtk::IconTheme::for_display(&gtk::gdk::Display::default().unwrap());
             gtk::IconTheme::add_resource_path(&icon_theme, "/Sonic4ModLoader/ManagerLauncher/");
+            window.set_icon_name(Some("icon"));
+            
+            // Ask the window manager/compositor to present the window
+            window.present();
         }
     }
 

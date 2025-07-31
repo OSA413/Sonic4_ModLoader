@@ -14,6 +14,14 @@
     <property name="title">Manager Launcher</property>
     <child type="titlebar">
       <object class="GtkHeaderBar">
+        <child type ="start">
+          <object class="GtkImage">
+            <property name="icon-name">icon</property>
+            <property name="icon-size">2</property>
+            <property name="margin-start">4</property>
+            <property name="margin-end">4</property>
+          </object>
+        </child>
         <child type ="end">
           <object class="GtkMenuButton">
             <property name="icon-name">open-menu-symbolic</property>
