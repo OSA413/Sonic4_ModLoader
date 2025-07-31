@@ -30,9 +30,13 @@ This folder stores file hashes of enabled mods (you can select which SHA algorit
 
 Linux! At this moment you can use AMBPatcher and other programs written by me through Mono (except for One-Click Mod Installer, because of [Mono's implementation of Windows Forms](https://www.mono-project.com/docs/faq/winforms/#my-multithreaded-application-crashes-or-locks-up), I'll try to do something with this). You can also use Wine/Proton to run them.
 
+**Note**: the last version to support Mono is [0.1.5.2](https://github.com/OSA413/Sonic4_ModLoader/releases/tag/v0.1.5.1). You can use it with Mono (like `$ mono ./AMBPatcher.exe`) to make mods work. The GUI apps should also work.
+
+Modern versions of the Mod Loader components won't work with Mono and Wine/Proton (as of 2025). You can wait until I rewrite all the components to Rust so you will be able to run the programs natively or via Wine/Proton.
+
 Here's a guide to make Episode 1 to work on Linux: https://steamcommunity.com/sharedfiles/filedetails/?id=1726034225
 
-Episode 2 should work rigth out of the box using Proton `4.11-2`.
+Episode 2 should work rigth out of the box using Proton `4.11-2` or later.
 
 ## Roadmap?
 
