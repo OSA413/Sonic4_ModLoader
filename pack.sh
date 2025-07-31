@@ -57,6 +57,10 @@ mkdir -p "./dist/Sonic4ModLoader/lib/gdk-pixbuf-2.0/2.10.0/loaders/"
 cp C:/gtk-build/gtk/x64/release/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache ./dist/Sonic4ModLoader/lib/gdk-pixbuf-2.0/2.10.0/loaders.cache
 cp C:/gtk-build/gtk/x64/release/lib/gdk-pixbuf-2.0/2.10.0/loaders/pixbufloader_svg.dll ./dist/Sonic4ModLoader/lib/gdk-pixbuf-2.0/2.10.0/loaders/pixbufloader_svg.dll
 
+# GTK4 SVG dlls
+cp C:/gtk-build/gtk/x64/release/bin/xml2-16.dll ./dist/Sonic4ModLoader/bin/xml2-16.dll
+cp C:/gtk-build/gtk/x64/release/bin/rsvg-2-2.dll ./dist/Sonic4ModLoader/bin/rsvg-2-2.dll
+
 # License - GTK4
 dependenciesGtk=$'
 cairo
