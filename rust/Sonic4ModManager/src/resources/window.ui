@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <menu id="main-menu">
+    <item>
+      <attribute name="label" translatable="yes">_Close window</attribute>
+      <attribute name="action">app.quit</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">_About</attribute>
+      <attribute name="action">app.about</attribute>
+    </item>
+  </menu>
+  <template class="Sonic4ModManager" parent="GtkApplicationWindow">
+    <property name="title">Sonic 4 Mod Manager</property>
+    <child type="titlebar">
+      <object class="GtkHeaderBar">
+        <child type ="start">
+          <object class="GtkImage">
+            <property name="icon-name">icon</property>
+            <property name="icon-size">2</property>
+            <property name="margin-start">4</property>
+            <property name="margin-end">4</property>
+          </object>
+        </child>
+        <child type ="end">
+          <object class="GtkMenuButton">
+            <property name="icon-name">open-menu-symbolic</property>
+            <property name="menu-model">main-menu</property>
+            <property name="tooltip-text" translatable="yes">Main Menu</property>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkGrid" id="gtk_box">
+        <child>
+          <object class="GtkButton" id="btn1">
+            <property name="label">Button 1</property>
+            <layout>
+              <property name="column">0</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="GtkGrid">
+          <layout>
+            <property name="column">0</property>
+            <property name="row">1</property>
+          </layout>
+        <child>
+          <object class="GtkButton">
+            <property name="label">Save</property>
+            <layout>
+              <property name="column">0</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label">Save and Play</property>
+            <layout>
+              <property name="column">0</property>
+              <property name="row">1</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label">Open in Explorer</property>
+            <layout>
+              <property name="column">1</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label">Refresh</property>
+            <layout>
+              <property name="column">2</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label">Random</property>
+            <layout>
+              <property name="column">2</property>
+              <property name="row">1</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="label"></property>
+            <layout>
+              <property name="column">3</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label">Settings</property>
+            <layout>
+              <property name="column">4</property>
+              <property name="row">0</property>
+            </layout>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label">Exit</property>
+            <layout>
+              <property name="column">4</property>
+              <property name="row">1</property>
+            </layout>
+          </object>
+        </child>
+      </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

@@ -32,7 +32,7 @@
       </object>
     </child>
     <child>
-      <object class="GtkBox" id="gtk_box">
+      <object class="GtkBox">
         <property name="orientation">vertical</property>
         <property name="margin-top">12</property>
         <property name="margin-bottom">12</property>
@@ -41,7 +41,7 @@
         <property name="spacing">12</property>
         <property name="halign">center</property>
         <child>
-          <object class="GtkButton" id="button_play">
+          <object class="GtkButton">
             <property name="label">Play</property>
             <property name="action-name">win.play</property>
             <property name="height-request">120</property>
@@ -49,7 +49,7 @@
           </object>
         </child>
         <child>
-          <object class="GtkButton" id="button_launch_config_tool">
+          <object class="GtkButton">
             <property name="label">Launch Configuration Tool</property>
             <property name="action-name">win.launch_config_tool</property>
             <property name="height-request">120</property>
@@ -57,7 +57,7 @@
           </object>
         </child>
         <child>
-          <object class="GtkButton" id="button_launch_mod_manager">
+          <object class="GtkButton">
             <property name="label">Launch Mod Manager</property>
             <property name="action-name">win.launch_mod_manager</property>
             <property name="height-request">120</property>

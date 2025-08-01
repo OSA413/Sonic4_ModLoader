@@ -6,13 +6,20 @@ mod imp {
     use super::*;
 
     #[derive(Debug, Default, gtk::CompositeTemplate)]
-    #[template(resource = "/Sonic4ModLoader/ManagerLauncher/window.ui")]
-    pub struct ManagerLauncherWindow {}
+    #[template(resource = "/Sonic4ModLoader/Sonic4ModManager/window.ui")]
+    pub struct Sonic4ModManagerWindow {
+        // #[template_child]
+        // pub button_play: TemplateChild<gtk::Button>,
+        // #[template_child]
+        // pub button_launch_config_tool: TemplateChild<gtk::Button>,
+        // #[template_child]
+        // pub button_launch_mod_manager: TemplateChild<gtk::Button>,
+    }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for ManagerLauncherWindow {
-        const NAME: &'static str = "ManagerLauncher";
-        type Type = super::ManagerLauncherWindow;
+    impl ObjectSubclass for Sonic4ModManagerWindow {
+        const NAME: &'static str = "Sonic4ModManager";
+        type Type = super::Sonic4ModManagerWindow;
         type ParentType = gtk::ApplicationWindow;
 
         fn class_init(klass: &mut Self::Class) {
@@ -24,21 +31,21 @@ mod imp {
         }
     }
 
-    impl ObjectImpl for ManagerLauncherWindow {
+    impl ObjectImpl for Sonic4ModManagerWindow {
         fn constructed(&self) {
             self.parent_constructed();
             self.obj().setup_actions();
         }
     }
 
-    impl WidgetImpl for ManagerLauncherWindow {}
-    impl WindowImpl for ManagerLauncherWindow {}
-    impl ApplicationWindowImpl for ManagerLauncherWindow {}
-    impl AdwApplicationWindowImpl for ManagerLauncherWindow {}
+    impl WidgetImpl for Sonic4ModManagerWindow {}
+    impl WindowImpl for Sonic4ModManagerWindow {}
+    impl ApplicationWindowImpl for Sonic4ModManagerWindow {}
+    impl AdwApplicationWindowImpl for Sonic4ModManagerWindow {}
 }
 
 glib::wrapper! {
-    pub struct ManagerLauncherWindow(ObjectSubclass<imp::ManagerLauncherWindow>)
+    pub struct Sonic4ModManagerWindow(ObjectSubclass<imp::Sonic4ModManagerWindow>)
         @extends gtk::Widget, gtk::Window, gtk::ApplicationWindow, adw::ApplicationWindow,
         @implements 
             gio::ActionGroup,
@@ -51,7 +58,7 @@ glib::wrapper! {
             gtk::Native;
 }
 
-impl ManagerLauncherWindow {
+impl Sonic4ModManagerWindow {
     pub fn new<P: glib::prelude::IsA<gtk::Application>>(application: &P) -> Self {
         glib::Object::builder()
             .property("application", application)

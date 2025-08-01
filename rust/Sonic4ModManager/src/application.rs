@@ -2,22 +2,22 @@ use gtk::{prelude::*, License};
 use adw::{prelude::AdwDialogExt, subclass::prelude::*};
 use gtk::{gio, glib};
 
-use crate::ManagerLauncherWindow;
+use crate::Sonic4ModManagerWindow;
 
 mod imp {
     use super::*;
 
     #[derive(Debug, Default)]
-    pub struct ManagerLauncherApplication {}
+    pub struct Sonic4ModManagerApplication {}
 
     #[glib::object_subclass]
-    impl ObjectSubclass for ManagerLauncherApplication {
+    impl ObjectSubclass for Sonic4ModManagerApplication {
         const NAME: &'static str = "ManagerLauncherApplication";
-        type Type = super::ManagerLauncherApplication;
+        type Type = super::Sonic4ModManagerApplication;
         type ParentType = adw::Application;
     }
 
-    impl ObjectImpl for ManagerLauncherApplication {
+    impl ObjectImpl for Sonic4ModManagerApplication {
         fn constructed(&self) {
             self.parent_constructed();
             let obj = self.obj();
@@ -26,7 +26,7 @@ mod imp {
         }
     }
 
-    impl ApplicationImpl for ManagerLauncherApplication {
+    impl ApplicationImpl for Sonic4ModManagerApplication {
         // We connect to the activate callback to create a window when the application
         // has been launched. Additionally, this callback notifies us when the user
         // tries to launch a "second instance" of the application. When they try
@@ -37,12 +37,12 @@ mod imp {
             let window = if let Some(window) = application.active_window() {
                 window
             } else {
-                let window = ManagerLauncherWindow::new(&*application);
+                let window = Sonic4ModManagerWindow::new(&*application);
                 window.upcast()
             };
 
             let icon_theme = gtk::IconTheme::for_display(&gtk::gdk::Display::default().unwrap());
-            gtk::IconTheme::add_resource_path(&icon_theme, "/Sonic4ModLoader/ManagerLauncher/");
+            gtk::IconTheme::add_resource_path(&icon_theme, "/Sonic4ModLoader/Sonic4ModManager/");
             window.set_icon_name(Some("icon"));
             
             // Ask the window manager/compositor to present the window
@@ -50,17 +50,17 @@ mod imp {
         }
     }
 
-    impl GtkApplicationImpl for ManagerLauncherApplication {}
-    impl AdwApplicationImpl for ManagerLauncherApplication {}
+    impl GtkApplicationImpl for Sonic4ModManagerApplication {}
+    impl AdwApplicationImpl for Sonic4ModManagerApplication {}
 }
 
 glib::wrapper! {
-    pub struct ManagerLauncherApplication(ObjectSubclass<imp::ManagerLauncherApplication>)
+    pub struct Sonic4ModManagerApplication(ObjectSubclass<imp::Sonic4ModManagerApplication>)
         @extends gio::Application, gtk::Application, adw::Application,
         @implements gio::ActionGroup, gio::ActionMap;
 }
 
-impl ManagerLauncherApplication {
+impl Sonic4ModManagerApplication {
     pub fn new(application_id: &str, flags: &gio::ApplicationFlags) -> Self {
         glib::Object::builder()
             .property("application-id", application_id)
