@@ -88,6 +88,10 @@ https://7-zip.org
 * GTK4 by GTK Team/GNOME under the LGPLv2.1+ license
 https://gtk.org/
 
+* GTK4 via gtk-rs under the MIT license https://gtk-rs.org/
+
+* For other licenses, see `Sonic4ModLoader/Mod Loader - licenses` folder of a downloaded copy of the Mod Loader.
+
 ## How to use copy of 7-Zip from your system
 
 1. Launch One-Click Mod Installer
