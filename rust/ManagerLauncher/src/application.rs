@@ -72,9 +72,11 @@ impl ManagerLauncherApplication {
         let quit_action = gio::ActionEntry::builder("quit")
             .activate(move |app: &Self, _, _| app.quit())
             .build();
+
         let about_action = gio::ActionEntry::builder("about")
             .activate(move |app: &Self, _, _| app.show_about())
             .build();
+
         self.add_action_entries([quit_action, about_action]);
     }
 

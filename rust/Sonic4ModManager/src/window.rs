@@ -1,6 +1,5 @@
-use adw::subclass::prelude::*;
-use gtk::{gio::{self, ActionEntry}, glib, prelude::ActionMapExtManual};
-use std::process;
+use adw::{prelude::ActionRowExt, subclass::prelude::*, ActionRow};
+use gtk::{gio::{self}, glib, prelude::{ActionMapExtManual, WidgetExt}, Align, CheckButton};
 
 mod imp {
     use super::*;
@@ -8,12 +7,8 @@ mod imp {
     #[derive(Debug, Default, gtk::CompositeTemplate)]
     #[template(resource = "/Sonic4ModLoader/Sonic4ModManager/window.ui")]
     pub struct Sonic4ModManagerWindow {
-        // #[template_child]
-        // pub button_play: TemplateChild<gtk::Button>,
-        // #[template_child]
-        // pub button_launch_config_tool: TemplateChild<gtk::Button>,
-        // #[template_child]
-        // pub button_launch_mod_manager: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub mod_list: TemplateChild<gtk::ListBox>,
     }
 
     #[glib::object_subclass]
@@ -65,37 +60,27 @@ impl Sonic4ModManagerWindow {
             .build()
     }
 
+     fn create_task_row(&self, text: &str) -> () {
+        let check_button = CheckButton::builder()
+            .valign(Align::Center)
+            .can_focus(false)
+            .build();
+
+        let row = ActionRow::builder()
+            .activatable_widget(&check_button)
+            .build();
+        row.add_prefix(&check_button);
+        
+        self.imp().mod_list.append(&row);
+        
+        println!("{:?}", self.imp().mod_list.size_request());
+    }
+
     fn setup_actions(&self) {
-        let action_play = ActionEntry::builder("play")
-            .activate(move |_window: &Self, _action, _parameter| {
-                let res = common::Launcher::launch_game();
-                match res {
-                    Ok(_) => process::exit(0),
-                    Err(_) => {},
-                }
-            })
+        let mod_check_action = gio::ActionEntry::builder("check_mod")
+            .activate(move |app: &Self, _, _| app.create_task_row("test"))
             .build();
 
-        let action_launch_config_tool = ActionEntry::builder("launch_config_tool")
-            .activate(move |_window: &Self, _action, _parameter| {
-                let res = common::Launcher::launch_config();
-                match res {
-                    Ok(_) => process::exit(0),
-                    Err(_) => {},
-                }
-            })
-            .build();
-
-        let action_launch_mod_manager = ActionEntry::builder("launch_mod_manager")
-            .activate(move |_window: &Self, _action, _parameter| {
-                let res = common::Launcher::launch_mod_manager(vec![]);
-                match res {
-                    Ok(_) => process::exit(0),
-                    Err(_) => {},
-                }
-            })
-            .build();
-
-        self.add_action_entries([action_play, action_launch_config_tool, action_launch_mod_manager]);
+        self.add_action_entries([mod_check_action]);
     }
 }

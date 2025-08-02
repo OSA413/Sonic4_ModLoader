@@ -1,5 +1,5 @@
 use gtk::{prelude::*, License};
-use adw::{prelude::AdwDialogExt, subclass::prelude::*};
+use adw::{prelude::{AdwDialogExt}, subclass::prelude::*};
 use gtk::{gio, glib};
 
 use crate::Sonic4ModManagerWindow;
@@ -12,7 +12,7 @@ mod imp {
 
     #[glib::object_subclass]
     impl ObjectSubclass for Sonic4ModManagerApplication {
-        const NAME: &'static str = "ManagerLauncherApplication";
+        const NAME: &'static str = "Sonic4ModManagerApplication";
         type Type = super::Sonic4ModManagerApplication;
         type ParentType = adw::Application;
     }
@@ -68,20 +68,22 @@ impl Sonic4ModManagerApplication {
             .build()
     }
 
-    fn setup_gactions(&self) {
+    fn setup_gactions(&self) {      
         let quit_action = gio::ActionEntry::builder("quit")
             .activate(move |app: &Self, _, _| app.quit())
             .build();
+
         let about_action = gio::ActionEntry::builder("about")
             .activate(move |app: &Self, _, _| app.show_about())
             .build();
+
         self.add_action_entries([quit_action, about_action]);
     }
 
     fn show_about(&self) {
         let window = self.active_window();                
         let about = adw::AboutDialog::builder()
-            .application_name("Manager Launcher")
+            .application_name("Sonic4 Mod Manager")
             .license_type(License::MitX11)
             .application_icon("icon")
             .developer_name("Oleg \"OSA413\" Sokolov")
