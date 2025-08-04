@@ -46,16 +46,18 @@
               <property name="row">0</property>
             </layout>
             <child>
-              <object class="GtkListBox" id="mod_list">
-                <property name="visible">True</property>
-                <property name="width-request">320</property>
-                <property name="overflow">1</property>
-                <property name="vexpand">false</property>
-                <property name="height-request">320</property>
-                <property name="selection-mode">none</property>
-                <style>
-                  <class name="boxed-list" />
-                </style>
+              <object class="GtkScrolledWindow">
+                  <property name="width-request">640</property>
+                  <property name="height-request">300</property>
+                <child>
+                  <object class="GtkListBox" id="mod_list">
+                    <property name="visible">True</property>
+                    <property name="selection-mode">2</property>
+                    <style>
+                      <class name="boxed-list" />
+                    </style>
+                  </object>
+                </child>
               </object>
             </child>
             <child>

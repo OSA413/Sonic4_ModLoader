@@ -66,9 +66,7 @@ impl Sonic4ModManagerWindow {
             .can_focus(false)
             .build();
 
-        let row = ActionRow::builder()
-            .activatable_widget(&check_button)
-            .build();
+        let row = ActionRow::builder().build();
         row.add_prefix(&check_button);
         
         self.imp().mod_list.append(&row);
