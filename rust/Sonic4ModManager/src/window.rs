@@ -1,5 +1,5 @@
-use adw::{prelude::ActionRowExt, subclass::prelude::*, ActionRow};
-use gtk::{gio::{self}, glib, prelude::{ActionMapExtManual, WidgetExt}, Align, CheckButton};
+use adw::{prelude::{ActionRowExt}, subclass::prelude::*, ActionRow};
+use gtk::{gio::{self}, glib, prelude::{ActionMapExtManual}, Align, CheckButton};
 
 mod imp {
     use super::*;
@@ -60,23 +60,24 @@ impl Sonic4ModManagerWindow {
             .build()
     }
 
-     fn create_task_row(&self, text: &str) -> () {
+     fn create_mod_row(&self, title: &str, subtitle: &str) -> () {
         let check_button = CheckButton::builder()
             .valign(Align::Center)
             .can_focus(false)
             .build();
 
-        let row = ActionRow::builder().build();
+        let row = ActionRow::builder()
+            .title(title)
+            .subtitle(subtitle)
+            .build();
         row.add_prefix(&check_button);
         
         self.imp().mod_list.append(&row);
-        
-        println!("{:?}", self.imp().mod_list.size_request());
     }
 
     fn setup_actions(&self) {
         let mod_check_action = gio::ActionEntry::builder("check_mod")
-            .activate(move |app: &Self, _, _| app.create_task_row("test"))
+            .activate(move |app: &Self, _, _| app.create_mod_row("test", "Version 1.0.1 by OSA413"))
             .build();
 
         self.add_action_entries([mod_check_action]);

@@ -32,26 +32,25 @@
       </object>
     </child>
     <child>
-      <object class="GtkGrid" id="gtk_box">
+      <object class="GtkGrid">
+        <property name="margin-start">8</property>
+        <property name="margin-end">8</property>
+        <property name="margin-top">8</property>
+        <property name="margin-bottom">8</property>
+        <property name="row-spacing">8</property>
         <child>
           <object class="GtkGrid">
-          
-                <property name="visible">True</property>
-                <property name="width-request">320</property>
-                <property name="overflow">1</property>
-                <property name="vexpand">false</property>
-                <property name="height-request">320</property>
+            <property name="column-spacing">8</property>
             <layout>
               <property name="column">0</property>
               <property name="row">0</property>
             </layout>
             <child>
               <object class="GtkScrolledWindow">
-                  <property name="width-request">640</property>
-                  <property name="height-request">300</property>
+                <property name="width-request">760</property>
+                <property name="height-request">300</property>
                 <child>
                   <object class="GtkListBox" id="mod_list">
-                    <property name="visible">True</property>
                     <property name="selection-mode">2</property>
                     <style>
                       <class name="boxed-list" />
@@ -61,131 +60,158 @@
               </object>
             </child>
             <child>
-            <object class="GtkGrid">
-              <layout>
-                <property name="column">1</property>
-                <property name="row">0</property>
-              </layout>
-              <child>
-                <object class="GtkButton">
-                  <property name="label">Button 1</property>
-                  <layout>
-                    <property name="column">0</property>
-                    <property name="row">0</property>
-                  </layout>
-                </object>
-              </child>
-              <child>
-                <object class="GtkButton">
-                  <property name="label">Button 1</property>
-                  <layout>
-                    <property name="column">0</property>
-                    <property name="row">1</property>
-                  </layout>
-                </object>
-              </child>
-              <child>
-                <object class="GtkButton">
-                  <property name="label">Button 1</property>
-                  <layout>
-                    <property name="column">0</property>
-                    <property name="row">2</property>
-                  </layout>
-                </object>
-              </child>
-              <child>
-                <object class="GtkButton">
-                  <property name="label">Button 1</property>
-                  <layout>
-                    <property name="column">0</property>
-                    <property name="row">3</property>
-                  </layout>
-                </object>
-              </child>
-            </object>
+              <object class="GtkGrid">
+                <property name="row-spacing">8</property>
+                <property name="column-homogeneous">true</property>
+                <property name="row-homogeneous">true</property>
+                <layout>
+                  <property name="column">1</property>
+                  <property name="row">0</property>
+                </layout>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">/\
+/\</property>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="row">0</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">/\</property>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="row">1</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">\/</property>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="row">2</property>
+                    </layout>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton">
+                    <property name="label">\/
+\/</property>
+                    <layout>
+                      <property name="column">0</property>
+                      <property name="row">3</property>
+                    </layout>
+                  </object>
+                </child>
+              </object>
             </child>
-        </object>
-      </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkFrame">
+            <layout>
+              <property name="column">0</property>
+              <property name="row">1</property>
+            </layout>
+            <property name="label">Description</property>
+            <child>
+              <object class="GtkTextView" id="mod_description">
+                <property name="wrap-mode">word-char</property>
+                <property name="editable">false</property>
+                <property name="width-request">-1</property>
+                <property name="height-request">160</property>
+              </object>
+            </child>
+          </object>
+        </child>
         <child>
           <object class="GtkGrid">
-          <layout>
-            <property name="column">0</property>
-            <property name="row">1</property>
-          </layout>
-        <child>
-          <object class="GtkButton">
-            <property name="label">Save</property>
+            <property name="column-spacing">8</property>
+            <property name="row-spacing">8</property>
+            <property name="column-homogeneous">true</property>
+            <property name="row-homogeneous">true</property>
+            <property name="height-request">128</property>
             <layout>
               <property name="column">0</property>
-              <property name="row">0</property>
+              <property name="row">2</property>
             </layout>
+            <child>
+              <object class="GtkButton">
+                <property name="label">Save</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="row">0</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="label">Save and Play</property>
+                <layout>
+                  <property name="column">0</property>
+                  <property name="row">1</property>
+                </layout>
+                <property name="action-name">win.check_mod</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="label">Open in Explorer</property>
+                <layout>
+                  <property name="column">1</property>
+                  <property name="row">0</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="label">Refresh</property>
+                <layout>
+                  <property name="column">2</property>
+                  <property name="row">0</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="label">Random</property>
+                <layout>
+                  <property name="column">2</property>
+                  <property name="row">1</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="label"></property>
+                <layout>
+                  <property name="column">3</property>
+                  <property name="row">0</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="label">Settings</property>
+                <layout>
+                  <property name="column">4</property>
+                  <property name="row">0</property>
+                </layout>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton">
+                <property name="label">Exit</property>
+                <layout>
+                  <property name="column">4</property>
+                  <property name="row">1</property>
+                </layout>
+              </object>
+            </child>
           </object>
-        </child>
-        <child>
-          <object class="GtkButton">
-            <property name="label">Save and Play</property>
-            <layout>
-              <property name="column">0</property>
-              <property name="row">1</property>
-            </layout>
-            <property name="action-name">win.check_mod</property>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton">
-            <property name="label">Open in Explorer</property>
-            <layout>
-              <property name="column">1</property>
-              <property name="row">0</property>
-            </layout>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton">
-            <property name="label">Refresh</property>
-            <layout>
-              <property name="column">2</property>
-              <property name="row">0</property>
-            </layout>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton">
-            <property name="label">Random</property>
-            <layout>
-              <property name="column">2</property>
-              <property name="row">1</property>
-            </layout>
-          </object>
-        </child>
-        <child>
-          <object class="GtkLabel">
-            <property name="label"></property>
-            <layout>
-              <property name="column">3</property>
-              <property name="row">0</property>
-            </layout>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton">
-            <property name="label">Settings</property>
-            <layout>
-              <property name="column">4</property>
-              <property name="row">0</property>
-            </layout>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton">
-            <property name="label">Exit</property>
-            <layout>
-              <property name="column">4</property>
-              <property name="row">1</property>
-            </layout>
-          </object>
-        </child>
-      </object>
         </child>
       </object>
     </child>
