@@ -209,6 +209,7 @@
                   <property name="column">4</property>
                   <property name="row">1</property>
                 </layout>
+                <property name="action-name">app.quit</property>
               </object>
             </child>
           </object>
