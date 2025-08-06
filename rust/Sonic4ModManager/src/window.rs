@@ -75,12 +75,11 @@ impl Sonic4ModManagerWindow {
 
     fn startup(&self) {
         let list_store = gio::ListStore::new::<crate::model::mod_entry::ModEntry>();
-        let entry = crate::model::mod_entry::ModEntry::new("my cool mod", None, None, None, None);
-        list_store.append(&entry);
-        let entry = crate::model::mod_entry::ModEntry::new("another_mod", Some("Another mod 🍪"), None, None, None);
-        list_store.append(&entry);
-        let entry = crate::model::mod_entry::ModEntry::new("another_mod2", None, Some("OSA413"), None, None);
-        list_store.append(&entry);
+        list_store.extend_from_slice(&vec![
+            crate::model::mod_entry::ModEntry::new("my cool mod", None, None, None, None),
+            crate::model::mod_entry::ModEntry::new("another_mod", Some("Another mod 🍪"), None, None, None),
+            crate::model::mod_entry::ModEntry::new("another_mod2", None, Some("OSA413"), None, None),
+        ]);
 
         self.imp().mod_list.bind_model(Some(&list_store),move |obj| {
             let mod_entry = obj
