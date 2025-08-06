@@ -1,5 +1,7 @@
 use adw::{prelude::{ActionRowExt}, subclass::prelude::*, ActionRow};
-use gtk::{gio::{self}, glib, prelude::{ActionMapExtManual}, Align, CheckButton};
+use gtk::{gio::{self}, glib::{self, object::Cast}, prelude::{ActionMapExtManual, TextBufferExt, TextTagExt, TextViewExt}, Align, CheckButton, Widget};
+
+use crate::model::mod_entry::ModEntry;
 
 mod imp {
     use super::*;
@@ -9,6 +11,8 @@ mod imp {
     pub struct Sonic4ModManagerWindow {
         #[template_child]
         pub mod_list: TemplateChild<gtk::ListBox>,
+        #[template_child]
+        pub description: TemplateChild<gtk::TextView>,
     }
 
     #[glib::object_subclass]
@@ -30,6 +34,7 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
             self.obj().setup_actions();
+            self.obj().startup();
         }
     }
 
@@ -60,26 +65,66 @@ impl Sonic4ModManagerWindow {
             .build()
     }
 
-     fn create_mod_row(&self, title: &str, subtitle: &str) -> () {
-        let check_button = CheckButton::builder()
-            .valign(Align::Center)
-            .can_focus(false)
-            .build();
+    fn setup_actions(&self) {
+        // let mod_check_action = gio::ActionEntry::builder("check_mod")
+        //     .activate(move |app: &Self, _, _| app.create_mod_row("test", "Version 1.0.1 by OSA413"))
+        //     .build();
 
-        let row = ActionRow::builder()
-            .title(title)
-            .subtitle(subtitle)
-            .build();
-        row.add_prefix(&check_button);
-        
-        self.imp().mod_list.append(&row);
+        // self.add_action_entries([mod_check_action]);
     }
 
-    fn setup_actions(&self) {
-        let mod_check_action = gio::ActionEntry::builder("check_mod")
-            .activate(move |app: &Self, _, _| app.create_mod_row("test", "Version 1.0.1 by OSA413"))
-            .build();
+    fn startup(&self) {
+        let list_store = gio::ListStore::new::<crate::model::mod_entry::ModEntry>();
+        let entry = crate::model::mod_entry::ModEntry::new("my cool mod", None, None, None, None);
+        list_store.append(&entry);
+        let entry = crate::model::mod_entry::ModEntry::new("another_mod", Some("Another mod 🍪"), None, None, None);
+        list_store.append(&entry);
+        let entry = crate::model::mod_entry::ModEntry::new("another_mod2", None, Some("OSA413"), None, None);
+        list_store.append(&entry);
 
-        self.add_action_entries([mod_check_action]);
+        self.imp().mod_list.bind_model(Some(&list_store),move |obj| {
+            let mod_entry = obj
+                .downcast_ref::<ModEntry>()
+                .expect("The object should be of type `ModEntry`.");
+
+            let check_button = CheckButton::builder()
+                .valign(Align::Center)
+                .can_focus(false)
+                .build();
+
+            let version_string = match mod_entry.version() {
+                Some(version) => {
+                    match mod_entry.authors() {
+                        Some(authors) => format!("Version {} by {}", version, authors),
+                        None => format!("Version {}", version)
+                    }
+                },
+                None => match mod_entry.authors() {
+                    Some(authors) => format!("by {}", authors),
+                    None => "".to_string()
+                },
+            };
+
+            let row = ActionRow::builder()
+                .title(mod_entry.title().unwrap_or(mod_entry.path()))
+                .subtitle(version_string)
+                .build();
+            row.add_prefix(&check_button);
+            
+            row.upcast()
+        });
+
+        let buffer_builder = gtk::TextBuffer::builder();
+        let tag = gtk::TextTag::new(Some("test"));
+        tag.set_weight(600);
+        tag.set_size(16);
+        let table = gtk::TextTagTable::new();
+        table.add(&tag);
+        let buffer_builder = buffer_builder.tag_table(&table);
+        let buffer_builder = buffer_builder.text("This is a test description");
+        // let buffer = buffer_builder.build();
+        // let start = buffer.
+        // buffer.apply_tag(&tag, gtk::TextIter::, -1);
+        // self.imp().description.set_buffer(Some(&buffer));
     }
 }

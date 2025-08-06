@@ -118,7 +118,7 @@
             </layout>
             <property name="label">Description</property>
             <child>
-              <object class="GtkTextView" id="mod_description">
+              <object class="GtkTextView" id="description">
                 <property name="wrap-mode">word-char</property>
                 <property name="editable">false</property>
                 <property name="width-request">-1</property>
