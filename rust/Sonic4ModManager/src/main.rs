@@ -1,6 +1,6 @@
 mod application;
 mod window;
-mod model;
+mod models;
 
 use self::application::Sonic4ModManagerApplication;
 use self::window::Sonic4ModManagerWindow;

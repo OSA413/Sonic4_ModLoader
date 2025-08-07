@@ -4,12 +4,13 @@ use gtk::glib;
 use gtk::glib::Properties;
 use std::cell::RefCell;
 
+// G means GNOME because I don't want to confuse pure Rust structs with GObject
 mod imp {
     use super::*;
 
     #[derive(Debug, Default, Properties)]
-    #[properties(wrapper_type = super::ModEntry)]
-    pub struct ModEntry {
+    #[properties(wrapper_type = super::GModEntry)]
+    pub struct GModEntry {
         #[property(get, set)]
         pub path: RefCell<String>,
         #[property(get, set)]
@@ -23,21 +24,21 @@ mod imp {
     }
 
     #[glib::object_subclass]
-    impl ObjectSubclass for ModEntry {
-        const NAME: &'static str = "ModEntry";
-        type Type = super::ModEntry;
+    impl ObjectSubclass for GModEntry {
+        const NAME: &'static str = "GModEntry";
+        type Type = super::GModEntry;
         type ParentType = glib::Object;
     }
 
     #[glib::derived_properties]
-    impl ObjectImpl for ModEntry {}
+    impl ObjectImpl for GModEntry {}
 }
 
 glib::wrapper! {
-    pub struct ModEntry(ObjectSubclass<imp::ModEntry>);
+    pub struct GModEntry(ObjectSubclass<imp::GModEntry>);
 }
 
-impl ModEntry {
+impl GModEntry {
     pub fn new(
         path: &str,
         title: Option<&str>,

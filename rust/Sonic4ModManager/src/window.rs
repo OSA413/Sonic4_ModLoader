@@ -1,7 +1,7 @@
 use adw::{prelude::{ActionRowExt}, subclass::prelude::*, ActionRow};
 use gtk::{gio::{self}, glib::{self, object::Cast}, prelude::{ActionMapExtManual, TextBufferExt, TextTagExt, TextViewExt}, Align, CheckButton, Widget};
 
-use crate::model::mod_entry::ModEntry;
+use crate::models::mod_entry::GModEntry;
 
 mod imp {
     use super::*;
@@ -74,16 +74,16 @@ impl Sonic4ModManagerWindow {
     }
 
     fn startup(&self) {
-        let list_store = gio::ListStore::new::<crate::model::mod_entry::ModEntry>();
+        let list_store = gio::ListStore::new::<GModEntry>();
         list_store.extend_from_slice(&vec![
-            crate::model::mod_entry::ModEntry::new("my cool mod", None, None, None, None),
-            crate::model::mod_entry::ModEntry::new("another_mod", Some("Another mod 🍪"), None, None, None),
-            crate::model::mod_entry::ModEntry::new("another_mod2", None, Some("OSA413"), None, None),
+            GModEntry::new("my cool mod", None, None, None, None),
+            GModEntry::new("another_mod", Some("Another mod 🍪"), None, None, None),
+            GModEntry::new("another_mod2", None, Some("OSA413"), None, None),
         ]);
 
         self.imp().mod_list.bind_model(Some(&list_store),move |obj| {
             let mod_entry = obj
-                .downcast_ref::<ModEntry>()
+                .downcast_ref::<GModEntry>()
                 .expect("The object should be of type `ModEntry`.");
 
             let check_button = CheckButton::builder()
