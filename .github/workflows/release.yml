@@ -79,7 +79,7 @@ jobs:
         run: |
           dotnet publish Sonic4_ModLoader/AMBPatcher -c Release --os linux
           mkdir -p "./dist/Sonic4ModLoader/Mod Loader - licenses"
-          cp "./Sonic4_ModLoader/AMBPatcher/bin/Release/net6.0/linux-x64/publish/AMBPatcher" "./dist/Sonic4ModLoader/AMBPatcher.exe"
+          cp "./src_old/AMBPatcher/bin/Release/net6.0/linux-x64/publish/AMBPatcher" "./dist/Sonic4ModLoader/AMBPatcher.exe"
 
       - name: Run tests
         run: bash ./tests/run_tests.sh --no-crash

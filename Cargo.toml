@@ -1,8 +1,8 @@
 [workspace]
 members = [
-    "rust/ManagerLauncher",
-    "rust/ManagerLauncher_link",
-    "rust/Sonic4ModManager",
-    "rust/Sonic4ModManager_link",
+    "src/ManagerLauncher",
+    "src/ManagerLauncher_link",
+    "src/Sonic4ModManager",
+    "src/Sonic4ModManager_link",
 ]
 resolver = "2"

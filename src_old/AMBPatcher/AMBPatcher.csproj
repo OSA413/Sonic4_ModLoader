@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>false</UseWindowsForms>
+    <ImportWindowsDesktopTargets>false</ImportWindowsDesktopTargets>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>false</SelfContained>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="..\Common\ValueUpdater.cs">
+      <Link>Common\ValueUpdater.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Ini.cs">
+      <Link>Common\Ini.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Mods.cs">
+      <Link>Common\Mods.cs</Link>
+    </Compile>
+    <Compile Include="..\Common\Launcher.cs">
+      <Link>Common\Launcher.cs</Link>
+    </Compile>
+  </ItemGroup>
+</Project>
