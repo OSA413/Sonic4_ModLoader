@@ -1,4 +1,5 @@
 use adw::subclass::prelude::*;
+use common::mod_logic::mod_entry::ModEntry;
 use gtk::prelude::ObjectExt;
 use gtk::glib;
 use gtk::glib::Properties;
@@ -20,7 +21,7 @@ mod imp {
         #[property(get, set)]
         pub version: RefCell<Option<String>>,
         #[property(get, set)]
-        pub description_file: RefCell<Option<String>>,
+        pub description: RefCell<Option<String>>,
     }
 
     #[glib::object_subclass]
@@ -44,14 +45,24 @@ impl GModEntry {
         title: Option<&str>,
         authors: Option<&str>,
         version: Option<&str>,
-        description_file: Option<&str>,
+        description: Option<&str>,
     ) -> Self {
         glib::Object::builder()
             .property("path", path)
             .property("title", title)
             .property("authors", authors)
             .property("version", version)
-            .property("description_file", description_file)
+            .property("description", description)
             .build()
+    }
+
+    pub fn from_mod_entry(mod_entry: &ModEntry) -> Self {
+        Self::new(
+            mod_entry.path.as_str(),
+            mod_entry.title.as_ref().map(|s| s.as_str()),
+            mod_entry.authors.as_ref().map(|s| s.as_str()),
+            mod_entry.version.as_ref().map(|s| s.as_str()),
+            mod_entry.description.as_ref().map(|s| s.as_str()),
+        )
     }
 }
