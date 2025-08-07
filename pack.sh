@@ -47,9 +47,14 @@ done
 # Rust
 mkdir -p "./dist/Sonic4ModLoader/bin"
 cargo install copydeps
+
 cp ./target/release/ManagerLauncher.exe ./dist/Sonic4ModLoader/bin/ManagerLauncher.exe
 copydeps --search-dir C:/gtk-build/gtk/x64/release/bin ./dist/Sonic4ModLoader/bin/ManagerLauncher.exe
 cp ./target/release/ManagerLauncher_link.exe ./dist/Sonic4ModLoader/ManagerLauncher_link.exe
+
+cp ./target/release/Sonic4ModManager.exe ./dist/Sonic4ModLoader/bin/Sonic4ModManager.exe
+copydeps --search-dir C:/gtk-build/gtk/x64/release/bin ./dist/Sonic4ModLoader/bin/Sonic4ModManager.exe
+cp ./target/release/Sonic4ModManager_link.exe ./dist/Sonic4ModLoader/Sonic4ModManager_link.exe
 
 # GTK4 icon files
 mkdir -p "./dist/Sonic4ModLoader/share/glib-2.0/schemas/"

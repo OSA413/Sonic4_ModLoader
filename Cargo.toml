@@ -3,5 +3,6 @@ members = [
     "rust/ManagerLauncher",
     "rust/ManagerLauncher_link",
     "rust/Sonic4ModManager",
+    "rust/Sonic4ModManager_link",
 ]
 resolver = "2"
