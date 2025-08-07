@@ -15,18 +15,10 @@ namespace OneClickModInstaller
             ArgsHandler.Handle(args);
             Settings.Load();
 
-            if (ArgsHandler.NoGUI)
-            {
-                var mod = new ModInstallationInstance(ArgsHandler.ModArgs);
-                mod.ContinueInstallation();
-            }
-            else
-            {
-                Application.EnableVisualStyles();
-                Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
-                Application.SetCompatibleTextRenderingDefault(false);
-                Application.Run(new UltimateWinForm());
-            }
+            Application.EnableVisualStyles();
+            Application.SetHighDpiMode(HighDpiMode.PerMonitorV2);
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new UltimateWinForm());
         }
     }
 }

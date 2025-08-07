@@ -42,7 +42,6 @@ public class HandlerInstallerWrapper : IHandlerInstaller<GAME?>
         switch (Environment.OSVersion.Platform)
         {
             case PlatformID.Win32NT: baseHandlerInstaller = new HandlerInstallerWindows(); break;
-            case PlatformID.Unix: baseHandlerInstaller = new HandlerInstallerLinux(); break;
         }
     }
 

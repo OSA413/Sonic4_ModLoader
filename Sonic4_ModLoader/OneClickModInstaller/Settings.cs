@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Linq;
 
 using Common.Ini;
 using Common.ValueUpdater;
@@ -42,10 +41,6 @@ namespace OneClickModInstaller
             text.Add("UseLocal7zip="           + Convert.ToInt32(UseLocal7zip));
             text.Add("SaveDownloadedArchives=" + Convert.ToInt32(SaveDownloadedArchives));
             text.Add("ExitLaunchManager="      + Convert.ToInt32(ExitLaunchManager));
-
-            text.Add("[Paths]");
-            foreach (var path in Paths.Keys)
-                text.Add(path + "=" + Paths[path]);
 
             File.WriteAllLines("OneClickModInstaller.cfg", text);
         }

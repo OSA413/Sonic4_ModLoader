@@ -5,7 +5,6 @@ using Common.Launcher;
 namespace OneClickModInstaller {
     
     public static class ArgsHandler {
-        public static bool NoGUI { get; private set; }
         public static ModArgs ModArgs {get; private set;}
         public static void Handle(string[] args) {
             if (args.Length > 0)
@@ -20,7 +19,6 @@ namespace OneClickModInstaller {
                     case "--fix":       Program.hiWrapper.FixPath(game);   Environment.Exit(0); break;
                 }
 
-                NoGUI = args[0] == "--no-gui";
                 var arg = args[^1];
 
                 if (File.Exists(arg)

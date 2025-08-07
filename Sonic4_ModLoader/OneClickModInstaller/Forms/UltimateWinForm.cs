@@ -3,11 +3,9 @@ using System.Windows.Forms;
 using System.IO;
 using System.Net;
 using System.ComponentModel;
-using System.Threading.Tasks;
 using System.Diagnostics;
 
 using Common.MyIO;
-using Common.URL;
 using Common.Launcher;
 
 namespace OneClickModInstaller
@@ -176,36 +174,12 @@ namespace OneClickModInstaller
         private void bIOEp1Uninstall_Click(object sender, EventArgs e) => Uninstall(GAME.Episode1);
         private void bIOEp2Uninstall_Click(object sender, EventArgs e) => Uninstall(GAME.Episode2);
 
-        private void cbUseLocal7zip_CheckedChanged(object sender, EventArgs e)
-        {
-            tbPath7z.Enabled =
-            bPath7z.Enabled  = cbUseLocal7zip.Checked;
-            fake_SettingsSave(sender, e);
-        }
-
-        private void bPath7z_Click(object sender, EventArgs e)
-        {
-            var path = MyDirectory.Select("7z.exe", "7z");
-            if (path != null)
-                tbPath7z.Text = path ?? tbPath7z.Text;
-        }
-
-        private void bPathDownloadedArchives_Click(object sender, EventArgs e)
-        {
-            var path = MyDirectory.Select("directory where you want to save downloaded archives", "dir");
-            if (path != null)
-                tbDownloadedArchiveLocation.Text = path;
-        }
-
         private void fake_SettingsSave(object sender, EventArgs e)
         {
             switch (((Control)sender).Name)
             {
-                case "cbUseLocal7zip":              Settings.UseLocal7zip               = cbUseLocal7zip.Checked;           break;
                 case "chSaveDownloadedArchives":    Settings.SaveDownloadedArchives     = chSaveDownloadedArchives.Checked; break;
                 case "cbExitLaunchManager":         Settings.ExitLaunchManager          = cbExitLaunchManager.Checked;      break;
-                case "tbPath7z":                    Settings.Paths["7-Zip"]             = tbPath7z.Text;                    break;
-                case "tbDownloadedArchiveLocation": Settings.Paths["DownloadedArhives"] = tbDownloadedArchiveLocation.Text; break;
             }
             Settings.Save();
         }

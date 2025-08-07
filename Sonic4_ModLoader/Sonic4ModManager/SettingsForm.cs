@@ -177,23 +177,7 @@ namespace Sonic4ModManager
 
             label_Installation_status.Text = statusText;
         }
-        
-        private void ReadLicense(string program)
-        {
-            var license = "";
-
-            switch (program)
-            {
-                case "S4ML": license = "LICENSE-Sonic4_ModLoader"; break;
-                case "AML": license = "LICENSE-AliceModLoader"; break;
-                case "SAT": license = "LICENSE-SonicAudioTools"; break;
-                case "7z": license = "LICENSE-7-Zip"; break;
-            }
-
-            if (license != "")
-                new LicenseReader(license).ShowDialog();
-        }
-        
+                
         private void bInstall_Click(object sender, EventArgs e)
         {
             var options = new Installation.UninstallationOptions();
@@ -213,9 +197,6 @@ namespace Sonic4ModManager
 
         private void cb_CsbEditor_EnableThreading_CheckedChanged(object sender, EventArgs e) =>
             num_CsbEditor_MaxThreads.Enabled = label6.Enabled = cb_CsbEditor_EnableThreading.Checked;
-
-        private void ReadLicense_Click(object sender, EventArgs e) =>
-            ReadLicense(((Control)sender).Name.Substring(4));
 
         private void LinkClicked(object sender, LinkLabelLinkClickedEventArgs e) =>
             Process.Start(((Control)sender).Text);

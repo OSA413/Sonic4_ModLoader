@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.IO;
 using System.Windows.Forms;
 
@@ -28,10 +26,8 @@ namespace OneClickModInstaller
         private string link;
         public string Link { get => link; set { if (!Locked) link = value; } }
         public (string root, ModType Platform)[] ModRoots;
-        private string currentPath;
 
         public Downloader Downloader = new();
-        public ModInstaller Installer;
 
         private (string Link, bool Correct, bool FromArchive, bool FromDir, Downloader.ServerHost Host) initialInfo;
         public bool FromArgs => Args != null;
