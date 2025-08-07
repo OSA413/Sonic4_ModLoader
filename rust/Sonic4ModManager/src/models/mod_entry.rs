@@ -15,6 +15,8 @@ mod imp {
         #[property(get, set)]
         pub path: RefCell<String>,
         #[property(get, set)]
+        pub enabled: RefCell<bool>,
+        #[property(get, set)]
         pub title: RefCell<Option<String>>,
         #[property(get, set)]
         pub authors: RefCell<Option<String>>,
@@ -42,6 +44,7 @@ glib::wrapper! {
 impl GModEntry {
     pub fn new(
         path: &str,
+        enabled: bool,
         title: Option<&str>,
         authors: Option<&str>,
         version: Option<&str>,
@@ -49,6 +52,7 @@ impl GModEntry {
     ) -> Self {
         glib::Object::builder()
             .property("path", path)
+            .property("enabled", enabled)
             .property("title", title)
             .property("authors", authors)
             .property("version", version)
@@ -59,6 +63,7 @@ impl GModEntry {
     pub fn from_mod_entry(mod_entry: &ModEntry) -> Self {
         Self::new(
             mod_entry.path.as_str(),
+            mod_entry.enabled,
             mod_entry.title.as_ref().map(|s| s.as_str()),
             mod_entry.authors.as_ref().map(|s| s.as_str()),
             mod_entry.version.as_ref().map(|s| s.as_str()),

@@ -33,7 +33,7 @@ impl ModEntry {
 
     pub fn from_existing_mod(existing_mod: &ExistingMod) -> Self {
         let mod_path = existing_mod.path.to_owned();
-        let mod_ini_path: PathBuf = ["mods".to_string(), mod_path, "mod.ini".to_string()].iter().collect();
+        let mod_ini_path = ["mods".to_string(), mod_path, "mod.ini".to_string()].iter().collect::<PathBuf>();
         let mod_ini = Ini::load_from_file(mod_ini_path);
 
         match mod_ini {

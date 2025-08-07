@@ -1,4 +1,4 @@
-use std::fs;
+use std::{fs, path::PathBuf};
 
 pub struct ModDummy {
     pub path: String,
@@ -21,7 +21,8 @@ impl ModDummy {
 
     pub fn load_from_mods_ini(path: &str) -> Vec<Self> {
         let mut result = Vec::new();
-        let file = fs::read_to_string(path);
+        let path_to_mod_ini = [path, "mods.ini"].iter().collect::<PathBuf>();
+        let file = fs::read_to_string(path_to_mod_ini);
         match file {
             Ok(file) => {
                 for line in file.lines() {

@@ -18,9 +18,10 @@ impl ExistingMod {
 
     pub fn load(path: &str) -> Vec<Self> {
         let mut folder_content = ModDummy::load_from_mods_directory(path);
-        let mod_ini_content = ModDummy::load_from_mods_ini(path);
+        let mut mod_ini_content = ModDummy::load_from_mods_ini(path);
+        mod_ini_content.reverse();
         let mut result = Vec::new();
-        
+
         for mod_dummy in mod_ini_content {
             let index_of_enabled_mod = folder_content.iter().position(|x| x == &mod_dummy);
             match index_of_enabled_mod {

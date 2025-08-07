@@ -87,6 +87,7 @@ impl Sonic4ModManagerWindow {
 
             let check_button = CheckButton::builder()
                 .valign(Align::Center)
+                .active(mod_entry.enabled())
                 .can_focus(false)
                 .build();
 
