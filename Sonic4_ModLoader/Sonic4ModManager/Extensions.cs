@@ -27,7 +27,7 @@ namespace Sonic4ModManager
         //https://github.com/OSA413/Sonic4_ModLoader/blob/main/docs/Mod%20structure.md#description-formating
         public static void Format(this RichTextBox rtb)
         {
-            var markers = new List<String>();
+            var markers = new List<string>();
             var markersFormatting = new [] {"b", "i", "u", "strike"};
             var markersAlignment = new [] {"l", "c", "r"};
             foreach (var marker in markersFormatting.Union(markersAlignment))
@@ -55,7 +55,7 @@ namespace Sonic4ModManager
                     }
                 
                 if (tokens.Count != prevTokensCount)
-                    i += tokens[tokens.Count - 1].token.Length;
+                    i += tokens[^1].token.Length;
                 else
                     i++;
             }

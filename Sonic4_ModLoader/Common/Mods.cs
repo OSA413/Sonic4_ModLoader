@@ -60,19 +60,13 @@ namespace Common.Mods
 
         private void ReadIni(string iniPath)
         {
-            var ini = Common.Ini.IniReader.Read(iniPath);
+            var ini = Ini.IniReader.Read(iniPath);
             if (ini.Count == 0) return;
 
-            Dictionary<string, string> infoSection = null;
-            if (ini.Keys.Count == 1 && ini.ContainsKey(Common.Ini.IniReader.DEFAULT_SECTION))
-                infoSection = ini[Common.Ini.IniReader.DEFAULT_SECTION];
-            else
-                infoSection = ini["Info"];
-
-            UpdateIfKeyPresent(infoSection, "Name", ref name);
-            UpdateIfKeyPresent(infoSection, "Authors", ref authors);
-            UpdateIfKeyPresent(infoSection, "Version", ref version);
-            UpdateIfKeyPresent(infoSection, "Description", ref description);
+            UpdateIfKeyPresent(ini, "Name", ref name);
+            UpdateIfKeyPresent(ini, "Authors", ref authors);
+            UpdateIfKeyPresent(ini, "Version", ref version);
+            UpdateIfKeyPresent(ini, "Description", ref description);
         }
 
         private void ReadDescription()
@@ -82,7 +76,7 @@ namespace Common.Mods
                 var descriptionPath = System.IO.Path.Combine("mods", Path, description.Substring(5));
                 if (File.Exists(descriptionPath))
                     //todo: wrap try-catch
-                    if (descriptionPath.EndsWith("txt", System.StringComparison.OrdinalIgnoreCase))
+                    if (descriptionPath.EndsWith("txt", StringComparison.OrdinalIgnoreCase))
                         description = File.ReadAllText(descriptionPath);
                     else description = "Error: unsupported format of \"" + descriptionPath + "\" file.";
                 else description = "Error: \"" + descriptionPath + "\" file not found.";

@@ -30,7 +30,8 @@ namespace OneClickModInstaller
                     return;
             }
 
-            ProcessStartInfo startInfo = new ProcessStartInfo
+            ProcessStartInfo startInfo = new()
+
             {
                 FileName = path_to_7z,
                 Arguments = "x \"" + file + "\" -o\"" + file + "_extracted" + "\""

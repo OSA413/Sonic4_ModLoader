@@ -14,8 +14,8 @@ namespace Sonic4ModManager
 {
     public partial class MainForm:Form
     {
-        private Random rnd = new Random();
-        private Dictionary<string, Mod> ModsDict = new Dictionary<string, Mod>();
+        private Random rnd = new();
+        private Dictionary<string, Mod> ModsDict = new();
 
         public void RefreshMods()
         {

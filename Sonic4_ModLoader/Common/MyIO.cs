@@ -40,14 +40,14 @@ namespace Common.MyIO
             {
                 var dir_name = Path.GetFileName(dir);
                 Directory.CreateDirectory(Path.Combine(destination, dir_name));
-                MyDirectory.CopyAll(Path.Combine(source, dir_name), Path.Combine(destination, dir_name));
+                CopyAll(Path.Combine(source, dir_name), Path.Combine(destination, dir_name));
             }
         }
 
         public static void DeleteRecursively(string dir)
         {
             foreach (var dirr in Directory.GetDirectories(dir))
-                MyDirectory.DeleteRecursively(dirr);
+                DeleteRecursively(dirr);
 
             foreach (var file in Directory.GetFiles(dir))
                 MyFile.DeleteAnyway(file);

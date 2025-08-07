@@ -35,11 +35,8 @@ namespace Sonic4ModManager
                 AMBPatcher.SHACheck    = true;
 
                 var cfg = IniReader.Read("AMBPatcher.cfg");
-                if (cfg.ContainsKey(IniReader.DEFAULT_SECTION))
-                {
-                    ValueUpdater.UpdateIfKeyPresent(cfg, "ProgressBar", ref AMBPatcher.ProgressBar);
-                    ValueUpdater.UpdateIfKeyPresent(cfg, "SHACheck", ref AMBPatcher.SHACheck);
-                }
+                ValueUpdater.UpdateIfKeyPresent(cfg, "ProgressBar", ref AMBPatcher.ProgressBar);
+                ValueUpdater.UpdateIfKeyPresent(cfg, "SHACheck", ref AMBPatcher.SHACheck);
 
                 //CsbEditor//
                 CsbEditor.EnableThreading  = true;
@@ -48,7 +45,7 @@ namespace Sonic4ModManager
 
                 if (File.Exists("CsbEditor.exe.config"))
                 {
-                    XmlDocument xmlDoc= new XmlDocument();
+                    XmlDocument xmlDoc= new();
                     xmlDoc.Load("CsbEditor.exe.config");
                     
                     XmlNodeList settings = xmlDoc.GetElementsByTagName("setting");
@@ -57,7 +54,7 @@ namespace Sonic4ModManager
                         string value = settings[i].InnerText;
                         switch (settings[i].Attributes["name"].InnerText)
                         {
-                            case "EnableThreading": CsbEditor.EnableThreading  = Boolean.Parse(value); break;
+                            case "EnableThreading": CsbEditor.EnableThreading  = bool.Parse(value); break;
                             case "MaxThreads":      CsbEditor.MaxThreads       = Convert.ToInt32(value); break;
                             case "BufferSize":      CsbEditor.BufferSize       = Convert.ToInt32(value); break;
                         }
@@ -76,7 +73,7 @@ namespace Sonic4ModManager
                 File.WriteAllLines("AMBPatcher.cfg", text);
 
                 //CsbEditor
-                XDocument xmlDoc = new XDocument(new XElement("configuration",
+                XDocument xmlDoc = new(new XElement("configuration",
                                                     new XElement("configSections",
                                                         new XElement("sectionGroup",
                                                             new XAttribute("name", "userSettings"),
@@ -88,15 +85,15 @@ namespace Sonic4ModManager
                                                             new XElement("setting",
                                                                 new XAttribute("name", "EnableThreading"),
                                                                 new XAttribute("serializeAs", "String"),
-                                                                new XElement("value", Settings.CsbEditor.EnableThreading)),
+                                                                new XElement("value", CsbEditor.EnableThreading)),
                                                             new XElement("setting",
                                                                 new XAttribute("name", "MaxThreads"),
                                                                 new XAttribute("serializeAs", "String"),
-                                                                new XElement("value", Settings.CsbEditor.MaxThreads)),
+                                                                new XElement("value", CsbEditor.MaxThreads)),
                                                             new XElement("setting",
                                                                 new XAttribute("name", "BufferSize"),
                                                                 new XAttribute("serializeAs", "String"),
-                                                                new XElement("value", Settings.CsbEditor.BufferSize))))));
+                                                                new XElement("value", CsbEditor.BufferSize))))));
 
                 xmlDoc.Save("CsbEditor.exe.config");
             }

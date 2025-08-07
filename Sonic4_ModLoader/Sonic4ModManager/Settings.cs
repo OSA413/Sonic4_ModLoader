@@ -21,12 +21,9 @@ namespace Sonic4ModManager
             CheckOnlineUpdates = false;
 
             var cfg = IniReader.Read("ModManager.cfg");
-            if (cfg.ContainsKey(IniReader.DEFAULT_SECTION))
-            {
-                ValueUpdater.UpdateIfKeyPresent(cfg, "OnlineUpdateCheckPeriod", ref OnlineUpdateCheckPeriod);
-                ValueUpdater.UpdateIfKeyPresent(cfg, "CheckOnlineUpdates", ref CheckOnlineUpdates);
-            }
-
+            ValueUpdater.UpdateIfKeyPresent(cfg, "OnlineUpdateCheckPeriod", ref OnlineUpdateCheckPeriod);
+            ValueUpdater.UpdateIfKeyPresent(cfg, "CheckOnlineUpdates", ref CheckOnlineUpdates);
+        
             if (!File.Exists("AML/AliceML.ini")) return;
             var cfgAml = File.ReadAllLines("AML/AliceML.ini");
             for (int i = 0; i < cfgAml.Length; i++)
@@ -43,9 +40,8 @@ namespace Sonic4ModManager
         public static void Save()
         {
             var ini = IniWriter.CreateIni();
-            ini[IniReader.DEFAULT_SECTION] = new Dictionary<string, string>();
-            ini[IniReader.DEFAULT_SECTION]["OnlineUpdateCheckPeriod"] = OnlineUpdateCheckPeriod.ToString();
-            ini[IniReader.DEFAULT_SECTION]["CheckOnlineUpdates"] = Convert.ToInt32(CheckOnlineUpdates).ToString();
+            ini["OnlineUpdateCheckPeriod"] = OnlineUpdateCheckPeriod.ToString();
+            ini["CheckOnlineUpdates"] = Convert.ToInt32(CheckOnlineUpdates).ToString();
             IniWriter.Write(ini, "ModManager.cfg");
 
             var iniAml = File.ReadAllLines("AML/AliceML.ini");

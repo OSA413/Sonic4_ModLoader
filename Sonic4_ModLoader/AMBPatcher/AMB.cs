@@ -15,7 +15,7 @@ public class AMB
     private byte[] source;
     public string AmbPath;
     public bool SameEndianness = true;
-    public List<BinaryObject> Objects = new List<BinaryObject>();
+    public List<BinaryObject> Objects = new();
     public bool hasNames = true;
     public Version version = Version.PC;
     public int Length { get => PredictPointers().name + Objects.Count * (hasNames ? 0x20 : 0) ;}
@@ -98,7 +98,7 @@ public class AMB
     }
 
 
-    private StringBuilder sb = new StringBuilder();
+    private StringBuilder sb = new();
     private string ReadString(byte[] source, int pointer)
     {
         sb.Clear();
@@ -213,7 +213,7 @@ public class AMB
         string InternalName;
         //If it's inside, return the part after original file ends
         if (index != -1)
-            InternalName = String.Join("\\", modPathParts.Skip(index + 1).ToArray());
+            InternalName = string.Join("\\", modPathParts.Skip(index + 1).ToArray());
         //Else use file name
         else
             InternalName = modPathParts.Last();
@@ -246,7 +246,7 @@ public class AMB
         if (InternalIndex != -1)
             return (this, InternalIndex, InternalName);
 
-        var ParentIndex = Objects.FindIndex(x => x.Name == String.Join("\\", InternalName.Split('\\').Take(x.Name.Count(c => c == '\\') + 1)));
+        var ParentIndex = Objects.FindIndex(x => x.Name == string.Join("\\", InternalName.Split('\\').Take(x.Name.Count(c => c == '\\') + 1)));
 
         if (ParentIndex != -1)
             return Objects[ParentIndex].Amb.FindObject(objectName.Substring(Objects[ParentIndex].Name.Length + 1));
@@ -310,8 +310,8 @@ public class BinaryObject
     public AMB Amb;
     public AMB ParentAMB;
 
-    public Int32 Flag1;
-    public Int32 Flag2;
+    public int Flag1;
+    public int Flag2;
 
     public byte[] Source {get; private set;}
     //TODO: use uint

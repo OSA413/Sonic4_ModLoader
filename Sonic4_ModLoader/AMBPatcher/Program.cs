@@ -17,9 +17,9 @@ namespace AMBPatcher
             //TODO: use it later in AMB.cs
             public static List<(string Name, int Pointer, int Length)> ReadWP(byte[] rawFile)
             {
-                List<int> filePointers = new List<int>();
-                List<int> fileLengths = new List<int>();
-                List<string> fileNames = new List<string>();
+                List<int> filePointers = new();
+                List<int> fileLengths = new();
+                List<string> fileNames = new();
                 var result = new List<(string Name, int Pointer, int Length)>();
 
                 int fileNumber = BitConverter.ToInt32(rawFile, 0x00);
@@ -58,7 +58,7 @@ namespace AMBPatcher
 
                 Directory.CreateDirectory(outputDirectory);
 
-                var files = AMB_old.ReadWP(raw_file);
+                var files = ReadWP(raw_file);
 
                 for (int i = 0; i < files.Count; i++)
                 {
@@ -92,7 +92,7 @@ namespace AMBPatcher
                             return;
                         }
 
-                        AMB amb = new AMB(File.Exists(file_name + ".bkp") ? file_name + ".bkp" : file_name);
+                        AMB amb = new(File.Exists(file_name + ".bkp") ? file_name + ".bkp" : file_name);
                         amb.AmbPath = file_name;
 
                         for (int i = 0; i < mod_files.Count; i++)
@@ -175,9 +175,9 @@ namespace AMBPatcher
             //TODO: Make it work with forward order, remove Reverse()
             var modsIni = Mods.GetMods().Where(x => x.Enabled).Select(x => x.Path).Reverse().ToList();
 
-            List<string> orig_files = new List<string>();
-            List<List<string>> mod_files = new List<List<string>>();
-            List<List<string>> mod_dirs = new List<List<string>>();
+            List<string> orig_files = new();
+            List<List<string>> mod_files = new();
+            List<List<string>> mod_dirs = new();
 
             for (int i = 0; i < modsIni.Count; i++)
             {
@@ -293,8 +293,8 @@ namespace AMBPatcher
                 }
 
                 var test = GetModFiles();
-                List<string> mods_prev = new List<string> { };
-                List<string> modified_files = new List<string> { };
+                List<string> mods_prev = new() { };
+                List<string> modified_files = new() { };
 
                 if (File.Exists("mods/mods_prev"))
                     mods_prev = File.ReadAllLines("mods/mods_prev").ToList<string>();

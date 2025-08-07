@@ -21,7 +21,8 @@ public class HandlerInstallerWindows : IHandlerInstaller<string>
     private static bool? isAdmin;
     public void RestartAsAdmin(string args)
     {
-        ProcessStartInfo startInfo = new ProcessStartInfo
+        ProcessStartInfo startInfo = new()
+
         {
             FileName = AppDomain.CurrentDomain.FriendlyName,
             Arguments = args,

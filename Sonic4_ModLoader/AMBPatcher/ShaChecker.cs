@@ -33,7 +33,7 @@ namespace AMBPatcher
 
             bool files_changed = false;
 
-            List<string> sha_list = new List<string> { };
+            List<string> sha_list = new() { };
 
             string orig_file_sha_root = Path.Combine("mods_sha", file_name);
 

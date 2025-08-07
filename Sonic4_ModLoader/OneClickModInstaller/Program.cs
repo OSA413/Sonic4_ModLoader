@@ -6,7 +6,7 @@ namespace OneClickModInstaller
 {
     static class Program
     {
-        public static HandlerInstallerWrapper hiWrapper = new HandlerInstallerWrapper();
+        public static HandlerInstallerWrapper hiWrapper = new();
 
         [STAThread]
         static void Main(string[] args)
