@@ -73,7 +73,7 @@ jobs:
 
       - name: Build AMBPatcher
         run: |
-          dotnet publish Sonic4_ModLoader/AMBPatcher -c Release --os linux
+          dotnet publish src_old/AMBPatcher -c Release --os linux
           mkdir -p "./dist/Sonic4ModLoader/Mod Loader - licenses"
           cp "./src_old/AMBPatcher/bin/Release/net6.0/linux-x64/publish/AMBPatcher" "./dist/Sonic4ModLoader/AMBPatcher.exe"
 
