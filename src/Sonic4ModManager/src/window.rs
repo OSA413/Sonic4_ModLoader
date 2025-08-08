@@ -1,7 +1,8 @@
+use std::cmp;
+
 use adw::{prelude::{ActionRowExt}, subclass::prelude::*, ActionRow};
 use common::mod_logic::mod_entry::ModEntry;
-use gtk::{gio::{self, prelude::ListModelExt}, glib::{self, object::Cast}, prelude::{ActionMapExtManual, ListBoxRowExt, TextTagExt, WidgetExt}, Align, CheckButton};
-
+use gtk::{gio::{self, prelude::ListModelExt}, glib::{self, clone, gobject_ffi::GObject, object::Cast, property::{PropertyGet, PropertySet}}, prelude::{ActionMapExtManual, ListBoxRowExt, TextTagExt, WidgetExt}, Align, CheckButton};
 use crate::models::mod_entry::GModEntry;
 
 enum Offset {
@@ -12,6 +13,7 @@ enum Offset {
 }
 
 mod imp {
+    use std::cell::RefCell;
 
     use super::*;
 
@@ -27,6 +29,7 @@ mod imp {
         
         #[template_child]
         pub mod_store: TemplateChild<gio::ListStore>,
+        pub selected_mod_index: RefCell<Option<String>>,
     }
 
     #[glib::object_subclass]
@@ -100,12 +103,14 @@ impl Sonic4ModManagerWindow {
                         self.imp().mod_store.remove(index);
                         let final_index = match offset {
                             Offset::Top => 0,
-                            Offset::Up => index - 1,
-                            Offset::Down => index + 1,
+                            Offset::Up => match index {0 => 0, _ => index - 1},
+                            Offset::Down => cmp::min(index + 1, self.imp().mod_store.n_items()),
                             Offset::Bottom => self.imp().mod_store.n_items(),
                         };
+
+                        let mod_folder = mod_to_move.downcast_ref::<GModEntry>().unwrap().path();
                         self.imp().mod_store.insert(final_index , &mod_to_move);
-                        // make mod entry focused after move
+                        self.imp().selected_mod_index.replace(Some(mod_folder));
                     }
                     None => (),
                 }
@@ -144,45 +149,60 @@ impl Sonic4ModManagerWindow {
         ]);
     }
 
+    fn create_mod_list_closure(&self, obj: &gtk::glib::Object) -> gtk::Widget {
+        let g_mod_entry = obj
+            .downcast_ref::<GModEntry>()
+            .expect("The object should be of type `GModEntry`.");
+
+        let check_button = CheckButton::builder()
+            .valign(Align::Center)
+            .active(g_mod_entry.enabled())
+            .can_focus(false)
+            .build();
+
+        let version_string = match g_mod_entry.version() {
+            Some(version) => {
+                match g_mod_entry.authors() {
+                    Some(authors) => format!("Version {} by {}", version, authors),
+                    None => format!("Version {}", version)
+                }
+            },
+            None => match g_mod_entry.authors() {
+                Some(authors) => format!("by {}", authors),
+                None => "".to_string()
+            },
+        };
+
+        let row = ActionRow::builder()
+            .title(g_mod_entry.title().unwrap_or(g_mod_entry.path()))
+            .subtitle(version_string)
+            .build();
+        row.add_prefix(&check_button);
+
+        let row = row.upcast::<gtk::Widget>();
+        
+        match self.imp().mod_list.first_child() {
+            Some(first_child) => first_child.activate(),
+            None => false,
+        };
+
+        row
+    }
+
     fn startup(&self) {
         let mod_entries = ModEntry::load("./mods");
         let g_mod_entries = mod_entries.iter().map(|x| GModEntry::from_mod_entry(x)).collect::<Vec<_>>();
         self.imp().mod_store.extend_from_slice(&g_mod_entries);
 
-        self.imp().mod_list.bind_model(Some(&self.imp().mod_store.get()),move |obj| {
-            let g_mod_entry = obj
-                .downcast_ref::<GModEntry>()
-                .expect("The object should be of type `GModEntry`.");
+        // TODO remove clone
+        let closure = {
+            clone!(
+                #[strong (rename_to = this)] self,
+                move |obj: &glib::Object| this.create_mod_list_closure(obj)
+            )
+        };
 
-            let check_button = CheckButton::builder()
-                .valign(Align::Center)
-                .active(g_mod_entry.enabled())
-                .can_focus(false)
-                .build();
-
-            let version_string = match g_mod_entry.version() {
-                Some(version) => {
-                    match g_mod_entry.authors() {
-                        Some(authors) => format!("Version {} by {}", version, authors),
-                        None => format!("Version {}", version)
-                    }
-                },
-                None => match g_mod_entry.authors() {
-                    Some(authors) => format!("by {}", authors),
-                    None => "".to_string()
-                },
-            };
-
-            let row = ActionRow::builder()
-                .title(g_mod_entry.title().unwrap_or(g_mod_entry.path()))
-                .subtitle(version_string)
-                .build();
-            row.add_prefix(&check_button);
-            
-            row.upcast()
-        });
-
-        self.imp().refresh_button.grab_focus();
+        self.imp().mod_list.bind_model(Some(&self.imp().mod_store.get()), move |obj: &glib::Object| closure(obj));
 
         let buffer_builder = gtk::TextBuffer::builder();
         let tag = gtk::TextTag::new(Some("test"));
