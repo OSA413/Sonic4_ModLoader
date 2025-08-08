@@ -73,6 +73,7 @@
                 </layout>
                 <child>
                   <object class="GtkButton">
+                    <property name="action-name">win.move_mod_to_top</property>
                     <property name="label">/\
 /\</property>
                     <layout>
@@ -83,6 +84,7 @@
                 </child>
                 <child>
                   <object class="GtkButton">
+                    <property name="action-name">win.move_mod_up</property>
                     <property name="label">/\</property>
                     <layout>
                       <property name="column">0</property>
@@ -92,6 +94,7 @@
                 </child>
                 <child>
                   <object class="GtkButton">
+                    <property name="action-name">win.move_mod_down</property>
                     <property name="label">\/</property>
                     <layout>
                       <property name="column">0</property>
@@ -101,6 +104,7 @@
                 </child>
                 <child>
                   <object class="GtkButton">
+                    <property name="action-name">win.move_mod_to_bottom</property>
                     <property name="label">\/
 \/</property>
                     <layout>
@@ -170,7 +174,7 @@
               </object>
             </child>
             <child>
-              <object class="GtkButton">
+              <object class="GtkButton" id="refresh_button">
                 <property name="label">Refresh</property>
                 <layout>
                   <property name="column">2</property>

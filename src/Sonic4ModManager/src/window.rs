@@ -1,10 +1,18 @@
 use adw::{prelude::{ActionRowExt}, subclass::prelude::*, ActionRow};
 use common::mod_logic::mod_entry::ModEntry;
-use gtk::{gio::{self}, glib::{self, object::Cast}, prelude::{ActionMapExtManual, TextBufferExt, TextTagExt, TextViewExt}, Align, CheckButton, Widget};
+use gtk::{gio::{self, prelude::ListModelExt}, glib::{self, object::Cast}, prelude::{ActionMapExtManual, ListBoxRowExt, TextTagExt, WidgetExt}, Align, CheckButton};
 
 use crate::models::mod_entry::GModEntry;
 
+enum Offset {
+    Top,
+    Up,
+    Down,
+    Bottom,
+}
+
 mod imp {
+
     use super::*;
 
     #[derive(Debug, Default, gtk::CompositeTemplate)]
@@ -14,6 +22,8 @@ mod imp {
         pub mod_list: TemplateChild<gtk::ListBox>,
         #[template_child]
         pub description: TemplateChild<gtk::TextView>,
+        #[template_child]
+        pub refresh_button: TemplateChild<gtk::Button>,
         
         #[template_child]
         pub mod_store: TemplateChild<gio::ListStore>,
@@ -59,7 +69,7 @@ glib::wrapper! {
             gtk::Accessible,
             gtk::ShortcutManager,
             gtk::Root,
-            gtk::Native;
+            gtk::Native;            
 }
 
 impl Sonic4ModManagerWindow {
@@ -69,12 +79,69 @@ impl Sonic4ModManagerWindow {
             .build()
     }
 
+    fn save_mods(&self) {
+        // let mod_entries = self.imp().mod_store.get().iter().map(|x| x.downcast_ref::<GModEntry>().unwrap().to_mod_entry()).collect::<Vec<_>>();
+        // ModEntry::save("./mods", &mod_entries);
+    }
+
+    fn get_selected_mod_index(&self) -> Option<u32> {
+        match self.imp().mod_list.selected_row() {
+            Some(row) => Some(row.index() as u32),
+            None => None,
+        }
+    }
+
+    fn move_selected_mod(&self, offset: Offset) {
+        match self.get_selected_mod_index() {
+            Some(index) => {
+                let mod_to_move = self.imp().mod_store.get().item(index);
+                match mod_to_move {
+                    Some(mod_to_move) => {
+                        self.imp().mod_store.remove(index);
+                        let final_index = match offset {
+                            Offset::Top => 0,
+                            Offset::Up => index - 1,
+                            Offset::Down => index + 1,
+                            Offset::Bottom => self.imp().mod_store.n_items(),
+                        };
+                        self.imp().mod_store.insert(final_index , &mod_to_move);
+                        // make mod entry focused after move
+                    }
+                    None => (),
+                }
+            }
+            None => (),
+        }
+    }
+
     fn setup_actions(&self) {
         let mod_check_action = gio::ActionEntry::builder("check_mod")
             .activate(move |app: &Self, _, _| app.imp().mod_store.remove(0))
             .build();
 
-        self.add_action_entries([mod_check_action]);
+        let move_mod_to_top_action = gio::ActionEntry::builder("move_mod_to_top")
+            .activate(move |app: &Self, _, _| app.move_selected_mod(Offset::Top))
+            .build();
+
+        let move_mod_up_action = gio::ActionEntry::builder("move_mod_up")
+            .activate(move |app: &Self, _, _| app.move_selected_mod(Offset::Up))
+            .build();
+
+        let move_mod_down_action = gio::ActionEntry::builder("move_mod_down")
+            .activate(move |app: &Self, _, _| app.move_selected_mod(Offset::Down))
+            .build();
+        
+        let move_mod_to_bottom_action = gio::ActionEntry::builder("move_mod_to_bottom")
+            .activate(move |app: &Self, _, _| app.move_selected_mod(Offset::Bottom))
+            .build();
+
+        self.add_action_entries([
+            mod_check_action,
+            move_mod_to_top_action,
+            move_mod_up_action,
+            move_mod_down_action,
+            move_mod_to_bottom_action,
+        ]);
     }
 
     fn startup(&self) {
@@ -115,7 +182,7 @@ impl Sonic4ModManagerWindow {
             row.upcast()
         });
 
-        self.imp().mod_list.unselect_all();
+        self.imp().refresh_button.grab_focus();
 
         let buffer_builder = gtk::TextBuffer::builder();
         let tag = gtk::TextTag::new(Some("test"));
