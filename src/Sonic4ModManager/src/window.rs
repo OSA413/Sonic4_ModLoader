@@ -14,6 +14,9 @@ mod imp {
         pub mod_list: TemplateChild<gtk::ListBox>,
         #[template_child]
         pub description: TemplateChild<gtk::TextView>,
+        
+        #[template_child]
+        pub mod_store: TemplateChild<gio::ListStore>,
     }
 
     #[glib::object_subclass]
@@ -67,51 +70,52 @@ impl Sonic4ModManagerWindow {
     }
 
     fn setup_actions(&self) {
-        // let mod_check_action = gio::ActionEntry::builder("check_mod")
-        //     .activate(move |app: &Self, _, _| app.create_mod_row("test", "Version 1.0.1 by OSA413"))
-        //     .build();
+        let mod_check_action = gio::ActionEntry::builder("check_mod")
+            .activate(move |app: &Self, _, _| app.imp().mod_store.remove(0))
+            .build();
 
-        // self.add_action_entries([mod_check_action]);
+        self.add_action_entries([mod_check_action]);
     }
 
     fn startup(&self) {
-        let list_store = gio::ListStore::new::<GModEntry>();
         let mod_entries = ModEntry::load("./mods");
         let g_mod_entries = mod_entries.iter().map(|x| GModEntry::from_mod_entry(x)).collect::<Vec<_>>();
-        list_store.extend_from_slice(&g_mod_entries);
+        self.imp().mod_store.extend_from_slice(&g_mod_entries);
 
-        self.imp().mod_list.bind_model(Some(&list_store),move |obj| {
-            let mod_entry = obj
+        self.imp().mod_list.bind_model(Some(&self.imp().mod_store.get()),move |obj| {
+            let g_mod_entry = obj
                 .downcast_ref::<GModEntry>()
-                .expect("The object should be of type `ModEntry`.");
+                .expect("The object should be of type `GModEntry`.");
 
             let check_button = CheckButton::builder()
                 .valign(Align::Center)
-                .active(mod_entry.enabled())
+                .active(g_mod_entry.enabled())
                 .can_focus(false)
                 .build();
 
-            let version_string = match mod_entry.version() {
+            let version_string = match g_mod_entry.version() {
                 Some(version) => {
-                    match mod_entry.authors() {
+                    match g_mod_entry.authors() {
                         Some(authors) => format!("Version {} by {}", version, authors),
                         None => format!("Version {}", version)
                     }
                 },
-                None => match mod_entry.authors() {
+                None => match g_mod_entry.authors() {
                     Some(authors) => format!("by {}", authors),
                     None => "".to_string()
                 },
             };
 
             let row = ActionRow::builder()
-                .title(mod_entry.title().unwrap_or(mod_entry.path()))
+                .title(g_mod_entry.title().unwrap_or(g_mod_entry.path()))
                 .subtitle(version_string)
                 .build();
             row.add_prefix(&check_button);
             
             row.upcast()
         });
+
+        self.imp().mod_list.unselect_all();
 
         let buffer_builder = gtk::TextBuffer::builder();
         let tag = gtk::TextTag::new(Some("test"));
