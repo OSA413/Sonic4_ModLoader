@@ -21,7 +21,6 @@ FAQ: https://github.com/OSA413/Sonic4_ModLoader/blob/main/docs/FAQ.md
     - [Manually](#manually)
     - [Automatically](#automatically)
   - [Third party works](#third-party-works)
-  - [How to use copy of 7-Zip from your system](#how-to-use-copy-of-7-zip-from-your-system)
   - [How to automatically update Mod Loader](#how-to-automatically-update-mod-loader)
   - [Useful documentation for modders and contributors](#useful-documentation-for-modders-and-contributors)
   - [See also](#see-also)
@@ -35,7 +34,7 @@ The Mod Loader includes:
 * One-Click Mod Installer for an easier mod installation through the web and local archives
 * AMBPatcher for editing .AMB files
 * CsbEditor for editing .CSB files
-* 7-Zip as a dependency for One-Click Mod Installer (you can use a copy from your system)
+* 7-Zip as a dependency for One-Click Mod Installer
 
 ## How to install the Mod Loader
 
@@ -91,16 +90,6 @@ https://gtk.org/
 * GTK4 via gtk-rs under the MIT license https://gtk-rs.org/
 
 * For other licenses, see `Sonic4ModLoader/Mod Loader - licenses` folder of a downloaded copy of the Mod Loader.
-
-## How to use copy of 7-Zip from your system
-
-1. Launch One-Click Mod Installer
-2. Go to the Settings tab
-3. Select "Paths" tab
-4. Check "Use a local copy of 7-Zip from this computer"
-5. Specify path to `7z.exe` in the text field below the checkbox
-
-Note: if OCMI fails to find `7z.exe` in your path, it will try to use a copy that comes with Mod Loader.
 
 ## How to automatically update Mod Loader
 
