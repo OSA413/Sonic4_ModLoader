@@ -1,5 +1,6 @@
 [workspace]
 members = [
+    "src/AMBPatcher",
     "src/ManagerLauncher",
     "src/ManagerLauncher_link",
     "src/Sonic4ModManager",
