@@ -1,5 +1,7 @@
 [package]
 name = "AMBPatcher"
+description = "AMB Container Editor"
+version = "1.0.0"
 edition = "2021"
 authors = ["Oleg \"OSA413\" Sokolov"]
 repository = "https://github.com/OSA413/Sonic4_ModLoader"
