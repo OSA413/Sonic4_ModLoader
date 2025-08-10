@@ -176,6 +176,7 @@
             <child>
               <object class="GtkButton" id="refresh_button">
                 <property name="label">Refresh</property>
+                <property name="action-name">win.refresh_mod_list</property>
                 <layout>
                   <property name="column">2</property>
                   <property name="row">0</property>

@@ -2,8 +2,9 @@ use std::cmp;
 
 use adw::{prelude::{ActionRowExt}, subclass::prelude::*, ActionRow};
 use common::mod_logic::mod_entry::ModEntry;
-use gtk::{gio::{self, prelude::ListModelExt}, glib::{self, clone, gobject_ffi::GObject, object::Cast, property::{PropertyGet, PropertySet}}, prelude::{ActionMapExtManual, ListBoxRowExt, TextTagExt, WidgetExt}, Align, CheckButton};
+use gtk::{gio::{self, prelude::ListModelExt}, glib::{self, clone, object::Cast}, prelude::{ActionMapExtManual, ListBoxRowExt, TextTagExt, WidgetExt}, Align, CheckButton};
 use crate::models::mod_entry::GModEntry;
+use std::cell::RefCell;
 
 enum Offset {
     Top,
@@ -13,8 +14,6 @@ enum Offset {
 }
 
 mod imp {
-    use std::cell::RefCell;
-
     use super::*;
 
     #[derive(Debug, Default, gtk::CompositeTemplate)]
@@ -140,12 +139,17 @@ impl Sonic4ModManagerWindow {
             .activate(move |app: &Self, _, _| app.move_selected_mod(Offset::Bottom))
             .build();
 
+        let refresh_mod_list_action = gio::ActionEntry::builder("refresh_mod_list")
+            .activate(move |app: &Self, _, _| app.refresh_mod_list())
+            .build();
+
         self.add_action_entries([
             mod_check_action,
             move_mod_to_top_action,
             move_mod_up_action,
             move_mod_down_action,
             move_mod_to_bottom_action,
+            refresh_mod_list_action,
         ]);
     }
 
@@ -189,11 +193,14 @@ impl Sonic4ModManagerWindow {
         row
     }
 
-    fn startup(&self) {
+    fn refresh_mod_list(&self) {
         let mod_entries = ModEntry::load("./mods");
         let g_mod_entries = mod_entries.iter().map(|x| GModEntry::from_mod_entry(x)).collect::<Vec<_>>();
+        self.imp().mod_store.remove_all();
         self.imp().mod_store.extend_from_slice(&g_mod_entries);
+    }
 
+    fn startup(&self) {
         // TODO remove clone
         let closure = {
             clone!(
@@ -201,8 +208,10 @@ impl Sonic4ModManagerWindow {
                 move |obj: &glib::Object| this.create_mod_list_closure(obj)
             )
         };
-
         self.imp().mod_list.bind_model(Some(&self.imp().mod_store.get()), move |obj: &glib::Object| closure(obj));
+
+        self.refresh_mod_list();
+
 
         let buffer_builder = gtk::TextBuffer::builder();
         let tag = gtk::TextTag::new(Some("test"));
