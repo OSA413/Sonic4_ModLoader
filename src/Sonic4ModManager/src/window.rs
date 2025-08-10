@@ -2,9 +2,10 @@ use std::cmp;
 
 use adw::{prelude::{ActionRowExt}, subclass::prelude::*, ActionRow};
 use common::mod_logic::mod_entry::ModEntry;
-use gtk::{gio::{self, prelude::ListModelExt}, glib::{self, clone, object::Cast}, prelude::{ActionMapExtManual, ListBoxRowExt, TextTagExt, WidgetExt}, Align, CheckButton};
+use gtk::{gio::{self, prelude::{ApplicationExt, ListModelExt, ListModelExtManual}}, glib::{self, clone, object::Cast, Object}, prelude::{ActionMapExtManual, CheckButtonExt, GtkWindowExt, ListBoxRowExt, TextTagExt, WidgetExt}, Align, CheckButton};
 use crate::models::mod_entry::GModEntry;
 use std::cell::RefCell;
+use std::fs;
 
 enum Offset {
     Top,
@@ -82,8 +83,34 @@ impl Sonic4ModManagerWindow {
     }
 
     fn save_mods(&self) {
-        // let mod_entries = self.imp().mod_store.get().iter().map(|x| x.downcast_ref::<GModEntry>().unwrap().to_mod_entry()).collect::<Vec<_>>();
-        // ModEntry::save("./mods", &mod_entries);
+        println!("Mod list:");
+        let mut result = Vec::<String>::new();
+        let mod_entries = self.imp().mod_store.iter::<Object>();
+        for mod_entry in mod_entries {
+            let g_mod_entry = mod_entry.unwrap().downcast::<GModEntry>().unwrap();
+            if g_mod_entry.enabled() {
+                result.push(g_mod_entry.path());
+                println!("{}", g_mod_entry.path());
+            }
+        }
+        result.reverse();
+        println!("Mod list ended");
+        self.save_mods_ini(result);
+    }
+
+    fn save_mods_ini(&self, mods: Vec<String>) {
+        // It will probably crash, fix later
+        fs::create_dir_all("mods");
+        fs::write("mods/mods.ini", mods.join("\n"));
+    }
+
+    fn save_mods_and_play(&self) {
+        self.save_mods();
+        let game_lauched = common::Launcher::launch_game();
+        match game_lauched {
+            Ok(_) => self.application().unwrap().quit(),
+            Err(e) => println!("{}", e),
+        }
     }
 
     fn get_selected_mod_index(&self) -> Option<u32> {
@@ -139,6 +166,14 @@ impl Sonic4ModManagerWindow {
             .activate(move |app: &Self, _, _| app.move_selected_mod(Offset::Bottom))
             .build();
 
+        let save_mods_action = gio::ActionEntry::builder("save_mods")
+            .activate(move |app: &Self, _, _| app.save_mods())
+            .build();
+
+        let save_mods_and_play_action = gio::ActionEntry::builder("save_mods_and_play")
+            .activate(move |app: &Self, _, _| app.save_mods_and_play())
+            .build();
+
         let refresh_mod_list_action = gio::ActionEntry::builder("refresh_mod_list")
             .activate(move |app: &Self, _, _| app.refresh_mod_list())
             .build();
@@ -149,6 +184,8 @@ impl Sonic4ModManagerWindow {
             move_mod_up_action,
             move_mod_down_action,
             move_mod_to_bottom_action,
+            save_mods_action,
+            save_mods_and_play_action,
             refresh_mod_list_action,
         ]);
     }
@@ -163,6 +200,9 @@ impl Sonic4ModManagerWindow {
             .active(g_mod_entry.enabled())
             .can_focus(false)
             .build();
+
+        let g_mod_entry_ = g_mod_entry.clone();
+        check_button.connect_toggled(move |check_box| g_mod_entry_.set_enabled(check_box.is_active()));
 
         let version_string = match g_mod_entry.version() {
             Some(version) => {
@@ -211,7 +251,6 @@ impl Sonic4ModManagerWindow {
         self.imp().mod_list.bind_model(Some(&self.imp().mod_store.get()), move |obj: &glib::Object| closure(obj));
 
         self.refresh_mod_list();
-
 
         let buffer_builder = gtk::TextBuffer::builder();
         let tag = gtk::TextTag::new(Some("test"));

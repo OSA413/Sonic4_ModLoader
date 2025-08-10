@@ -148,6 +148,7 @@
             <child>
               <object class="GtkButton">
                 <property name="label">Save</property>
+                <property name="action-name">win.save_mods</property>
                 <layout>
                   <property name="column">0</property>
                   <property name="row">0</property>
@@ -157,11 +158,11 @@
             <child>
               <object class="GtkButton">
                 <property name="label">Save and Play</property>
+                <property name="action-name">win.save_mods_and_play</property>
                 <layout>
                   <property name="column">0</property>
                   <property name="row">1</property>
                 </layout>
-                <property name="action-name">win.check_mod</property>
               </object>
             </child>
             <child>
