@@ -80,8 +80,7 @@ impl Sonic4ModManagerApplication {
         self.add_action_entries([quit_action, about_action]);
     }
 
-    fn show_about(&self) {
-        let window = self.active_window();                
+    fn show_about(&self) {              
         let about = adw::AboutDialog::builder()
             .application_name("Sonic4 Mod Manager")
             .license_type(License::MitX11)
@@ -96,6 +95,7 @@ impl Sonic4ModManagerApplication {
             .copyright("© 2018-2025 Oleg \"OSA413\" Sokolov")
             .build();
 
+        let window = self.active_window();  
         about.present(window.as_ref());
     }
 }

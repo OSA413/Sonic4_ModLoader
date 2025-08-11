@@ -1,8 +1,8 @@
 use std::cmp;
 
-use adw::{prelude::{ActionRowExt}, subclass::prelude::*, ActionRow};
+use adw::{prelude::{ActionRowExt, AlertDialogExt, AlertDialogExtManual}, subclass::prelude::*, ActionRow};
 use common::mod_logic::mod_entry::ModEntry;
-use gtk::{gio::{self, prelude::{ApplicationExt, ListModelExt, ListModelExtManual}}, glib::{self, clone, object::Cast, Object}, prelude::{ActionMapExtManual, CheckButtonExt, GtkWindowExt, ListBoxRowExt, TextTagExt, WidgetExt}, Align, CheckButton};
+use gtk::{gio::{self, prelude::{ApplicationExt, ListModelExt, ListModelExtManual}}, glib::{self, clone, object::Cast, Object}, prelude::{ActionMapExtManual, CheckButtonExt, GtkWindowExt, ListBoxRowExt, TextTagExt, TextViewExt, WidgetExt}, Align, CheckButton};
 use crate::models::mod_entry::GModEntry;
 use std::cell::RefCell;
 use std::fs;
@@ -224,11 +224,6 @@ impl Sonic4ModManagerWindow {
         row.add_prefix(&check_button);
 
         let row = row.upcast::<gtk::Widget>();
-        
-        match self.imp().mod_list.first_child() {
-            Some(first_child) => first_child.activate(),
-            None => false,
-        };
 
         row
     }
@@ -238,6 +233,21 @@ impl Sonic4ModManagerWindow {
         let g_mod_entries = mod_entries.iter().map(|x| GModEntry::from_mod_entry(x)).collect::<Vec<_>>();
         self.imp().mod_store.remove_all();
         self.imp().mod_store.extend_from_slice(&g_mod_entries);
+    }
+
+    fn show_first_time_dialog(&self) {
+        let a = adw::Dialog::new();
+        let b = adw::AlertDialog::new(Some("First Launch Dialog"), Some("Hello!
+It seems that you have launched the Mod Manager for the first time. Do you want to install the Mod Loader to be able to launch it from other shortcuts (e.g. Steam)?
+
+You can install/uninstall and configure it through the settings menu at any time."));
+        b.add_response("yes", "Yes");
+        b.set_response_appearance("yes", adw::ResponseAppearance::Suggested);
+        b.add_response("ask_later", "Ask Later");
+        b.set_response_appearance("ask_later", adw::ResponseAppearance::Default);
+        b.add_response("no", "No");
+        b.set_response_appearance("no", adw::ResponseAppearance::Destructive);
+        b.set_close_response("ask_later");
     }
 
     fn startup(&self) {
@@ -252,6 +262,8 @@ impl Sonic4ModManagerWindow {
 
         self.refresh_mod_list();
 
+        self.show_first_time_dialog();
+
         let buffer_builder = gtk::TextBuffer::builder();
         let tag = gtk::TextTag::new(Some("test"));
         tag.set_weight(600);
@@ -260,9 +272,9 @@ impl Sonic4ModManagerWindow {
         table.add(&tag);
         let buffer_builder = buffer_builder.tag_table(&table);
         let buffer_builder = buffer_builder.text("This is a test description");
-        // let buffer = buffer_builder.build();
+        let buffer = buffer_builder.build();
         // let start = buffer.
         // buffer.apply_tag(&tag, gtk::TextIter::, -1);
-        // self.imp().description.set_buffer(Some(&buffer));
+        self.imp().description.set_buffer(Some(&buffer));
     }
 }
