@@ -1,6 +1,6 @@
 use std::cmp;
 
-use adw::{prelude::{ActionRowExt, AlertDialogExt, AlertDialogExtManual}, subclass::prelude::*, ActionRow};
+use adw::{prelude::{ActionRowExt, AdwDialogExt, AlertDialogExt, AlertDialogExtManual}, subclass::prelude::*, ActionRow};
 use common::mod_logic::mod_entry::ModEntry;
 use gtk::{gio::{self, prelude::{ApplicationExt, ListModelExt, ListModelExtManual}}, glib::{self, clone, object::Cast, Object}, prelude::{ActionMapExtManual, CheckButtonExt, GtkWindowExt, ListBoxRowExt, TextTagExt, TextViewExt, WidgetExt}, Align, CheckButton};
 use crate::models::mod_entry::GModEntry;
@@ -236,18 +236,19 @@ impl Sonic4ModManagerWindow {
     }
 
     fn show_first_time_dialog(&self) {
-        let a = adw::Dialog::new();
-        let b = adw::AlertDialog::new(Some("First Launch Dialog"), Some("Hello!
+        let alert = adw::AlertDialog::new(Some("First Launch Dialog"), Some("Hello!
 It seems that you have launched the Mod Manager for the first time. Do you want to install the Mod Loader to be able to launch it from other shortcuts (e.g. Steam)?
 
 You can install/uninstall and configure it through the settings menu at any time."));
-        b.add_response("yes", "Yes");
-        b.set_response_appearance("yes", adw::ResponseAppearance::Suggested);
-        b.add_response("ask_later", "Ask Later");
-        b.set_response_appearance("ask_later", adw::ResponseAppearance::Default);
-        b.add_response("no", "No");
-        b.set_response_appearance("no", adw::ResponseAppearance::Destructive);
-        b.set_close_response("ask_later");
+
+        alert.add_response("no", "No");
+        alert.set_response_appearance("no", adw::ResponseAppearance::Destructive);
+        alert.add_response("ask_later", "Ask Later");
+        alert.set_response_appearance("ask_later", adw::ResponseAppearance::Default);
+        alert.add_response("yes", "Yes");
+        alert.set_response_appearance("yes", adw::ResponseAppearance::Suggested);
+        alert.set_close_response("ask_later");
+        alert.present(Some(self));
     }
 
     fn startup(&self) {
