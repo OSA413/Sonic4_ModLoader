@@ -3,7 +3,7 @@ use std::cmp;
 use adw::{prelude::{ActionRowExt, AdwDialogExt, AlertDialogExt, AlertDialogExtManual}, subclass::prelude::*, ActionRow};
 use common::mod_logic::mod_entry::ModEntry;
 use gtk::{gio::{self, prelude::{ApplicationExt, ListModelExt, ListModelExtManual}}, glib::{self, clone, object::Cast, Object}, prelude::{ActionMapExtManual, CheckButtonExt, GtkWindowExt, ListBoxRowExt, TextTagExt, TextViewExt, WidgetExt}, Align, CheckButton};
-use crate::models::mod_entry::GModEntry;
+use crate::models::g_mod_entry::GModEntry;
 use std::cell::RefCell;
 use std::fs;
 

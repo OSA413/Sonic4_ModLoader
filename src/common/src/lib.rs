@@ -1,5 +1,6 @@
 mod launcher;
 pub use launcher::Launcher;
+pub use launcher::Game;
 pub mod global;
 pub mod config {
     pub mod config;
