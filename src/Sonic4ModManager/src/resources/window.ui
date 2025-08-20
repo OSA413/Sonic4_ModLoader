@@ -168,6 +168,7 @@
             <child>
               <object class="GtkButton">
                 <property name="label">Open in Explorer</property>
+                <property name="action-name">win.open_mods_folder</property>
                 <layout>
                   <property name="column">1</property>
                   <property name="row">0</property>
@@ -187,6 +188,7 @@
             <child>
               <object class="GtkButton">
                 <property name="label">Random</property>
+                <property name="action-name">win.randomize_mod_list</property>
                 <layout>
                   <property name="column">2</property>
                   <property name="row">1</property>

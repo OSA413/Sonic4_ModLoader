@@ -89,4 +89,8 @@ impl Launcher {
     pub fn launch_ocmi(args: Vec<String>) -> Result<Child, io::Error> {
         Command::new("OneClickModInstaller.exe").args(args).spawn()
     }
+
+    pub fn open_mods_folder() -> Result<Child, io::Error> {
+        Command::new("explorer.exe").arg("mods").spawn()
+    }
 }

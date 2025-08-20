@@ -1,11 +1,13 @@
 use std::cmp;
 
 use adw::{prelude::{ActionRowExt, AdwDialogExt, AlertDialogExt, AlertDialogExtManual}, subclass::prelude::*, ActionRow};
-use common::mod_logic::mod_entry::ModEntry;
-use gtk::{gio::{self, prelude::{ApplicationExt, ListModelExt, ListModelExtManual}}, glib::{self, clone, object::Cast, Object}, prelude::{ActionMapExtManual, CheckButtonExt, GtkWindowExt, ListBoxRowExt, TextTagExt, TextViewExt, WidgetExt}, Align, CheckButton};
+use common::{mod_logic::mod_entry::ModEntry, Launcher};
+use gtk::{gio::{self, prelude::{ApplicationExt, ListModelExt, ListModelExtManual}}, glib::{self, clone, gobject_ffi::GObject, object::Cast, Object}, prelude::{ActionMapExtManual, CheckButtonExt, GtkWindowExt, ListBoxRowExt, TextTagExt, TextViewExt, WidgetExt}, Align, CheckButton};
 use crate::{installation, models::g_mod_entry::GModEntry};
 use std::cell::RefCell;
 use std::fs;
+use rand::rng;
+use rand::seq::SliceRandom;
 
 enum Offset {
     Top,
@@ -174,8 +176,16 @@ impl Sonic4ModManagerWindow {
             .activate(move |app: &Self, _, _| app.save_mods_and_play())
             .build();
 
+        let open_mods_folder_action = gio::ActionEntry::builder("open_mods_folder")
+            .activate(move |app: &Self, _, _| app.open_mods_folder())
+            .build();
+
         let refresh_mod_list_action = gio::ActionEntry::builder("refresh_mod_list")
             .activate(move |app: &Self, _, _| app.refresh_mod_list())
+            .build();
+
+        let randomize_mod_list_action = gio::ActionEntry::builder("randomize_mod_list")
+            .activate(move |app: &Self, _, _| app.randomize_mod_list())
             .build();
 
         self.add_action_entries([
@@ -186,7 +196,9 @@ impl Sonic4ModManagerWindow {
             move_mod_to_bottom_action,
             save_mods_action,
             save_mods_and_play_action,
+            open_mods_folder_action,
             refresh_mod_list_action,
+            randomize_mod_list_action,
         ]);
     }
 
@@ -233,6 +245,25 @@ impl Sonic4ModManagerWindow {
         let g_mod_entries = mod_entries.iter().map(|x| GModEntry::from_mod_entry(x)).collect::<Vec<_>>();
         self.imp().mod_store.remove_all();
         self.imp().mod_store.extend_from_slice(&g_mod_entries);
+    }
+
+    fn open_mods_folder(&self) {
+        Launcher::open_mods_folder();
+    }
+
+    fn randomize_mod_list(&self) {
+        let range = 0..self.imp().mod_store.n_items();
+        let mut result: Vec<glib::Object> = range.map(|position| self.imp().mod_store.item(position).unwrap()).collect();
+        result.shuffle(&mut rng());
+        result.iter().for_each(|obj| {
+            let new_mod = obj
+                .downcast_ref::<GModEntry>()
+                .expect("The object should be of type `GModEntry`.");
+
+            new_mod.set_enabled(rand::random_bool(0.5));
+        });
+        self.imp().mod_store.remove_all();
+        self.imp().mod_store.extend_from_slice(&result);
     }
 
     fn show_first_time_dialog(&self) {
