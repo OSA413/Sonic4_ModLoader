@@ -3,7 +3,7 @@ use std::cmp;
 use adw::{prelude::{ActionRowExt, AdwDialogExt, AlertDialogExt, AlertDialogExtManual}, subclass::prelude::*, ActionRow};
 use common::mod_logic::mod_entry::ModEntry;
 use gtk::{gio::{self, prelude::{ApplicationExt, ListModelExt, ListModelExtManual}}, glib::{self, clone, object::Cast, Object}, prelude::{ActionMapExtManual, CheckButtonExt, GtkWindowExt, ListBoxRowExt, TextTagExt, TextViewExt, WidgetExt}, Align, CheckButton};
-use crate::models::g_mod_entry::GModEntry;
+use crate::{installation, models::g_mod_entry::GModEntry};
 use std::cell::RefCell;
 use std::fs;
 
@@ -249,6 +249,14 @@ You can install/uninstall and configure it through the settings menu at any time
         alert.set_response_appearance("yes", adw::ResponseAppearance::Suggested);
         alert.set_close_response("ask_later");
         alert.present(Some(self));
+
+        alert.connect_response(None, move |_, response| {
+            match response {
+                "no" => installation::write_empty_config(),
+                "yes" => installation::install(),
+                _ => {}
+            }
+        });
     }
 
     fn startup(&self) {

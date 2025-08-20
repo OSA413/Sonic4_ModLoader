@@ -1,4 +1,4 @@
-use std::{fs, path::Path, process};
+use std::{fs::{self, read_to_string}, path::Path, process};
 
 use common::{Game, Launcher};
 
@@ -100,9 +100,26 @@ pub fn install() {
         }
     }
 
-    todo!()
-    // Settings.PatcherDir = "AMBPatcher.exe";
-    // Settings.Save();
+    fs::write("ModManager.cfg", "");
+    write_aml_config("AMBPatcher.exe");
+}
+
+pub fn write_empty_config() {
+    fs::write("ModManager.cfg", "");
+}
+
+pub fn write_aml_config(patcher_dir: &str) {
+    let ini_aml = fs::read_to_string("AML/AliceML.ini").unwrap();
+    let mut result_lines = Vec::<String>::new();
+    for line in ini_aml.lines() {
+        if line.starts_with("PatcherDir=") {
+            result_lines.push(format!("PatcherDir={}", patcher_dir));
+        } else {
+            result_lines.push(line.to_string());
+        }
+    }
+            
+    fs::write("AML/AliceML.ini", result_lines.join("\n"));
 }
 
 pub struct UninstallationOptions {
@@ -125,9 +142,7 @@ pub fn uninstall(options: UninstallationOptions) {
         }
     }
 
-    // todo!();
-    // Settings.PatcherDir = "";
-    // Settings.Save();
+    write_aml_config("");
 
     if options.recover_original_files {
         let result = process::Command::new("AMBPatcher.exe")
