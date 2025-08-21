@@ -2,14 +2,14 @@ use std::{fs::{self, read_to_string}, path::Path, process};
 
 use common::{Game, Launcher};
 
-enum InstallationStatus {
+pub enum InstallationStatus {
     Installed,
     NotInstalled,
     FirstLaunch,
     NotGameDirectory,
 }
 
-fn get_installation_status() -> InstallationStatus {
+pub fn get_installation_status() -> InstallationStatus {
     let game = Launcher::get_current_game();
     
     match game {

@@ -1,7 +1,7 @@
 mod application;
 mod window;
 mod models;
-mod settings;
+mod settings_dialog;
 mod installation;
 
 use self::application::Sonic4ModManagerApplication;

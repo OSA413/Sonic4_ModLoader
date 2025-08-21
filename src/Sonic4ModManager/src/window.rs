@@ -3,7 +3,7 @@ use std::cmp;
 use adw::{prelude::{ActionRowExt, AdwDialogExt, AlertDialogExt, AlertDialogExtManual}, subclass::prelude::*, ActionRow};
 use common::{mod_logic::mod_entry::ModEntry, Launcher};
 use gtk::{gio::{self, prelude::{ApplicationExt, ListModelExt, ListModelExtManual}}, glib::{self, clone, gobject_ffi::GObject, object::Cast, Object}, prelude::{ActionMapExtManual, CheckButtonExt, GtkWindowExt, ListBoxRowExt, TextTagExt, TextViewExt, WidgetExt}, Align, CheckButton};
-use crate::{installation, models::g_mod_entry::GModEntry};
+use crate::{installation, models::g_mod_entry::GModEntry, settings_dialog::SettingsWindow};
 use std::cell::RefCell;
 use std::fs;
 use rand::rng;
@@ -188,6 +188,10 @@ impl Sonic4ModManagerWindow {
             .activate(move |app: &Self, _, _| app.randomize_mod_list())
             .build();
 
+        let show_settings_action = gio::ActionEntry::builder("show_settings")
+            .activate(move |app: &Self, _, _| app.show_settings())
+            .build();
+
         self.add_action_entries([
             mod_check_action,
             move_mod_to_top_action,
@@ -199,7 +203,13 @@ impl Sonic4ModManagerWindow {
             open_mods_folder_action,
             refresh_mod_list_action,
             randomize_mod_list_action,
+            show_settings_action,
         ]);
+    }
+
+    fn show_settings(&self) {
+        let a = SettingsWindow::new(None);
+        a.present(Some(self));
     }
 
     fn create_mod_list_closure(&self, obj: &gtk::glib::Object) -> gtk::Widget {
@@ -302,8 +312,6 @@ You can install/uninstall and configure it through the settings menu at any time
 
         self.refresh_mod_list();
 
-        self.show_first_time_dialog();
-
         let buffer_builder = gtk::TextBuffer::builder();
         let tag = gtk::TextTag::new(Some("test"));
         tag.set_weight(600);
@@ -316,5 +324,10 @@ You can install/uninstall and configure it through the settings menu at any time
         // let start = buffer.
         // buffer.apply_tag(&tag, gtk::TextIter::, -1);
         self.imp().description.set_buffer(Some(&buffer));
+        
+        match installation::get_installation_status() {
+            installation::InstallationStatus::FirstLaunch => self.show_first_time_dialog(),
+            _ => ()
+        };
     }
 }

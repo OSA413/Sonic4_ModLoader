@@ -2,6 +2,7 @@
 <gresources>
   <gresource prefix="/Sonic4ModLoader/Sonic4ModManager/">
     <file compressed="true" preprocess="xml-stripblanks">window.ui</file>
+    <file compressed="true" preprocess="xml-stripblanks">window_settings.ui</file>
     <file compressed="true" preprocess="xml-stripblanks" alias="icon.svg">../../../../icon.svg</file>
   </gresource>
 </gresources>
