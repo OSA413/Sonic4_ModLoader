@@ -18,11 +18,6 @@
               <object class="AdwOverlaySplitView">
                 <property name="sidebar">
                   <object class="AdwToolbarView">
-                    <child type="top">
-                      <object class="AdwHeaderBar">
-                        <property name="show-title">False</property>
-                      </object>
-                    </child>
                     <property name="content">
                       <object class="AdwLayoutSlot">
                         <property name="id">sidebar</property>
@@ -33,8 +28,31 @@
                 <property name="content">
                   <object class="AdwToolbarView">
                     <child type="top">
-                      <object class="AdwHeaderBar">
-                        <property name="show-title">False</property>
+                      <object class="GtkGrid">
+                        <property name="margin-start">8</property>
+                        <property name="margin-end">8</property>
+                        <property name="margin-top">8</property>
+                        <property name="margin-bottom">8</property>
+                        <property name="column-spacing">8</property>
+                        <property name="row-spacing">8</property>
+                        <child>
+                          <object class="GtkButton">
+                            <property name="label" translatable="yes">Save</property>
+                            <layout>
+                              <property name="column">0</property>
+                              <property name="row">0</property>
+                            </layout>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton">
+                            <property name="label" translatable="yes">Discard</property>
+                            <layout>
+                              <property name="column">4</property>
+                              <property name="row">0</property>
+                            </layout>
+                          </object>
+                        </child>
                       </object>
                     </child>
                     <property name="content">
@@ -48,40 +66,67 @@
             </property>
           </object>
         </child>
-        <child>
-          <object class="AdwLayout">
-            <property name="name">narrow</property>
-            <property name="content">
+        <child type="sidebar">
+          <object class="AdwNavigationPage">
+            <property name="title" translatable="yes">Sidebar</property>
+            <property name="child">
               <object class="AdwToolbarView">
-                <property name="bottom-bar-style">raised</property>
-                <child type="top">
-                  <object class="AdwHeaderBar">
-                    <property name="show-title">False</property>
-                  </object>
-                </child>
                 <property name="content">
-                  <object class="AdwLayoutSlot">
-                    <property name="id">content</property>
+                  <object class="GtkStackSidebar">
+                    <property name="stack">stack</property>
                   </object>
                 </property>
-                <child type="bottom">
-                  <object class="AdwLayoutSlot">
-                    <property name="id">sidebar</property>
-                    <property name="height-request">100</property>
-                  </object>
-                </child>
               </object>
             </property>
           </object>
         </child>
-        <child type="sidebar">
-          <object class="GtkLabel">
-            <property name="label">Sidebar</property>
-          </object>
-        </child>
         <child type="content">
-          <object class="GtkLabel">
-            <property name="label">Content</property>
+          <object class="AdwNavigationPage" id="content_page">
+            <property name="title" translatable="yes">Content</property>
+            <property name="child">
+              <object class="GtkStack" id="stack">
+                <child>
+                  <object class="GtkStackPage">
+                    <property name="title" translatable="yes">Welcome</property>
+                    <property name="child">
+                      <object class="GtkLabel">
+                        <property name="label">Content0</property>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkStackPage">
+                    <property name="title" translatable="yes">Welcome</property>
+                    <property name="child">
+                      <object class="GtkLabel">
+                        <property name="label">Content1</property>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkStackPage">
+                    <property name="title" translatable="yes">Welcome</property>
+                    <property name="child">
+                      <object class="GtkLabel">
+                        <property name="label">Content2</property>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkStackPage">
+                    <property name="title" translatable="yes">Welcome</property>
+                    <property name="child">
+                      <object class="GtkLabel">
+                        <property name="label">Content3</property>
+                      </object>
+                    </property>
+                  </object>
+                </child>
+              </object>
+            </property>
           </object>
         </child>
       </object>
