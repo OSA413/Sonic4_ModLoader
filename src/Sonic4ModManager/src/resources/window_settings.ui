@@ -154,6 +154,8 @@
                   <object class="GtkStackPage">
                     <property name="title" translatable="yes">AMBPatcher</property>
                     <property name="child">
+                      <!-- TODO: try redo GtkBox to -->
+                       <!-- https://gnome.pages.gitlab.gnome.org/libadwaita/doc/main/class.ToolbarView.html -->
                       <object class="GtkBox">
                         <property name="orientation">vertical</property>
                         <child>
