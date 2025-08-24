@@ -87,40 +87,129 @@
               <object class="GtkStack" id="stack">
                 <child>
                   <object class="GtkStackPage">
-                    <property name="title" translatable="yes">Welcome</property>
+                    <property name="title" translatable="yes">Installation</property>
                     <property name="child">
-                      <object class="GtkLabel">
-                        <property name="label">Content0</property>
+                      <object class="GtkBox">
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label">Installation Status:</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label">//Installation status goes here</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton">
+                            <property name="label">(Un)install</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckButton">
+                            <property name="label">Force uninstall</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label">Uninstallation options:</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckButton">
+                            <property name="label">Force uninstall</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckButton">
+                            <property name="label">Rename files back</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckButton">
+                            <property name="label">Delete all Mod Loader files</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckButton">
+                            <property name="label">Keep configs</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckButton">
+                            <property name="label">Uninstall and delete One-Click Mod Installer</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckButton">
+                            <property name="label">Recover original game files (AMBs, CSBs, ...)</property>
+                          </object>
+                        </child>
                       </object>
                     </property>
                   </object>
                 </child>
                 <child>
                   <object class="GtkStackPage">
-                    <property name="title" translatable="yes">Welcome</property>
+                    <property name="title" translatable="yes">AMBPatcher</property>
                     <property name="child">
-                      <object class="GtkLabel">
-                        <property name="label">Content1</property>
+                      <object class="GtkBox">
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkCheckButton">
+                            <property name="label">Progress Bar</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckButton">
+                            <property name="label">Check SHA of files (recommended)</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton">
+                            <property name="label">Recover origianl files</property>
+                          </object>
+                        </child>
                       </object>
                     </property>
                   </object>
                 </child>
                 <child>
                   <object class="GtkStackPage">
-                    <property name="title" translatable="yes">Welcome</property>
+                    <property name="title" translatable="yes">CSBEditor</property>
                     <property name="child">
-                      <object class="GtkLabel">
-                        <property name="label">Content2</property>
-                      </object>
-                    </property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkStackPage">
-                    <property name="title" translatable="yes">Welcome</property>
-                    <property name="child">
-                      <object class="GtkLabel">
-                        <property name="label">Content3</property>
+                      <object class="GtkBox">
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkBox">
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label">Buffer size</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkEntry"></object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckButton">
+                            <property name="label">Enable threading</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox">
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label">Max threads</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkEntry"></object>
+                            </child>
+                          </object>
+                        </child>
                       </object>
                     </property>
                   </object>

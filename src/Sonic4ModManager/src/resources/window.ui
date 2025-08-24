@@ -52,6 +52,8 @@
                 <child>
                   <object class="GListStore" id="mod_store" />
                 </child>
+                <!-- TODO: Add this when no mods loaded -->
+                <!-- https://gnome.pages.gitlab.gnome.org/libadwaita/doc/1.5/class.StatusPage.html -->
                 <child>
                   <object class="GtkListBox" id="mod_list">
                     <property name="selection-mode">2</property>
