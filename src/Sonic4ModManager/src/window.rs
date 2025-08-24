@@ -208,7 +208,7 @@ impl Sonic4ModManagerWindow {
     }
 
     fn show_settings(&self) {
-        let a = SettingsWindow::new(None);
+        let a = SettingsWindow::new();
         a.present(Some(self));
     }
 

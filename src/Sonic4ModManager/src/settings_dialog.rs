@@ -1,5 +1,5 @@
-use adw::subclass::prelude::*;
-use gtk::{gio, glib};
+use adw::{prelude::AdwDialogExt, subclass::prelude::*};
+use gtk::{gio::{self, prelude::ActionMapExtManual}, glib};
 use std::cell::RefCell;
 
 // https://gnome.pages.gitlab.gnome.org/libadwaita/doc/main/class.Dialog.html
@@ -64,11 +64,17 @@ glib::wrapper! {
 }
 
 impl SettingsWindow {
-    pub fn new(application: Option<String>) -> Self {
+    pub fn new() -> Self {
         glib::Object::builder().build()
     }
 
     fn setup_actions(&self) {
-        
+        let close_action = gio::ActionEntry::builder("close")
+            .activate(move |app: &Self, _, _| {app.close();})
+            .build();
+
+        self.add_action_entries([
+            close_action
+        ]);
     }
 }

@@ -28,29 +28,17 @@
                 <property name="content">
                   <object class="AdwToolbarView">
                     <child type="top">
-                      <object class="GtkGrid">
-                        <property name="margin-start">8</property>
-                        <property name="margin-end">8</property>
-                        <property name="margin-top">8</property>
-                        <property name="margin-bottom">8</property>
-                        <property name="column-spacing">8</property>
-                        <property name="row-spacing">8</property>
-                        <child>
+                      <object class="AdwHeaderBar">
+                        <property name="show-end-title-buttons">false</property>
+                        <child type ="end">
                           <object class="GtkButton">
                             <property name="label" translatable="yes">Save</property>
-                            <layout>
-                              <property name="column">0</property>
-                              <property name="row">0</property>
-                            </layout>
                           </object>
                         </child>
-                        <child>
+                        <child type ="end">
                           <object class="GtkButton">
-                            <property name="label" translatable="yes">Discard</property>
-                            <layout>
-                              <property name="column">4</property>
-                              <property name="row">0</property>
-                            </layout>
+                            <property name="label" translatable="yes">Discard</property>    
+                            <property name="action-name">win.close</property>
                           </object>
                         </child>
                       </object>
@@ -154,8 +142,6 @@
                   <object class="GtkStackPage">
                     <property name="title" translatable="yes">AMBPatcher</property>
                     <property name="child">
-                      <!-- TODO: try redo GtkBox to -->
-                       <!-- https://gnome.pages.gitlab.gnome.org/libadwaita/doc/main/class.ToolbarView.html -->
                       <object class="GtkBox">
                         <property name="orientation">vertical</property>
                         <child>
