@@ -1,9 +1,5 @@
-use adw::{prelude::AdwDialogExt, subclass::prelude::*};
-use gtk::{gio::{self, prelude::ActionMapExtManual}, glib};
-use std::cell::RefCell;
-
-// https://gnome.pages.gitlab.gnome.org/libadwaita/doc/main/class.Dialog.html
-// https://world.pages.gitlab.gnome.org/Rust/libadwaita-rs/stable/latest/docs/libadwaita/struct.NavigationSplitView.html
+use adw::subclass::prelude::*;
+use gtk::{gio::{self, prelude::ActionMapExtManual}, glib, prelude::GtkWindowExt};
 
 mod imp {
     use super::*;
@@ -27,7 +23,7 @@ mod imp {
     impl ObjectSubclass for SettingsWindow {
         const NAME: &'static str = "Settings";
         type Type = super::SettingsWindow;
-        type ParentType = adw::Dialog;
+        type ParentType = adw::ApplicationWindow;
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();
@@ -46,13 +42,15 @@ mod imp {
     }
 
     impl WidgetImpl for SettingsWindow {}
-    impl AdwDialogImpl for SettingsWindow {}
+    impl WindowImpl for SettingsWindow {}
+    impl ApplicationWindowImpl for SettingsWindow {}
+    impl AdwApplicationWindowImpl for SettingsWindow {}
 }
 
 glib::wrapper! {
     pub struct SettingsWindow(ObjectSubclass<imp::SettingsWindow>)
-        @extends gtk::Widget, adw::Dialog,
-        @implements 
+        @extends gtk::Widget, gtk::Window, adw::Window, gtk::ApplicationWindow, adw::ApplicationWindow,
+        @implements
             gio::ActionGroup,
             gio::ActionMap,
             gtk::ConstraintTarget,
@@ -60,7 +58,7 @@ glib::wrapper! {
             gtk::Accessible,
             gtk::ShortcutManager,
             gtk::Root,
-            gtk::Native;          
+            gtk::Native;
 }
 
 impl SettingsWindow {

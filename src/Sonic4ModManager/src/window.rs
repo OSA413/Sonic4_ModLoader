@@ -74,7 +74,7 @@ glib::wrapper! {
             gtk::Accessible,
             gtk::ShortcutManager,
             gtk::Root,
-            gtk::Native;            
+            gtk::Native;
 }
 
 impl Sonic4ModManagerWindow {
@@ -208,8 +208,7 @@ impl Sonic4ModManagerWindow {
     }
 
     fn show_settings(&self) {
-        let a = SettingsWindow::new();
-        a.present(Some(self));
+        SettingsWindow::new().present();
     }
 
     fn create_mod_list_closure(&self, obj: &gtk::glib::Object) -> gtk::Widget {
