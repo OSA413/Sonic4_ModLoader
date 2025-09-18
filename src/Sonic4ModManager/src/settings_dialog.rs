@@ -7,16 +7,37 @@ mod imp {
     #[derive(Debug, Default, gtk::CompositeTemplate)]
     #[template(resource = "/Sonic4ModLoader/Sonic4ModManager/window_settings.ui")]
     pub struct SettingsWindow {
-        // #[template_child]
-        // pub mod_list: TemplateChild<gtk::ListBox>,
-        // #[template_child]
-        // pub description: TemplateChild<gtk::TextView>,
-        // #[template_child]
-        // pub refresh_button: TemplateChild<gtk::Button>,
-        
-        // #[template_child]
-        // pub mod_store: TemplateChild<gio::ListStore>,
-        // pub selected_mod_index: RefCell<Option<String>>,
+        // Installation
+        #[template_child]
+        pub label_installation_status: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub button_un_install: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub checkbutton_force_uninstall: TemplateChild<gtk::CheckButton>,
+        #[template_child]
+        pub checkbutton_rename_files_back: TemplateChild<gtk::CheckButton>,
+        #[template_child]
+        pub checkbutton_delete_all_mod_loader_files: TemplateChild<gtk::CheckButton>,
+        #[template_child]
+        pub checkbutton_keep_configs: TemplateChild<gtk::CheckButton>,
+        #[template_child]
+        pub checkbutton_uninstall_and_delete_ocmi: TemplateChild<gtk::CheckButton>,
+        #[template_child]
+        pub checkbutton_recover_original_files: TemplateChild<gtk::CheckButton>,
+
+        // AMBPatcher
+        #[template_child]
+        pub checkbutton_progress_bar: TemplateChild<gtk::CheckButton>,
+        #[template_child]
+        pub checkbutton_check_sha_of_files: TemplateChild<gtk::CheckButton>,
+
+        // CSBEditor
+        #[template_child]
+        pub entry_buffer_size: TemplateChild<gtk::Entry>,
+        #[template_child]
+        pub checkbutton_enable_threading: TemplateChild<gtk::CheckButton>,
+        #[template_child]
+        pub entry_max_threads: TemplateChild<gtk::Entry>,
     }
 
     #[glib::object_subclass]

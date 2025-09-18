@@ -90,17 +90,17 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkLabel">
+                          <object class="GtkLabel" id="label_installation_status">
                             <property name="label">//Installation status goes here</property>
                           </object>
                         </child>
                         <child>
-                          <object class="GtkButton">
+                          <object class="GtkButton" id="button_un_install">
                             <property name="label">(Un)install</property>
                           </object>
                         </child>
                         <child>
-                          <object class="GtkCheckButton">
+                          <object class="GtkCheckButton" id="checkbutton_force_uninstall">
                             <property name="label">Force uninstall</property>
                           </object>
                         </child>
@@ -110,32 +110,27 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkCheckButton">
-                            <property name="label">Force uninstall</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkCheckButton">
+                          <object class="GtkCheckButton" id="checkbutton_rename_files_back">
                             <property name="label">Rename files back</property>
                           </object>
                         </child>
                         <child>
-                          <object class="GtkCheckButton">
+                          <object class="GtkCheckButton" id="checkbutton_delete_all_mod_loader_files">
                             <property name="label">Delete all Mod Loader files</property>
                           </object>
                         </child>
                         <child>
-                          <object class="GtkCheckButton">
+                          <object class="GtkCheckButton" id="checkbutton_keep_configs">
                             <property name="label">Keep configs</property>
                           </object>
                         </child>
                         <child>
-                          <object class="GtkCheckButton">
+                          <object class="GtkCheckButton" id="checkbutton_uninstall_and_delete_ocmi">
                             <property name="label">Uninstall and delete One-Click Mod Installer</property>
                           </object>
                         </child>
                         <child>
-                          <object class="GtkCheckButton">
+                          <object class="GtkCheckButton" id="checkbutton_recover_original_files">
                             <property name="label">Recover original game files (AMBs, CSBs, ...)</property>
                           </object>
                         </child>
@@ -150,18 +145,18 @@
                       <object class="GtkBox">
                         <property name="orientation">vertical</property>
                         <child>
-                          <object class="GtkCheckButton">
+                          <object class="GtkCheckButton" id="checkbutton_progress_bar">
                             <property name="label">Progress Bar</property>
                           </object>
                         </child>
                         <child>
-                          <object class="GtkCheckButton">
+                          <object class="GtkCheckButton" id="checkbutton_check_sha_of_files">
                             <property name="label">Check SHA of files (recommended)</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkButton">
-                            <property name="label">Recover origianl files</property>
+                            <property name="label">Recover original files</property>
                           </object>
                         </child>
                       </object>
@@ -182,12 +177,12 @@
                               </object>
                             </child>
                             <child>
-                              <object class="GtkEntry"></object>
+                              <object class="GtkEntry" id="entry_buffer_size"/>
                             </child>
                           </object>
                         </child>
                         <child>
-                          <object class="GtkCheckButton">
+                          <object class="GtkCheckButton" id="checkbutton_enable_threading">
                             <property name="label">Enable threading</property>
                           </object>
                         </child>
@@ -199,7 +194,7 @@
                               </object>
                             </child>
                             <child>
-                              <object class="GtkEntry"></object>
+                              <object class="GtkEntry" id="entry_max_threads"></object>
                             </child>
                           </object>
                         </child>
