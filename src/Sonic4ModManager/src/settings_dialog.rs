@@ -87,6 +87,10 @@ impl SettingsWindow {
         glib::Object::builder().build()
     }
 
+    fn startup(&self) {
+        
+    }
+
     fn setup_actions(&self) {
         let close_action = gio::ActionEntry::builder("close")
             .activate(move |app: &Self, _, _| {app.close();})
