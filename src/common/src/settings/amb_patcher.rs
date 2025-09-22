@@ -6,21 +6,30 @@ pub struct AMBPatcherConfig {
 }
 
 pub fn load() -> Result<AMBPatcherConfig, Box<dyn std::error::Error>> {
-    let ini = Ini::load_from_file("AMBPatcher.cfg")?;
+    let default_settings = AMBPatcherConfig { progress_bar: true, sha_check: true };
+    let ini_result = Ini::load_from_file("AMBPatcher.cfg");
 
-    let default_section = ini.section(None::<String>);
+    match ini_result {
+        Ok(ini) => {
+            let default_section = ini.section(None::<String>);
 
-    match default_section {
-        Some(section) => {
-            let progress_bar = section
-                .get("progress_bar")
-                .unwrap_or("1");
-            let sha_check = section
-                .get("sha_check")
-                .unwrap_or("1");
-            return Ok(AMBPatcherConfig { progress_bar: progress_bar == "1", sha_check: sha_check == "1" });
+            match default_section {
+                Some(section) => {
+                    let progress_bar = section
+                        .get("progress_bar")
+                        .unwrap_or("1");
+                    let sha_check = section
+                        .get("sha_check")
+                        .unwrap_or("1");
+                    return Ok(AMBPatcherConfig { progress_bar: progress_bar == "1", sha_check: sha_check == "1" });
+                },
+                None => return Ok(default_settings)
+            }
         },
-        None => return Ok(AMBPatcherConfig { progress_bar: true, sha_check: true })
+        Err(e) => {
+            println!("Error loading AMBPatcher.cfg: {}", e);
+            return Ok(default_settings);
+        }
     }
 }
 

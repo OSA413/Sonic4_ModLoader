@@ -61,14 +61,40 @@ pub struct CSBEditorConfig {
 }
 
 pub fn load() -> Result<CSBEditorConfig, Box<dyn std::error::Error>> {
-    let config = fs::read_to_string("CsbEditor.exe.config")?;
-    let xml_config: XmlConfiguration = serde_xml_rs::from_str(config.as_str())?;
+    let default_config = CSBEditorConfig { enable_threading: true, max_threads: 4, buffer_size: 4096 };
+    let config_result = fs::read_to_string("CsbEditor.exe.config");
+    match config_result {
+        Ok(config) => {
+            let xml_config_result: Result<XmlConfiguration, serde_xml_rs::Error> = serde_xml_rs::from_str(config.as_str());
 
-    let enable_threading = xml_config.user_settings.csb_editor_properties_settings.iter().find(|x| x.name == "EnableThreading").unwrap().value.value.clone() == "true";
-    let max_threads = xml_config.user_settings.csb_editor_properties_settings.iter().find(|x| x.name == "MaxThreads").unwrap().value.value.clone().parse::<u32>().unwrap();
-    let buffer_size = xml_config.user_settings.csb_editor_properties_settings.iter().find(|x| x.name == "BufferSize").unwrap().value.value.clone().parse::<u32>().unwrap();
+            match xml_config_result {
+                Ok(xml_config) => {
+                    let enable_threading = match xml_config.user_settings.csb_editor_properties_settings.iter().find(|x| x.name == "EnableThreading") {
+                        Some(x) => x.value.value == "true",
+                        None => default_config.enable_threading
+                    };
+                    let max_threads = match xml_config.user_settings.csb_editor_properties_settings.iter().find(|x| x.name == "MaxThreads") {
+                        Some(x) => x.value.value.clone().parse::<u32>().unwrap_or(default_config.max_threads),
+                        None => default_config.max_threads
+                    };
+                    let buffer_size = match xml_config.user_settings.csb_editor_properties_settings.iter().find(|x| x.name == "BufferSize") {
+                        Some(x) => x.value.value.clone().parse::<u32>().unwrap_or(default_config.buffer_size),
+                        None => default_config.buffer_size
+                    };
 
-    Ok(CSBEditorConfig { enable_threading, max_threads, buffer_size })
+                    Ok(CSBEditorConfig { enable_threading, max_threads, buffer_size })
+                }
+                Err(e) => {
+                    println!("Error parsing CsbEditor.exe.config: {}", e);
+                    return Ok(default_config);
+                }
+            }
+        },
+        Err(e) => {
+            println!("Error reading CsbEditor.exe.config: {}", e);
+            return Ok(default_config);
+        }
+    }
 }
 
 pub fn save(config: &CSBEditorConfig) -> Result<(), Box<dyn std::error::Error>> {
