@@ -104,13 +104,35 @@ impl SettingsWindow {
     fn save(&self) {
         let amb_patcher_config_progress_bar = self.imp().checkbutton_progress_bar.is_active();
         let amb_patcher_config_sha_check = self.imp().checkbutton_check_sha_of_files.is_active();
-        common::settings::amb_patcher::save(&AMBPatcherConfig{ progress_bar: amb_patcher_config_progress_bar, sha_check: amb_patcher_config_sha_check});
+        let result = common::settings::amb_patcher::save(&AMBPatcherConfig{
+            progress_bar: amb_patcher_config_progress_bar,
+            sha_check: amb_patcher_config_sha_check
+        });
+
+
+        let mut can_close = false;
+
+        match result {
+            Ok(_) => can_close = true,
+            Err(e) => println!("Error saving settings: {}", e)
+        }
 
         let current_or_default_config_csb_editor = common::settings::csb_editor::load();
         let csb_editor_config_buffer_size = self.imp().entry_buffer_size.text().parse().unwrap_or(current_or_default_config_csb_editor.buffer_size);
         let csb_editor_config_enable_threading = self.imp().checkbutton_enable_threading.is_active();
         let csb_editor_config_max_threads = self.imp().entry_max_threads.text().parse().unwrap_or(current_or_default_config_csb_editor.max_threads);
-        common::settings::csb_editor::save(&CSBEditorConfig { buffer_size: csb_editor_config_buffer_size, enable_threading: csb_editor_config_enable_threading, max_threads: csb_editor_config_max_threads } );
+        let result = common::settings::csb_editor::save(&CSBEditorConfig {
+            buffer_size: csb_editor_config_buffer_size,
+            enable_threading: csb_editor_config_enable_threading,
+            max_threads: csb_editor_config_max_threads
+        });
+
+        match result {
+            Ok(_) => if can_close {
+                self.close()
+            },
+            Err(e) => println!("Error saving settings: {}", e)
+        }
     }
 
     fn setup_actions(&self) {
