@@ -1,5 +1,6 @@
 use adw::subclass::prelude::*;
-use gtk::{gio::{self, prelude::ActionMapExtManual}, glib, prelude::GtkWindowExt};
+use common::settings::{amb_patcher::AMBPatcherConfig, csb_editor::CSBEditorConfig};
+use gtk::{gio::{self, prelude::ActionMapExtManual}, glib, prelude::{CheckButtonExt, EditableExt, GtkWindowExt}};
 
 mod imp {
     use super::*;
@@ -59,6 +60,7 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
             self.obj().setup_actions();
+            self.obj().startup();
         }
     }
 
@@ -88,7 +90,27 @@ impl SettingsWindow {
     }
 
     fn startup(&self) {
-        
+        let amb_patcher_config = common::settings::amb_patcher::load();
+        let csb_editor_config = common::settings::csb_editor::load();
+
+        self.imp().checkbutton_progress_bar.set_active(amb_patcher_config.progress_bar);
+        self.imp().checkbutton_check_sha_of_files.set_active(amb_patcher_config.sha_check);
+
+        self.imp().entry_buffer_size.set_text(csb_editor_config.buffer_size.to_string().as_str());
+        self.imp().checkbutton_enable_threading.set_active(csb_editor_config.enable_threading);
+        self.imp().entry_max_threads.set_text(csb_editor_config.max_threads.to_string().as_str());
+    }
+
+    fn save(&self) {
+        let amb_patcher_config_progress_bar = self.imp().checkbutton_progress_bar.is_active();
+        let amb_patcher_config_sha_check = self.imp().checkbutton_check_sha_of_files.is_active();
+        common::settings::amb_patcher::save(&AMBPatcherConfig{ progress_bar: amb_patcher_config_progress_bar, sha_check: amb_patcher_config_sha_check});
+
+        let current_or_default_config_csb_editor = common::settings::csb_editor::load();
+        let csb_editor_config_buffer_size = self.imp().entry_buffer_size.text().parse().unwrap_or(current_or_default_config_csb_editor.buffer_size);
+        let csb_editor_config_enable_threading = self.imp().checkbutton_enable_threading.is_active();
+        let csb_editor_config_max_threads = self.imp().entry_max_threads.text().parse().unwrap_or(current_or_default_config_csb_editor.max_threads);
+        common::settings::csb_editor::save(&CSBEditorConfig { buffer_size: csb_editor_config_buffer_size, enable_threading: csb_editor_config_enable_threading, max_threads: csb_editor_config_max_threads } );
     }
 
     fn setup_actions(&self) {
@@ -96,8 +118,13 @@ impl SettingsWindow {
             .activate(move |app: &Self, _, _| {app.close();})
             .build();
 
+        let save_action = gio::ActionEntry::builder("save")
+            .activate(move |app: &Self, _, _| {app.save();})
+            .build();
+
         self.add_action_entries([
-            close_action
+            close_action,
+            save_action,
         ]);
     }
 }

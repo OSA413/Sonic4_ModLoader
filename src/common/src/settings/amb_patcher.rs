@@ -36,8 +36,14 @@ pub fn load() -> AMBPatcherConfig {
 pub fn save(config: &AMBPatcherConfig) -> Result<(), Box<dyn std::error::Error>> {
     let mut ini = Ini::new();
 
-    ini.with_section(None::<String>).set("progress_bar", config.progress_bar.to_string());
-    ini.with_section(None::<String>).set("sha_check", config.sha_check.to_string());
+    ini.with_section(None::<String>).set("progress_bar", match config.progress_bar {
+        true => "1",
+        false => "0"
+    });
+    ini.with_section(None::<String>).set("sha_check", match config.sha_check {
+        true => "1",
+        false => "0"
+    });
 
     ini.write_to_file("AMBPatcher.cfg")?;
 
