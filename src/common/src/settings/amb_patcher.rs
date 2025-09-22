@@ -5,7 +5,7 @@ pub struct AMBPatcherConfig {
     pub sha_check: bool
 }
 
-pub fn load() -> Result<AMBPatcherConfig, Box<dyn std::error::Error>> {
+pub fn load() -> AMBPatcherConfig {
     let default_settings = AMBPatcherConfig { progress_bar: true, sha_check: true };
     let ini_result = Ini::load_from_file("AMBPatcher.cfg");
 
@@ -21,14 +21,14 @@ pub fn load() -> Result<AMBPatcherConfig, Box<dyn std::error::Error>> {
                     let sha_check = section
                         .get("sha_check")
                         .unwrap_or("1");
-                    return Ok(AMBPatcherConfig { progress_bar: progress_bar == "1", sha_check: sha_check == "1" });
+                    return AMBPatcherConfig { progress_bar: progress_bar == "1", sha_check: sha_check == "1" };
                 },
-                None => return Ok(default_settings)
+                None => return default_settings
             }
         },
         Err(e) => {
             println!("Error loading AMBPatcher.cfg: {}", e);
-            return Ok(default_settings);
+            return default_settings
         }
     }
 }

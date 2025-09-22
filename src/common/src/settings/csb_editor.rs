@@ -60,7 +60,7 @@ pub struct CSBEditorConfig {
     pub buffer_size: u32
 }
 
-pub fn load() -> Result<CSBEditorConfig, Box<dyn std::error::Error>> {
+pub fn load() -> CSBEditorConfig {
     let default_config = CSBEditorConfig { enable_threading: true, max_threads: 4, buffer_size: 4096 };
     let config_result = fs::read_to_string("CsbEditor.exe.config");
     match config_result {
@@ -82,17 +82,17 @@ pub fn load() -> Result<CSBEditorConfig, Box<dyn std::error::Error>> {
                         None => default_config.buffer_size
                     };
 
-                    Ok(CSBEditorConfig { enable_threading, max_threads, buffer_size })
+                    return CSBEditorConfig { enable_threading, max_threads, buffer_size }
                 }
                 Err(e) => {
                     println!("Error parsing CsbEditor.exe.config: {}", e);
-                    return Ok(default_config);
+                    return default_config;
                 }
             }
         },
         Err(e) => {
             println!("Error reading CsbEditor.exe.config: {}", e);
-            return Ok(default_config);
+            return default_config;
         }
     }
 }
