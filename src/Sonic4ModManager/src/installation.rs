@@ -126,7 +126,7 @@ pub struct UninstallationOptions {
     pub recover_original_files: bool,
     pub delete_all_mod_loader_files: bool,
     pub uninstall_and_delete_ocmi: bool,
-    pub keep_settings: bool,
+    pub keep_configs: bool,
 }
 
 pub fn uninstall(options: UninstallationOptions) {
@@ -169,7 +169,7 @@ pub fn uninstall(options: UninstallationOptions) {
             fs::remove_file("OneClickModInstaller.exe");
         }
 
-        if !options.keep_settings && Path::new("OneClickModInstaller.cfg").exists() {
+        if !options.keep_configs && Path::new("OneClickModInstaller.cfg").exists() {
             fs::remove_file("OneClickModInstaller.cfg");
         }
     }
@@ -177,7 +177,7 @@ pub fn uninstall(options: UninstallationOptions) {
     if options.delete_all_mod_loader_files {
         for file in installation_order {
             if file.modloader_file && Path::new(&file.orig_name).exists() {
-                if (!options.keep_settings || !(options.keep_settings && (file.orig_name.ends_with(".cfg") || file.orig_name.ends_with(".config")))) {
+                if (!options.keep_configs || !(options.keep_configs && (file.orig_name.ends_with(".cfg") || file.orig_name.ends_with(".config")))) {
                     if Path::new(&file.orig_name).is_file() {
                         fs::remove_file(file.orig_name);
                     } else if Path::new(&file.orig_name).is_dir() {

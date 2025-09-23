@@ -97,6 +97,7 @@
                         <child>
                           <object class="GtkButton" id="button_un_install">
                             <property name="label">(Un)install</property>
+                            <property name="action-name">win.un_install</property>
                           </object>
                         </child>
                         <child>
@@ -105,7 +106,7 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkLabel">
+                          <object class="GtkLabel" id="label_uninstallation_options">
                             <property name="label">Uninstallation options:</property>
                           </object>
                         </child>

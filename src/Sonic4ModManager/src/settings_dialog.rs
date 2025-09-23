@@ -1,6 +1,8 @@
 use adw::subclass::prelude::*;
 use common::settings::{amb_patcher::AMBPatcherConfig, csb_editor::CSBEditorConfig};
-use gtk::{gio::{self, prelude::ActionMapExtManual}, glib, prelude::{CheckButtonExt, EditableExt, GtkWindowExt}};
+use gtk::{gio::{self, prelude::ActionMapExtManual}, glib::{self, clone}, prelude::{ButtonExt, CheckButtonExt, EditableExt, GtkWindowExt, WidgetExt}};
+
+use crate::installation::{self, get_installation_status, install, InstallationStatus, UninstallationOptions};
 
 mod imp {
     use super::*;
@@ -15,6 +17,8 @@ mod imp {
         pub button_un_install: TemplateChild<gtk::Button>,
         #[template_child]
         pub checkbutton_force_uninstall: TemplateChild<gtk::CheckButton>,
+        #[template_child]
+        pub label_uninstallation_options: TemplateChild<gtk::Label>,
         #[template_child]
         pub checkbutton_rename_files_back: TemplateChild<gtk::CheckButton>,
         #[template_child]
@@ -90,6 +94,101 @@ impl SettingsWindow {
     }
 
     fn startup(&self) {
+        self.load_settings();
+        self.update_installation_status();
+
+        let closure = {
+            clone!(
+                #[strong (rename_to = this)] self,
+                move || this.update_installation_status()
+            )
+        };
+
+        self.imp().checkbutton_force_uninstall.connect_active_notify(move |_| closure());
+    }
+
+    fn un_install(&self) {
+        match self.imp().button_un_install.label() {
+            Some(label) => {
+                let label = label.to_string();
+                if label == "Install" {
+                    installation::install();
+                } else if label == "Uninstall" {
+                    installation::uninstall(UninstallationOptions {
+                        recover_original_files: self.imp().checkbutton_recover_original_files.is_active(),
+                        delete_all_mod_loader_files: self.imp().checkbutton_delete_all_mod_loader_files.is_active(),
+                        keep_configs: self.imp().checkbutton_keep_configs.is_active(),
+                        uninstall_and_delete_ocmi: self.imp().checkbutton_uninstall_and_delete_ocmi.is_active()
+                            && self.imp().checkbutton_delete_all_mod_loader_files.is_active(),
+                    });
+                }
+            }
+            None => (),
+        }
+
+        self.update_installation_status();
+    }
+
+    fn update_installation_status(&self) {
+        let status = get_installation_status();
+        let force_uninstall = self.imp().checkbutton_force_uninstall.is_active();
+        
+        self.imp().label_uninstallation_options.set_sensitive(false);
+        self.imp().checkbutton_rename_files_back.set_sensitive(false);
+        self.imp().checkbutton_delete_all_mod_loader_files.set_sensitive(false);
+        self.imp().checkbutton_keep_configs.set_sensitive(false);
+        self.imp().checkbutton_uninstall_and_delete_ocmi.set_sensitive(false);
+        self.imp().checkbutton_recover_original_files.set_sensitive(false);
+        self.imp().button_un_install.set_label("Install");
+
+        self.imp().checkbutton_rename_files_back.set_active(true);
+        self.imp().checkbutton_delete_all_mod_loader_files.set_active(false);
+        self.imp().checkbutton_recover_original_files.set_active(false);
+        self.imp().checkbutton_uninstall_and_delete_ocmi.set_active(false);
+        self.imp().button_un_install.set_sensitive(true);
+
+        match status {
+            InstallationStatus::Installed => {
+                self.imp().label_uninstallation_options.set_sensitive(true);
+                self.imp().checkbutton_rename_files_back.set_sensitive(true);
+                self.imp().checkbutton_delete_all_mod_loader_files.set_sensitive(true);
+                self.imp().checkbutton_keep_configs.set_sensitive(true);
+                self.imp().checkbutton_uninstall_and_delete_ocmi.set_sensitive(true);
+                self.imp().button_un_install.set_label("Uninstall");
+                self.imp().label_installation_status.set_text("Installed");
+            }
+            InstallationStatus::NotInstalled => {
+                self.imp().button_un_install.set_sensitive(true);
+                self.imp().button_un_install.set_label("Install");
+                self.imp().label_installation_status.set_text("Not installed");
+            }
+            InstallationStatus::FirstLaunch => {
+                self.imp().button_un_install.set_sensitive(true);
+                self.imp().button_un_install.set_label("Install");
+                self.imp().label_installation_status.set_text("Not installed");
+            }
+            InstallationStatus::NotGameDirectory => {
+                self.imp().label_installation_status.set_text("Current directory is not the game directory");
+                self.imp().button_un_install.set_sensitive(false);
+                self.imp().checkbutton_force_uninstall.set_sensitive(false);
+                self.imp().label_uninstallation_options.set_sensitive(false);
+            }
+        }
+        if force_uninstall {
+            self.imp().label_uninstallation_options.set_sensitive(true);
+            self.imp().checkbutton_rename_files_back.set_sensitive(true);
+            self.imp().checkbutton_delete_all_mod_loader_files.set_sensitive(true);
+            self.imp().checkbutton_keep_configs.set_sensitive(true);
+            self.imp().checkbutton_recover_original_files.set_sensitive(true);
+            self.imp().checkbutton_uninstall_and_delete_ocmi.set_sensitive(true);
+            self.imp().button_un_install.set_sensitive(true);
+            self.imp().button_un_install.set_label("Uninstall");
+            self.imp().checkbutton_rename_files_back.set_active(false);
+            self.imp().checkbutton_delete_all_mod_loader_files.set_active(true);            
+        }
+    }
+
+    fn load_settings(&self) {
         let amb_patcher_config = common::settings::amb_patcher::load();
         let csb_editor_config = common::settings::csb_editor::load();
 
@@ -144,9 +243,14 @@ impl SettingsWindow {
             .activate(move |app: &Self, _, _| {app.save();})
             .build();
 
+        let un_install_action = gio::ActionEntry::builder("un_install")
+            .activate(move |app: &Self, _, _| {app.un_install();})
+            .build();
+
         self.add_action_entries([
             close_action,
             save_action,
+            un_install_action,
         ]);
     }
 }
