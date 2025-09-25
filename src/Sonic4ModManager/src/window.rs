@@ -1,8 +1,8 @@
 use std::cmp;
 
-use adw::{prelude::{ActionRowExt, AdwDialogExt, AlertDialogExt, AlertDialogExtManual}, subclass::prelude::*, ActionRow};
+use adw::{prelude::{ActionRowExt, AdwDialogExt, AlertDialogExt}, subclass::prelude::*, ActionRow};
 use common::{mod_logic::mod_entry::ModEntry, Launcher};
-use gtk::{gio::{self, prelude::{ApplicationExt, ListModelExt, ListModelExtManual}}, glib::{self, clone, gobject_ffi::GObject, object::Cast, Object}, prelude::{ActionMapExtManual, CheckButtonExt, GtkWindowExt, ListBoxRowExt, TextTagExt, TextViewExt, WidgetExt}, Align, CheckButton};
+use gtk::{gio::{self, prelude::{ApplicationExt, ListModelExt, ListModelExtManual}}, glib::{self, clone, object::Cast, Object}, prelude::{ActionMapExtManual, CheckButtonExt, GtkWindowExt, ListBoxRowExt, TextTagExt, TextViewExt}, Align, CheckButton};
 use crate::{installation, models::g_mod_entry::GModEntry, settings_dialog::SettingsWindow};
 use std::cell::RefCell;
 use std::fs;
@@ -85,18 +85,15 @@ impl Sonic4ModManagerWindow {
     }
 
     fn save_mods(&self) {
-        println!("Mod list:");
         let mut result = Vec::<String>::new();
         let mod_entries = self.imp().mod_store.iter::<Object>();
         for mod_entry in mod_entries {
             let g_mod_entry = mod_entry.unwrap().downcast::<GModEntry>().unwrap();
             if g_mod_entry.enabled() {
                 result.push(g_mod_entry.path());
-                println!("{}", g_mod_entry.path());
             }
         }
         result.reverse();
-        println!("Mod list ended");
         self.save_mods_ini(result);
     }
 
