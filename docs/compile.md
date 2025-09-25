@@ -1,5 +1,7 @@
 # How to compile this program on Windows
 
+Note: these instructions are outdated, check `.github/workflows/release.yml` for up-to-date instructions.
+
 Things you'll need:
 * [.Net 6 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
 * [Python 3](https://www.python.org/) to run tests

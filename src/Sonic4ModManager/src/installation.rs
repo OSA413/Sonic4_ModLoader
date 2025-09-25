@@ -54,7 +54,7 @@ fn get_installation_order() -> Vec<InstallationInstruction> {
     let original_launcher = match game {
         Game::Episode1 => "SonicLauncher",
         Game::Episode2 => "Launcher",
-        _ => "",
+        _ => return vec![],
     };
 
     let original_launcher_bkp = format!("{}.orig.exe", original_launcher);
@@ -80,6 +80,10 @@ fn get_installation_order() -> Vec<InstallationInstruction> {
     installation_order.push(InstallationInstruction::new("Mod Loader - licenses".to_string(), None, true));
     installation_order.push(InstallationInstruction::new("AML".to_string(), None, true));
     installation_order.push(InstallationInstruction::new("d3d9.dll".to_string(), None, true));
+
+    installation_order.push(InstallationInstruction::new("lib".to_string(), None, true));
+    installation_order.push(InstallationInstruction::new("share".to_string(), None, true));
+    installation_order.push(InstallationInstruction::new("bin".to_string(), None, true));
 
     installation_order
 }
@@ -189,7 +193,7 @@ pub fn uninstall(options: UninstallationOptions) {
 
         let bat = format!("{}\n{}\n{}",
             "taskkill /IM Sonic4ModManager.exe /F",
-            "DEL Sonic4ModManager_link.exe",
+            "DEL Sonic4ModManager.exe",
             "DEL FinishInstallation.bat");
         fs::write("FinishInstallation.bat", bat);
 

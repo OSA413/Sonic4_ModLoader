@@ -1,4 +1,4 @@
-use std::io;
+use std::{env, io};
 use std::path::Path;
 use std::process::{Child, Command};
 
@@ -52,25 +52,27 @@ impl Launcher {
 
     pub fn launch_game() -> Result<Child, io::Error> {
         let game = Launcher::get_current_game();
+        let current_dir = env::current_dir().unwrap();
         match game {
             Game::Unknown => Err(io::Error::new(io::ErrorKind::Other, "Game not found")),
             Game::Episode1 => {
                 if Path::new("main.conf").exists() {
-                    return Command::new("Sonic_vis.exe").spawn();
+                    Command::new(current_dir.join("Sonic_vis.exe")).spawn()
                 } else {
-                    return Command::new("SonicLauncher.orig.exe").spawn();
+                    Command::new(current_dir.join("SonicLauncher.orig.exe")).spawn()
                 }
             },
-            Game::Episode2 => Command::new("Sonic.exe").spawn()
+            Game::Episode2 => Command::new(current_dir.join("Sonic.exe")).spawn()
         }
     }
 
     pub fn launch_config() -> Result<Child, io::Error> {
         let game = Launcher::get_current_game();
+        let current_dir = env::current_dir().unwrap();
         match game {
             Game::Unknown => Err(io::Error::new(io::ErrorKind::Other, "Game not found")),
-            Game::Episode1 => Command::new("SonicLauncher.orig.exe").spawn(),
-            Game::Episode2 => Command::new("Launcher.orig.exe").spawn()
+            Game::Episode1 => Command::new(current_dir.join("SonicLauncher.orig.exe")).spawn(),
+            Game::Episode2 => Command::new(current_dir.join("Launcher.orig.exe")).spawn()
         }
     }
 
