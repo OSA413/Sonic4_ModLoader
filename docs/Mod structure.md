@@ -53,8 +53,9 @@ where `description.txt` is relative path (from `/mods/My Cool Mod/`) to your des
 
 You can make your description look better with formatting.
 
-`\n` will be formatted into a newline character.
-`\t` will be formatted into a tab character.
+* `\n` will be formatted into a newline character.
+* `\t` will be formatted into a tab character.
+* `* ` will be formatted into a bullet point.
 
 Mod Manager supports those tags:
 
@@ -70,15 +71,9 @@ You can align the lines of the text:
 * `[l]` - Left (default)
 * `[c]` - Center
 * `[r]` - Right
+* `[f]` - Fill
 
 Add only one of those tags per line. Of course you can put as many tags as you want anywhere, but only the last tag/alignment on a line will be applied.
-
-Also URL links to web-sites can be highlighted (they are **clickable!**):
-* example.com - Doesn't work
-* www.example.com - OK
-* https://example.com - OK
-* https://www.example.com - OK
-
 
 ## Examples
 

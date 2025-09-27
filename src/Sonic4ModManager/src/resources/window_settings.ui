@@ -158,6 +158,7 @@
                         <child>
                           <object class="GtkButton">
                             <property name="label">Recover original files</property>
+                            <property name="action-name">win.recover_files</property>
                           </object>
                         </child>
                       </object>

@@ -3,6 +3,7 @@ mod window;
 mod models;
 mod settings_dialog;
 mod installation;
+mod buffer_formatter;
 
 use self::application::Sonic4ModManagerApplication;
 use self::window::Sonic4ModManagerWindow;

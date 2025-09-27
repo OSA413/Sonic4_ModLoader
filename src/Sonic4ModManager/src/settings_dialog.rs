@@ -1,5 +1,7 @@
+use std::{fs, path::Path};
+
 use adw::subclass::prelude::*;
-use common::settings::{amb_patcher::AMBPatcherConfig, csb_editor::CSBEditorConfig};
+use common::{settings::{amb_patcher::AMBPatcherConfig, csb_editor::CSBEditorConfig}, Launcher};
 use gtk::{gio::{self, prelude::ActionMapExtManual}, glib::{self, clone}, prelude::{ButtonExt, CheckButtonExt, EditableExt, GtkWindowExt, WidgetExt}};
 
 use crate::installation::{self, get_installation_status, install, InstallationStatus, UninstallationOptions};
@@ -200,6 +202,26 @@ impl SettingsWindow {
         self.imp().entry_max_threads.set_text(csb_editor_config.max_threads.to_string().as_str());
     }
 
+    fn recover_files(&self) {
+        match Path::new("AMBPatcher.exe").exists() {
+            true => {
+                match Launcher::launch_amb_patcher(vec!["recover".to_string()]) {
+                    Ok(_) => println!("Recovered files with AMBPatcher"),
+                    Err(e) => println!("Error recovering files: {}", e)
+                }
+                match fs::remove_file("mods/mods_prev") {
+                    Ok(_) => println!("Removed mods_prev"),
+                    Err(e) => println!("Error removing mods_prev: {}", e)
+                }
+                match fs::remove_file("mods/mods_sha") {
+                    Ok(_) => println!("Removed mods_sha"),
+                    Err(e) => println!("Error removing mods_sha: {}", e)
+                }
+            },
+            false => println!("AMBPatcher.exe not found"),
+        };
+    }
+
     fn save(&self) {
         let amb_patcher_config_progress_bar = self.imp().checkbutton_progress_bar.is_active();
         let amb_patcher_config_sha_check = self.imp().checkbutton_check_sha_of_files.is_active();
@@ -247,10 +269,15 @@ impl SettingsWindow {
             .activate(move |app: &Self, _, _| {app.un_install();})
             .build();
 
+        let recover_files_action = gio::ActionEntry::builder("recover_files")
+            .activate(move |app: &Self, _, _| {app.recover_files();})
+            .build();
+
         self.add_action_entries([
             close_action,
             save_action,
             un_install_action,
+            recover_files_action,
         ]);
     }
 }

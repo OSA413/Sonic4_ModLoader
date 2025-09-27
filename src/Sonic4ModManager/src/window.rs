@@ -2,8 +2,8 @@ use std::cmp;
 
 use adw::{prelude::{ActionRowExt, AdwDialogExt, AlertDialogExt}, subclass::prelude::*, ActionRow};
 use common::{mod_logic::mod_entry::ModEntry, Launcher};
-use gtk::{gio::{self, prelude::{ApplicationExt, ListModelExt, ListModelExtManual}}, glib::{self, clone, object::Cast, Object}, prelude::{ActionMapExtManual, CheckButtonExt, GtkWindowExt, ListBoxRowExt, TextTagExt, TextViewExt}, Align, CheckButton};
-use crate::{installation, models::g_mod_entry::GModEntry, settings_dialog::SettingsWindow};
+use gtk::{gio::{self, prelude::{ApplicationExt, ListModelExt, ListModelExtManual}}, glib::{self, clone, object::Cast, Object}, prelude::{ActionMapExtManual, CheckButtonExt, GtkWindowExt, ListBoxRowExt, TextBufferExt, TextTagExt, TextViewExt}, Align, CheckButton};
+use crate::{buffer_formatter, installation, models::g_mod_entry::GModEntry, settings_dialog::SettingsWindow};
 use std::cell::RefCell;
 use std::fs;
 use rand::rng;
@@ -308,18 +308,10 @@ You can install/uninstall and configure it through the settings menu at any time
 
         self.refresh_mod_list();
 
-        let buffer_builder = gtk::TextBuffer::builder();
-        let tag = gtk::TextTag::new(Some("test"));
-        tag.set_weight(600);
-        tag.set_size(16);
-        let table = gtk::TextTagTable::new();
-        table.add(&tag);
-        let buffer_builder = buffer_builder.tag_table(&table);
-        let buffer_builder = buffer_builder.text("This is a test description");
-        let buffer = buffer_builder.build();
-        // let start = buffer.
-        // buffer.apply_tag(&tag, gtk::TextIter::, -1);
-        self.imp().description.set_buffer(Some(&buffer));
+        let description = fs::read_to_string("Mod Loader - Whats new.txt").unwrap_or("File \"Mod Loader - Whats new.txt\" not found.".to_string());
+        let description = format!("Select a mod to read its description\n\n[c][b][i]What's new:[\\i][\\b]\n{}\n\nHome page: https://github.com/OSA413/Sonic4_ModLoader", description);
+        let description = buffer_formatter::format_buffer(description);
+        self.imp().description.set_buffer(Some(&description));
         
         match installation::get_installation_status() {
             installation::InstallationStatus::FirstLaunch => self.show_first_time_dialog(),
