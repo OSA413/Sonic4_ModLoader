@@ -1,9 +1,9 @@
-use std::cmp;
+use std::{cmp, path::Path};
 
 use adw::{prelude::{ActionRowExt, AdwDialogExt, AlertDialogExt}, subclass::prelude::*, ActionRow};
 use common::{mod_logic::mod_entry::ModEntry, Launcher};
-use gtk::{gio::{self, prelude::{ApplicationExt, ListModelExt, ListModelExtManual}}, glib::{self, clone, object::Cast, Object}, prelude::{ActionMapExtManual, CheckButtonExt, GtkWindowExt, ListBoxRowExt, TextBufferExt, TextTagExt, TextViewExt}, Align, CheckButton};
-use crate::{buffer_formatter, installation, models::g_mod_entry::GModEntry, settings_dialog::SettingsWindow};
+use gtk::{gio::{self, prelude::{ApplicationExt, ListModelExt, ListModelExtManual}}, glib::{self, clone, object::Cast, Object}, prelude::{ActionMapExtManual, CheckButtonExt, GtkWindowExt, ListBoxRowExt, TextBufferExt, TextTagExt, TextViewExt, WidgetExt}, Align, CheckButton};
+use crate::{buffer_formatter, installation, models::g_mod_entry::{self, GModEntry}, settings_dialog::SettingsWindow};
 use std::cell::RefCell;
 use std::fs;
 use rand::rng;
@@ -296,8 +296,34 @@ You can install/uninstall and configure it through the settings menu at any time
         });
     }
 
+    fn load_description_of_a_mod(&self, listbox_row: Option<&gtk::ListBoxRow>) {
+        match listbox_row {
+            None => (),
+            Some(listbox_row) => {
+                let index = listbox_row.index();
+                let g_mod_entry = self.imp().mod_store.item(index as u32).unwrap();
+                let g_mod_entry = g_mod_entry.downcast_ref::<GModEntry>().unwrap();
+                let description = match g_mod_entry.description() {
+                    None => "No description.".to_string(),
+                    Some(description) => {
+                        if description.starts_with("file=") {
+                            let description_file = description.replacen("file=", "", 1);
+                            let description_file = Path::new("mods").join(&g_mod_entry.path()).join(&description_file);
+                            fs::read_to_string(&description_file)
+                                .unwrap_or(format!("Description file {:?} not found.", &description_file).to_string())
+                        } else {
+                            description
+                        }
+                    },
+                };
+
+                let description = buffer_formatter::format_buffer(description);
+                self.imp().description.set_buffer(Some(&description));
+            }
+        };
+    }
+
     fn startup(&self) {
-        // TODO remove clone
         let closure = {
             clone!(
                 #[strong (rename_to = this)] self,
@@ -305,6 +331,17 @@ You can install/uninstall and configure it through the settings menu at any time
             )
         };
         self.imp().mod_list.bind_model(Some(&self.imp().mod_store.get()), move |obj: &glib::Object| closure(obj));
+
+        let closure = {
+            clone!(
+                #[strong (rename_to = this)] self,
+                move |listbox_row: Option<&gtk::ListBoxRow>| this.load_description_of_a_mod(listbox_row)
+            )
+        };
+
+        self.imp().mod_list.connect_row_selected(move |_, listbox_row| closure(listbox_row));
+
+        self.imp().refresh_button.grab_focus();
 
         self.refresh_mod_list();
 

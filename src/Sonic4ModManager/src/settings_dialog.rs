@@ -4,7 +4,7 @@ use adw::subclass::prelude::*;
 use common::{settings::{amb_patcher::AMBPatcherConfig, csb_editor::CSBEditorConfig}, Launcher};
 use gtk::{gio::{self, prelude::ActionMapExtManual}, glib::{self, clone}, prelude::{ButtonExt, CheckButtonExt, EditableExt, GtkWindowExt, WidgetExt}};
 
-use crate::installation::{self, get_installation_status, install, InstallationStatus, UninstallationOptions};
+use crate::installation::{self, get_installation_status, InstallationStatus, UninstallationOptions};
 
 mod imp {
     use super::*;
