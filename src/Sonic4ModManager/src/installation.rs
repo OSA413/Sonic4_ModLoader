@@ -1,4 +1,4 @@
-use std::{fs::{self, read_to_string}, path::Path, process};
+use std::{fs, path::Path, process};
 
 use common::{Game, Launcher};
 
