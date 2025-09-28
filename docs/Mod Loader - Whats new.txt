@@ -1,3 +1,6 @@
+[c]Version: v0.2.1
+* Rewritten Mod Manager to Rust and GTK4
+
 [c]Version: v0.1.7.1
 * Updated rewritten ManagerLauncher to properly work with Steam (fix for Episode 2)
 * Simplified CI/CD, now distributions are shipped as zip files
@@ -142,3 +145,4 @@ Change log:
 * Admin on uninstallation is now only required if OCMI was installed.
 * Now you can install Mod Loader using OCMI.
 * Crash fix when deleting readonly directory.
+
