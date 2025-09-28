@@ -2,8 +2,8 @@ use std::{cmp, path::Path};
 
 use adw::{prelude::{ActionRowExt, AdwDialogExt, AlertDialogExt}, subclass::prelude::*, ActionRow};
 use common::{mod_logic::mod_entry::ModEntry, Launcher};
-use gtk::{gio::{self, prelude::{ApplicationExt, ListModelExt, ListModelExtManual}}, glib::{self, clone, object::Cast, Object}, prelude::{ActionMapExtManual, CheckButtonExt, GtkWindowExt, ListBoxRowExt, TextBufferExt, TextTagExt, TextViewExt, WidgetExt}, Align, CheckButton};
-use crate::{buffer_formatter, installation, models::g_mod_entry::{self, GModEntry}, settings_dialog::SettingsWindow};
+use gtk::{gio::{self, prelude::{ApplicationExt, ListModelExt, ListModelExtManual}}, glib::{self, clone, object::Cast, Object}, prelude::{ActionMapExtManual, CheckButtonExt, GtkWindowExt, ListBoxRowExt, TextViewExt, WidgetExt}, Align, CheckButton};
+use crate::{buffer_formatter, installation, models::g_mod_entry::GModEntry, settings_dialog::SettingsWindow};
 use std::cell::RefCell;
 use std::fs;
 use rand::rng;
@@ -98,9 +98,14 @@ impl Sonic4ModManagerWindow {
     }
 
     fn save_mods_ini(&self, mods: Vec<String>) {
-        // It will probably crash, fix later
-        fs::create_dir_all("mods");
-        fs::write("mods/mods.ini", mods.join("\n"));
+        match fs::create_dir_all("mods") {
+            Ok(_) => println!("Created [mods] directory"),
+            Err(e) => println!("Coudn't create directories, they probably already exist {}", e),
+        };
+        match fs::write("mods/mods.ini", mods.join("\n")) {
+            Ok(_) => println!("Saved mods/mods.ini"),
+            Err(e) => println!("Coudn't save mods/mods.ini: {}", e),
+        }
     }
 
     fn save_mods_and_play(&self) {
@@ -254,7 +259,14 @@ impl Sonic4ModManagerWindow {
     }
 
     fn open_mods_folder(&self) {
-        Launcher::open_mods_folder();
+        match fs::create_dir_all("mods") {
+            Ok(_) => println!("Created [mods] directory"),
+            Err(e) => println!("Coudn't create directories, they probably already exist {}", e),
+        };
+        match Launcher::open_mods_folder() {
+            Ok(_) => println!("Opening mods directory..."),
+            Err(e) => println!("Coudn't open [mods] directory {}", e),
+        };
     }
 
     fn randomize_mod_list(&self) {

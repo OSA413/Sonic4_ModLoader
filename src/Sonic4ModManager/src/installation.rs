@@ -100,16 +100,25 @@ pub fn install() {
     let installation_order = get_installation_order();
     for i in installation_order {
         if Path::new(&i.orig_name).exists() && i.new_name.is_some() && !Path::new(&i.new_name.clone().unwrap()).exists() {
-            fs::rename(&i.orig_name, &i.new_name.unwrap());
+            match fs::rename(&i.orig_name, &i.new_name.unwrap()) {
+                Ok(_) => (),
+                Err(e) => println!("Failed to move some files: {}", e)
+            }
         }
     }
 
-    fs::write("ModManager.cfg", "");
+    match fs::write("ModManager.cfg", "") {
+        Ok(_) => (),
+        Err(e) => println!("Couldn't write ModManager.cfg: {}", e),
+    }
     write_aml_config("AMBPatcher.exe");
 }
 
 pub fn write_empty_config() {
-    fs::write("ModManager.cfg", "");
+    match fs::write("ModManager.cfg", "") {
+        Ok(_) => (),
+        Err(e) => println!("Couldn't write ModManager.cfg: {}", e),
+    }
 }
 
 pub fn write_aml_config(patcher_dir: &str) {
@@ -122,8 +131,11 @@ pub fn write_aml_config(patcher_dir: &str) {
             result_lines.push(line.to_string());
         }
     }
-            
-    fs::write("AML/AliceML.ini", result_lines.join("\n"));
+
+    match fs::write("AML/AliceML.ini", result_lines.join("\n")) {
+        Ok(_) => (),
+        Err(e) => println!("Couldn't write AML/AliceML.ini: {}", e),
+    }
 }
 
 pub struct UninstallationOptions {
@@ -142,50 +154,68 @@ pub fn uninstall(options: UninstallationOptions) {
 
     for i in &installation_order {
         if i.new_name.is_some() && Path::new(&i.new_name.clone().unwrap()).exists() && !Path::new(&i.orig_name).exists() {
-            fs::rename(i.new_name.clone().unwrap(), &i.orig_name);
+            match fs::rename(i.new_name.clone().unwrap(), &i.orig_name) {
+                Ok(_) => (),
+                Err(e) => println!("Error: {}", e),
+            }
         }
     }
 
     write_aml_config("");
 
     if options.recover_original_files {
-        let result = process::Command::new("AMBPatcher.exe")
+        match process::Command::new("AMBPatcher.exe")
             .arg("recover")
-            .output();
-        if result.is_err() {
-            println!("Error: {}", result.err().unwrap());
+            .output() {
+            Ok(_) => println!("Original files should be recovered"),
+            Err(e) => println!("Error: {}", e),
         }
 
-        if options.delete_all_mod_loader_files && Path::new("mods_sha").exists() {
-            fs::remove_dir_all("mods_sha");
+        if options.delete_all_mod_loader_files {
+            match fs::remove_dir_all("mods_sha") {
+                Ok(_) => println!("Removed directory [mods_sha]"),
+                Err(e) => println!("Error removing directory [mods_sha]: {}", e)
+            }
         }
     }
 
     if options.uninstall_and_delete_ocmi {
         if Path::new("OneClickModInstaller.exe").exists() {
-            let result = process::Command::new("OneClickModInstaller.exe")
+            match process::Command::new("OneClickModInstaller.exe")
                 .arg("--uninstall")
-                .output();
-            if result.is_err() {
-                println!("Error: {}", result.err().unwrap());
+                .output() {
+                Ok(_) => println!("OneClickModInstaller should be uninstalled"),
+                Err(e) => println!("Error: {}", e),
             }
 
-            fs::remove_file("OneClickModInstaller.exe");
+            match fs::remove_file("OneClickModInstaller.exe") {
+                Ok(_) => println!("OneClickModInstaller.exe deleted"),
+                Err(e) => println!("Error removing file [OneClickModInstaller.exe]: {}", e)
+            }
         }
 
-        if !options.keep_configs && Path::new("OneClickModInstaller.cfg").exists() {
-            fs::remove_file("OneClickModInstaller.cfg");
+        if !options.keep_configs {
+            match fs::remove_file("OneClickModInstaller.cfg") {
+                Ok(_) => (),
+                Err(e) => println!("Error removing file [OneClickModInstaller.cfg]: {}", e)
+            };
         }
     }
 
     if options.delete_all_mod_loader_files {
         for file in installation_order {
             if file.modloader_file && Path::new(&file.orig_name).exists() {
-                if (!options.keep_configs || !(options.keep_configs && (file.orig_name.ends_with(".cfg") || file.orig_name.ends_with(".config")))) {
+                if !options.keep_configs || !(options.keep_configs && (file.orig_name.ends_with(".cfg") || file.orig_name.ends_with(".config"))) {
                     if Path::new(&file.orig_name).is_file() {
-                        fs::remove_file(file.orig_name);
+                        match fs::remove_file(&file.orig_name) {
+                            Ok(_) => println!("Removed file [{}]", file.orig_name),
+                            Err(e) => println!("Error removing file [{}]: {}", file.orig_name, e),
+                        }
                     } else if Path::new(&file.orig_name).is_dir() {
-                        fs::remove_dir_all(file.orig_name);
+                        match fs::remove_dir_all(&file.orig_name) {
+                            Ok(_) => println!("Removed directory [{}]", file.orig_name),
+                            Err(e) => println!("Error removing directory [{}]: {}", file.orig_name, e),
+                        }
                     }
                 }
             }
@@ -195,9 +225,15 @@ pub fn uninstall(options: UninstallationOptions) {
             "taskkill /IM Sonic4ModManager.exe /F",
             "DEL Sonic4ModManager.exe",
             "DEL FinishInstallation.bat");
-        fs::write("FinishInstallation.bat", bat);
-
-        process::Command::new("FinishInstallation.bat");
-        process::exit(0);
+        
+        match fs::write("FinishInstallation.bat", bat) {
+            Ok(_) => {
+                match process::Command::new("FinishInstallation.bat").spawn() {
+                    Ok(_) => process::exit(0),
+                    Err(e) => println!("Error launching FinishInstallation.bat: {}", e),
+                }
+            },
+            Err(e) => println!("Error writing FinishInstallation.bat: {}", e),
+        }
     }
 }
