@@ -82,7 +82,7 @@ impl Sonic4ModManagerApplication {
 
     fn show_about(&self) {              
         let about = adw::AboutDialog::builder()
-            .application_name("Sonic4 Mod Manager")
+            .application_name("Sonic 4 Mod Manager")
             .license_type(License::MitX11)
             .application_icon("icon")
             .developer_name("Oleg \"OSA413\" Sokolov")

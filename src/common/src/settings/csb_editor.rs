@@ -10,13 +10,11 @@ struct XmlConfiguration {
     pub user_settings: XmlUserSettingsGroup,
 }
 
-
 #[derive(Debug, Serialize, Deserialize)]
 struct XmlConfigSections {
     #[serde(rename = "sectionGroup")]
     pub section_group: XmlSectionGroup,
 }
-
 
 #[derive(Debug, Serialize, Deserialize)]
 struct XmlSectionGroup {
@@ -36,7 +34,13 @@ struct XmlSection {
 #[derive(Debug, Serialize, Deserialize)]
 struct XmlUserSettingsGroup {
     #[serde(rename = "CsbEditor.Properties.Settings")]
-    csb_editor_properties_settings: Vec<XmlSettingElement>,
+    csb_editor_properties_settings: XmlCsbEditorPropertiesSettings,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct XmlCsbEditorPropertiesSettings {
+    #[serde(rename = "setting")]
+    settings: Vec<XmlSettingElement>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -69,15 +73,15 @@ pub fn load() -> CSBEditorConfig {
 
             match xml_config_result {
                 Ok(xml_config) => {
-                    let enable_threading = match xml_config.user_settings.csb_editor_properties_settings.iter().find(|x| x.name == "EnableThreading") {
+                    let enable_threading = match xml_config.user_settings.csb_editor_properties_settings.settings.iter().find(|x| x.name == "EnableThreading") {
                         Some(x) => x.value.value == "true",
                         None => default_config.enable_threading
                     };
-                    let max_threads = match xml_config.user_settings.csb_editor_properties_settings.iter().find(|x| x.name == "MaxThreads") {
+                    let max_threads = match xml_config.user_settings.csb_editor_properties_settings.settings.iter().find(|x| x.name == "MaxThreads") {
                         Some(x) => x.value.value.clone().parse::<u32>().unwrap_or(default_config.max_threads),
                         None => default_config.max_threads
                     };
-                    let buffer_size = match xml_config.user_settings.csb_editor_properties_settings.iter().find(|x| x.name == "BufferSize") {
+                    let buffer_size = match xml_config.user_settings.csb_editor_properties_settings.settings.iter().find(|x| x.name == "BufferSize") {
                         Some(x) => x.value.value.clone().parse::<u32>().unwrap_or(default_config.buffer_size),
                         None => default_config.buffer_size
                     };
@@ -109,29 +113,31 @@ pub fn save(config: &CSBEditorConfig) -> Result<(), Box<dyn std::error::Error>> 
             }
         },
         user_settings: XmlUserSettingsGroup {
-            csb_editor_properties_settings: vec![
-                XmlSettingElement {
-                    name: "EnableThreading".to_string(),
-                    serialize_as: "String".to_string(),
-                    value: XmlValue {
-                        value: config.enable_threading.to_string()
+            csb_editor_properties_settings: XmlCsbEditorPropertiesSettings {
+                settings: vec![
+                    XmlSettingElement {
+                        name: "EnableThreading".to_string(),
+                        serialize_as: "String".to_string(),
+                        value: XmlValue {
+                            value: config.enable_threading.to_string()
+                        }
+                    },
+                    XmlSettingElement {
+                        name: "MaxThreads".to_string(),
+                        serialize_as: "String".to_string(),
+                        value: XmlValue {
+                            value: config.max_threads.to_string()
+                        }
+                    },
+                    XmlSettingElement {
+                        name: "BufferSize".to_string(),
+                        serialize_as: "String".to_string(),
+                        value: XmlValue {
+                            value: config.buffer_size.to_string()
+                        }
                     }
-                },
-                XmlSettingElement {
-                    name: "MaxThreads".to_string(),
-                    serialize_as: "String".to_string(),
-                    value: XmlValue {
-                        value: config.max_threads.to_string()
-                    }
-                },
-                XmlSettingElement {
-                    name: "BufferSize".to_string(),
-                    serialize_as: "String".to_string(),
-                    value: XmlValue {
-                        value: config.buffer_size.to_string()
-                    }
-                }
-            ]
+                ]
+            }
         }
     };
 
