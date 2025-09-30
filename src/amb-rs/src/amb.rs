@@ -1,4 +1,4 @@
-use databuffer::DataBuffer;
+use crate::binary_reader::read_u32;
 
 pub enum Version {
     PC = 0x20,
@@ -15,22 +15,22 @@ pub struct Amb {
 }
 
 struct AmbPointersPrediction {
-    pub list: u32,
-    pub data: u32,
-    pub name: u32,
+    pub list: usize,
+    pub data: usize,
+    pub name: usize,
 }
 
 impl Amb {
-    pub fn length(&self) -> u32 {
-        self.predict_pointers().name + u32::try_from(self.objects.len()).unwrap() * match self.has_names {
+    pub fn length(&self) -> usize {
+        self.predict_pointers().name + self.objects.len() * match self.has_names {
             true => 0x20,
             false => 0
         }
     }
 
     fn predict_pointers(&self) -> AmbPointersPrediction {
-        let data = 0x20 + 0x10 * u32::try_from(self.objects.len()).unwrap();
-        let ptr = data + self.objects.iter().map(|object| object.length_nice()).sum::<u32>();
+        let data = 0x20 + 0x10 * self.objects.len();
+        let ptr = data + self.objects.iter().map(|object| object.length_nice()).sum::<usize>();
         AmbPointersPrediction {
             list: 0x20, 
             data: data.try_into().unwrap(),
@@ -41,27 +41,24 @@ impl Amb {
         }
     }
 
-    pub fn is_source_amb(&self, ptr: Option<u32>) -> bool {
+    pub fn is_source_amb(&self, ptr: Option<usize>) -> bool {
         let ptr = ptr.unwrap_or(0);
-        u32::try_from(self.source.len()).unwrap() - ptr >= 0x20
-            && self.source[(ptr + 0) as usize] == '#' as u8
-            && self.source[(ptr + 1) as usize] == 'A' as u8
-            && self.source[(ptr + 2) as usize] == 'M' as u8
-            && self.source[(ptr + 3) as usize] == 'B' as u8
+        self.source.len() - ptr >= 0x20
+            && self.source[ptr + 0] == '#' as u8
+            && self.source[ptr + 1] == 'A' as u8
+            && self.source[ptr + 2] == 'M' as u8
+            && self.source[ptr + 3] == 'B' as u8
     }
 
     pub fn is_little_endian(&self, binary: Option<&Vec<u8>>) -> bool {
         let binary = binary.unwrap_or(&self.source);
-        let mut buffer = DataBuffer::from_bytes(&binary);
-        buffer.read_u32() > 0xFFFF
+        read_u32(binary, 0).unwrap() > 0xFFFF
     }
 
-    pub fn get_version(&self, binary: Option<&Vec<u8>>, ptr: Option<u32>) -> Version {
+    pub fn get_version(&self, binary: Option<&Vec<u8>>, ptr: Option<usize>) -> Version {
         let binary = binary.unwrap_or(&self.source);
         let ptr = ptr.unwrap_or(0);
-        let mut buffer = DataBuffer::from_bytes(&binary);
-        buffer.read_bytes((ptr + 0x4) as usize);
-        match buffer.read_u32() {
+        match read_u32(binary, ptr + 0x4).unwrap() {
             0x20 => Version::PC,
             0x28 => Version::Mobile,
             value => {
@@ -81,12 +78,6 @@ impl Amb {
         todo!()
     }
 
-    fn read_string(source: &Vec<u8>, ptr: u32) -> String {
-        let mut buffer = DataBuffer::from_bytes(source);
-        buffer.read_bytes(ptr as usize);
-        buffer.read_ntstr()
-    }
-
     pub fn new_empty() -> Self {
         Self {
             source: Vec::new(),
@@ -104,7 +95,7 @@ impl Amb {
 
     pub fn new_from_src_ptr_name(
         source: &Vec<u8>,
-        ptr: Option<u32>,
+        ptr: Option<usize>,
         name: Option<String>
     ) -> Self {
         todo!()
@@ -128,14 +119,14 @@ pub struct BinaryObject {
     pub amb: Option<Amb>,
     pub parent_amb: Option<Amb>,
 
-    pub flag1: u32,
-    pub flag2: u32,
+    pub flag1: usize,
+    pub flag2: usize,
 
     pub source: Vec<u8>,
 
     // use usize?
-    pub pointer: u32,
-    length: u32,
+    pub pointer: usize,
+    length: usize,
 }
 
 impl BinaryObject {
@@ -146,14 +137,14 @@ impl BinaryObject {
         }
     }
 
-    pub fn length(&self) -> u32 {
+    pub fn length(&self) -> usize {
         match &self.amb {
             Some(amb) => amb.length(),
             None => self.length
         }
     }
 
-    pub fn length_nice(&self) -> u32 {
+    pub fn length_nice(&self) -> usize {
         self.length() + (16 - self.length() % 16) % 16
     }
 

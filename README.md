@@ -8,11 +8,17 @@ In order to run the games you will also need [Microsoft Visual C++ 2015 Redistri
 
 Note for Linux users: [v0.1.5.1](https://github.com/OSA413/Sonic4_ModLoader/releases/tag/v0.1.5.1) is the last version that works with Mono (and probably Wine/Proton) (as for 2023).
 
+If you are looking for AMBPatcher (the predecessor of amb-rs):
+
+* Rewritten version of AMBPatcher (used for PC modding as for 2025): [Release v0.1.6.2p1](https://github.com/OSA413/Sonic4_ModLoader/releases/tag/v0.1.6.2p1)
+* Pre-rewritten version of AMBPatcher (should work with most AMB formats but is slow): [Release v0.1.4.3](https://github.com/OSA413/Sonic4_ModLoader/releases/tag/v0.1.4.3)
+
 Join our [Sonic 4 Modding Discord server](https://discord.gg/WCp8BFyFxN)
 
 FAQ: https://github.com/OSA413/Sonic4_ModLoader/blob/main/docs/FAQ.md
 
 **Table of content:**
+
 - [Sonic 4 Mod Loader](#sonic-4-mod-loader)
   - [What is this?](#what-is-this)
   - [How to install the Mod Loader](#how-to-install-the-mod-loader)
@@ -30,6 +36,7 @@ FAQ: https://github.com/OSA413/Sonic4_ModLoader/blob/main/docs/FAQ.md
 This program is a mod loader for Sonic 4 (both episodes supported).
 
 The Mod Loader includes:
+
 * Mod Manager to manage your mods (enabling/disabling and changing mod priority)
 * One-Click Mod Installer for an easier mod installation through the web and local archives
 * AMBPatcher for editing .AMB files
@@ -68,6 +75,7 @@ If you want to enable 1-Click installation, launch `OneClickModInstaller.exe` an
 ### Automatically
 
 Installation from a local archive/directory:
+
 1. Drag and drop a mod archive/directory on `OneClickModInstaller.exe`
 2. Press the "Install" button.
 3. Enable the mod in the Mod Manager.
