@@ -1,4 +1,4 @@
-pub fn get_help_text() -> &'static str {
+pub fn get_text() -> &'static str {
 "        amb-rs by OSA413
         Released under the MIT License
         https://github.com/OSA413
@@ -24,6 +24,6 @@ Usage:
     amb-rs --help - Show help message."
 }
 
-pub fn print_help() {
-    println!("{}", get_help_text());
+pub fn print() {
+    println!("{}", get_text());
 }
