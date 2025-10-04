@@ -33,9 +33,9 @@ impl Amb {
         let ptr = data + self.objects.iter().map(|object| object.length_nice()).sum::<usize>();
         AmbPointersPrediction {
             list: 0x20, 
-            data: data.try_into().unwrap(),
+            data: data,
             name: match self.has_names { 
-                true => ptr.try_into().unwrap(),
+                true => ptr,
                 false => 0
             }
         }
@@ -155,8 +155,8 @@ impl BinaryObject {
     ) -> Self {
         BinaryObject {
             source: source,
-            pointer: pointer.try_into().unwrap(),
-            length: length.try_into().unwrap(),
+            pointer: pointer,
+            length: length,
             amb: None,
             flag1: 0,
             flag2: 0,
@@ -174,7 +174,7 @@ impl BinaryObject {
         Ok(BinaryObject {
             source: file_content,
             pointer: 0,
-            length: file_length.try_into().unwrap(),
+            length: file_length,
             amb: None,
             flag1: 0,
             flag2: 0,
@@ -187,7 +187,7 @@ impl BinaryObject {
     pub fn write(&self) -> Vec<u8> {
         match &self.amb {
             Some(amb) => amb.write(),
-            None => self.source.iter().skip(self.pointer.try_into().unwrap()).take(self.length.try_into().unwrap()).map(|x| x.to_owned()).collect()
+            None => self.source.iter().skip(self.pointer).take(self.length).map(|x| x.to_owned()).collect()
         }
     }
 }
