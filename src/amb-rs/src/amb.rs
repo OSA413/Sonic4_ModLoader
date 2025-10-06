@@ -8,7 +8,7 @@ pub enum Version {
 pub struct Amb {
     source: Vec<u8>,
     pub amb_path: String,
-    pub same_endianness: Option<bool>,
+    pub endianness: bool,
     pub objects: Vec<BinaryObject>,
     pub has_names: bool,
     pub version: Version,
@@ -82,15 +82,15 @@ impl Amb {
         Self {
             source: Vec::new(),
             amb_path: String::new(),
-            same_endianness: Some(true),
+            endianness: true,
             objects: Vec::new(),
             has_names: true,
             version: Version::PC,
         }
     }
 
-    pub fn from_file_name(file_path: &str) -> Result<Self, std::io::Error> {
-        Ok(Self::new_from_src_ptr_name(&std::fs::read(file_path)?, Some(0), Some(file_path.to_string())))
+    pub fn from_file_name(file_path: &String) -> Result<Self, std::io::Error> {
+        Ok(Self::new_from_src_ptr_name(&std::fs::read(&file_path)?, Some(0), Some(file_path.to_string())))
     }
 
     pub fn new_from_src_ptr_name(
@@ -98,7 +98,14 @@ impl Amb {
         ptr: Option<usize>,
         name: Option<String>
     ) -> Self {
-        todo!()
+        Amb {
+            source: source.to_vec(),
+            amb_path: name.unwrap_or(String::new()),
+            endianness: true,
+            objects: Vec::new(),
+            has_names: true,
+            version: Version::PC,
+        }
     }
 
     pub fn save(&self) {todo!()}

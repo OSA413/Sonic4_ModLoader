@@ -45,22 +45,10 @@ Or: add <target_file> <dir_of_files_to_add>"),
                         None => println!("Usage: read <file>"),
                     }
                 },
-                "read_json" => {
-                    match args.next() {
-                        Some(file) => amb_management::print_json_amb_table_of_content_from_file(file),
-                        None => println!("Usage: read_json <file>"),
-                    }
-                },
                 "swap_endianness" => {
                     match args.next() {
                         Some(file) => amb_management::swap_endianness_and_save(file),
                         None => println!("Usage: swap_endianness <file>"),
-                    }
-                },
-                "endianness" => {
-                    match args.next() {
-                        Some(file) => amb_management::print_endianness(file),
-                        None => println!("Usage: endianness <file>"),
                     }
                 },
                 "create" => {
@@ -79,7 +67,7 @@ Or: add <target_file> <dir_of_files_to_add>"),
                     let path = Path::new(&arg);
                     match path.is_dir() {
                         true => amb_management::recreate_amb_from_dir(path),
-                        false => amb_management::extract_amb_from_file(path, args.next()),
+                        false => amb_management::extract_amb(path.to_str().unwrap().to_string(), args.next()),
                     }
                 },
             }
