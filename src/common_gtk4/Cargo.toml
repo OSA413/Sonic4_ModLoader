@@ -7,5 +7,5 @@ homepage = "https://github.com/OSA413/Sonic4_ModLoader"
 license = "MIT"
 
 [dependencies]
-gtk = { version = "0.10.0", package = "gtk4", features = ["v4_18"] }
+gtk = { version = "0.10.0", package = "gtk4", features = ["v4_14"] }
 common = { path = "../common" }
