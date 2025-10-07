@@ -32,7 +32,7 @@ jobs:
         run: bash src/common/src/generate-version.sh
 
       - name: Build .Net
-        run: dotnet publish src_old -c Release -m
+        run: dotnet publish src_old/AMBPatcher -c Release -m
 
       - name: Build Rust
         run: cargo build --release

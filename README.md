@@ -1,6 +1,10 @@
 # Sonic 4 Mod Loader
 
-Looking for midday builds? Get it from [GitHub Actions](https://github.com/OSA413/Sonic4_ModLoader/actions)! [![Main](https://github.com/OSA413/Sonic4_ModLoader/actions/workflows/main.yml/badge.svg)](https://github.com/OSA413/Sonic4_ModLoader/actions/workflows/main.yml)
+Looking for midday builds? Get it from [GitHub Actions](https://github.com/OSA413/Sonic4_ModLoader/actions)!
+
+[![Midday build (Windows)](https://github.com/OSA413/Sonic4_ModLoader/actions/workflows/main_win.yml/badge.svg)](https://github.com/OSA413/Sonic4_ModLoader/actions/workflows/main_win.yml)
+
+[![Midday build (Linux)](https://github.com/OSA413/Sonic4_ModLoader/actions/workflows/main_linux.yml/badge.svg)](https://github.com/OSA413/Sonic4_ModLoader/actions/workflows/main_linux.yml)
 
 In order to run it, you need [.Net 6 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) and [.Net Framework 4.5.2 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net452) installed.
 
