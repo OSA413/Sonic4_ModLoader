@@ -11,7 +11,6 @@ echo "Copying new distribution files..."
 cp "LICENSE" "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-Sonic4_ModLoader"
 #EXEs
 cp "./src_old/AMBPatcher/bin/Release/net6.0/win-x64/publish/AMBPatcher.exe" "./dist/Sonic4ModLoader/AMBPatcher.exe"
-cp "./src_old/OneClickModInstaller/bin/Release/net6.0-windows/win-x64/publish/OneClickModInstaller.exe" "./dist/Sonic4ModLoader/OneClickModInstaller.exe"
 #README
 cp "./README.md" "./dist/Sonic4ModLoader/README.md"
 #Change log
@@ -45,11 +44,11 @@ done
 # Rust
 mkdir -p "./dist/Sonic4ModLoader/bin"
 
-cp ./target/release/ManagerLauncher.exe ./dist/Sonic4ModLoader/bin/ManagerLauncher.exe
-cp ./target/release/ManagerLauncher_link.exe ./dist/Sonic4ModLoader/ManagerLauncher_link.exe
+cp ./target/release/ManagerLauncher ./dist/Sonic4ModLoader/bin/ManagerLauncher
+cp ./target/release/ManagerLauncher_link ./dist/Sonic4ModLoader/ManagerLauncher_link
 
-cp ./target/release/Sonic4ModManager.exe ./dist/Sonic4ModLoader/bin/Sonic4ModManager.exe
-cp ./target/release/Sonic4ModManager_link.exe ./dist/Sonic4ModLoader/Sonic4ModManager_link.exe
+cp ./target/release/Sonic4ModManager ./dist/Sonic4ModLoader/bin/Sonic4ModManager.exe
+cp ./target/release/Sonic4ModManager_link ./dist/Sonic4ModLoader/Sonic4ModManager_link
 
 # SHA256SUMS
 echo "Creating SHA256SUMS..."
