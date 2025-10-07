@@ -19,7 +19,7 @@ jobs:
           dotnet-version: '6.0.x'
       - uses: actions/checkout@v2
 
-      - run: apt install libgtk-4-dev libadwaita-1-dev build-essential
+      - run: sudo apt install libgtk-4-dev libadwaita-1-dev build-essential
 
       - name: Update dependencies
         run: bash update_dependencies_linux.sh
