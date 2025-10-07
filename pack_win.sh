@@ -98,6 +98,6 @@ done <<< "$dependenciesGtk"
 # SHA256SUMS
 echo "Creating SHA256SUMS..."
 cd dist
-find * -type f -exec sha256sum {} \; >> "SHA256SUMS"
+find * -type f -exec sha256sum {} \; >> "SHA256SUMS_win"
 
-7z a "./Sonic4ModLoader.zip" ./* -mx=9
+7z a "./Sonic4ModLoader_win.zip" ./* -mx=9

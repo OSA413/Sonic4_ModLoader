@@ -1,11 +1,18 @@
-name: Release
+name: Midday build (Windows)
 
 on:
-  release:
-    types: [published]
+  push:
+    branches:
+     - "**"
+  pull_request:
+    branches:
+     - "**"
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
 
 jobs:
   build-pack-win64:
@@ -23,9 +30,6 @@ jobs:
         with:
           python-version: '3.13'
 
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v1.1
-
       - run: py -3.13 -m pip install --user pipx
       - run: py -3.13 -m pipx ensurepath
       - run: pipx install gvsbuild
@@ -33,39 +37,34 @@ jobs:
       - run: echo "C:\gtk-build\gtk\x64\release\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Update dependencies
-        run: bash update_dependencies.sh
+        run: bash update_dependencies_win.sh
+
+      - name: Generate version
+        run: bash src/common/src/generate-version.sh
 
       - name: Build .Net
-        run: bash build.sh
+        run: dotnet publish src_old -c Release -m
 
       - name: Build Rust
         run: cargo build --release
 
       - name: Pack
-        run: bash pack.sh
+        run: bash pack_win.sh
         
       - uses: actions/upload-artifact@v4
         with:
-          name: Sonic 4 Mod Loader
-          path: dist/Sonic4ModLoader.zip
+          name: Sonic4ModLoader_win
+          path: dist/Sonic4ModLoader_win.zip
 
       - uses: actions/upload-artifact@v4
         with:
-          name: SHA256 sums
-          path: dist/SHA256SUMS
+          name: SHA256SUMS_win
+          path: dist/SHA256SUMS_win
 
       - uses: actions/upload-artifact@v4
         with:
           name: AMBPatcher
           path: dist/Sonic4ModLoader/AMBPatcher.exe
-
-      - uses: softprops/action-gh-release@v2
-        if: github.ref_type == 'tag'
-        with:
-          files: |
-            dist/Sonic4ModLoader/AMBPatcher.exe
-            dist/SHA256SUMS
-            dist/Sonic4ModLoader.zip
   
   tests:
     runs-on: ubuntu-latest

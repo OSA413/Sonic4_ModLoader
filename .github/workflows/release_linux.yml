@@ -1,0 +1,62 @@
+name: Release (Windows)
+
+on:
+  release:
+    types: [published]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-pack-win64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '6.0.x'
+      - uses: actions/checkout@v2
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v1.1
+
+      - run: apt install libgtk-4-dev libadwaita-1-dev build-essential
+
+      - name: Update dependencies
+        run: bash update_dependencies_linux.sh
+
+      - name: Generate version
+        run: bash src/common/src/generate-version.sh
+
+      - name: Build .Net
+        run: dotnet publish src_old -c Release -m
+
+      - name: Build Rust
+        run: cargo build --release
+
+      - name: Pack
+        run: bash pack.sh
+        
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Sonic4ModLoader_linux
+          path: dist/Sonic4ModLoader_linux.zip
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SHA256SUMS_linux
+          path: dist/SHA256SUMS_linux
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AMBPatcher
+          path: dist/Sonic4ModLoader/AMBPatcher.exe
+
+      - uses: softprops/action-gh-release@v2
+        if: github.ref_type == 'tag'
+        with:
+          files: |
+            dist/SHA256SUMS_linux
+            dist/Sonic4ModLoader_linux.zip
