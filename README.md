@@ -6,13 +6,30 @@ Looking for midday builds? Get it from [GitHub Actions](https://github.com/OSA41
 
 [![Midday build (Linux)](https://github.com/OSA413/Sonic4_ModLoader/actions/workflows/main_linux.yml/badge.svg)](https://github.com/OSA413/Sonic4_ModLoader/actions/workflows/main_linux.yml)
 
+## To run it on Windows
+
 In order to run it, you need [.Net 6 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) and [.Net Framework 4.5.2 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net452) installed.
 
 In order to run the games you will also need [Microsoft Visual C++ 2015 Redistributable](https://www.microsoft.com/en-us/download/details.aspx?id=52685) and [Latest Microsoft Visual C++ Redistributable](https://learn.microsoft.com/en-gb/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-microsoft-visual-c-redistributable-version) **both x86 and x64 for both packages**.
 
+## To run it on Linux
+
 Note for Linux users: [v0.1.5.1](https://github.com/OSA413/Sonic4_ModLoader/releases/tag/v0.1.5.1) is the last version that works with Mono (and probably Wine/Proton) (as for 2023).
 
-If you are looking for AMBPatcher (the predecessor of amb-rs):
+(as for 2025) In order to run Mod Manager, you need to install these:
+```
+# Debian/Ubuntu and derivatives
+# TODO
+
+# Arch/Steam Deck and derivatives
+sudo pacman -S gtk4 libadwaita
+```
+
+You also should use the `_linux` distribution of the Mod Loader
+
+----------------
+
+*If you are looking for AMBPatcher* (the predecessor of amb-rs):
 
 * Rewritten version of AMBPatcher (used for PC modding as for 2025): [Release v0.1.6.2p1](https://github.com/OSA413/Sonic4_ModLoader/releases/tag/v0.1.6.2p1)
 * Pre-rewritten version of AMBPatcher (should work with most AMB formats but is slow): [Release v0.1.4.3](https://github.com/OSA413/Sonic4_ModLoader/releases/tag/v0.1.4.3)
