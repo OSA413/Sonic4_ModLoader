@@ -19,7 +19,7 @@ Note for Linux users: [v0.1.5.1](https://github.com/OSA413/Sonic4_ModLoader/rele
 (as for 2025) In order to run Mod Manager, you need to install these:
 ```
 # Debian/Ubuntu and derivatives
-# TODO
+sudo apt install libgtk-4-1 libadwaita-1-0
 
 # Arch/Steam Deck and derivatives
 sudo pacman -S gtk4 libadwaita
