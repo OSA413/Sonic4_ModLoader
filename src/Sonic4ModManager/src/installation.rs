@@ -122,19 +122,24 @@ pub fn write_empty_config() {
 }
 
 pub fn write_aml_config(patcher_dir: &str) {
-    let ini_aml = fs::read_to_string("AML/AliceML.ini").unwrap();
-    let mut result_lines = Vec::<String>::new();
-    for line in ini_aml.lines() {
-        if line.starts_with("PatcherDir=") {
-            result_lines.push(format!("PatcherDir={}", patcher_dir));
-        } else {
-            result_lines.push(line.to_string());
-        }
-    }
-
-    match fs::write("AML/AliceML.ini", result_lines.join("\n")) {
-        Ok(_) => (),
-        Err(e) => println!("Couldn't write AML/AliceML.ini: {}", e),
+    let ini_aml_result = fs::read_to_string("AML/AliceML.ini");
+    match ini_aml_result {
+        Ok(ini_aml) => {
+            let mut result_lines = Vec::<String>::new();
+            for line in ini_aml.lines() {
+                if line.starts_with("PatcherDir=") {
+                    result_lines.push(format!("PatcherDir={}", patcher_dir));
+                } else {
+                    result_lines.push(line.to_string());
+                }
+            }
+            
+            match fs::write("AML/AliceML.ini", result_lines.join("\n")) {
+                Ok(_) => (),
+                Err(e) => println!("Couldn't write AML/AliceML.ini: {}", e),
+            }
+        },
+        Err(e) => println!("Error reading AML config: {}", e),
     }
 }
 
