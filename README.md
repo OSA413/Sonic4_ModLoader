@@ -29,7 +29,7 @@ You also should use the `_linux` distribution of the Mod Loader
 
 ----------------
 
-*If you are looking for AMBPatcher* (the predecessor of amb-rs):
+**If you are looking for AMBPatcher** (the predecessor of amb-rs):
 
 * Rewritten version of AMBPatcher (used for PC modding as for 2025): [Release v0.1.6.2p1](https://github.com/OSA413/Sonic4_ModLoader/releases/tag/v0.1.6.2p1)
 * Pre-rewritten version of AMBPatcher (should work with most AMB formats but is slow): [Release v0.1.4.3](https://github.com/OSA413/Sonic4_ModLoader/releases/tag/v0.1.4.3)
