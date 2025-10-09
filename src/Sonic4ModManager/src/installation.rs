@@ -1,6 +1,6 @@
 use std::{fs, path::Path, process};
 
-use common::{Game, Launcher};
+use common::{settings, Game, Launcher};
 
 pub enum InstallationStatus {
     Installed,
@@ -11,16 +11,20 @@ pub enum InstallationStatus {
 
 pub fn get_installation_status() -> InstallationStatus {
     let game = Launcher::get_current_game();
+    let aml_config = settings::alice_mod_loader::load();
+    let check_launcher = cfg!(windows);
     
     match game {
         Game::Unknown => return InstallationStatus::NotGameDirectory,
         Game::Episode1 => {
-            if Path::new("SonicLauncher.orig.exe").exists() {
+            if (!check_launcher || Path::new("SonicLauncher.orig.exe").exists())
+                && aml_config == "AMBPatcher.exe" {
                 return InstallationStatus::Installed;
             }
         },
         Game::Episode2 => {
-            if Path::new("Launcher.orig.exe").exists() {
+            if (!check_launcher || Path::new("Launcher.orig.exe").exists())
+                && aml_config == "AMBPatcher.exe" {
                 return InstallationStatus::Installed;
             }
         }
@@ -36,12 +40,13 @@ pub fn get_installation_status() -> InstallationStatus {
 pub struct InstallationInstruction {
     pub orig_name: String,
     pub new_name: Option<String>,
+    pub only_if_this_file_exists: Option<String>,
     pub modloader_file: bool,
 }
 
 impl InstallationInstruction {
-    pub fn new(orig_name: String, new_name: Option<String>, modloader_file: bool) -> InstallationInstruction {
-        InstallationInstruction { orig_name, new_name, modloader_file }
+    pub fn new(orig_name: String, new_name: Option<String>, only_if_this_file_exists: Option<String>, modloader_file: bool) -> InstallationInstruction {
+        InstallationInstruction { orig_name, new_name, only_if_this_file_exists, modloader_file }
     }
 }
 
@@ -61,29 +66,39 @@ fn get_installation_order() -> Vec<InstallationInstruction> {
     let original_launcher = format!("{}.exe", original_launcher);
 
     //Original files
-    installation_order.push(InstallationInstruction::new(original_launcher.clone(), Some(original_launcher_bkp), false ));
-    installation_order.push(InstallationInstruction::new(manager_launcher.to_string(), Some(original_launcher), true));
+    installation_order.push(InstallationInstruction::new(
+        original_launcher.clone(),
+        Some(original_launcher_bkp.clone()),
+        Some(manager_launcher.to_string()),
+        false )
+    );
+    installation_order.push(InstallationInstruction::new(
+        manager_launcher.to_string(),
+        Some(original_launcher),
+        Some(original_launcher_bkp.clone()),
+        true)
+    );
     
     //Mod Loader files
-    installation_order.push(InstallationInstruction::new("7z.exe".to_string(), None, true));
-    installation_order.push(InstallationInstruction::new("7z.dll".to_string(), None, true));
-    installation_order.push(InstallationInstruction::new("AMBPatcher.exe".to_string(), None, true));
-    installation_order.push(InstallationInstruction::new("CsbEditor.exe".to_string(), None, true));
-    installation_order.push(InstallationInstruction::new("Mod Loader - Whats new.txt".to_string(), None, true));
-    installation_order.push(InstallationInstruction::new("README.md".to_string(), None, true));
-    installation_order.push(InstallationInstruction::new("SonicAudioLib.dll".to_string(), None, true));
+    installation_order.push(InstallationInstruction::new("7z.exe".to_string(), None, None, true));
+    installation_order.push(InstallationInstruction::new("7z.dll".to_string(), None, None, true));
+    installation_order.push(InstallationInstruction::new("AMBPatcher.exe".to_string(), None, None, true));
+    installation_order.push(InstallationInstruction::new("CsbEditor.exe".to_string(), None, None, true));
+    installation_order.push(InstallationInstruction::new("Mod Loader - Whats new.txt".to_string(), None, None, true));
+    installation_order.push(InstallationInstruction::new("README.md".to_string(), None, None, true));
+    installation_order.push(InstallationInstruction::new("SonicAudioLib.dll".to_string(), None, None, true));
 
-    installation_order.push(InstallationInstruction::new("AMBPatcher.cfg".to_string(), None, true));
-    installation_order.push(InstallationInstruction::new("CsbEditor.exe.config".to_string(), None, true));
-    installation_order.push(InstallationInstruction::new("ModManager.cfg".to_string(), None, true));
+    installation_order.push(InstallationInstruction::new("AMBPatcher.cfg".to_string(), None, None, true));
+    installation_order.push(InstallationInstruction::new("CsbEditor.exe.config".to_string(), None, None, true));
+    installation_order.push(InstallationInstruction::new("ModManager.cfg".to_string(), None, None, true));
 
-    installation_order.push(InstallationInstruction::new("Mod Loader - licenses".to_string(), None, true));
-    installation_order.push(InstallationInstruction::new("AML".to_string(), None, true));
-    installation_order.push(InstallationInstruction::new("d3d9.dll".to_string(), None, true));
+    installation_order.push(InstallationInstruction::new("Mod Loader - licenses".to_string(), None, None, true));
+    installation_order.push(InstallationInstruction::new("AML".to_string(), None, None, true));
+    installation_order.push(InstallationInstruction::new("d3d9.dll".to_string(), None, None, true));
 
-    installation_order.push(InstallationInstruction::new("lib".to_string(), None, true));
-    installation_order.push(InstallationInstruction::new("share".to_string(), None, true));
-    installation_order.push(InstallationInstruction::new("bin".to_string(), None, true));
+    installation_order.push(InstallationInstruction::new("lib".to_string(), None, None, true));
+    installation_order.push(InstallationInstruction::new("share".to_string(), None, None, true));
+    installation_order.push(InstallationInstruction::new("bin".to_string(), None, None, true));
 
     installation_order
 }
@@ -99,7 +114,10 @@ pub fn install() {
 
     let installation_order = get_installation_order();
     for i in installation_order {
-        if Path::new(&i.orig_name).exists() && i.new_name.is_some() && !Path::new(&i.new_name.clone().unwrap()).exists() {
+        if Path::new(&i.orig_name).exists()
+            && i.new_name.is_some()
+            && !Path::new(&i.new_name.clone().unwrap()).exists()
+            && match i.only_if_this_file_exists { Some(path) => Path::new(&path).exists(), None => true, } {
             match fs::rename(&i.orig_name, &i.new_name.unwrap()) {
                 Ok(_) => (),
                 Err(e) => println!("Failed to move some files: {}", e)
@@ -111,36 +129,7 @@ pub fn install() {
         Ok(_) => (),
         Err(e) => println!("Couldn't write ModManager.cfg: {}", e),
     }
-    write_aml_config("AMBPatcher.exe");
-}
-
-pub fn write_empty_config() {
-    match fs::write("ModManager.cfg", "") {
-        Ok(_) => (),
-        Err(e) => println!("Couldn't write ModManager.cfg: {}", e),
-    }
-}
-
-pub fn write_aml_config(patcher_dir: &str) {
-    let ini_aml_result = fs::read_to_string("AML/AliceML.ini");
-    match ini_aml_result {
-        Ok(ini_aml) => {
-            let mut result_lines = Vec::<String>::new();
-            for line in ini_aml.lines() {
-                if line.starts_with("PatcherDir=") {
-                    result_lines.push(format!("PatcherDir={}", patcher_dir));
-                } else {
-                    result_lines.push(line.to_string());
-                }
-            }
-            
-            match fs::write("AML/AliceML.ini", result_lines.join("\n")) {
-                Ok(_) => (),
-                Err(e) => println!("Couldn't write AML/AliceML.ini: {}", e),
-            }
-        },
-        Err(e) => println!("Error reading AML config: {}", e),
-    }
+    settings::alice_mod_loader::save("AMBPatcher.exe");
 }
 
 pub struct UninstallationOptions {
@@ -158,7 +147,10 @@ pub fn uninstall(options: UninstallationOptions) {
     };
 
     for i in &installation_order {
-        if i.new_name.is_some() && Path::new(&i.new_name.clone().unwrap()).exists() && !Path::new(&i.orig_name).exists() {
+        if i.new_name.is_some()
+            && Path::new(&i.new_name.clone().unwrap()).exists()
+            && !Path::new(&i.orig_name).exists()
+            && match &i.only_if_this_file_exists { Some(path) => Path::new(&path).exists(), None => true } {
             match fs::rename(i.new_name.clone().unwrap(), &i.orig_name) {
                 Ok(_) => (),
                 Err(e) => println!("Error: {}", e),
@@ -166,7 +158,7 @@ pub fn uninstall(options: UninstallationOptions) {
         }
     }
 
-    write_aml_config("");
+    settings::alice_mod_loader::save("");
 
     if options.recover_original_files {
         match process::Command::new("AMBPatcher.exe")

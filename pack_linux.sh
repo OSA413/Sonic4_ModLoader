@@ -42,13 +42,9 @@ for dir in $(ls ./dependencies); do
 done
 
 # Rust
-mkdir -p "./dist/Sonic4ModLoader/bin"
+mkdir -p "./dist/Sonic4ModLoader"
 
-cp ./target/release/ManagerLauncher ./dist/Sonic4ModLoader/bin/ManagerLauncher
-cp ./target/release/ManagerLauncher_link ./dist/Sonic4ModLoader/ManagerLauncher_link
-
-cp ./target/release/Sonic4ModManager ./dist/Sonic4ModLoader/bin/Sonic4ModManager
-cp ./target/release/Sonic4ModManager_link ./dist/Sonic4ModLoader/Sonic4ModManager_link
+cp ./target/release/Sonic4ModManager ./dist/Sonic4ModLoader/Sonic4ModManager
 
 # SHA256SUMS
 echo "Creating SHA256SUMS..."

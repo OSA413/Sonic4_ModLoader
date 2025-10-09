@@ -1,7 +1,7 @@
 use std::{cmp, path::Path};
 
 use adw::{prelude::{ActionRowExt, AdwDialogExt, AlertDialogExt}, subclass::prelude::*, ActionRow};
-use common::{mod_logic::mod_entry::ModEntry, Launcher};
+use common::{mod_logic::mod_entry::ModEntry, settings, Launcher};
 use gtk::{gio::{self, prelude::{ApplicationExt, ListModelExt, ListModelExtManual}}, glib::{self, clone, object::Cast, Object}, prelude::{ActionMapExtManual, CheckButtonExt, GtkWindowExt, ListBoxRowExt, TextViewExt, WidgetExt}, Align, CheckButton};
 use crate::{buffer_formatter, installation, models::g_mod_entry::GModEntry, settings_dialog::SettingsWindow};
 use std::cell::RefCell;
@@ -301,7 +301,7 @@ You can install/uninstall and configure it through the settings menu at any time
 
         alert.connect_response(None, move |_, response| {
             match response {
-                "no" => installation::write_empty_config(),
+                "no" => settings::mod_manager::save(),
                 "yes" => installation::install(),
                 _ => {}
             }
