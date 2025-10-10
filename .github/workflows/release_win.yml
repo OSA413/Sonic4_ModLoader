@@ -42,7 +42,7 @@ jobs:
         run: cargo build --release
 
       - name: Pack
-        run: bash pack.sh
+        run: bash pack_win.sh
         
       - uses: actions/upload-artifact@v4
         with:
