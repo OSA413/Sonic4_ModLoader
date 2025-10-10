@@ -29,6 +29,8 @@ You also should use the `_linux` distribution of the Mod Loader
 
 Note that you will not be able to launch the Manager Launcher from Steam, instead to manage mods you will need to open the game's directory and launch `Sonic4ModManager` manually. This is related to the isolation mechanism that Steam uses that refuses to load external `.so` libraries from the system (e.g. without specifying `LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libadwaita-1.so:...` to `protontricks-launch`) when using Proton.
 
+To get AMBPatcher working, you need to install .Net 6 via `protontricks`.
+
 ----------------
 
 **If you are looking for AMBPatcher** (the predecessor of amb-rs):
