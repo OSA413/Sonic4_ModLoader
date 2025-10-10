@@ -14,9 +14,7 @@ In order to run the games you will also need [Microsoft Visual C++ 2015 Redistri
 
 ## To run it on Linux
 
-Note for Linux users: [v0.1.5.1](https://github.com/OSA413/Sonic4_ModLoader/releases/tag/v0.1.5.1) is the last version that works with Mono (and probably Wine/Proton) (as for 2023).
-
-(as for 2025) In order to run Mod Manager, you need to install these:
+In order to run Mod Manager, you need to install these:
 ```
 # Debian/Ubuntu and derivatives
 sudo apt install libgtk-4-1 libadwaita-1-0
@@ -25,11 +23,11 @@ sudo apt install libgtk-4-1 libadwaita-1-0
 sudo pacman -S gtk4 libadwaita
 ```
 
+To get AMBPatcher working, you need to install .Net 6 via `protontricks`.
+
 You also should use the `_linux` distribution of the Mod Loader
 
 Note that you will not be able to launch the Manager Launcher from Steam, instead to manage mods you will need to open the game's directory and launch `Sonic4ModManager` manually. This is related to the isolation mechanism that Steam uses that refuses to load external `.so` libraries from the system (e.g. without specifying `LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libadwaita-1.so:...` to `protontricks-launch`) when using Proton.
-
-To get AMBPatcher working, you need to install .Net 6 via `protontricks`.
 
 ----------------
 
