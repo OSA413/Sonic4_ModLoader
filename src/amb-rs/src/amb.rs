@@ -1,19 +1,14 @@
 use std::path::Path;
-use crate::binary_reader::read_u32;
+use crate::binary_reader::{self, Endianness};
 
 pub enum Version {
     PC = 0x20,
     Mobile = 0x28,
 }
 
-pub enum Endianness {
-    Little,
-    Big,
-}
-
 pub struct Amb {
     pub amb_path: String,
-    pub endianness: Endianness,
+    pub endianness: Option<Endianness>,
     pub objects: Vec<BinaryObject>,
     pub has_names: bool,
     pub version: Version,
@@ -46,47 +41,37 @@ impl Amb {
         }
     }
 
-    // pub fn is_source_amb(&self, ptr: Option<usize>) -> bool {
-    //     let ptr = ptr.unwrap_or(0);
-    //     self.source.len() - ptr >= 0x20
-    //         && self.source[ptr + 0] == '#' as u8
-    //         && self.source[ptr + 1] == 'A' as u8
-    //         && self.source[ptr + 2] == 'M' as u8
-    //         && self.source[ptr + 3] == 'B' as u8
-    // }
+    pub fn is_source_amb(source: &Vec<u8>, ptr: Option<usize>) -> bool {
+        let ptr = ptr.unwrap_or(0);
+        source.len() - ptr >= 0x20
+            && source[ptr + 0] == '#' as u8
+            && source[ptr + 1] == 'A' as u8
+            && source[ptr + 2] == 'M' as u8
+            && source[ptr + 3] == 'B' as u8
+    }
 
-    // pub fn is_little_endian(&self, binary: Option<&Vec<u8>>) -> bool {
-    //     let binary = binary.unwrap_or(&self.source);
-    //     read_u32(binary, 0).unwrap() > 0xFFFF
-    // }
-
-    // pub fn get_version(&self, binary: Option<&Vec<u8>>, ptr: Option<usize>) -> Version {
-    //     let binary = binary.unwrap_or(&self.source);
-    //     let ptr = ptr.unwrap_or(0);
-    //     match read_u32(binary, ptr + 0x4).unwrap() {
-    //         0x20 => Version::PC,
-    //         0x28 => Version::Mobile,
-    //         value => {
-    //             match value.swap_bytes() {
-    //                 0x20 => Version::PC,
-    //                 0x28 => Version::Mobile,
-    //                 _ => {
-    //                     println!("Could not detect version of AMB file");
-    //                     Version::PC
-    //                 },
-    //             }
-    //         }
-    //     }
-    // }
-
-    pub fn swap_endianness(&self, binary: Option<&Vec<u8>>) -> Vec<u8> {
-        todo!()
+    pub fn get_version(source: &Vec<u8>, ptr: Option<usize>) -> (Version, Option<Endianness>) {
+        let ptr = ptr.unwrap_or(0);
+        match binary_reader::read_u32(source, ptr + 0x4, &None).unwrap() {
+            0x20 => (Version::PC, Some(Endianness::Little)),
+            0x28 => (Version::Mobile, Some(Endianness::Little)),
+            value => {
+                match value.swap_bytes() {
+                    0x20 => (Version::PC, Some(Endianness::Big)),
+                    0x28 => (Version::Mobile, Some(Endianness::Big)),
+                    _ => {
+                        println!("Could not detect version of AMB file");
+                        (Version::PC, None)
+                    },
+                }
+            }
+        }
     }
 
     pub fn new_empty() -> Self {
         Self {
             amb_path: String::new(),
-            endianness: Endianness::Little,
+            endianness: Some(Endianness::Little),
             objects: Vec::new(),
             has_names: true,
             version: Version::PC,
@@ -94,18 +79,59 @@ impl Amb {
     }
 
     pub fn from_file_name(file_path: &String) -> Result<Self, std::io::Error> {
-        Ok(Self::new_from_src_ptr_name(&std::fs::read(&file_path)?, Some(0), Some(file_path.to_string())))
+        Ok(Self::new_from_src_ptr_name(&std::fs::read(&file_path)?, Some(0), file_path.to_string()))
     }
 
     pub fn new_from_src_ptr_name(
         source: &Vec<u8>,
         ptr: Option<usize>,
-        name: Option<String>
+        name: String
     ) -> Self {
+        if !Amb::is_source_amb(source, ptr) {
+            panic!("Provided source is not an AMB file");
+        }
+        let ptr = ptr.unwrap_or(0);
+        let (version, endianness) = Amb::get_version(source, Some(ptr));
+        let shift: usize = match version {
+            Version::Mobile => 0x4,
+            _ => 0,
+        };
+
+        let object_number = binary_reader::read_u32(source, ptr + 0x10, &endianness).expect("Another bad thing happened that you didn't account for #10");
+        let list_pointer = binary_reader::read_u32(source, ptr + 0x14, &endianness).expect("Another bad thing happened that you didn't account for #11") + ptr as u32;
+        //var dataPtr = binary_reader::read_u32(source, sourcePtr + 0x18 + shift) + sourcePtr; //this may be not dataPtr for mobile
+        let names_pointer = binary_reader::read_u32(source, ptr + 0x1C + shift, &endianness).expect("Another bad thing happened that you didn't account for #12") + ptr as u32;
+        let has_names = names_pointer != 0;
+
+        let mut objects = Vec::<BinaryObject>::new();
+        let mut i: usize = 0;
+        while i < object_number as usize {
+            let object_pointer = binary_reader::read_u32(source, list_pointer as usize + (0x10 + shift) * i, &endianness).expect("Who's bad?") + ptr as u32;
+            if object_pointer == 0 {
+                i += 1;
+                continue;
+            }
+            let object_length = binary_reader::read_u32(source, list_pointer as usize + (0x10 + shift) * i + 4 + shift, &endianness).expect("Who's bad? (2)");
+            let mut new_object = BinaryObject::new_from_src_ptr_len(source, object_pointer as usize, object_length as usize);
+            new_object.real_name = match has_names {
+                true => binary_reader::read_string32(source, names_pointer as usize + 0x20 * i),
+                false =>  i.to_string(),
+            };
+            new_object.name = Amb::make_name_safe(&new_object.real_name);
+            new_object.flag1 = binary_reader::read_u32(source, list_pointer as usize + (0x10 + shift) * i + 8 + shift, &endianness).expect("Who's bad? (3)");
+            new_object.flag2 = binary_reader::read_u32(source, list_pointer as usize + (0x10 + shift) * i + 12 + shift, &endianness).expect("Who's bad? (4)");
+            if Amb::is_source_amb(source, Some(object_pointer as usize)) {
+                new_object.amb = Some(Amb::new_from_src_ptr_name(source, Some(object_pointer as usize), name.clone() + "\\" + &new_object.name));
+            }
+            objects.push(new_object);
+            i += 1;
+        }
+
+
         Amb {
-            amb_path: name.unwrap_or(String::new()),
-            endianness: Endianness::Little,
-            objects: Vec::new(),
+            amb_path: name,
+            endianness,
+            objects,
             has_names: true,
             version: Version::PC,
         }
@@ -208,7 +234,7 @@ impl Amb {
 
     pub fn extract(&self) {todo!()}
 
-    pub fn make_name_safe(&self, raw_name: String) -> String {
+    pub fn make_name_safe(raw_name: &String) -> String {
         //removing ".\" in the names (Windows can't create "." folders)
         //sometimes they can have several ".\" in the names
         //Turns out there's a double dot directory in file names
@@ -240,20 +266,17 @@ impl Amb {
 pub struct BinaryObject {
     pub name: String,
     pub real_name: String,
+    pub amb: Option<Amb>,
 
-    pub flag1: usize,
-    pub flag2: usize,
+    pub flag1: u32,
+    pub flag2: u32,
 
-    pub source: Vec<u8>,
-
-    // use usize?
-    pub pointer: usize,
-    length: usize,
+    pub data: Vec<u8>,
 }
 
 impl BinaryObject {
     pub fn length(&self) -> usize {
-        return self.length;
+        return self.data.len();
     }
 
     pub fn length_nice(&self) -> usize {
@@ -261,16 +284,15 @@ impl BinaryObject {
     }
 
     pub fn new_from_src_ptr_len(
-        source: Vec<u8>,
+        source: &Vec<u8>,
         pointer: usize,
         length: usize
     ) -> Self {
         BinaryObject {
-            source: source,
-            pointer: pointer,
-            length: length,
+            data: source.iter().skip(pointer).take(length).map(|x| x.to_owned()).collect(),
             flag1: 0,
             flag2: 0,
+            amb: None,
             name: String::new(),
             real_name: String::new(),
         }
@@ -280,19 +302,13 @@ impl BinaryObject {
         file_path: String
     ) -> Result<Self, std::io::Error> {
         let file_content = std::fs::read(file_path)?;
-        let file_length = file_content.len();
         Ok(BinaryObject {
-            source: file_content,
-            pointer: 0,
-            length: file_length,
+            data: file_content,
             flag1: 0,
             flag2: 0,
+            amb: None,
             name: String::new(),
             real_name: String::new(),
         })
-    }
-
-    pub fn write(&self) -> Vec<u8> {
-        return self.source.iter().skip(self.pointer).take(self.length).map(|x| x.to_owned()).collect();
     }
 }

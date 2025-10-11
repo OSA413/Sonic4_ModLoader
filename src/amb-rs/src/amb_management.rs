@@ -1,6 +1,6 @@
 use std::{fs, path::Path};
 
-use crate::amb::{Amb, Endianness, Version};
+use crate::{amb::{Amb, Version}, binary_reader::Endianness};
 
 pub fn add_dir_to_amb(target_file: &Path, dir_to_add: &Path) {
     todo!();
@@ -18,7 +18,7 @@ pub fn extract_amb(target_file: String, dir_to_extract: Option<String>) {
             let base_dir = Path::new(&base_dir);
             for binary_object in amb.objects {
                 // Fix path when out of bounds
-                match fs::write(base_dir.join(&binary_object.name), &binary_object.write()) {
+                match fs::write(base_dir.join(&binary_object.name), &binary_object.data) {
                     Ok(_) => println!("Extracted {}", &binary_object.name),
                     Err(e) => println!("Error: {}", e),
                 }
@@ -45,13 +45,17 @@ pub fn print_amb_table_of_content_from_file(target_file: String) {
 }
 
 pub fn get_json_string_amb_table_of_content(source: Vec<u8>, name: String) -> String {
-    let amb = Amb::new_from_src_ptr_name(&source, Some(0), Some(name));
+    let amb = Amb::new_from_src_ptr_name(&source, Some(0), name);
     let mut amb_toc = Vec::<String>::new();
 
     amb_toc.push(add_json_entry_str("name", &amb.amb_path));
     let amb_version = match &amb.version { Version::PC => &"PC".to_string(), Version::Mobile => &"Mobile".to_string() };
     amb_toc.push(add_json_entry_str("version", amb_version));
-    let amb_endianness = match &amb.endianness { Endianness::Little => &"little".to_string(), Endianness::Big => &"big".to_string() };
+    let amb_endianness = match &amb.endianness { 
+        Some(Endianness::Little) => &"little".to_string(),
+        Some(Endianness::Big) => &"big".to_string(),
+        None => &"unknown".to_string(),
+    };
     amb_toc.push(add_json_entry_str("endianness", amb_endianness));
     let mut objects_toc = Vec::<String>::new();
     for binary_object in amb.objects {
@@ -60,7 +64,6 @@ pub fn get_json_string_amb_table_of_content(source: Vec<u8>, name: String) -> St
         object_toc.push(add_json_entry_str("real_name", &binary_object.real_name));
         object_toc.push(add_json_entry("flag1", &binary_object.flag1.to_string()));
         object_toc.push(add_json_entry("flag2", &binary_object.flag2.to_string()));
-        object_toc.push(add_json_entry("pointer", &binary_object.pointer.to_string()));
         object_toc.push(add_json_entry("length", &binary_object.length().to_string()));
         objects_toc.push(format!("{{{}}}", object_toc.join(",")))
     }
