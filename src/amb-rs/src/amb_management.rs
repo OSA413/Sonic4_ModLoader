@@ -64,10 +64,11 @@ pub fn get_json_string_amb_table_of_content(source: Vec<u8>, name: String) -> St
         object_toc.push(add_json_entry_str("real_name", &binary_object.real_name));
         object_toc.push(add_json_entry("flag1", &binary_object.flag1.to_string()));
         object_toc.push(add_json_entry("flag2", &binary_object.flag2.to_string()));
+        object_toc.push(add_json_entry("pointer", &binary_object.pointer.to_string()));
         object_toc.push(add_json_entry("length", &binary_object.length().to_string()));
         objects_toc.push(format!("{{{}}}", object_toc.join(",")))
     }
-    amb_toc.push(add_json_entry_str("objects", &format!("[{}]", objects_toc.join(","))));
+    amb_toc.push(add_json_entry("objects", &format!("[{}]", objects_toc.join(","))));
 
     format!("{{{}}}", amb_toc.join(","))
 }

@@ -271,6 +271,7 @@ pub struct BinaryObject {
     pub flag1: u32,
     pub flag2: u32,
 
+    pub pointer: usize, //This is used just for the output and debugging
     pub data: Vec<u8>,
 }
 
@@ -292,6 +293,7 @@ impl BinaryObject {
             data: source.iter().skip(pointer).take(length).map(|x| x.to_owned()).collect(),
             flag1: 0,
             flag2: 0,
+            pointer,
             amb: None,
             name: String::new(),
             real_name: String::new(),
@@ -306,6 +308,7 @@ impl BinaryObject {
             data: file_content,
             flag1: 0,
             flag2: 0,
+            pointer: 0,
             amb: None,
             name: String::new(),
             real_name: String::new(),
