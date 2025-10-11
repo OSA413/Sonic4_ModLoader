@@ -1,7 +1,5 @@
 use std::fs;
-
 use ini::Ini;
-
 
 pub fn load() -> String {
     let default = "".to_string();
