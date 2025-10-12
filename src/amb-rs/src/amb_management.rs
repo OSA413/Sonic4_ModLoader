@@ -73,7 +73,7 @@ pub fn get_json_string_amb_table_of_content(source: Vec<u8>, name: String) -> St
     format!("{{{}}}", amb_toc.join(","))
 }
 
-pub fn swap_endianness_and_save(target_file: String) {
+pub fn swap_endianness_and_save(target_file: String, save_as_file_name: Option<String>) {
     todo!();
 }
 
@@ -81,7 +81,7 @@ pub fn create_amb(file_name: String) {
     todo!();
 }
 
-pub fn recreate_amb(file: String) {
+pub fn recreate_amb(file: String, save_as_file_name: Option<String>) {
     todo!();
 }
 

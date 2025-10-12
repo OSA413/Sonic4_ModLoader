@@ -69,9 +69,9 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: amb-rs-win
-          path: dist/Sonic4ModLoader/amb-rs
+          path: dist/Sonic4ModLoader/amb-rs.exe
 
-  
+
   tests:
     runs-on: ubuntu-latest
     steps:

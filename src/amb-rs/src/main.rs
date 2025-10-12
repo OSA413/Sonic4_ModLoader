@@ -26,11 +26,11 @@ fn main() -> () {
                                         false => amb_management::add_file_to_amb(target_file, path_to_add, args.next()),
                                     }
                                 },
-                                None => println!("Usage: add <target_file> <file_to_add> <internal_file_name>
+                                None => println!("Usage: add <target_file> <file_to_add> [internal_file_name]
 Or: add <target_file> <dir_of_files_to_add>"),
                             }
                         }
-                        None => println!("Usage: add <target_file> <file_to_add> <internal_file_name>
+                        None => println!("Usage: add <target_file> <file_to_add> [internal_file_name]
 Or: add <target_file> <dir_of_files_to_add>"),
                     }
                 },
@@ -48,8 +48,8 @@ Or: add <target_file> <dir_of_files_to_add>"),
                 },
                 "swap_endianness" => {
                     match args.next() {
-                        Some(file) => amb_management::swap_endianness_and_save(file),
-                        None => println!("Usage: swap_endianness <file>"),
+                        Some(file) => amb_management::swap_endianness_and_save(file, args.next()),
+                        None => println!("Usage: swap_endianness <file> [save_as_file_name]"),
                     }
                 },
                 "create" => {
@@ -60,8 +60,8 @@ Or: add <target_file> <dir_of_files_to_add>"),
                 },
                 "recreate" => {
                     match args.next() {
-                        Some(file) => amb_management::recreate_amb(file),
-                        None => println!("Usage: recreate <file>"),
+                        Some(file) => amb_management::recreate_amb(file, args.next()),
+                        None => println!("Usage: recreate <file> [save_as_file_name]"),
                     }
                 },
                 _ => {
