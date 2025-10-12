@@ -1,5 +1,5 @@
-use std::path::Path;
-use crate::binary_reader::{self, Endianness};
+use std::{io::Read, path::Path};
+use crate::{binary_reader::{self, Endianness}, binary_writer};
 
 pub enum Version {
     PC = 0x20,
@@ -127,13 +127,12 @@ impl Amb {
             i += 1;
         }
 
-
         Amb {
             amb_path: name,
             endianness,
             objects,
-            has_names: true,
-            version: Version::PC,
+            has_names,
+            version,
         }
     }
 
@@ -141,8 +140,39 @@ impl Amb {
         todo!();
     }
 
-    pub fn save(&self) {todo!()}
-    pub fn write(&self) -> Vec<u8> {todo!()}
+    pub fn write(&self) -> Vec<u8> {
+        let mut result = Vec::<u8>::with_capacity(self.length());
+        let mut pointers = self.predict_pointers();
+
+        "#AMB".as_bytes().read_exact(&mut result[0x0..0x4]);
+        binary_writer::write_u32(&mut result, 0x4, match self.version {
+            Version::PC => 0x20,
+            Version::Mobile => 0x28,
+        }, &self.endianness);
+        binary_writer::write_u32(&mut result, 0x10, self.objects.iter().count() as u32, &self.endianness);
+        binary_writer::write_u32(&mut result, 0x14, pointers.list as u32, &self.endianness);
+        binary_writer::write_u32(&mut result, 0x18, pointers.data as u32, &self.endianness);
+        binary_writer::write_u32(&mut result, 0x1C, pointers.name as u32, &self.endianness);
+
+        for o in self.objects.iter() {
+            binary_writer::write_u32(&mut result, pointers.list, pointers.data as u32, &self.endianness);
+            binary_writer::write_u32(&mut result, pointers.list + 4, o.length_nice() as u32, &self.endianness);
+            binary_writer::write_u32(&mut result, pointers.list + 8, o.flag1 as u32, &self.endianness);
+            binary_writer::write_u32(&mut result, pointers.list + 12, o.flag2 as u32, &self.endianness);
+
+            let object_data = &o.data;
+            result[pointers.data..pointers.data + o.length()].copy_from_slice(&object_data);
+            if self.has_names {
+                o.real_name.as_bytes().read_exact(&mut result[pointers.name..pointers.name + o.real_name.len()]);
+                pointers.name += 0x20;
+            }
+
+            pointers.list += 0x10;
+            pointers.data += o.length_nice();
+        }
+
+        result
+    }
 
     pub fn get_relative_name(&self, main_file_name: String, object_name: String) -> String {
         //Turning "C:\1\2\3" into {"C:","1","2","3"}

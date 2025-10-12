@@ -2,6 +2,7 @@ use std::{env, ops, path::Path};
 
 mod amb;
 mod binary_reader;
+mod binary_writer;
 mod help;
 mod amb_management;
 mod mod_management;
