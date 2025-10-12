@@ -44,6 +44,7 @@ done
 # Rust
 mkdir -p "./dist/Sonic4ModLoader"
 
+cp ./target/release/amb-rs ./dist/Sonic4ModLoader/amb-rs
 cp ./target/release/Sonic4ModManager ./dist/Sonic4ModLoader/Sonic4ModManager
 
 # SHA256SUMS
