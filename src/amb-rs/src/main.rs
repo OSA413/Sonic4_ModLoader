@@ -67,8 +67,8 @@ Or: add <target_file> <dir_of_files_to_add>"),
                 _ => {
                     let path = Path::new(&arg);
                     match path.is_dir() {
-                        true => amb_management::recreate_amb_from_dir(path),
-                        false => amb_management::extract_amb(path.to_str().unwrap().to_string(), args.next()),
+                        true => amb_management::recreate_amb_from_dir(arg),
+                        false => amb_management::extract_amb(arg, args.next()),
                     }
                 },
             }

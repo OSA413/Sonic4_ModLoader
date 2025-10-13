@@ -137,7 +137,7 @@ impl Amb {
     }
 
     pub fn new_from_binary_object(bo: &BinaryObject) -> Self {
-        todo!();
+        Amb::new_from_src_ptr_name(&bo.data, Some(bo.pointer), bo.name.clone())
     }
 
     pub fn write(&self) -> Vec<u8> {
@@ -259,10 +259,6 @@ impl Amb {
         self.objects.remove(target_index);
         self.objects.insert(target_index, bo.try_into().expect("That one bad thing happened that you thought would not happen #5"));
     }
-
-    pub fn extract_all(&self) {todo!()}
-
-    pub fn extract(&self) {todo!()}
 
     pub fn make_name_safe(raw_name: &String) -> String {
         //removing ".\" in the names (Windows can't create "." folders)
