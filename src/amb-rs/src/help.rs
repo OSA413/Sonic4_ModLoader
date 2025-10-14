@@ -18,9 +18,13 @@ Usage:
         Add all files from directory to AMB file.
         Internal names of files are determined from path to each file.
 
-    `amb-rs extract <file>`
+    `amb-rs remove <target_file> <object_name>`
+        Remove object from AMB file by **real** name.`
+
+    `amb-rs extract <file> [dir_to_extract]`
         Extract files from AMB to \"<file>_extracted\" directory.
-        Same as `amb-rs <file>`.
+        If [dir_to_extract] is specified, extracts to the specified directory.
+        Same as `amb-rs <file> [dir_to_extract]`.
 
     `amb-rs read <file>`
         Print the contents of the AMB file to the stdout in JSON format.

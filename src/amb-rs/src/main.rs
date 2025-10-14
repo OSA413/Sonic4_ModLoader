@@ -34,6 +34,19 @@ Or: add <target_file> <dir_of_files_to_add>"),
 Or: add <target_file> <dir_of_files_to_add>"),
                     }
                 },
+                "remove" => {
+                    let target_file = args.next();
+                    match target_file {
+                        Some(target_file) => {
+                            let object_name = args.next();
+                            match object_name {
+                                Some(object_name) => amb_management::remove_object_from_amb(target_file, object_name),
+                                None => println!("Usage: remove <target_file> <object_name>"),
+                            }
+                        },
+                        None => println!("Usage: remove <target_file> <object_name>"),
+                    }
+                },
                 "extract" => {
                     match args.next() {
                         Some(file) => amb_management::extract_amb(file, args.next()),

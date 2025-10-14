@@ -279,14 +279,13 @@ impl Amb {
         return raw_name.chars().skip(safe_index).collect();
     }
 
-    pub fn remove_at(&mut self, index: usize) {
-        self.objects.remove(index);
+    // Make recursive as `add`?
+    pub fn remove(&mut self, object_name: String) {
+        let target = self.objects.iter().position(|x| x.name == object_name);
+        if let Some(target) = target {
+            self.objects.remove(target);
+        }
     }
-
-    // pub fn remove(&mut self, object_name: String) {
-    //     let target = self.find_object(object_name);
-    //     target.0.remove_at(target.1.expect("That one bad thing happened that you thought would not happen #5"));
-    // }
 }
 
 pub struct BinaryObject {

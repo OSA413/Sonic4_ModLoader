@@ -214,3 +214,17 @@ pub fn recreate_amb_from_dir(dir: String) {
         None => println!("No AMB file found for provided directory"),
     }
 }
+
+pub fn remove_object_from_amb(target_file: String, object_name: String) {
+    let amb = Amb::from_file_name(&target_file);
+    match amb {
+        Ok(mut amb) => {
+            amb.remove(object_name);
+            match fs::write(target_file, amb.write()) {
+                Ok(_) => (),
+                Err(e) => println!("Error: {}", e),
+            }
+        },
+        Err(e) => println!("Error: {}", e),
+    }
+}
