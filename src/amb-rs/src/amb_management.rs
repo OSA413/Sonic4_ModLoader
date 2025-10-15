@@ -3,7 +3,7 @@ use glob::glob;
 use crate::{amb::{Amb, Version}, binary_reader::Endianness};
 
 pub fn add_dir_to_amb(target_file: &Path, dir_to_add: &Path) {
-    let amb_result = Amb::from_file_name(&target_file.display().to_string());
+    let amb_result = Amb::new_from_file_name(&target_file.display().to_string());
     match amb_result {
         Ok(mut amb) => {
             let files_to_add = glob(&format!("{}/**/*.*", dir_to_add.display().to_string()));
@@ -31,7 +31,7 @@ pub fn add_dir_to_amb(target_file: &Path, dir_to_add: &Path) {
 }
 
 pub fn add_file_to_amb(target_file: &Path, file_to_add: &Path, internal_file_name: Option<String>) {
-    let amb_result = Amb::from_file_name(&target_file.display().to_string());
+    let amb_result = Amb::new_from_file_name(&target_file.display().to_string());
     match amb_result {
         Ok(mut amb) => {
             amb.add(file_to_add.display().to_string(), internal_file_name);
@@ -45,7 +45,7 @@ pub fn add_file_to_amb(target_file: &Path, file_to_add: &Path, internal_file_nam
 }
 
 pub fn extract_amb(target_file: String, dir_to_extract: Option<String>) {
-    let amb = Amb::from_file_name(&target_file);
+    let amb = Amb::new_from_file_name(&target_file);
     match amb {
         Ok(amb) => {
             let base_dir = dir_to_extract.unwrap_or(format!("{}_extracted", &target_file));
@@ -107,7 +107,7 @@ pub fn get_json_string_amb_table_of_content(source: Vec<u8>, name: String) -> St
 }
 
 pub fn swap_endianness_and_save(target_file: String, save_as_file_name: Option<String>) {
-    let amb_result = Amb::from_file_name(&target_file);
+    let amb_result = Amb::new_from_file_name(&target_file);
     match amb_result {
         Ok(mut amb) => {
             amb.endianness = match amb.endianness {
@@ -139,7 +139,7 @@ pub fn create_amb(file_name: String) {
 }
 
 pub fn recreate_amb(file: String, save_as_file_name: Option<String>) {
-    let amb = Amb::from_file_name(&file);
+    let amb = Amb::new_from_file_name(&file);
     match amb {
         Ok(amb) => {
             match fs::write(save_as_file_name.unwrap_or(file), amb.write()) {
@@ -185,7 +185,7 @@ pub fn recreate_amb_from_dir(dir: String) {
 
     match amb_file_path {
         Some(amb_file_path) => {
-            let amb_result = Amb::from_file_name(&amb_file_path);
+            let amb_result = Amb::new_from_file_name(&amb_file_path);
             match amb_result {
                 Ok(mut amb) => {
                     let files_to_add = glob(&format!("{}/**/*.*", dir));
@@ -216,7 +216,7 @@ pub fn recreate_amb_from_dir(dir: String) {
 }
 
 pub fn remove_object_from_amb(target_file: String, object_name: String) {
-    let amb = Amb::from_file_name(&target_file);
+    let amb = Amb::new_from_file_name(&target_file);
     match amb {
         Ok(mut amb) => {
             amb.remove(object_name);

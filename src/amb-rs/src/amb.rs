@@ -78,7 +78,7 @@ impl Amb {
         }
     }
 
-    pub fn from_file_name(file_path: &String) -> Result<Self, std::io::Error> {
+    pub fn new_from_file_name(file_path: &String) -> Result<Self, std::io::Error> {
         Ok(Self::new_from_src_ptr_name(&std::fs::read(&file_path)?, Some(0), file_path.to_string()))
     }
 

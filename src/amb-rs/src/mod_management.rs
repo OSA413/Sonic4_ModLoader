@@ -1,16 +1,40 @@
 use std::{fs::{self, File}, path::{Path, PathBuf}};
 
+use common::Launcher;
 use glob::glob;
-use sha1::{Digest, Sha1};
 
-use crate::help;
+use crate::{amb::Amb, help, sha_checker};
 
 pub fn recover() {
-    todo!();
+    if Path::new("mods/mods_prev").is_file() {
+        let mods_prev = fs::read_to_string("mods/mods_prev").expect("Rolling around at error messages");
+        let mods_prev = mods_prev.lines();
+
+        for file in mods_prev {           
+            // ProgressBar.PrintProgress(i, mods_prev.Length, "Recovering \""+ file +"\" file...");
+
+            Recover(&file.to_string());
+            if file.ends_with(".CSB") || file.ends_with(".csb") {
+                let path_without_extension = file.chars().take(file.chars().count() - 4).collect::<String>();
+                Recover( &format!("{}.CPK", path_without_extension));
+                sha_checker::ShaRemove(path_without_extension);
+            }
+            else
+            {
+                sha_checker::ShaRemove(file.to_string());
+            }
+        }
+        fs::remove_file("mods/mods_prev");
+        // ProgressBar.PrintProgress(1, 1, "");
+    }
+
 }
 
-pub fn get_sha1(data: impl AsRef<[u8]>) -> String {
-    Sha1::digest(data).iter().map(|x| format!("{:02x}", x)).collect()
+pub fn Recover(file_name: &String) {
+    let backup_path = format!("{}.bkp", file_name);
+    if Path::new(&backup_path).is_file() {
+        fs::copy(backup_path, file_name);
+    }
 }
 
 fn GetModFiles() -> Vec<(String, Vec<String>, Vec<String>)> {
@@ -138,62 +162,67 @@ pub fn backup(file_name: &String) {
 
 pub fn PatchAll(file_name: &String, mod_files: &Vec<String>, mod_paths: &Vec<String>) {
     if Path::new(&file_name).is_file() {
-        todo!();
-    //     if file_name.ends_with(".AMB") || file_name.ends_with(".amb")
-    //     {
-    //         if (ShaChecker.ShaChanged(file_name, mod_files, mod_paths))
-    //         {
-    //             if (file_name == mod_files.FirstOrDefault())
-    //             {
-    //                 var modFull = Path.Combine("mods", mod_paths[0], mod_files[0]);
-    //                 File.Copy(modFull, file_name, true);
-    //                 ShaChecker.ShaWrite(mod_files[0], modFull);
-    //                 return;
-    //             }
+        if file_name.ends_with(".AMB") || file_name.ends_with(".amb")
+        {
+            if sha_checker::ShaChanged(true , file_name, mod_files, mod_paths)
+            {
+                if file_name == mod_files.first().unwrap_or(&"".to_string()) {
+                    let modFull = Path::new("mods").join(mod_paths[0].clone()).join(mod_files[0].clone());
+                    fs::copy(&modFull, file_name);
+                    sha_checker::ShaWrite(mod_files[0].clone(), modFull.display().to_string());
+                    return;
+                }
 
-    //             AMB amb = new(File.Exists(file_name + ".bkp") ? file_name + ".bkp" : file_name);
-    //             amb.AmbPath = file_name;
+                let mut amb = Amb::new_from_file_name(&match Path::new(&format!("{}.bkp", file_name)).is_file() {
+                    true => format!("{}.bkp", file_name),
+                    false => file_name.to_string(),
+                }).expect("I'm runnning out of error messages");
+                amb.amb_path = file_name.to_string();
 
-    //             for (int i = 0; i < mod_files.Count; i++)
-    //             {
-    //                 var mod_file_full = Path.Combine("mods", mod_paths[i], mod_files[i]);
-    //                 ProgressBar.PrintProgress(i, mod_files.Count, mod_file_full);
-    //                 amb.Add(mod_file_full);
-    //                 ShaChecker.ShaWrite(mod_files[i], mod_file_full);
-    //             }
+                let mut i = 0;
+                while i < mod_files.len() {
+                    let mod_file_full = Path::new("mods").join(mod_paths[i].clone()).join( mod_files[i].clone()).display().to_string();
+                    // ProgressBar.PrintProgress(i, mod_files.Count, mod_file_full);
+                    amb.add(mod_file_full.clone(), None);
+                    sha_checker::ShaWrite(mod_files[i].clone(), mod_file_full);
+                    i += 1;
+                }
 
-    //             amb.Save(file_name);
-    //         }
-    //     }
-    //     else if (file_name.ToUpper().EndsWith(".CSB"))
-    //     {
-    //         if (ShaChecker.ShaChanged(file_name.Substring(0, file_name.Length - 4), mod_files, mod_paths))
-    //         {
-    //             Recover(file_name);
-    //             if (file_name.EndsWith(".CSB", StringComparison.OrdinalIgnoreCase))
-    //                 Recover(file_name.Substring(0, file_name.Length - 4) + ".CPK");
+                match fs::write(file_name, amb.write()) {
+                    Ok(_) => {},
+                    Err(e) => println!("Error writing AMB file: {e}"),
+                }
+            }
+        }
+        else if file_name.ends_with(".csb") || file_name.ends_with(".CSB")
+        {
+            if sha_checker::ShaChanged(true, &file_name.chars().take(file_name.chars().count() - 4).collect::<String>(), mod_files, mod_paths)
+            {
+                Recover(file_name);
+                Recover(&format!("{}.CPK", &file_name.chars().take(file_name.chars().count() - 4).collect::<String>()));
 
-    //             ProgressBar.PrintProgress(0, 100, "Asking CsbEditor to unpack " + file_name);
+                // ProgressBar.PrintProgress(0, 100, "Asking CsbEditor to unpack " + file_name);
 
-    //             //Needs CSB Editor (from SonicAudioTools) to work
-    //             //FIXME
-    //             if (!Launcher.LaunchCsbEditor(file_name))
-    //                 throw new Exception("CsbEditor not found (PatchAll)");
-
-    //             for (int i = 0; i < mod_files.Count; i++)
-    //             {
-    //                 string mod_file = Path.Combine("mods", mod_paths[i], mod_files[i]);
-
-    //                 ProgressBar.PrintProgress(i, mod_files.Count, mod_file);
-    //                 File.Copy(mod_file, mod_files[i], true);
-
-    //                 ShaChecker.ShaWrite(mod_files[i], mod_file);
-    //             }
-
-    //             ProgressBar.PrintProgress(99, 100, "Asking CsbEditor to repack " + file_name);
-    //             Launcher.LaunchCsbEditor(file_name.Substring(0, file_name.Length - 4));
-    //         }
-    //     }
+                match Launcher::launch_csb_editor(vec![file_name.to_string()]) {
+                    Ok(_) => {
+                        let mut i = 0;
+                        while i < mod_files.len() {
+                            let mod_file = Path::new("mods").join(mod_paths[i].clone()).join( mod_files[i].clone());
+                            
+                            // ProgressBar.PrintProgress(i, mod_files.Count, mod_file);
+                            fs::copy(mod_file.clone(), mod_files[i].clone());
+                            
+                            sha_checker::ShaWrite(mod_files[i].clone(), mod_file.display().to_string());
+                            i += 1;
+                        }
+                        
+                        // ProgressBar.PrintProgress(99, 100, "Asking CsbEditor to repack " + file_name);
+                        Launcher::launch_csb_editor(vec![file_name.chars().take(file_name.chars().count() - 4).collect::<String>()]);
+                    },
+                    Err(e) => println!("Error launching CsbEditor: {e}"),
+                }
+            }
+        }
     }
 }
 
@@ -228,7 +257,7 @@ pub fn load_file_mods() {
         }
 
         PatchAll(&test[i].0, &test[i].1, &test[i].2);
-        // fnaionfioanfoiwandioawdioaw
+        // TODO: burn it with fire
         mods_prev = mods_prev.iter().filter(|x | x.to_string() != test[i].0).map(|x| x.to_string()).collect();
 
         // ProgressBar.MoveCursorUp();
@@ -240,21 +269,18 @@ pub fn load_file_mods() {
     // ProgressBar.PrintProgress(1, 1, "");
 
     let mut i = 0;
-
-    todo!();
-    // while i < mods_prev.len() {
-    //     Recover(mods_prev[i]);
-    //     //Some CSB files may have CPK archive
-    //     if (mods_prev[i].EndsWith(".CSB", StringComparison.OrdinalIgnoreCase))
-    //         Recover(mods_prev[i].Substring(0, mods_prev[i].Length - 4) + ".CPK");
-        
-    //     if (mods_prev[i].EndsWith(".CSB", StringComparison.OrdinalIgnoreCase))
-    //         ShaChecker.ShaRemove(mods_prev[i].Substring(0, mods_prev[i].Length - 4));
-    //     else
-    //         ShaChecker.ShaRemove(mods_prev[i]);
-    // }
-    // 
-    // if Directory.Exists("mods") {
-    //     File.WriteAllText("mods/mods_prev", string.Join("\n", modified_files.ToArray()));
-    // }
+    while i < mods_prev.len() {
+        Recover(&mods_prev[i]);
+        //Some CSB files may have CPK archive
+        if mods_prev[i].ends_with(".csb") || mods_prev[i].ends_with(".CSB") {
+            let mods_prev_path = mods_prev[i].chars().take(mods_prev[i].chars().count() - 4).collect::<String>();
+            Recover(&format!("{}.CPK", mods_prev_path));
+            sha_checker::ShaRemove(mods_prev_path);
+        } else {
+            sha_checker::ShaRemove(mods_prev[i].clone());
+        }
+        i += 1;
+    }
+    
+    fs::write("mods/mods_prev", modified_files.join("\n"));
 }

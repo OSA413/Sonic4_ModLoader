@@ -6,6 +6,7 @@ mod binary_writer;
 mod help;
 mod amb_management;
 mod mod_management;
+mod sha_checker;
 
 fn main() -> () {
     let mut args = env::args().skip(1);
