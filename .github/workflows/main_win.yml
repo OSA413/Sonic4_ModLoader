@@ -30,10 +30,14 @@ jobs:
         with:
           python-version: '3.13'
 
+      - name: Set gtk-build-moment-stamp for cache
+        run: echo "stamp=$(($(date +'%j' ) / 7))" >> $GITHUB_OUTPUT
+        id: gtk-build-moment-stamp
+
       - uses: actions/cache@v4
         with:
           path: C:/gtk-build
-          key: ${{ runner.os }}-gtk-build-${{ hashFiles('C:/gtk-build/**/*.*') }}
+          key: ${{ runner.os }}-gtk-build-${{ steps.gtk-build-moment-stamp.outputs.stamp }}
           restore-keys: |
             ${{ runner.os }}-gtk-build-
 
