@@ -32,7 +32,7 @@ jobs:
 
       - uses: actions/cache@v4
         with:
-          path: C:\gtk-build
+          path: C:/gtk-build
           key: ${{ runner.os }}-gtk-build-${{ hashFiles('C:/gtk-build/**/*.*') }}
           restore-keys: |
             ${{ runner.os }}-gtk-build-
