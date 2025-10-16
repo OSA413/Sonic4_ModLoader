@@ -30,6 +30,13 @@ jobs:
         with:
           python-version: '3.13'
 
+      - uses: actions/cache@v4
+        with:
+          path: C:\gtk-build
+          key: ${{ runner.os }}-gtk-build-${{ hashFiles('C:/gtk-build/**/*.*') }}
+          restore-keys: |
+            ${{ runner.os }}-gtk-build-
+
       - run: py -3.13 -m pip install --user pipx
       - run: py -3.13 -m pipx ensurepath
       - run: pipx install gvsbuild
