@@ -52,6 +52,16 @@ jobs:
       - name: Build .Net
         run: dotnet publish src_old -c Release -m
 
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
       - name: Build Rust
         run: cargo build --release
 
