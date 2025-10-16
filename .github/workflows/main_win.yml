@@ -31,8 +31,10 @@ jobs:
           python-version: '3.13'
 
       - name: Set gtk-build-moment-stamp for cache
-        run: echo "stamp=$(($(date +'%j' ) / 7))" >> $GITHUB_OUTPUT
+        run: echo "stamp=$(($(Get-Date).DayofYear / 7))" >> $GITHUB_OUTPUT
         id: gtk-build-moment-stamp
+
+      - run: echo ${{ steps.gtk-build-moment-stamp.outputs.stamp }}
 
       - uses: actions/cache@v4
         with:
