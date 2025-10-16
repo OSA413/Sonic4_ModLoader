@@ -23,6 +23,17 @@ jobs:
         with:
           python-version: '3.13'
 
+      - name: Set gtk-build-moment-stamp for cache
+        run: echo "stamp=$([Math]::Truncate(($(Get-Date).DayofYear / 7)))" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+        id: gtk-build-moment-stamp
+
+      - uses: actions/cache@v4
+        with:
+          path: C:/gtk-build
+          key: ${{ runner.os }}-gtk-build-${{ steps.gtk-build-moment-stamp.outputs.stamp }}
+          restore-keys: |
+            ${{ runner.os }}-gtk-build-
+
       - run: py -3.13 -m pip install --user pipx
       - run: py -3.13 -m pipx ensurepath
       - run: pipx install gvsbuild
@@ -37,6 +48,16 @@ jobs:
 
       - name: Build .Net
         run: dotnet publish src_old -c Release -m
+
+      - uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+            target/
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Build Rust
         run: cargo build --release
