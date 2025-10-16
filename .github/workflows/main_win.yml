@@ -31,7 +31,7 @@ jobs:
           python-version: '3.13'
 
       - name: Set gtk-build-moment-stamp for cache
-        run: echo "stamp=$(($(Get-Date).DayofYear / 7))" >> $GITHUB_OUTPUT
+        run: echo "stamp=$([Math]::Truncate(($(Get-Date).DayofYear / 7)))" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
         id: gtk-build-moment-stamp
 
       - run: echo ${{ steps.gtk-build-moment-stamp.outputs.stamp }}
