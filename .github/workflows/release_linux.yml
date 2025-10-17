@@ -67,3 +67,9 @@ jobs:
           files: |
             dist/SHA256SUMS_linux
             dist/Sonic4ModLoader_linux.zip
+
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: cargo test

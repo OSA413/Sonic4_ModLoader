@@ -87,3 +87,9 @@ jobs:
             dist/Sonic4ModLoader/AMBPatcher.exe
             dist/SHA256SUMS_win
             dist/Sonic4ModLoader_win.zip
+
+  tests:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v2
+      - run: cargo test

@@ -109,3 +109,9 @@ jobs:
 
       - name: Run tests
         run: bash ./tests/run_tests.sh --no-crash
+
+  tests-rust:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v2
+      - run: cargo test

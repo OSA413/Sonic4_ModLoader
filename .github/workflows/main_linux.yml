@@ -69,3 +69,9 @@ jobs:
         with:
           name: amb-rs-linux
           path: dist/Sonic4ModLoader/amb-rs
+
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: cargo test
