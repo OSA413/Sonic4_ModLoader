@@ -120,9 +120,7 @@ impl Amb {
             new_object.name = Amb::make_name_safe(&new_object.real_name);
             new_object.flag1 = binary_reader::read_u32(source, list_pointer as usize + (0x10 + shift) * i + 8 + shift, &endianness).expect("Who's bad? (3)");
             new_object.flag2 = binary_reader::read_u32(source, list_pointer as usize + (0x10 + shift) * i + 12 + shift, &endianness).expect("Who's bad? (4)");
-            if Amb::is_source_amb(source, Some(object_pointer as usize)) {
-                new_object.amb = Some(Amb::new_from_src_ptr_name(source, Some(object_pointer as usize), name.clone() + "\\" + &new_object.name));
-            }
+
             objects.push(new_object);
             i += 1;
         }
@@ -291,7 +289,6 @@ impl Amb {
 pub struct BinaryObject {
     pub name: String,
     pub real_name: String,
-    pub amb: Option<Amb>,
 
     pub flag1: u32,
     pub flag2: u32,
@@ -319,7 +316,6 @@ impl BinaryObject {
             flag1: 0,
             flag2: 0,
             pointer,
-            amb: None,
             name: String::new(),
             real_name: String::new(),
         }
@@ -334,7 +330,6 @@ impl BinaryObject {
             flag1: 0,
             flag2: 0,
             pointer: 0,
-            amb: None,
             name: String::new(),
             real_name: String::new(),
         })
