@@ -1,9 +1,9 @@
-use std::{fs::{self, File}, path::{Path, PathBuf}};
+use std::{fs, path::{Path, PathBuf}};
 
 use common::Launcher;
 use glob::glob;
-
-use crate::{amb::Amb, help, sha_checker};
+use amb_rs_lib::{amb::Amb};
+use crate::{help, sha_checker};
 
 pub fn recover() {
     if Path::new("mods/mods_prev").is_file() {

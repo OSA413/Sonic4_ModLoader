@@ -1,7 +1,6 @@
 [package]
-name = "amb-rs"
-description = "AMB Container Editor"
-version = "1.0.0"
+name = "amb-rs-tests"
+description = "AMB Container Editor Tests"
 edition = "2021"
 authors = ["Oleg \"OSA413\" Sokolov"]
 repository = "https://github.com/OSA413/Sonic4_ModLoader"
@@ -10,8 +9,11 @@ license = "MIT"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[dependencies]
-amb-rs-lib = { path = "../amb-rs-lib" }
-common = { path = "../common" }
-glob = "0.3.3"
-sha1 = "0.10.6"
+[dev-dependencies]
+amb_rs_lib = { path = "../amb-rs-lib", package = "amb-rs-lib"}
+serde = "1.0.228"
+serde_json = "1.0.145"
+
+[[test]]
+name = "read"
+path = "tests/read.rs"

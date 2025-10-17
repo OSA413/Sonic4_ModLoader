@@ -1,10 +1,7 @@
 use std::{env, ops, path::Path};
+use amb_rs_lib::amb_management;
 
-mod amb;
-mod binary_reader;
-mod binary_writer;
 mod help;
-mod amb_management;
 mod mod_management;
 mod sha_checker;
 
@@ -56,7 +53,7 @@ Or: add <target_file> <dir_of_files_to_add>"),
                 },
                 "read" => {
                     match args.next() {
-                        Some(file) => amb_management::print_amb_table_of_content_from_file(file),
+                        Some(file) => amb_management::json::print_from_file_to_stdout(file),
                         None => println!("Usage: read <file>"),
                     }
                 },

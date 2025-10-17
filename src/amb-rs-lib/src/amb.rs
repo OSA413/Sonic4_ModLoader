@@ -1,5 +1,5 @@
 use std::{io::Read, path::Path};
-use crate::{binary_reader::{self, Endianness}, binary_writer};
+use crate::{binary_object::BinaryObject, binary_reader::{self, Endianness}, binary_writer};
 
 pub enum Version {
     PC = 0x20,
@@ -79,13 +79,13 @@ impl Amb {
     }
 
     pub fn new_from_file_name(file_path: &String) -> Result<Self, std::io::Error> {
-        Ok(Self::new_from_src_ptr_name(&std::fs::read(&file_path)?, Some(0), file_path.to_string()))
+        Ok(Self::new_from_src_ptr_name(&std::fs::read(&file_path)?, Some(0), file_path))
     }
 
     pub fn new_from_src_ptr_name(
         source: &Vec<u8>,
         ptr: Option<usize>,
-        name: String
+        name: &String
     ) -> Self {
         if !Amb::is_source_amb(source, ptr) {
             panic!("Provided source is not an AMB file");
@@ -126,7 +126,7 @@ impl Amb {
         }
 
         Amb {
-            amb_path: name,
+            amb_path: name.to_string(),
             endianness,
             objects,
             has_names,
@@ -135,7 +135,7 @@ impl Amb {
     }
 
     pub fn new_from_binary_object(bo: &BinaryObject) -> Self {
-        Amb::new_from_src_ptr_name(&bo.data, Some(bo.pointer), bo.name.clone())
+        Amb::new_from_src_ptr_name(&bo.data, Some(bo.pointer), &bo.name)
     }
 
     pub fn write(&self) -> Vec<u8> {
@@ -243,9 +243,11 @@ impl Amb {
                 let parent_object = &self.objects[parent_index];
                 // Why do we consider that this object is an AMB?
                 let mut parent_amb = Amb::new_from_binary_object(parent_object);
-                return parent_amb.add_binary_object(new_obj, internal_name);
+                parent_amb.add_binary_object(new_obj, internal_name);
+                todo!("Implement this later");
+                // self.objects[parent_index] = parent_amb;
             }
-            None => todo!(),
+            None => todo!("Ну что сказать, ну что сказать..."),
         }
     }
 
@@ -264,9 +266,8 @@ impl Amb {
         //Turns out there's a double dot directory in file names
         //And double backslash in file names
         let mut safe_index = 0;
-        // Why mut?
         let mut chars = raw_name.chars();
-        while let Some(ch) = chars.nth(safe_index) {
+        while let Some(ch) = chars.nth(0) {
             if ch == '.' || ch == '\\' || ch == '/' {
                 safe_index += 1;
             } else {
@@ -283,55 +284,5 @@ impl Amb {
         if let Some(target) = target {
             self.objects.remove(target);
         }
-    }
-}
-
-pub struct BinaryObject {
-    pub name: String,
-    pub real_name: String,
-
-    pub flag1: u32,
-    pub flag2: u32,
-
-    pub pointer: usize, //This is used just for the output and debugging
-    pub data: Vec<u8>,
-}
-
-impl BinaryObject {
-    pub fn length(&self) -> usize {
-        return self.data.len();
-    }
-
-    pub fn length_nice(&self) -> usize {
-        self.length() + (16 - self.length() % 16) % 16
-    }
-
-    pub fn new_from_src_ptr_len(
-        source: &Vec<u8>,
-        pointer: usize,
-        length: usize
-    ) -> Self {
-        BinaryObject {
-            data: source.iter().skip(pointer).take(length).map(|x| x.to_owned()).collect(),
-            flag1: 0,
-            flag2: 0,
-            pointer,
-            name: String::new(),
-            real_name: String::new(),
-        }
-    }
-
-    pub fn new_from_file_path(
-        file_path: String
-    ) -> Result<Self, std::io::Error> {
-        let file_content = std::fs::read(file_path)?;
-        Ok(BinaryObject {
-            data: file_content,
-            flag1: 0,
-            flag2: 0,
-            pointer: 0,
-            name: String::new(),
-            real_name: String::new(),
-        })
     }
 }

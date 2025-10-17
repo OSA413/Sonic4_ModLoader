@@ -1,9 +1,11 @@
 [workspace]
 members = [
     "src/amb-rs",
+    "src/amb-rs-lib",
+    "src/amb-rs-tests",
     "src/ManagerLauncher",
     "src/ManagerLauncher_link",
     "src/Sonic4ModManager",
     "src/Sonic4ModManager_link",
 ]
-resolver = "2"
+resolver = "3"

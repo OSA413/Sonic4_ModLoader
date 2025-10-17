@@ -1,6 +1,6 @@
 [package]
-name = "amb-rs"
-description = "AMB Container Editor"
+name = "amb-rs-lib"
+description = "AMB Container Editor Library"
 version = "1.0.0"
 edition = "2021"
 authors = ["Oleg \"OSA413\" Sokolov"]
@@ -11,7 +11,6 @@ license = "MIT"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-amb-rs-lib = { path = "../amb-rs-lib" }
 common = { path = "../common" }
 glob = "0.3.3"
-sha1 = "0.10.6"
+
