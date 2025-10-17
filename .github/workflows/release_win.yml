@@ -29,7 +29,9 @@ jobs:
 
       - uses: actions/cache@v4
         with:
-          path: C:/gtk-build
+          path: |
+            C:/gtk-build
+            !C:/gtk-build/**/*.pdb
           key: ${{ runner.os }}-gtk-build-${{ steps.gtk-build-moment-stamp.outputs.stamp }}
           restore-keys: |
             ${{ runner.os }}-gtk-build-
