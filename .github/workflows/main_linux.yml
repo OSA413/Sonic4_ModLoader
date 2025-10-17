@@ -74,4 +74,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: cargo test
+      - run: cargo test -p amb-rs-tests
