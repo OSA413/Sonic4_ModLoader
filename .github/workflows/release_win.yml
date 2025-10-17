@@ -28,18 +28,21 @@ jobs:
         id: gtk-build-moment-stamp
 
       - uses: actions/cache@v4
+        id: cache-gtk
         with:
-          path: |
-            C:/gtk-build
-            !C:/gtk-build/**/*.pdb
-          key: ${{ runner.os }}-gtk-build-${{ steps.gtk-build-moment-stamp.outputs.stamp }}
+          path: C:/gtk-build/gtk/x64/release/bin
+          key: ${{ runner.os }}-gtk-build-binaries-${{ steps.gtk-build-moment-stamp.outputs.stamp }}
           restore-keys: |
-            ${{ runner.os }}-gtk-build-
+            ${{ runner.os }}-gtk-build-binaries-
 
       - run: py -3.13 -m pip install --user pipx
+        if: ${{ steps.cache-gtk.outputs.cache-hit != 'true' }}
       - run: py -3.13 -m pipx ensurepath
+        if: ${{ steps.cache-gtk.outputs.cache-hit != 'true' }}
       - run: pipx install gvsbuild
+        if: ${{ steps.cache-gtk.outputs.cache-hit != 'true' }}
       - run: gvsbuild build gtk4 libadwaita librsvg
+        if: ${{ steps.cache-gtk.outputs.cache-hit != 'true' }}
       - run: echo "C:\gtk-build\gtk\x64\release\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Update dependencies
