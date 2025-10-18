@@ -17,12 +17,12 @@ pub fn print_from_file_to_stdout(target_file: String) {
 pub fn print_from_file(target_file: &String) -> String {
     let source = std::fs::read(&target_file);
     match source {
-        Ok(source) => format!("{}", print_from_vec(source, target_file)),
+        Ok(source) => format!("{}", print_from_vec_u8(source, target_file)),
         Err(e) => format!("Error reading file: {}", e),
     }
 }
 
-pub fn print_from_vec(source: Vec<u8>, name: &String) -> String {
+pub fn print_from_vec_u8(source: Vec<u8>, name: &String) -> String {
     let amb = Amb::new_from_src_ptr_name(&source, Some(0), name);
     let mut amb_toc = Vec::<String>::new();
 

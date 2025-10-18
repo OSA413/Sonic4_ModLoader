@@ -20,8 +20,8 @@ fn main() -> () {
                                 Some(path_to_add) => {
                                     let path_to_add = Path::new(&path_to_add);
                                     match path_to_add.is_dir() {
-                                        true => amb_management::add_dir_to_amb(target_file, path_to_add),
-                                        false => amb_management::add_file_to_amb(target_file, path_to_add, args.next()),
+                                        true => amb_management::add::directory::add_dir_to_amb(target_file, path_to_add),
+                                        false => amb_management::add::file::add_file_to_amb(target_file, path_to_add, args.next()),
                                     }
                                 },
                                 None => println!("Usage: add <target_file> <file_to_add> [internal_file_name]
@@ -38,7 +38,7 @@ Or: add <target_file> <dir_of_files_to_add>"),
                         Some(target_file) => {
                             let object_name = args.next();
                             match object_name {
-                                Some(object_name) => amb_management::remove_object_from_amb(target_file, object_name),
+                                Some(object_name) => amb_management::remove::remove_object_from_file_and_write_to_file(target_file, object_name),
                                 None => println!("Usage: remove <target_file> <object_name>"),
                             }
                         },
@@ -47,7 +47,7 @@ Or: add <target_file> <dir_of_files_to_add>"),
                 },
                 "extract" => {
                     match args.next() {
-                        Some(file) => amb_management::extract_amb(file, args.next()),
+                        Some(file) => amb_management::extract::extract_amb(file, args.next()),
                         None => println!("Usage: extract <file>"),
                     }
                 },
@@ -59,27 +59,27 @@ Or: add <target_file> <dir_of_files_to_add>"),
                 },
                 "swap_endianness" => {
                     match args.next() {
-                        Some(file) => amb_management::swap_endianness_and_save(file, args.next()),
+                        Some(file) => amb_management::endianness::swap_endianness_and_save(file, args.next()),
                         None => println!("Usage: swap_endianness <file> [save_as_file_name]"),
                     }
                 },
                 "create" => {
                     match args.next() {
-                        Some(file_name) => amb_management::create_amb(file_name),
+                        Some(file_name) => amb_management::create::create_amb(file_name),
                         None => println!("Usage: create <file_name>"),
                     }
                 },
                 "recreate" => {
                     match args.next() {
-                        Some(file) => amb_management::recreate_amb(file, args.next()),
+                        Some(file) => amb_management::recreate::recreate_amb(file, args.next()),
                         None => println!("Usage: recreate <file> [save_as_file_name]"),
                     }
                 },
                 _ => {
                     let path = Path::new(&arg);
                     match path.is_dir() {
-                        true => amb_management::recreate_amb_from_dir(arg),
-                        false => amb_management::extract_amb(arg, args.next()),
+                        true => amb_management::recreate::recreate_amb_from_dir(arg),
+                        false => amb_management::extract::extract_amb(arg, args.next()),
                     }
                 },
             }
