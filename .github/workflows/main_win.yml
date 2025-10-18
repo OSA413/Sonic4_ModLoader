@@ -37,7 +37,7 @@ jobs:
       - uses: actions/cache@v4
         id: cache-gtk
         with:
-          path: C:/gtk-build/gtk/x64/release/bin
+          path: C:/gtk-build/gtk/x64/release
           key: ${{ runner.os }}-gtk-build-binaries-${{ steps.gtk-build-moment-stamp.outputs.stamp }}
           restore-keys: |
             ${{ runner.os }}-gtk-build-binaries-
