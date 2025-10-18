@@ -39,8 +39,6 @@ jobs:
         with:
           path: C:/gtk-build/gtk/x64/release
           key: ${{ runner.os }}-gtk-build-binaries-${{ steps.gtk-build-moment-stamp.outputs.stamp }}
-          restore-keys: |
-            ${{ runner.os }}-gtk-build-binaries-
 
       - run: py -3.13 -m pip install --user pipx
         if: ${{ steps.cache-gtk.outputs.cache-hit != 'true' }}
