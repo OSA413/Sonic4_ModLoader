@@ -1,6 +1,19 @@
 use std::{fs, path::{Path, PathBuf}};
 use crate::{amb::Amb, amb_management};
 
+/** DO NOT USE, will be removed after debugging and stabilization of amb-rs */
+pub fn test_recreation(file_path: String) {
+    let source = fs::read(&file_path).unwrap();
+    let amb = Amb::new_from_file_name(&file_path).unwrap();
+    let amb_write_result = amb.write();
+    if amb_write_result != source {
+        let dump_result_path = format!("{}_broken", file_path);
+        fs::write(&dump_result_path, amb_write_result).unwrap();
+        panic!("Resulting AMB does not match the source");
+    }
+    println!("OK");
+}
+
 pub fn recreate_amb(file: String, save_as_file_name: Option<String>) {
     let amb = Amb::new_from_file_name(&file);
     match amb {

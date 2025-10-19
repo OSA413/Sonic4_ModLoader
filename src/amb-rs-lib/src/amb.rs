@@ -142,6 +142,12 @@ impl Amb {
         let mut result = Vec::<u8>::with_capacity(self.length());
         let mut pointers = self.predict_pointers();
 
+        let mut i = 0;
+        while i < self.length() {
+            result.push(0);
+            i += 1;
+        }
+
         "#AMB".as_bytes().read_exact(&mut result[0x0..0x4]);
         binary_writer::write_u32(&mut result, 0x4, match self.version {
             Version::PC => 0x20,
