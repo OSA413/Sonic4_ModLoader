@@ -11,6 +11,7 @@ fn main() -> () {
         Some(arg) => {
             match &arg[ops::RangeFull] {
                 "--help" | "-h" => help::print(),
+                "--version" | "-v" => println!("amb-rs version: {}", common::global::VERSION),
                 "recover" => mod_management::recover(),
                 "add" => {
                     match args.next() {

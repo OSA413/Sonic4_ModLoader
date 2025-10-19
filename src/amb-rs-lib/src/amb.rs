@@ -139,11 +139,12 @@ impl Amb {
     }
 
     pub fn write(&self) -> Vec<u8> {
-        let mut result = Vec::<u8>::with_capacity(self.length());
+        let amb_length = self.length();
+        let mut result = Vec::<u8>::with_capacity(amb_length);
         let mut pointers = self.predict_pointers();
 
         let mut i = 0;
-        while i < self.length() {
+        while i < amb_length {
             result.push(0);
             i += 1;
         }
