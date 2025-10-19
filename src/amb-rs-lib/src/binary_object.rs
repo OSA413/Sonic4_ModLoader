@@ -6,7 +6,7 @@ pub struct BinaryObject {
     pub flag1: u32,
     pub flag2: u32,
 
-    pub pointer: usize, //This is used just for the output and debugging
+    pub pointer: usize, //This is used just for the json print and debugging
     pub data: Vec<u8>,
 }
 

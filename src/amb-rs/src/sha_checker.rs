@@ -1,12 +1,12 @@
-use std::{fs, path::Path};
+use std::{fs, path::{Path, PathBuf}};
 use glob::glob;
 use sha1::{Digest, Sha1};
 
-pub fn Sha(data: impl AsRef<[u8]>) -> String {
+pub fn get(data: impl AsRef<[u8]>) -> String {
     Sha1::digest(data).iter().map(|x| format!("{:02x}", x)).collect()
 }
 
-pub fn ShaRemove(file_name: String)
+pub fn remove(file_name: String)
 {
     let orig_file_sha_root = Path::new("mods_sha").join(file_name);
 
@@ -15,7 +15,7 @@ pub fn ShaRemove(file_name: String)
     }
 }
 
-pub fn ShaChanged(do_sha_check: bool, file_name: &String, mod_files: &Vec<String>, mod_paths: &Vec<String>) -> bool {
+pub fn is_changed(do_sha_check: bool, file_name: &String, mod_files: &Vec<String>, mod_paths: &Vec<String>) -> bool {
     if !do_sha_check {
         return true;
     }
@@ -60,7 +60,7 @@ pub fn ShaChanged(do_sha_check: bool, file_name: &String, mod_files: &Vec<String
         };
 
         if mod_file_sha.is_file() {
-            let sha_tmp = Sha(fs::read(mod_file_full).expect("Bad, bad thing happened"));
+            let sha_tmp = get(fs::read(mod_file_full).expect("Bad, bad thing happened"));
             if sha_tmp != fs::read_to_string(mod_file_sha).expect("Badder thing happened") {
                 files_changed = true;
             }
@@ -84,10 +84,10 @@ pub fn ShaChanged(do_sha_check: bool, file_name: &String, mod_files: &Vec<String
     return files_changed;
 }
 
-pub fn ShaWrite(relative_mod_file_path: String, full_mod_file_path: String) {
+pub fn write(relative_mod_file_path: String, full_mod_file_path: PathBuf) {
     let sha_file = Path::new("mods_sha").join(relative_mod_file_path + ".txt");
     let sha_dir = sha_file.parent().unwrap();
 
     fs::create_dir_all(sha_dir).expect("Failed to create directory for SHA-1 file");
-    fs::write(sha_file, Sha(fs::read(full_mod_file_path).expect("Failed to read file for SHA-1 file "))).expect("Coundn't write SHA-1 of file");
+    fs::write(sha_file, get(fs::read(full_mod_file_path).expect("Failed to read file for SHA-1 file "))).expect("Coundn't write SHA-1 of file");
 }

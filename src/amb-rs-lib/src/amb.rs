@@ -172,7 +172,7 @@ impl Amb {
         result
     }
 
-    pub fn get_relative_name(&self, main_file_name: String, object_name: String) -> String {
+    pub fn get_relative_name(main_file_name: String, object_name: String) -> String {
         //Turning "C:\1\2\3" into {"C:","1","2","3"}
         let mod_path_parts = object_name.replace('/', "\\");
         let mod_path_parts = mod_path_parts.split('\\').collect::<Vec<_>>();
@@ -196,14 +196,18 @@ impl Amb {
         return internal_name;
     }
 
-    pub fn add_binary_object(&mut self, mut new_obj: BinaryObject, internal_name: String) {
+    pub fn add_binary_object(&mut self, binary_object: BinaryObject, internal_name: String) {
         match self.objects.iter().position(|x| x.name == internal_name) {
             Some(internal_index) => {
-                let existing_object = &self.objects[internal_index];
-                new_obj.name = existing_object.name.clone();
-                new_obj.real_name = existing_object.real_name.clone();
-                
-                self.replace(new_obj, internal_index);
+                let existing_object = &self.objects[internal_index];                
+                self.replace(BinaryObject { 
+                    name: existing_object.name.clone(),
+                    real_name: existing_object.real_name.clone(),
+                    flag1: existing_object.flag1,
+                    flag2: existing_object.flag2,
+                    pointer: existing_object.pointer,
+                    data: binary_object.data.clone(),
+                }, internal_index);
                 return;
             },
             None => (),
@@ -215,24 +219,24 @@ impl Amb {
                 // Why do we consider that this object is an AMB?
                 let mut parent_amb = Amb::new_from_binary_object(parent_object);
                 // ????????
-                return parent_amb.add_binary_object(new_obj, internal_name);
+                return parent_amb.add_binary_object(binary_object, internal_name);
             }
             None => todo!(),
         }
     }
 
-    pub fn add(&mut self, file_path: String, new_name: Option<String>) {
-        let mut new_obj = BinaryObject::new_from_file_path(file_path.clone()).expect("This happend #6");
-
-        let internal_name = new_name.unwrap_or(self.get_relative_name(self.amb_path.clone(), file_path.replace("_extracted", ""))).replace('/', "\\");
-
+    pub fn add(&mut self, binary_object: BinaryObject, internal_name: String) {
         match self.objects.iter().position(|x| x.name == internal_name) {
             Some(internal_index) => {
                 let existing_object = &self.objects[internal_index];
-                new_obj.name = existing_object.name.clone();
-                new_obj.real_name = existing_object.real_name.clone();
-                
-                self.objects[internal_index] = new_obj;
+                self.objects[internal_index] = BinaryObject { 
+                    name: existing_object.name.clone(),
+                    real_name: existing_object.real_name.clone(),
+                    flag1: existing_object.flag1,
+                    flag2: existing_object.flag2,
+                    pointer: existing_object.pointer,
+                    data: binary_object.data.clone(),
+                };
                 return;
             },
             None => (),
@@ -243,11 +247,11 @@ impl Amb {
                 let parent_object = &self.objects[parent_index];
                 // Why do we consider that this object is an AMB?
                 let mut parent_amb = Amb::new_from_binary_object(parent_object);
-                parent_amb.add_binary_object(new_obj, internal_name);
+                parent_amb.add_binary_object(binary_object, internal_name);
                 todo!("Implement this later");
                 // self.objects[parent_index] = parent_amb;
             }
-            None => todo!("Ну что сказать, ну что сказать..."),
+            None => todo!("Looks like this is the place where I should append a file to the AMB"),
         }
     }
 

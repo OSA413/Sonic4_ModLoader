@@ -2,7 +2,7 @@ use std::{fs, path::{Path, PathBuf}};
 
 use common::Launcher;
 use glob::glob;
-use amb_rs_lib::{amb::Amb};
+use amb_rs_lib::{amb::Amb, amb_management};
 use crate::{help, sha_checker};
 
 pub fn recover() {
@@ -17,11 +17,11 @@ pub fn recover() {
             if file.ends_with(".CSB") || file.ends_with(".csb") {
                 let path_without_extension = file.chars().take(file.chars().count() - 4).collect::<String>();
                 Recover( &format!("{}.CPK", path_without_extension));
-                sha_checker::ShaRemove(path_without_extension);
+                sha_checker::remove(path_without_extension);
             }
             else
             {
-                sha_checker::ShaRemove(file.to_string());
+                sha_checker::remove(file.to_string());
             }
         }
         fs::remove_file("mods/mods_prev");
@@ -164,12 +164,12 @@ pub fn PatchAll(file_name: &String, mod_files: &Vec<String>, mod_paths: &Vec<Str
     if Path::new(&file_name).is_file() {
         if file_name.ends_with(".AMB") || file_name.ends_with(".amb")
         {
-            if sha_checker::ShaChanged(true , file_name, mod_files, mod_paths)
+            if sha_checker::is_changed(true , file_name, mod_files, mod_paths)
             {
                 if file_name == mod_files.first().unwrap_or(&"".to_string()) {
-                    let modFull = Path::new("mods").join(mod_paths[0].clone()).join(mod_files[0].clone());
-                    fs::copy(&modFull, file_name);
-                    sha_checker::ShaWrite(mod_files[0].clone(), modFull.display().to_string());
+                    let mod_full = Path::new("mods").join(mod_paths[0].clone()).join(mod_files[0].clone());
+                    fs::copy(&mod_full, file_name);
+                    sha_checker::write(mod_files[0].clone(), mod_full);
                     return;
                 }
 
@@ -181,10 +181,10 @@ pub fn PatchAll(file_name: &String, mod_files: &Vec<String>, mod_paths: &Vec<Str
 
                 let mut i = 0;
                 while i < mod_files.len() {
-                    let mod_file_full = Path::new("mods").join(mod_paths[i].clone()).join( mod_files[i].clone()).display().to_string();
+                    let mod_file_full = Path::new("mods").join(mod_paths[i].clone()).join( mod_files[i].clone());
                     // ProgressBar.PrintProgress(i, mod_files.Count, mod_file_full);
-                    amb.add(mod_file_full.clone(), None);
-                    sha_checker::ShaWrite(mod_files[i].clone(), mod_file_full);
+                    amb_management::add::file::add_file_to_amb(&mut amb, &mod_file_full, None);
+                    sha_checker::write(mod_files[i].clone(), mod_file_full);
                     i += 1;
                 }
 
@@ -196,7 +196,7 @@ pub fn PatchAll(file_name: &String, mod_files: &Vec<String>, mod_paths: &Vec<Str
         }
         else if file_name.ends_with(".csb") || file_name.ends_with(".CSB")
         {
-            if sha_checker::ShaChanged(true, &file_name.chars().take(file_name.chars().count() - 4).collect::<String>(), mod_files, mod_paths)
+            if sha_checker::is_changed(true, &file_name.chars().take(file_name.chars().count() - 4).collect::<String>(), mod_files, mod_paths)
             {
                 Recover(file_name);
                 Recover(&format!("{}.CPK", &file_name.chars().take(file_name.chars().count() - 4).collect::<String>()));
@@ -212,7 +212,7 @@ pub fn PatchAll(file_name: &String, mod_files: &Vec<String>, mod_paths: &Vec<Str
                             // ProgressBar.PrintProgress(i, mod_files.Count, mod_file);
                             fs::copy(mod_file.clone(), mod_files[i].clone());
                             
-                            sha_checker::ShaWrite(mod_files[i].clone(), mod_file.display().to_string());
+                            sha_checker::write(mod_files[i].clone(), mod_file);
                             i += 1;
                         }
                         
@@ -275,9 +275,9 @@ pub fn load_file_mods() {
         if mods_prev[i].ends_with(".csb") || mods_prev[i].ends_with(".CSB") {
             let mods_prev_path = mods_prev[i].chars().take(mods_prev[i].chars().count() - 4).collect::<String>();
             Recover(&format!("{}.CPK", mods_prev_path));
-            sha_checker::ShaRemove(mods_prev_path);
+            sha_checker::remove(mods_prev_path);
         } else {
-            sha_checker::ShaRemove(mods_prev[i].clone());
+            sha_checker::remove(mods_prev[i].clone());
         }
         i += 1;
     }

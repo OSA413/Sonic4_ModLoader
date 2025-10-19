@@ -20,8 +20,8 @@ fn main() -> () {
                                 Some(path_to_add) => {
                                     let path_to_add = Path::new(&path_to_add);
                                     match path_to_add.is_dir() {
-                                        true => amb_management::add::directory::add_dir_to_amb(target_file, path_to_add),
-                                        false => amb_management::add::file::add_file_to_amb(target_file, path_to_add, args.next()),
+                                        true => amb_management::add::directory::add_dir_to_amb_from_dir_path(target_file, path_to_add),
+                                        false => amb_management::add::file::add_file_to_file(target_file, path_to_add, args.next()),
                                     }
                                 },
                                 None => println!("Usage: add <target_file> <file_to_add> [internal_file_name]
