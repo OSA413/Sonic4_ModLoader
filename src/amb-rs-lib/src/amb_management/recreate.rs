@@ -1,7 +1,6 @@
 use std::{fs, path::{Path, PathBuf}};
 use crate::{amb::Amb, amb_management};
 
-/** DO NOT USE, will be removed after debugging and stabilization of amb-rs */
 pub fn test_recreation(file_path: String) {
     let source = fs::read(&file_path).unwrap();
     let amb = Amb::new_from_file_name(&file_path).unwrap();
