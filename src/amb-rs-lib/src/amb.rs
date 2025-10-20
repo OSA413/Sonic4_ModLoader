@@ -6,12 +6,21 @@ pub enum Version {
     Mobile = 0x28,
 }
 
+#[derive(Debug)]
+pub struct AmbPadding {
+    pub after_header: u32,
+    pub after_list: u32,
+    pub after_data: u32,
+}
+
 pub struct Amb {
     pub amb_path: String,
     pub endianness: Option<Endianness>,
+    pub flag1: u32,
     pub objects: Vec<BinaryObject>,
     pub has_names: bool,
     pub version: Version,
+    pub padding: AmbPadding,
 }
 
 struct AmbPointersPrediction {
@@ -25,14 +34,16 @@ impl Amb {
         self.predict_pointers().name + self.objects.len() * match self.has_names {
             true => 0x20,
             false => 0
-        }
+        } + self.padding.after_data as usize
+        + self.padding.after_list as usize
+        + self.padding.after_header as usize
     }
 
     fn predict_pointers(&self) -> AmbPointersPrediction {
         let data = 0x20 + 0x10 * self.objects.len();
         let ptr = data + self.objects.iter().map(|object| object.length_nice()).sum::<usize>();
         AmbPointersPrediction {
-            list: 0x20, 
+            list: 0x20,
             data: data,
             name: match self.has_names { 
                 true => ptr,
@@ -72,9 +83,11 @@ impl Amb {
         Self {
             amb_path: String::new(),
             endianness: Some(Endianness::Little),
+            flag1: 0,
             objects: Vec::new(),
             has_names: true,
             version: Version::PC,
+            padding: AmbPadding { after_header: 0, after_list: 0, after_data: 0 },
         }
     }
 
@@ -90,27 +103,47 @@ impl Amb {
         if !Amb::is_source_amb(source, ptr) {
             panic!("Provided source is not an AMB file");
         }
-        let ptr = ptr.unwrap_or(0);
-        let (version, endianness) = Amb::get_version(source, Some(ptr));
+        let (version, endianness) = Amb::get_version(source, ptr);
         let shift: usize = match version {
             Version::Mobile => 0x4,
             _ => 0,
         };
 
+        let mut padding = AmbPadding { after_header: 0, after_list: 0, after_data: 0 };
+        
+        let ptr = ptr.unwrap_or(0);
+
+        let flag1 = binary_reader::read_u32(source, ptr + 0x8, &endianness).expect("Another bad thing happened that you didn't account for #9");
         let object_number = binary_reader::read_u32(source, ptr + 0x10, &endianness).expect("Another bad thing happened that you didn't account for #10");
         let list_pointer = binary_reader::read_u32(source, ptr + 0x14, &endianness).expect("Another bad thing happened that you didn't account for #11") + ptr as u32;
         //var dataPtr = binary_reader::read_u32(source, sourcePtr + 0x18 + shift) + sourcePtr; //this may be not dataPtr for mobile
         let names_pointer = binary_reader::read_u32(source, ptr + 0x1C + shift, &endianness).expect("Another bad thing happened that you didn't account for #12") + ptr as u32;
         let has_names = names_pointer != 0;
+        
+        padding.after_header = list_pointer - 0x20;
 
         let mut objects = Vec::<BinaryObject>::new();
         let mut i: usize = 0;
+        // We need mut to keep track of the last object to calculate padding
+        let mut last_object_pointer = 0;
+        let mut last_object_length = 0;
         while i < object_number as usize {
             let object_pointer = binary_reader::read_u32(source, list_pointer as usize + (0x10 + shift) * i, &endianness).expect("Who's bad?") + ptr as u32;
             if object_pointer == 0 {
                 i += 1;
                 continue;
             }
+
+            if last_object_pointer != 0 {
+                let last_object_index = objects.len() - 1;
+                let last_object = &mut objects[last_object_index];
+                last_object.padding_after_data = object_pointer - last_object_pointer - last_object_length;
+            }
+
+            if i == 0 {
+                padding.after_list = object_pointer - list_pointer - 0x10 * object_number;
+            }
+
             let object_length = binary_reader::read_u32(source, list_pointer as usize + (0x10 + shift) * i + 4 + shift, &endianness).expect("Who's bad? (2)");
             let mut new_object = BinaryObject::new_from_src_ptr_len(source, object_pointer as usize, object_length as usize);
             new_object.real_name = match has_names {
@@ -122,15 +155,25 @@ impl Amb {
             new_object.flag2 = binary_reader::read_u32(source, list_pointer as usize + (0x10 + shift) * i + 12 + shift, &endianness).expect("Who's bad? (4)");
 
             objects.push(new_object);
+
+            last_object_pointer = object_pointer;
+            last_object_length = object_length;
+
             i += 1;
         }
+
+        padding.after_data = names_pointer - last_object_pointer - last_object_length;
+
+        println!("{:?}", padding);
 
         Amb {
             amb_path: name.to_string(),
             endianness,
+            flag1,
             objects,
             has_names,
             version,
+            padding,
         }
     }
 
@@ -148,12 +191,17 @@ impl Amb {
             result.push(0);
             i += 1;
         }
+        
+        pointers.list += self.padding.after_header as usize;
+        pointers.data += self.padding.after_header as usize + self.padding.after_list as usize;
+        pointers.name += self.padding.after_header as usize + self.padding.after_list as usize + self.padding.after_data as usize;
 
         "#AMB".as_bytes().read_exact(&mut result[0x0..0x4]);
         binary_writer::write_u32(&mut result, 0x4, match self.version {
             Version::PC => 0x20,
             Version::Mobile => 0x28,
         }, &self.endianness);
+        binary_writer::write_u32(&mut result, 0x8, self.flag1 as u32, &self.endianness);
         binary_writer::write_u32(&mut result, 0x10, self.objects.iter().count() as u32, &self.endianness);
         binary_writer::write_u32(&mut result, 0x14, pointers.list as u32, &self.endianness);
         binary_writer::write_u32(&mut result, 0x18, pointers.data as u32, &self.endianness);
@@ -161,7 +209,7 @@ impl Amb {
 
         for o in self.objects.iter() {
             binary_writer::write_u32(&mut result, pointers.list, pointers.data as u32, &self.endianness);
-            binary_writer::write_u32(&mut result, pointers.list + 4, o.length_nice() as u32, &self.endianness);
+            binary_writer::write_u32(&mut result, pointers.list + 4, o.length() as u32, &self.endianness);
             binary_writer::write_u32(&mut result, pointers.list + 8, o.flag1 as u32, &self.endianness);
             binary_writer::write_u32(&mut result, pointers.list + 12, o.flag2 as u32, &self.endianness);
 
@@ -214,6 +262,7 @@ impl Amb {
                     flag2: existing_object.flag2,
                     pointer: existing_object.pointer,
                     data: binary_object.data.clone(),
+                    padding_after_data: existing_object.padding_after_data,
                 }, internal_index);
                 return;
             },
@@ -243,6 +292,7 @@ impl Amb {
                     flag2: existing_object.flag2,
                     pointer: existing_object.pointer,
                     data: binary_object.data.clone(),
+                    padding_after_data: existing_object.padding_after_data,
                 };
                 return;
             },
