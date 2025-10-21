@@ -120,7 +120,9 @@ impl Amb {
         let names_pointer = binary_reader::read_u32(source, ptr + 0x1C + shift, &endianness).expect("Another bad thing happened that you didn't account for #12") + ptr as u32;
         let has_names = names_pointer != 0;
         
-        padding.after_header = list_pointer - 0x20;
+        if list_pointer != 0 {
+            padding.after_header = list_pointer - 0x20;
+        }
 
         let mut objects = Vec::<BinaryObject>::new();
         let mut i: usize = 0;
@@ -162,7 +164,9 @@ impl Amb {
             i += 1;
         }
 
-        padding.after_data = names_pointer - last_object_pointer - last_object_length;
+        if last_object_pointer != 0 {
+            padding.after_data = names_pointer - last_object_pointer - last_object_length;
+        }
 
         println!("{:?}", padding);
 
