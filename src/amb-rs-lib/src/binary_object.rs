@@ -8,8 +8,6 @@ pub struct BinaryObject {
 
     pub pointer: usize, //This is used just for the json print and debugging
     pub data: Vec<u8>,
-
-    pub padding_after_data: u32,
 }
 
 impl BinaryObject {
@@ -18,7 +16,7 @@ impl BinaryObject {
     }
 
     pub fn length_nice(&self) -> usize {
-        self.length() + (16 - self.length() % 16) % 16 + self.padding_after_data as usize
+        self.length() + (16 - self.length() % 16) % 16 as usize
     }
 
     pub fn new_from_src_ptr_len(
@@ -33,7 +31,6 @@ impl BinaryObject {
             pointer,
             name: String::new(),
             real_name: String::new(),
-            padding_after_data: 0,
         }
     }
 
@@ -48,7 +45,6 @@ impl BinaryObject {
             pointer: 0,
             name: String::new(),
             real_name: String::new(),
-            padding_after_data: 0,
         })
     }
 }
