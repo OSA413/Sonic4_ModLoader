@@ -76,7 +76,6 @@ Or: add <target_file> <dir_of_files_to_add>"),
                         None => println!("Usage: recreate <file> [save_as_file_name]"),
                     }
                 },
-                "test_recreation" => amb_management::recreate::test_recreation(args.next().unwrap()),
                 _ => {
                     let path = Path::new(&arg);
                     match path.is_dir() {
