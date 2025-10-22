@@ -31,33 +31,17 @@ impl Amb {
                     false => 0
                 }
             },
-            false => {
-                let mut i = 0;
-                let mut objects_length = 0;
-
-                while i < self.objects.len() {
-                    objects_length += match i == self.objects.len() - 1 {
-                        true => self.objects[i].length(),
-                        false => self.objects[i].length_nice()
-                    } ;
-                    i += 1;
-                }
-
-                pointers_predition.data + objects_length
-            },
+            false => pointers_predition.name,
         }
     }
 
     fn predict_pointers(&self) -> AmbPointersPrediction {
         let data = 0x20 + 0x10 * self.objects.len();
-        let ptr = data + self.objects.iter().map(|object| object.length_nice()).sum::<usize>();
+        let name = data + self.objects.iter().map(|object| object.length_nice()).sum::<usize>();
         AmbPointersPrediction {
             list: 0x20,
-            data: data,
-            name: match self.has_names { 
-                true => ptr,
-                false => 0
-            }
+            data,
+            name
         }
     }
 
@@ -255,38 +239,15 @@ impl Amb {
                 let parent_object = &self.objects[parent_index];
                 // Why do we consider that this object is an AMB?
                 let mut parent_amb = Amb::new_from_binary_object(parent_object);
-                // ????????
-                return parent_amb.add_binary_object(binary_object, internal_name);
-            }
-            None => todo!(),
-        }
-    }
-
-    pub fn add(&mut self, binary_object: BinaryObject, internal_name: String) {
-        match self.objects.iter().position(|x| x.name == internal_name) {
-            Some(internal_index) => {
-                let existing_object = &self.objects[internal_index];
-                self.objects[internal_index] = BinaryObject { 
-                    name: existing_object.name.clone(),
-                    real_name: existing_object.real_name.clone(),
-                    flag1: existing_object.flag1,
-                    flag2: existing_object.flag2,
-                    pointer: existing_object.pointer,
-                    data: binary_object.data.clone(),
-                };
-                return;
-            },
-            None => (),
-        }
-
-        match self.objects.iter().position(|x| x.name == internal_name.split('\\').take(x.name.chars().filter(|&c| c == '\\').count() + 1).collect::<Vec<_>>().join("\\")) {
-            Some(parent_index) => {
-                let parent_object = &self.objects[parent_index];
-                // Why do we consider that this object is an AMB?
-                let mut parent_amb = Amb::new_from_binary_object(parent_object);
                 parent_amb.add_binary_object(binary_object, internal_name);
-                todo!("Implement this later");
-                // self.objects[parent_index] = parent_amb;
+                self.objects[parent_index] = BinaryObject { 
+                    name: parent_object.name.clone(),
+                    real_name: parent_object.real_name.clone(),
+                    flag1: parent_object.flag1,
+                    flag2: parent_object.flag2,
+                    pointer: 0,
+                    data: parent_amb.write(),
+                };
             }
             None => todo!("Looks like this is the place where I should append a file to the AMB"),
         }
