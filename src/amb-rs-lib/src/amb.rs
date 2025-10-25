@@ -240,7 +240,7 @@ impl Amb {
                 // Why do we consider that this object is an AMB?
                 let mut parent_amb = Amb::new_from_binary_object(parent_object);
                 parent_amb.add_binary_object(binary_object, internal_name);
-                self.objects[parent_index] = BinaryObject { 
+                self.objects[parent_index] = BinaryObject {
                     name: parent_object.name.clone(),
                     real_name: parent_object.real_name.clone(),
                     flag1: parent_object.flag1,

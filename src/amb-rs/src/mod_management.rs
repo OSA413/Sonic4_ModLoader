@@ -1,4 +1,4 @@
-use std::{fs, path::{Path, PathBuf}};
+use std::{collections::HashMap, fs, path::{Path, PathBuf}};
 
 use common::Launcher;
 use glob::glob;
@@ -37,18 +37,16 @@ pub fn Recover(file_name: &String) {
     }
 }
 
-fn GetModFiles() -> Vec<(String, Vec<String>, Vec<String>)> {
+fn GetModFiles() -> HashMap<String, Vec<(String, String)>> {
     /* returns a list of:
         * list[0].OrigFile = Path to original file
         * list[0].ModFiles = List of mod files
         * list[0].ModName = List of mod names of ModFiles
         */
 
-    let mut result = Vec::new();
-
     //Reading the mods.ini file
     if !Path::new("mods/mods.ini").is_file() {
-        return result;
+        return HashMap::new();
     }
 
     //The mods.ini contains directory names of the enabled mods in reversed priority
@@ -60,14 +58,16 @@ fn GetModFiles() -> Vec<(String, Vec<String>, Vec<String>)> {
 
     
     //TODO: Make it work with forward order, remove Reverse()
-    let modsIni = common::mod_logic::existing_mod::ExistingMod::load("mods/mods.ini");
-    let modsIni = modsIni
+    let mods_ini = common::mod_logic::existing_mod::ExistingMod::load("mods");
+    let mods_ini = mods_ini
         .iter()
         .filter(|m| m.enabled)
         .rev()
         .collect::<Vec<_>>();
 
-    for mmod in modsIni {
+    let mut result: Vec<(String, String, String)> = Vec::new();
+
+    for mmod in mods_ini {
         if !Path::new("mods").join(mmod.path.clone()).is_dir() {
             continue;
         }
@@ -78,9 +78,6 @@ fn GetModFiles() -> Vec<(String, Vec<String>, Vec<String>)> {
                 for entry in filenames {
                     match entry {
                         Ok(path) => {
-                            let mut mod_files = Vec::<String>::new();
-                            let mut mod_dirs = Vec::<String>::new();
-
                             //Getting "folder/file" from "mods/mod/folder/file/mod_file"
                             let ppath = path.display().to_string();
                             let filename_parts = ppath.split(std::path::MAIN_SEPARATOR_STR).collect::<Vec<_>>();
@@ -113,34 +110,12 @@ fn GetModFiles() -> Vec<(String, Vec<String>, Vec<String>)> {
                             // BUT WHY??????
                             let mod_path = filename_parts[1];
 
-                            if mod_files.iter().find(|x | x.to_string() == mod_file.display().to_string()).is_some()
-                            {
-                                /* Updating queue of the files that will be modified
-                                * to correspond to the given mod priority.
-                                * This is needed because the old single-depth no replacing
-                                * method doesn't work correctly (theoretically) after some new features.
-                                * Before it was not a queue at all.
-                                * Thank you for your attention.
-                                * 
-                                * ~OSA413
-                                */
-                                let mod_index = mod_files.iter().position(|mods| mods.to_string() == mod_file.display().to_string()).unwrap();
-                                mod_files.remove(mod_index);
-                                mod_dirs.remove(mod_index);
-                            }
-
-                            mod_files.push(mod_file.display().to_string());
-                            mod_dirs.push(mod_path.to_string());
-
-                            if result.iter().find(|mods| mods.0 == original_file).is_none()
-                            {
-                                result
-                                    .push((
-                                        original_file,
-                                        mod_files,
-                                        mod_dirs,
-                                    ));
-                            }
+                            result
+                                .push((
+                                    original_file,
+                                    mod_file.display().to_string(),
+                                    mod_path.to_string(),
+                                ));
                         },
                         Err(e) => println!("Glob error: {}", e),
                     }
@@ -149,18 +124,37 @@ fn GetModFiles() -> Vec<(String, Vec<String>, Vec<String>)> {
             Err(e) => println!("Error: {e}"),
         }
     }
+
+    println!("{:?}", result);
+
+    let mut grouped: HashMap<String, Vec<(String, String)>> = HashMap::new();
+
+    for (original_file, mod_file, mod_path) in result {
+        let list = grouped.entry(original_file).or_insert(Vec::new());
+        match list.last() {
+            Some(last) => {
+                if mod_file.contains(&last.0) {
+                    continue;
+                }
+            },
+            None => (),
+        }
+        list.push((mod_file, mod_path));
+    }
+
+    println!("{:?}", grouped);
     
-    result
+    grouped
 }
 
 pub fn backup(file_name: &String) {
     let backup_path = format!("{}.bkp", &file_name);
     if !Path::new(&backup_path).exists() && Path::new(&file_name).is_file() { 
-        fs::copy(&file_name, backup_path);
+        fs::copy(&file_name, backup_path).unwrap();
     }
 }
 
-pub fn PatchAll(file_name: &String, mod_files: &Vec<String>, mod_paths: &Vec<String>) {
+pub fn patch_all(file_name: &String, mod_files: &Vec<String>, mod_paths: &Vec<String>) {
     if Path::new(&file_name).is_file() {
         if file_name.ends_with(".AMB") || file_name.ends_with(".amb")
         {
@@ -168,7 +162,11 @@ pub fn PatchAll(file_name: &String, mod_files: &Vec<String>, mod_paths: &Vec<Str
             {
                 if file_name == mod_files.first().unwrap_or(&"".to_string()) {
                     let mod_full = Path::new("mods").join(mod_paths[0].clone()).join(mod_files[0].clone());
-                    fs::copy(&mod_full, file_name);
+                    println!("+++++++++++++++++");
+                    println!("{}", mod_files[0]);
+                    println!("{:?}", mod_full);
+                    println!("+++++++++++++++++");
+                    fs::copy(&mod_full, file_name).unwrap();
                     sha_checker::write(mod_files[0].clone(), mod_full);
                     return;
                 }
@@ -181,7 +179,7 @@ pub fn PatchAll(file_name: &String, mod_files: &Vec<String>, mod_paths: &Vec<Str
 
                 let mut i = 0;
                 while i < mod_files.len() {
-                    let mod_file_full = Path::new("mods").join(mod_paths[i].clone()).join( mod_files[i].clone());
+                    let mod_file_full = Path::new("mods").join(mod_paths[i].clone()).join(mod_files[i].clone());
                     // ProgressBar.PrintProgress(i, mod_files.Count, mod_file_full);
                     amb_management::add::file::add_file_to_amb(&mut amb, &mod_file_full, None);
                     sha_checker::write(mod_files[i].clone(), mod_file_full);
@@ -243,25 +241,23 @@ pub fn load_file_mods() {
     // ProgressBar.PrintFiller();
     // ProgressBar.MoveCursorUp();
 
-    let mut i = 0;
-    while i < test.len() {
-        modified_files.push(test[i].0.clone());
+    for (key, value) in test {
+        modified_files.push(key.clone());
         
         // ProgressBar.PrintProgress(i, test.Count, "Modifying \"" + test[i].OrigFile + "\"...");
         // ProgressBar.MoveCursorDown();
 
-        backup(&test[i].0);
+        backup(&key);
         //Some CSB files may have CPK archive
-        if Path::new(&format!("{}.CPK", test[i].0.chars().take(test[i].0.len() - 4).collect::<String>())).is_file() {
-            backup(&(test[i].0.chars().take(test[i].0.len() - 4).collect::<String>() + ".CPK"));
+        if Path::new(&format!("{}.CPK", key.chars().take(key.len() - 4).collect::<String>())).is_file() {
+            backup(&(key.chars().take(key.len() - 4).collect::<String>() + ".CPK"));
         }
 
-        PatchAll(&test[i].0, &test[i].1, &test[i].2);
+        patch_all(&key, &value.iter().map(|x| x.0.clone()).collect(), &value.iter().map(|x| x.1.clone()).collect());
         // TODO: burn it with fire
-        mods_prev = mods_prev.iter().filter(|x | x.to_string() != test[i].0).map(|x| x.to_string()).collect();
+        mods_prev = mods_prev.iter().filter(|x | x.to_string() != key).map(|x| x.to_string()).collect();
 
         // ProgressBar.MoveCursorUp();
-        i += 1;
     }
 
     // ProgressBar.PrintProgress(1, 1, "");
