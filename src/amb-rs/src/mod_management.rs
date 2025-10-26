@@ -78,6 +78,10 @@ fn GetModFiles() -> HashMap<String, Vec<(String, String)>> {
                 for entry in filenames {
                     match entry {
                         Ok(path) => {
+                            // glob returns all entries, even if it's a folder that contains files
+                            if path.is_dir() {
+                                continue;
+                            }
                             //Getting "folder/file" from "mods/mod/folder/file/mod_file"
                             let ppath = path.display().to_string();
                             let filename_parts = ppath.split(std::path::MAIN_SEPARATOR_STR).collect::<Vec<_>>();
@@ -124,8 +128,6 @@ fn GetModFiles() -> HashMap<String, Vec<(String, String)>> {
             Err(e) => println!("Error: {e}"),
         }
     }
-
-    println!("{:?}", result);
 
     let mut grouped: HashMap<String, Vec<(String, String)>> = HashMap::new();
 

@@ -88,6 +88,6 @@ pub fn write(relative_mod_file_path: String, full_mod_file_path: PathBuf) {
     let sha_file = Path::new("mods_sha").join(relative_mod_file_path + ".txt");
     let sha_dir = sha_file.parent().unwrap();
 
-    fs::create_dir_all(sha_dir.parent().unwrap()).expect("Failed to create directory for SHA-1 file");
+    fs::create_dir_all(sha_dir).expect("Failed to create directory for SHA-1 file");
     fs::write(sha_file, get(fs::read(full_mod_file_path).expect("Failed to read file for SHA-1 file "))).expect("Couldn't write SHA-1 of file");
 }
