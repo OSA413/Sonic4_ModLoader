@@ -160,7 +160,7 @@ impl Amb {
             i += 1;
         }
 
-        "#AMB".as_bytes().read_exact(&mut result[0x0..0x4]);
+        "#AMB".as_bytes().read_exact(&mut result[0x0..0x4]).unwrap();
         binary_writer::write_u32(&mut result, 0x4, match self.version {
             Version::PC => 0x20,
             Version::Mobile => 0x28,
@@ -182,7 +182,7 @@ impl Amb {
             let object_data = &o.data;
             result[pointers.data..pointers.data + o.length()].copy_from_slice(&object_data);
             if self.has_names {
-                o.real_name.as_bytes().read_exact(&mut result[pointers.name..pointers.name + o.real_name.len()]);
+                o.real_name.as_bytes().read_exact(&mut result[pointers.name..pointers.name + o.real_name.len()]).unwrap();
                 pointers.name += 0x20;
             }
 
