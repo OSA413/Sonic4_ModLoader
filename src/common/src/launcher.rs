@@ -81,7 +81,8 @@ impl Launcher {
     }
     
     pub fn launch_csb_editor(args: Vec<String>) -> Result<Child, io::Error> {
-        Command::new("CsbEditor.exe").args(args).spawn()
+        let current_dir = env::current_dir().unwrap();
+        Command::new(current_dir.join("CsbEditor.exe")).args(args).spawn()
     }
 
     pub fn launch_amb_patcher(args: Vec<String>) -> Result<Child, io::Error> {

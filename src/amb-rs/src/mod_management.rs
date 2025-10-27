@@ -143,8 +143,6 @@ fn get_mod_files() -> HashMap<String, Vec<(String, String)>> {
         }
         list.push((mod_file, mod_path));
     }
-
-    println!("{:?}", grouped);
     
     grouped
 }
@@ -164,10 +162,6 @@ pub fn patch_all(file_name: &String, mod_files: &Vec<String>, mod_paths: &Vec<St
             {
                 if file_name == mod_files.first().unwrap_or(&"".to_string()) {
                     let mod_full = Path::new("mods").join(mod_paths[0].clone()).join(mod_files[0].clone());
-                    println!("+++++++++++++++++");
-                    println!("{}", mod_files[0]);
-                    println!("{:?}", mod_full);
-                    println!("+++++++++++++++++");
                     fs::copy(&mod_full, file_name).unwrap();
                     sha_checker::write(mod_files[0].clone(), mod_full);
                     return;
@@ -201,23 +195,32 @@ pub fn patch_all(file_name: &String, mod_files: &Vec<String>, mod_paths: &Vec<St
                 reecover(file_name);
                 reecover(&format!("{}.CPK", &file_name.chars().take(file_name.chars().count() - 4).collect::<String>()));
 
-                // ProgressBar.PrintProgress(0, 100, "Asking CsbEditor to unpack " + file_name);
-
                 match Launcher::launch_csb_editor(vec![file_name.to_string()]) {
-                    Ok(_) => {
-                        let mut i = 0;
-                        while i < mod_files.len() {
-                            let mod_file = Path::new("mods").join(mod_paths[i].clone()).join( mod_files[i].clone());
+                    Ok(mut child) => {
+                        match child.wait() {
+                            Ok(_) => {
+                                let mut i = 0;
+                                while i < mod_files.len() {
+                                    let mod_file = Path::new("mods").join(mod_paths[i].clone()).join( mod_files[i].clone());
+                                    
+                                    fs::copy(mod_file.clone(), mod_files[i].clone()).unwrap();
                             
-                            // ProgressBar.PrintProgress(i, mod_files.Count, mod_file);
-                            fs::copy(mod_file.clone(), mod_files[i].clone()).unwrap();
-                            
-                            sha_checker::write(mod_files[i].clone(), mod_file);
-                            i += 1;
+                                    sha_checker::write(mod_files[i].clone(), mod_file);
+                                    i += 1;
+                                }
+                                
+                                match Launcher::launch_csb_editor(vec![file_name.chars().take(file_name.chars().count() - 4).collect::<String>()]) {
+                                    Ok(mut child) => {
+                                        match child.wait() {
+                                            Ok(_) => (),
+                                            Err(e) => println!("Error waiting for CsbEditor: {e}"),
+                                        }
+                                    },
+                                    Err(e) => println!("Error launching CsbEditor: {e}"),
+                                }
+                            },
+                            Err(e) => println!("Error waiting for CsbEditor: {e}"),
                         }
-                        
-                        // ProgressBar.PrintProgress(99, 100, "Asking CsbEditor to repack " + file_name);
-                        Launcher::launch_csb_editor(vec![file_name.chars().take(file_name.chars().count() - 4).collect::<String>()]).unwrap();
                     },
                     Err(e) => println!("Error launching CsbEditor: {e}"),
                 }
@@ -232,7 +235,8 @@ pub fn load_file_mods() {
         return;
     }
 
-    let test = get_mod_files();
+    let files_that_i_have_to_patch = get_mod_files();
+    println!("There are {} files to patch...", files_that_i_have_to_patch.len());
     let mut mods_prev = Vec::<String>::new();
     let mut modified_files = Vec::<String>::new();
 
@@ -240,14 +244,9 @@ pub fn load_file_mods() {
         mods_prev = fs::read_to_string("mods/mods_prev").unwrap().lines().map(|x| x.to_string()).collect::<Vec<String>>();
     }
 
-    // ProgressBar.PrintFiller();
-    // ProgressBar.MoveCursorUp();
-
-    for (key, value) in test {
+    for (key, value) in files_that_i_have_to_patch {
+        println!("Patching {}...", key);
         modified_files.push(key.clone());
-        
-        // ProgressBar.PrintProgress(i, test.Count, "Modifying \"" + test[i].OrigFile + "\"...");
-        // ProgressBar.MoveCursorDown();
 
         backup(&key);
         //Some CSB files may have CPK archive
@@ -256,18 +255,13 @@ pub fn load_file_mods() {
         }
 
         patch_all(&key, &value.iter().map(|x| x.0.clone()).collect(), &value.iter().map(|x| x.1.clone()).collect());
-        // TODO: burn it with fire
+        // TODO: burn it with fire🔥🔥🔥🔥🔥🔥
         mods_prev = mods_prev.iter().filter(|x | x.to_string() != key).map(|x| x.to_string()).collect();
-
-        // ProgressBar.MoveCursorUp();
     }
-
-    // ProgressBar.PrintProgress(1, 1, "");
-    // ProgressBar.MoveCursorDown();
-    // ProgressBar.PrintProgress(1, 1, "");
 
     let mut i = 0;
     while i < mods_prev.len() {
+        println!("Recovering {}...", mods_prev[i]);
         reecover(&mods_prev[i]);
         //Some CSB files may have CPK archive
         if mods_prev[i].ends_with(".csb") || mods_prev[i].ends_with(".CSB") {
@@ -281,4 +275,5 @@ pub fn load_file_mods() {
     }
     
     fs::write("mods/mods_prev", modified_files.join("\n")).unwrap();
+    println!("\nPatching complete!");
 }

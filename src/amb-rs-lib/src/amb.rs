@@ -146,7 +146,7 @@ impl Amb {
     }
 
     pub fn new_from_binary_object(bo: &BinaryObject) -> Self {
-        Amb::new_from_src_ptr_name(&bo.data, Some(bo.pointer), &bo.name)
+        Amb::new_from_src_ptr_name(&bo.data, None, &bo.name)
     }
 
     pub fn write(&self) -> Vec<u8> {
@@ -249,7 +249,7 @@ impl Amb {
                     data: parent_amb.write(),
                 };
             }
-            None => todo!("Looks like this is the place where I should append a file to the AMB"),
+            None => self.objects.push(binary_object),
         }
     }
 
