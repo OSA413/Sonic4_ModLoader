@@ -4,6 +4,7 @@ use common::Launcher;
 use glob::glob;
 use amb_rs_lib::{amb::Amb, amb_management};
 use crate::{help, sha_checker};
+use indicatif::ProgressBar;
 
 pub fn recover() {
     if Path::new("mods/mods_prev").is_file() {
@@ -170,16 +171,21 @@ pub fn backup(file_name: &String) {
     }
 }
 
-pub fn patch_all(file_name: &String, mod_files: &Vec<String>, mod_paths: &Vec<String>) {
+pub fn patch_all(file_name: &String, mod_files: &Vec<String>, mod_paths: &Vec<String>, bar: Option<&ProgressBar>) {
     if Path::new(&file_name).is_file() {
         if file_name.ends_with(".AMB") || file_name.ends_with(".amb")
         {
             if sha_checker::is_changed(true , file_name, mod_files, mod_paths)
             {
+                // This makes no sense, TODO check the use case
                 if file_name == mod_files.first().unwrap_or(&"".to_string()) {
                     let mod_full = Path::new("mods").join(mod_paths[0].clone()).join(mod_files[0].clone());
                     fs::copy(&mod_full, file_name).unwrap();
                     sha_checker::write(mod_files[0].clone(), mod_full);
+                    match bar {
+                        Some(bar) => bar.inc(1),
+                        None => (),
+                    }
                     return;
                 }
 
@@ -192,7 +198,10 @@ pub fn patch_all(file_name: &String, mod_files: &Vec<String>, mod_paths: &Vec<St
                 let mut i = 0;
                 while i < mod_files.len() {
                     let mod_file_full = Path::new("mods").join(mod_paths[i].clone()).join(mod_files[i].clone());
-                    // ProgressBar.PrintProgress(i, mod_files.Count, mod_file_full);
+                    match bar {
+                        Some(bar) => bar.inc(1),
+                        None => (),
+                    }
                     amb_management::add::file::add_file_to_amb(&mut amb, &mod_file_full, None).unwrap();
                     sha_checker::write(mod_files[i].clone(), mod_file_full);
                     i += 1;
@@ -218,9 +227,14 @@ pub fn patch_all(file_name: &String, mod_files: &Vec<String>, mod_paths: &Vec<St
                                 let mut i = 0;
                                 while i < mod_files.len() {
                                     let mod_file = Path::new("mods").join(mod_paths[i].clone()).join( mod_files[i].clone());
-                                    
+
                                     fs::copy(mod_file.clone(), mod_files[i].clone()).unwrap();
                             
+                                    match bar {
+                                        Some(bar) => bar.inc(1),
+                                        None => (),
+                                    }
+
                                     sha_checker::write(mod_files[i].clone(), mod_file);
                                     i += 1;
                                 }
@@ -251,17 +265,22 @@ pub fn load_file_mods() {
         return;
     }
 
+    println!("Preparing list of files to patch...");
     let files_that_i_have_to_patch = get_mod_files();
     println!("There are {} files to patch...", files_that_i_have_to_patch.len());
+    let total_files_to_read: usize = files_that_i_have_to_patch.iter().map(|x| x.1.len()).sum();
+    println!("And approximately {} files to read...", total_files_to_read);
+    println!("Starting patching files of the game");
     let mut mods_prev = Vec::<String>::new();
     let mut modified_files = Vec::<String>::new();
+
+    let bar = ProgressBar::new(total_files_to_read as u64);
 
     if Path::new("mods/mods_prev").is_file() {
         mods_prev = fs::read_to_string("mods/mods_prev").unwrap().lines().map(|x| x.to_string()).collect::<Vec<String>>();
     }
 
     for (key, value) in files_that_i_have_to_patch {
-        println!("Patching {}...", key);
         modified_files.push(key.clone());
 
         backup(&key);
@@ -270,7 +289,7 @@ pub fn load_file_mods() {
             backup(&(key.chars().take(key.len() - 4).collect::<String>() + ".CPK"));
         }
 
-        patch_all(&key, &value.iter().map(|x| x.0.clone()).collect(), &value.iter().map(|x| x.1.clone()).collect());
+        patch_all(&key, &value.iter().map(|x| x.0.clone()).collect(), &value.iter().map(|x| x.1.clone()).collect(), Some(&bar));
         // TODO: burn it with fire🔥🔥🔥🔥🔥🔥
         mods_prev = mods_prev.iter().filter(|x | x.to_string() != key).map(|x| x.to_string()).collect();
     }
