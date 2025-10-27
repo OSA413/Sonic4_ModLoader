@@ -73,6 +73,7 @@ fn get_mod_files() -> HashMap<String, Vec<(String, String)>> {
         }
 
         let filenames = glob(&format!("mods/{}/**/*.*", mmod.path));
+        let mut paths = Vec::new();
         match filenames {
             Ok(filenames) => {
                 for entry in filenames {
@@ -82,50 +83,65 @@ fn get_mod_files() -> HashMap<String, Vec<(String, String)>> {
                             if path.is_dir() {
                                 continue;
                             }
-                            //Getting "folder/file" from "mods/mod/folder/file/mod_file"
-                            let ppath = path.display().to_string();
-                            let filename_parts = ppath.split(std::path::MAIN_SEPARATOR_STR).collect::<Vec<_>>();
-                            let mut original_file = "".to_string();
-                            let mut k = 0;
-
-                            while k < filename_parts.len() - 2 {
-                                let possible_orig_file = filename_parts.iter().skip(2).take(k + 1).collect::<PathBuf>();
-
-                                if possible_orig_file.is_file() {
-                                    original_file = possible_orig_file.display().to_string();
-                                    break;
-                                }
-                                else if Path::new(&format!("{}.CSB", possible_orig_file.display().to_string())).is_file()
-                                {
-                                    original_file = format!("{}.CSB", possible_orig_file.display().to_string());
-                                    break;
-                                }
-                                k += 1;
-                            }
-
-                            if original_file == "" {
-                                continue;
-                            }
-
-                            //Getting "folder/file/mod_file" from "mods/mod/folder/file/mod_file"
-                            let mod_file = filename_parts.iter().skip(2).collect::<PathBuf>();
-
-                            //Getting "mod" from "mods/mod/folder/file/mod_file"
-                            // BUT WHY??????
-                            let mod_path = filename_parts[1];
-
-                            result
-                                .push((
-                                    original_file,
-                                    mod_file.display().to_string(),
-                                    mod_path.to_string(),
-                                ));
+                            paths.push(path);
                         },
                         Err(e) => println!("Glob error: {}", e),
                     }
                 }
             },
             Err(e) => println!("Error: {e}"),
+        }
+
+        paths.sort_by(|a, b| a.display().to_string().cmp(&b.display().to_string()));
+        // Needs confirmation
+        // // We have to replicate .Net default sort to not break some mods that rely on file addition order
+        // // For example, SSON_DRAG.ZNM must come after SSON_DRAG_L.ZNM keeping overal file order the same
+        // // TODO: optimize
+        // // paths.sort_by(
+        // //     |a, b| 
+        // //         a.display().to_string().replace("_", ".")
+        // //             .cmp(&b.display().to_string().replace("_", "."))
+        // // );
+
+        for path in paths {
+            //Getting "folder/file" from "mods/mod/folder/file/mod_file"
+            let ppath = path.display().to_string();
+            let filename_parts = ppath.split(std::path::MAIN_SEPARATOR_STR).collect::<Vec<_>>();
+            let mut original_file = "".to_string();
+            let mut k = 0;
+
+            while k < filename_parts.len() - 2 {
+                let possible_orig_file = filename_parts.iter().skip(2).take(k + 1).collect::<PathBuf>();
+
+                if possible_orig_file.is_file() {
+                    original_file = possible_orig_file.display().to_string();
+                    break;
+                }
+                else if Path::new(&format!("{}.CSB", possible_orig_file.display().to_string())).is_file()
+                {
+                    original_file = format!("{}.CSB", possible_orig_file.display().to_string());
+                    break;
+                }
+                k += 1;
+            }
+
+            if original_file == "" {
+                continue;
+            }
+
+            //Getting "folder/file/mod_file" from "mods/mod/folder/file/mod_file"
+            let mod_file = filename_parts.iter().skip(2).collect::<PathBuf>();
+
+            //Getting "mod" from "mods/mod/folder/file/mod_file"
+            // BUT WHY??????
+            let mod_path = filename_parts[1];
+
+            result
+                .push((
+                    original_file,
+                    mod_file.display().to_string(),
+                    mod_path.to_string(),
+                ));
         }
     }
 

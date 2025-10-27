@@ -239,7 +239,7 @@ impl Amb {
                 let parent_object = &self.objects[parent_index];
                 // Why do we consider that this object is an AMB?
                 let mut parent_amb = Amb::new_from_binary_object(parent_object);
-                parent_amb.add_binary_object(binary_object, internal_name);
+                parent_amb.add_binary_object(binary_object, internal_name.chars().skip(parent_object.real_name.chars().count() + 1).collect::<String>());
                 self.objects[parent_index] = BinaryObject {
                     name: parent_object.name.clone(),
                     real_name: parent_object.real_name.clone(),
@@ -249,7 +249,14 @@ impl Amb {
                     data: parent_amb.write(),
                 };
             }
-            None => self.objects.push(binary_object),
+            None => self.objects.push(BinaryObject {
+                name: internal_name.clone(),
+                real_name: internal_name.clone(),
+                flag1: 0,
+                flag2: 0,
+                pointer: 0,
+                data: binary_object.data,
+            }),
         }
     }
 
