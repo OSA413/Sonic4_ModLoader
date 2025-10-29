@@ -23,6 +23,13 @@ dependencies = [
 ]
 
 [[package]]
+name = "Sonic4FilePatcher"
+version = "1.0.0"
+dependencies = [
+ "winresource",
+]
+
+[[package]]
 name = "Sonic4ModManager"
 version = "1.0.0"
 dependencies = [

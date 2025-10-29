@@ -37,6 +37,8 @@ mod imp {
         pub checkbutton_progress_bar: TemplateChild<gtk::CheckButton>,
         #[template_child]
         pub checkbutton_check_sha_of_files: TemplateChild<gtk::CheckButton>,
+        #[template_child]
+        pub checkbutton_use_amb_rs_instead: TemplateChild<gtk::CheckButton>,
 
         // CSBEditor
         #[template_child]

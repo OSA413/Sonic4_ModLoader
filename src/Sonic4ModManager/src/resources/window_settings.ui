@@ -156,6 +156,11 @@
                           </object>
                         </child>
                         <child>
+                          <object class="GtkCheckButton" id="checkbutton_check_sha_of_files">
+                            <property name="label">Use amb-rs instead (WiP)</property>
+                          </object>
+                        </child>
+                        <child>
                           <object class="GtkButton">
                             <property name="label">Recover original files</property>
                             <property name="action-name">win.recover_files</property>

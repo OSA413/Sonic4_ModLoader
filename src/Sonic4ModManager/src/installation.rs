@@ -18,13 +18,13 @@ pub fn get_installation_status() -> InstallationStatus {
         Game::Unknown => return InstallationStatus::NotGameDirectory,
         Game::Episode1 => {
             if (!check_launcher || Path::new("SonicLauncher.orig.exe").exists())
-                && aml_config == "AMBPatcher.exe" {
+                && aml_config == "Sonic4FilePatcher.exe" {
                 return InstallationStatus::Installed;
             }
         },
         Game::Episode2 => {
             if (!check_launcher || Path::new("Launcher.orig.exe").exists())
-                && aml_config == "AMBPatcher.exe" {
+                && aml_config == "Sonic4FilePatcher.exe" {
                 return InstallationStatus::Installed;
             }
         }
@@ -83,6 +83,8 @@ fn get_installation_order() -> Vec<InstallationInstruction> {
     installation_order.push(InstallationInstruction::new("7z.exe".to_string(), None, None, true));
     installation_order.push(InstallationInstruction::new("7z.dll".to_string(), None, None, true));
     installation_order.push(InstallationInstruction::new("AMBPatcher.exe".to_string(), None, None, true));
+    installation_order.push(InstallationInstruction::new("amb-rs.exe".to_string(), None, None, true));
+    installation_order.push(InstallationInstruction::new("Sonic4FilePatcher.exe".to_string(), None, None, true));
     installation_order.push(InstallationInstruction::new("CsbEditor.exe".to_string(), None, None, true));
     installation_order.push(InstallationInstruction::new("Mod Loader - Whats new.txt".to_string(), None, None, true));
     installation_order.push(InstallationInstruction::new("README.md".to_string(), None, None, true));
@@ -129,7 +131,7 @@ pub fn install() {
         Ok(_) => (),
         Err(e) => println!("Couldn't write ModManager.cfg: {}", e),
     }
-    settings::alice_mod_loader::save("AMBPatcher.exe");
+    settings::alice_mod_loader::save("Sonic4FilePatcher.exe");
 }
 
 pub struct UninstallationOptions {

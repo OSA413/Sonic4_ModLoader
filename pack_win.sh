@@ -49,6 +49,7 @@ cargo install copydeps cargo-bundle-licenses
 cargo bundle-licenses --format json --output "./dist/Sonic4ModLoader/Mod Loader - licenses/Rust-THIRDPARTY.json"
 
 cp ./target/release/amb-rs.exe ./dist/Sonic4ModLoader/amb-rs.exe
+cp ./target/release/Sonic4FilePatcher.exe ./dist/Sonic4ModLoader/Sonic4FilePatcher.exe
 
 cp ./target/release/ManagerLauncher.exe ./dist/Sonic4ModLoader/bin/ManagerLauncher.exe
 copydeps --search-dir C:/gtk-build/gtk/x64/release/bin ./dist/Sonic4ModLoader/bin/ManagerLauncher.exe
