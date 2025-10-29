@@ -6,59 +6,45 @@ use amb_rs_lib::{amb::Amb, amb_management};
 use crate::{help, sha_checker};
 use indicatif::ProgressBar;
 
-pub fn recover() {
+pub fn full_recover_of_files() {
     if Path::new("mods/mods_prev").is_file() {
         let mods_prev = fs::read_to_string("mods/mods_prev").expect("Rolling around at error messages");
         let mods_prev = mods_prev.lines();
 
-        for file in mods_prev {           
-            // ProgressBar.PrintProgress(i, mods_prev.Length, "Recovering \""+ file +"\" file...");
-
-            reecover(&file.to_string());
+        for file in mods_prev {
+            recover(&file.to_string());
             if file.ends_with(".CSB") || file.ends_with(".csb") {
                 let path_without_extension = file.chars().take(file.chars().count() - 4).collect::<String>();
-                reecover( &format!("{}.CPK", path_without_extension));
-                sha_checker::remove(path_without_extension);
+                recover( &format!("{}.CPK", path_without_extension));
+                sha_checker::remove(&path_without_extension);
             }
             else
             {
-                sha_checker::remove(file.to_string());
+                sha_checker::remove(&file.to_string());
             }
         }
         fs::remove_file("mods/mods_prev").unwrap();
-        // ProgressBar.PrintProgress(1, 1, "");
     }
 
 }
 
-pub fn reecover(file_name: &String) {
+pub fn recover(file_name: &String) {
     let backup_path = format!("{}.bkp", file_name);
     if Path::new(&backup_path).is_file() {
         fs::copy(backup_path, file_name).unwrap();
     }
 }
 
-fn get_mod_files() -> HashMap<String, Vec<(String, String)>> {
-    /* returns a list of:
-        * list[0].OrigFile = Path to original file
-        * list[0].ModFiles = List of mod files
-        * list[0].ModName = List of mod names of ModFiles
-        */
+pub struct ModFile {
+    pub file_path: String,
+    pub mod_folder: String,
+}
 
-    //Reading the mods.ini file
+fn get_mod_files() -> HashMap<String, Vec<ModFile>> {
     if !Path::new("mods/mods.ini").is_file() {
         return HashMap::new();
     }
-
-    //The mods.ini contains directory names of the enabled mods in reversed priority
-    /*e.g.
-        * Mod 3
-        * Mod 2
-        * Mod 1
-        */
-
     
-    //TODO: Make it work with forward order, remove Reverse()
     let mods_ini = common::mod_logic::existing_mod::ExistingMod::load("mods");
     let mods_ini = mods_ini
         .iter()
@@ -66,7 +52,7 @@ fn get_mod_files() -> HashMap<String, Vec<(String, String)>> {
         .rev()
         .collect::<Vec<_>>();
 
-    let mut result: Vec<(String, String, String)> = Vec::new();
+    let mut result: Vec<(String, ModFile)> = Vec::new();
 
     for mmod in mods_ini {
         if !Path::new("mods").join(mmod.path.clone()).is_dir() {
@@ -134,31 +120,32 @@ fn get_mod_files() -> HashMap<String, Vec<(String, String)>> {
             let mod_file = filename_parts.iter().skip(2).collect::<PathBuf>();
 
             //Getting "mod" from "mods/mod/folder/file/mod_file"
-            // BUT WHY??????
             let mod_path = filename_parts[1];
 
             result
                 .push((
                     original_file,
-                    mod_file.display().to_string(),
-                    mod_path.to_string(),
+                    ModFile {
+                        file_path: mod_file.display().to_string(),
+                        mod_folder: mod_path.to_string(),
+                    }
                 ));
         }
     }
 
-    let mut grouped: HashMap<String, Vec<(String, String)>> = HashMap::new();
+    let mut grouped: HashMap<String, Vec<ModFile>> = HashMap::new();
 
-    for (original_file, mod_file, mod_path) in result {
+    for (original_file, mod_file) in result {
         let list = grouped.entry(original_file).or_insert(Vec::new());
         match list.last() {
             Some(last) => {
-                if mod_file.contains(&last.0) {
+                if mod_file.file_path.contains(&last.file_path) {
                     continue;
                 }
             },
             None => (),
         }
-        list.push((mod_file, mod_path));
+        list.push(mod_file);
     }
     
     grouped
@@ -171,17 +158,20 @@ pub fn backup(file_name: &String) {
     }
 }
 
-pub fn patch_all(file_name: &String, mod_files: &Vec<String>, mod_paths: &Vec<String>, bar: Option<&ProgressBar>) {
+pub fn patch_all(file_name: &String, mod_files: Vec<ModFile>, bar: Option<&ProgressBar>) {
+    if mod_files.is_empty() {
+        return;
+    }
+
     if Path::new(&file_name).is_file() {
         if file_name.ends_with(".AMB") || file_name.ends_with(".amb")
         {
-            if sha_checker::is_changed(true , file_name, mod_files, mod_paths)
+            if sha_checker::is_changed(true , file_name, &mod_files)
             {
-                // This makes no sense, TODO check the use case
-                if file_name == mod_files.first().unwrap_or(&"".to_string()) {
-                    let mod_full = Path::new("mods").join(mod_paths[0].clone()).join(mod_files[0].clone());
+                if file_name == &mod_files.first().unwrap().file_path {
+                    let mod_full = Path::new("mods").join(mod_files[0].mod_folder.clone()).join(mod_files[0].file_path.clone());
                     fs::copy(&mod_full, file_name).unwrap();
-                    sha_checker::write(mod_files[0].clone(), mod_full);
+                    sha_checker::write(mod_files[0].file_path.clone(), mod_full);
                     match bar {
                         Some(bar) => bar.inc(1),
                         None => (),
@@ -195,16 +185,14 @@ pub fn patch_all(file_name: &String, mod_files: &Vec<String>, mod_paths: &Vec<St
                 }).expect("I'm runnning out of error messages");
                 amb.amb_path = file_name.to_string();
 
-                let mut i = 0;
-                while i < mod_files.len() {
-                    let mod_file_full = Path::new("mods").join(mod_paths[i].clone()).join(mod_files[i].clone());
+                for mod_file in mod_files {
+                    let mod_file_full = Path::new("mods").join(mod_file.mod_folder.clone()).join(mod_file.file_path.clone());
                     match bar {
                         Some(bar) => bar.inc(1),
                         None => (),
                     }
                     amb_management::add::file::add_file_to_amb(&mut amb, &mod_file_full, None).unwrap();
-                    sha_checker::write(mod_files[i].clone(), mod_file_full);
-                    i += 1;
+                    sha_checker::write(mod_file.file_path.clone(), mod_file_full);
                 }
 
                 match fs::write(file_name, amb.write()) {
@@ -215,28 +203,26 @@ pub fn patch_all(file_name: &String, mod_files: &Vec<String>, mod_paths: &Vec<St
         }
         else if file_name.ends_with(".csb") || file_name.ends_with(".CSB")
         {
-            if sha_checker::is_changed(true, &file_name.chars().take(file_name.chars().count() - 4).collect::<String>(), mod_files, mod_paths)
+            if sha_checker::is_changed(true, &file_name.chars().take(file_name.chars().count() - 4).collect::<String>(), &mod_files)
             {
-                reecover(file_name);
-                reecover(&format!("{}.CPK", &file_name.chars().take(file_name.chars().count() - 4).collect::<String>()));
+                recover(file_name);
+                recover(&format!("{}.CPK", &file_name.chars().take(file_name.chars().count() - 4).collect::<String>()));
 
                 match Launcher::launch_csb_editor(vec![file_name.to_string()]) {
                     Ok(mut child) => {
                         match child.wait() {
                             Ok(_) => {
-                                let mut i = 0;
-                                while i < mod_files.len() {
-                                    let mod_file = Path::new("mods").join(mod_paths[i].clone()).join( mod_files[i].clone());
+                                for mod_file in mod_files {
+                                    let mod_file_path = Path::new("mods").join(mod_file.mod_folder.clone()).join( mod_file.file_path.clone());
 
-                                    fs::copy(mod_file.clone(), mod_files[i].clone()).unwrap();
-                            
+                                    fs::copy(mod_file_path.clone(), mod_file.file_path.clone()).unwrap();
+
                                     match bar {
                                         Some(bar) => bar.inc(1),
                                         None => (),
                                     }
 
-                                    sha_checker::write(mod_files[i].clone(), mod_file);
-                                    i += 1;
+                                    sha_checker::write(mod_file.file_path.clone(), mod_file_path);
                                 }
                                 
                                 match Launcher::launch_csb_editor(vec![file_name.chars().take(file_name.chars().count() - 4).collect::<String>()]) {
@@ -289,24 +275,21 @@ pub fn load_file_mods() {
             backup(&(key.chars().take(key.len() - 4).collect::<String>() + ".CPK"));
         }
 
-        patch_all(&key, &value.iter().map(|x| x.0.clone()).collect(), &value.iter().map(|x| x.1.clone()).collect(), Some(&bar));
-        // TODO: burn it with fire🔥🔥🔥🔥🔥🔥
-        mods_prev = mods_prev.iter().filter(|x | x.to_string() != key).map(|x| x.to_string()).collect();
+        patch_all(&key, value, Some(&bar));
+        mods_prev.retain(|x| x != &key);
     }
 
-    let mut i = 0;
-    while i < mods_prev.len() {
-        println!("Recovering {}...", mods_prev[i]);
-        reecover(&mods_prev[i]);
+    for mod_file in mods_prev {
+        println!("Recovering {}...", mod_file);
+        recover(&mod_file);
         //Some CSB files may have CPK archive
-        if mods_prev[i].ends_with(".csb") || mods_prev[i].ends_with(".CSB") {
-            let mods_prev_path = mods_prev[i].chars().take(mods_prev[i].chars().count() - 4).collect::<String>();
-            reecover(&format!("{}.CPK", mods_prev_path));
-            sha_checker::remove(mods_prev_path);
+        if mod_file.ends_with(".csb") || mod_file.ends_with(".CSB") {
+            let mods_prev_path = mod_file.chars().take(mod_file.chars().count() - 4).collect::<String>();
+            recover(&format!("{}.CPK", mods_prev_path));
+            sha_checker::remove(&mods_prev_path);
         } else {
-            sha_checker::remove(mods_prev[i].clone());
+            sha_checker::remove(&mod_file);
         }
-        i += 1;
     }
     
     fs::write("mods/mods_prev", modified_files.join("\n")).unwrap();

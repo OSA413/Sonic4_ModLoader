@@ -2,11 +2,13 @@ use std::{fs, path::{Path, PathBuf}};
 use glob::glob;
 use sha1::{Digest, Sha1};
 
+use crate::mod_management::ModFile;
+
 pub fn get(data: impl AsRef<[u8]>) -> String {
     Sha1::digest(data).iter().map(|x| format!("{:02x}", x)).collect()
 }
 
-pub fn remove(file_name: String)
+pub fn remove(file_name: &String)
 {
     let orig_file_sha_root = Path::new("mods_sha").join(file_name);
 
@@ -15,15 +17,13 @@ pub fn remove(file_name: String)
     }
 }
 
-pub fn is_changed(do_sha_check: bool, file_name: &String, mod_files: &Vec<String>, mod_paths: &Vec<String>) -> bool {
+pub fn is_changed(do_sha_check: bool, file_name: &String, mod_files: &Vec<ModFile>) -> bool {
     if !do_sha_check {
         return true;
     }
 
     let mut files_changed = false;
-
     let mut sha_list = Vec::<String>::new();
-
     let orig_file_sha_root = Path::new("mods_sha").join(file_name);
 
     if orig_file_sha_root.is_dir() {
@@ -41,15 +41,13 @@ pub fn is_changed(do_sha_check: bool, file_name: &String, mod_files: &Vec<String
         }
     }
 
-    //Checking SHA1s
-    let mut i = 0;
-    while i < mod_files.len() {
+    for mod_file in mod_files {
         if files_changed { 
             break;
         }
 
-        let mod_file_full = Path::new("mods").join(mod_paths[i].clone()).join(mod_files[i].clone());
-        let mod_file_sha = Path::new("mods_sha").join(mod_files[i].clone() + ".txt");
+        let mod_file_full = Path::new("mods").join(mod_file.mod_folder.clone()).join(mod_file.file_path.clone());
+        let mod_file_sha = Path::new("mods_sha").join(mod_file.file_path.clone() + ".txt");
 
         match sha_list.iter().position(|x| x.to_string() == mod_file_sha.display().to_string()) {
             Some(index) => sha_list.remove(index),
@@ -67,7 +65,6 @@ pub fn is_changed(do_sha_check: bool, file_name: &String, mod_files: &Vec<String
         } else {
             files_changed = true;
         }
-        i += 1;
     }
 
     //Checking if there're removed files

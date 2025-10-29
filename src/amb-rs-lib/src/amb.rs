@@ -221,14 +221,14 @@ impl Amb {
         match self.objects.iter().position(|x| x.name == internal_name) {
             Some(internal_index) => {
                 let existing_object = &self.objects[internal_index];                
-                self.replace(BinaryObject { 
+                self.objects[internal_index] = BinaryObject {
                     name: existing_object.name.clone(),
                     real_name: existing_object.real_name.clone(),
                     flag1: existing_object.flag1,
                     flag2: existing_object.flag2,
                     pointer: existing_object.pointer,
-                    data: binary_object.data.clone(),
-                }, internal_index);
+                    data: binary_object.data,
+                };
                 return;
             },
             None => (),
@@ -258,15 +258,6 @@ impl Amb {
                 data: binary_object.data,
             }),
         }
-    }
-
-    pub fn replace(&mut self, mut bo: BinaryObject, target_index: usize) {
-        let prev = &self.objects[target_index];
-        bo.real_name = prev.real_name.clone();
-        bo.flag1 = prev.flag1;
-        bo.flag2 = prev.flag2;
-        self.objects.remove(target_index);
-        self.objects.insert(target_index, bo.try_into().expect("That one bad thing happened that you thought would not happen #5"));
     }
 
     pub fn make_name_safe(raw_name: &String) -> String {

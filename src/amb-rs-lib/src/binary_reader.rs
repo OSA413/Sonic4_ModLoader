@@ -8,7 +8,7 @@ pub fn read_string32(source: &Vec<u8>, pointer: usize) -> String {
     // Isn't it cool that you can do that in Rust?
     let mut pointer = pointer;
 
-    while source[pointer] != 0x00 || result.len() > 31 {
+    while source[pointer] != 0x00 || result.len() >= 31 {
         result.push(source[pointer] as char);
         pointer += 1;
     }
