@@ -12,6 +12,7 @@ license = "MIT"
 
 [dependencies]
 common = { path = "../common" }
+amb-rs-lib = { path = "../amb-rs-lib" }
 glob = "0.3.3"
 sha1 = "0.10.6"
 indicatif = "0.18.2"
