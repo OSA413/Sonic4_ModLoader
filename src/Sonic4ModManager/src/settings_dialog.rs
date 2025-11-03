@@ -1,4 +1,4 @@
-use std::{fs, path::Path};
+use std::fs;
 
 use adw::subclass::prelude::*;
 use common::{Launcher, settings::{amb_patcher::AMBPatcherConfig, csb_editor::CSBEditorConfig, file_patcher::FilePatcherConfig}};
@@ -194,10 +194,13 @@ impl SettingsWindow {
 
     fn load_settings(&self) {
         let amb_patcher_config = common::settings::amb_patcher::load();
+        let file_patcher = common::settings::file_patcher::load();
         let csb_editor_config = common::settings::csb_editor::load();
 
         self.imp().checkbutton_progress_bar.set_active(amb_patcher_config.progress_bar);
         self.imp().checkbutton_check_sha_of_files.set_active(amb_patcher_config.sha_check);
+
+        self.imp().checkbutton_use_amb_rs_instead.set_active(file_patcher.use_amb_rs_instead);
 
         self.imp().entry_buffer_size.set_text(csb_editor_config.buffer_size.to_string().as_str());
         self.imp().checkbutton_enable_threading.set_active(csb_editor_config.enable_threading);

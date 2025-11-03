@@ -156,7 +156,7 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkCheckButton" id="checkbutton_check_sha_of_files">
+                          <object class="GtkCheckButton" id="checkbutton_use_amb_rs_instead">
                             <property name="label">Use amb-rs instead (WiP)</property>
                           </object>
                         </child>
