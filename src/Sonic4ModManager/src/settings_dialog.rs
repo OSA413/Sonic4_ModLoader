@@ -1,7 +1,7 @@
 use std::{fs, path::Path};
 
 use adw::subclass::prelude::*;
-use common::{settings::{amb_patcher::AMBPatcherConfig, csb_editor::CSBEditorConfig}, Launcher};
+use common::{Launcher, settings::{amb_patcher::AMBPatcherConfig, csb_editor::CSBEditorConfig, file_patcher::FilePatcherConfig}};
 use gtk::{gio::{self, prelude::ActionMapExtManual}, glib::{self, clone}, prelude::{ButtonExt, CheckButtonExt, EditableExt, GtkWindowExt, WidgetExt}};
 
 use crate::installation::{self, get_installation_status, InstallationStatus, UninstallationOptions};
@@ -205,12 +205,9 @@ impl SettingsWindow {
     }
 
     fn recover_files(&self) {
-        match Path::new("AMBPatcher.exe").exists() {
-            true => {
-                match Launcher::launch_amb_patcher(vec!["recover".to_string()]) {
-                    Ok(_) => println!("Recovered files with AMBPatcher"),
-                    Err(e) => println!("Error recovering files: {}", e)
-                }
+        match Launcher::launch_file_patcher(vec!["recover".to_string()]) {
+            Ok(_) => {
+                println!("Recovered files with Sonic4FilePatcher");
                 match fs::remove_file("mods/mods_prev") {
                     Ok(_) => println!("Removed mods_prev"),
                     Err(e) => println!("Error removing mods_prev: {}", e)
@@ -220,8 +217,8 @@ impl SettingsWindow {
                     Err(e) => println!("Error removing mods_sha: {}", e)
                 }
             },
-            false => println!("AMBPatcher.exe not found"),
-        };
+            Err(e) => println!("Error recovering files: {}", e)
+        }
     }
 
     fn save(&self) {
@@ -237,6 +234,16 @@ impl SettingsWindow {
 
         match result {
             Ok(_) => can_close = true,
+            Err(e) => println!("Error saving settings: {}", e)
+        }
+
+        let file_patcher_use_amb_rs = self.imp().checkbutton_use_amb_rs_instead.is_active();
+        let result = common::settings::file_patcher::save(&FilePatcherConfig {
+            use_amb_rs_instead: file_patcher_use_amb_rs,
+        });
+
+        match result {
+            Ok(_) => can_close = can_close && true,
             Err(e) => println!("Error saving settings: {}", e)
         }
 

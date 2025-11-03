@@ -92,6 +92,10 @@ impl Launcher {
     pub fn launch_amb_rs(args: Vec<String>) -> Result<Child, io::Error> {
         Command::new("amb-rs").args(args).spawn()
     }
+    
+    pub fn launch_file_patcher(args: Vec<String>) -> Result<Child, io::Error> {
+        Command::new("Sonic4FilePatcher").args(args).spawn()
+    }
 
     pub fn launch_ocmi(args: Vec<String>) -> Result<Child, io::Error> {
         Command::new("OneClickModInstaller.exe").args(args).spawn()
