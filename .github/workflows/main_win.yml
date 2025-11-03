@@ -37,7 +37,9 @@ jobs:
       - uses: actions/cache@v4
         id: cache-gtk
         with:
-          path: C:/gtk-build/gtk/x64/release
+          path: |
+            C:/gtk-build/gtk/x64/release
+            C:/gtk-build/src
           key: ${{ runner.os }}-gtk-build-binaries-${{ steps.gtk-build-moment-stamp.outputs.stamp }}
 
       - run: py -3.13 -m pip install --user pipx
@@ -74,7 +76,12 @@ jobs:
 
       - name: Pack
         run: bash pack_win.sh
-        
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gtk-build-src
+          path: C:/gtk-build/src
+
       - uses: actions/upload-artifact@v4
         with:
           name: Sonic4ModLoader_win
