@@ -4,12 +4,6 @@ pub fn get_text() -> &'static str {
         https://github.com/OSA413/Sonic4_ModLoader
 
 Usage:
-    `amb-rs`
-        If \"mods\" directory exists, patch all files used by enabled mods, else show this help message.
-
-    `amb-rs recover`
-        Recover original files that were changed by enabled mods.
-
     `amb-rs add <target_file> <file_to_add> [internal_file_name]`
         Add file to AMB file with internal file name.
         If internal file name is not specified, determine it from path to file.
@@ -50,6 +44,7 @@ Usage:
         Needs target AMB file to exist near the directory.
         Via GUI, you can drag&drop AMB file on amb-rs executable to recreate it.
 
+    `amb-rs` and
     `amb-rs -h` and
     `amb-rs --help`
         Show this help message."

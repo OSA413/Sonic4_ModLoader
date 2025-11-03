@@ -2,7 +2,6 @@ use std::{collections::HashMap, fs, path::{Path, PathBuf}};
 
 use common::Launcher;
 use glob::glob;
-use amb_rs_lib::{amb::Amb, amb_management};
 use crate::{help, sha_checker};
 use indicatif::ProgressBar;
 
@@ -179,25 +178,22 @@ pub fn patch_all(file_name: &String, mod_files: Vec<ModFile>, bar: Option<&Progr
                     return;
                 }
 
-                let mut amb = Amb::new_from_file_name(&match Path::new(&format!("{}.bkp", file_name)).is_file() {
-                    true => format!("{}.bkp", file_name),
-                    false => file_name.to_string(),
-                }).expect("I'm runnning out of error messages");
-                amb.amb_path = file_name.to_string();
-
                 for mod_file in mod_files {
                     let mod_file_full = Path::new("mods").join(mod_file.mod_folder.clone()).join(mod_file.file_path.clone());
                     match bar {
                         Some(bar) => bar.inc(1),
                         None => (),
                     }
-                    amb_management::add::file::add_file_to_amb(&mut amb, &mod_file_full, None).unwrap();
-                    sha_checker::write(mod_file.file_path.clone(), mod_file_full);
-                }
+                    match common::Launcher::launch_amb_rs(vec!["add".to_string(), file_name.to_string(), mod_file_full.display().to_string()]) {
+                        Ok(mut child) => {
+                            match child.wait() {
+                                Ok(_) => sha_checker::write(mod_file.file_path.clone(), mod_file_full),
+                                Err(e) => println!("Error: {}", e),
+                            }
+                        },
+                        Err(e) => println!("Error: {}", e),
+                    }
 
-                match fs::write(file_name, amb.write()) {
-                    Ok(_) => {},
-                    Err(e) => println!("Error writing AMB file: {e}"),
                 }
             }
         }
@@ -248,6 +244,23 @@ pub fn patch_all(file_name: &String, mod_files: Vec<ModFile>, bar: Option<&Progr
 pub fn load_file_mods() {
     if !Path::new("mods/mods.ini").is_file() {
         help::print();
+        return;
+    }
+
+    let file_patcher_config = common::settings::file_pathcer::load();
+    if file_patcher_config.use_amb_rs_instead {
+        println!("Using amb-rs instead of AMBPathcer");
+    } else {
+        println!("Using AMBPathcer...");
+        match common::Launcher::launch_amb_patcher(vec![]) {
+            Ok(mut child) => {
+                match child.wait() {
+                    Ok(_) => println!("AMBPatcher finished"),
+                    Err(e) => println!("Error waiting for AMBPatcher: {e}"),
+                }
+            },
+            Err(e) => println!("Error launching AMBPatcher: {e}"),
+        }
         return;
     }
 

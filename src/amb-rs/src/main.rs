@@ -2,8 +2,6 @@ use std::{env, ops, path::Path};
 use amb_rs_lib::amb_management;
 
 mod help;
-mod mod_management;
-mod sha_checker;
 
 fn main() -> () {
     let mut args = env::args().skip(1);
@@ -12,7 +10,6 @@ fn main() -> () {
             match &arg[ops::RangeFull] {
                 "--help" | "-h" => help::print(),
                 "--version" | "-v" => println!("amb-rs version: {}", common::global::VERSION),
-                "recover" => mod_management::full_recover_of_files(),
                 "add" => {
                     match args.next() {
                         Some(target_file) => {
@@ -85,6 +82,6 @@ Or: add <target_file> <dir_of_files_to_add>"),
                 },
             }
         },
-        None => mod_management::load_file_mods(),
+        None => help::print(),
     };
 }

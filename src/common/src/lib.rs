@@ -9,6 +9,7 @@ pub mod settings {
     pub mod amb_patcher;
     pub mod alice_mod_loader;
     pub mod csb_editor;
+    pub mod file_pathcer;
     pub mod mod_manager;
 }
 pub mod mod_logic {

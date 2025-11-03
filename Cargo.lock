@@ -26,6 +26,10 @@ dependencies = [
 name = "Sonic4FilePatcher"
 version = "1.0.0"
 dependencies = [
+ "common",
+ "glob",
+ "indicatif",
+ "sha1",
  "winresource",
 ]
 
@@ -56,9 +60,6 @@ version = "1.0.0"
 dependencies = [
  "amb-rs-lib",
  "common",
- "glob",
- "indicatif",
- "sha1",
 ]
 
 [[package]]

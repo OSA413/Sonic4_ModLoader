@@ -1,13 +1,20 @@
-fn main() -> () {
-    let program = "AMBPatcher.exe";
+use std::{env, ops};
 
-    println!("Launching {}...", program);
-    let process = std::process::Command::new(program).args(std::env::args().skip(1)).spawn();
-    match process {
-        Ok(_) => (),
-        Err(e) => {
-            println!("Error launching the program: {}", e);
-            std::thread::sleep(std::time::Duration::from_millis(10_000));
+mod help;
+mod mod_management;
+mod sha_checker;
+
+fn main() -> () {
+    let mut args = env::args().skip(1);
+    match args.next() {
+        Some(arg) => {
+            match &arg[ops::RangeFull] {
+                "--help" | "-h" => help::print(),
+                "--version" | "-v" => println!("Sonic4FilePatcher version: {}", common::global::VERSION),
+                "recover" => mod_management::full_recover_of_files(),
+                _ => help::print(),
+            }
         },
-    }
+        None => mod_management::load_file_mods(),
+    };
 }
