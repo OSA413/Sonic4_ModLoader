@@ -46,7 +46,7 @@ jobs:
         if: ${{ steps.cache-gtk.outputs.cache-hit != 'true' }}
       - run: py -3.13 -m pipx ensurepath
         if: ${{ steps.cache-gtk.outputs.cache-hit != 'true' }}
-      - run: pipx install gvsbuild
+      - run: pipx install gvsbuild==2025.9.0
         if: ${{ steps.cache-gtk.outputs.cache-hit != 'true' }}
       - run: gvsbuild build gtk4 libadwaita librsvg
         if: ${{ steps.cache-gtk.outputs.cache-hit != 'true' }}
