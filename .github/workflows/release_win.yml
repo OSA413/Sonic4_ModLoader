@@ -90,6 +90,12 @@ jobs:
           name: AMBPatcher
           path: dist/Sonic4ModLoader/AMBPatcher.exe
 
+      - uses: thedoctor0/zip-release@0.7.5
+        with:
+          type: 'zip'
+          filename: 'gtk-src-win.zip'
+          directory: C:/gtk-build/src
+
       - uses: softprops/action-gh-release@v2
         if: github.ref_type == 'tag'
         with:
@@ -97,12 +103,9 @@ jobs:
             dist/Sonic4ModLoader/AMBPatcher.exe
             dist/SHA256SUMS_win
             dist/Sonic4ModLoader_win.zip
+            gtk-src-win.zip
 
-      - uses: thedoctor0/zip-release@0.7.5
-        with:
-          type: 'zip'
-          filename: 'gtk-src.zip'
-          directory: C:/gtk-build/src
+
 
   tests:
     runs-on: windows-2022
