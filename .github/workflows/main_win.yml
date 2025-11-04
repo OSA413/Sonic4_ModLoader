@@ -79,7 +79,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: gtk-build-src
+          name: gtk-src
           path: C:/gtk-build/src
 
       - uses: actions/upload-artifact@v4
@@ -102,6 +102,11 @@ jobs:
           name: amb-rs-win
           path: dist/Sonic4ModLoader/amb-rs.exe
 
+      - uses: thedoctor0/zip-release@0.7.5
+        with:
+          type: 'zip'
+          filename: 'gtk-src.zip'
+          directory: C:/gtk-build/src
 
   tests:
     runs-on: ubuntu-latest
