@@ -103,7 +103,7 @@ jobs:
             dist/Sonic4ModLoader/AMBPatcher.exe
             dist/SHA256SUMS_win
             dist/Sonic4ModLoader_win.zip
-            gtk-src-win.zip
+            C:/gtk-build/src/gtk-src-win.zip
 
 
 
