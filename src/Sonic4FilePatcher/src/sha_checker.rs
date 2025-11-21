@@ -1,5 +1,4 @@
-use std::{fs, path::{Path, PathBuf}};
-use glob::glob;
+use std::{ffi::OsStr, fs, path::{Path, PathBuf}};
 use sha1::{Digest, Sha1};
 
 use crate::mod_management::ModFile;
@@ -23,23 +22,8 @@ pub fn is_changed(do_sha_check: bool, file_name: &String, mod_files: &Vec<ModFil
     }
 
     let mut files_changed = false;
-    let mut sha_list = Vec::<String>::new();
     let orig_file_sha_root = Path::new("mods_sha").join(file_name);
-
-    if orig_file_sha_root.is_dir() {
-        let glob_result = glob(&(orig_file_sha_root.display().to_string() + "/**/*.txt"));
-        match glob_result {
-            Ok(glob_result) => {
-                for entry in glob_result {
-                    match entry {
-                        Ok(path) => sha_list.push(path.display().to_string()),
-                        Err(e) => println!("Glob error: {e}"),
-                    }
-                }
-            },
-            Err(e) => println!("Error: {e}"),
-        }
-    }
+    let mut sha_list = common::walk_dir::walk_dir(&orig_file_sha_root, Some(OsStr::new("txt")));
 
     for mod_file in mod_files {
         if files_changed { 
@@ -49,7 +33,7 @@ pub fn is_changed(do_sha_check: bool, file_name: &String, mod_files: &Vec<ModFil
         let mod_file_full = Path::new("mods").join(mod_file.mod_folder.clone()).join(mod_file.file_path.clone());
         let mod_file_sha = Path::new("mods_sha").join(mod_file.file_path.clone() + ".txt");
 
-        match sha_list.iter().position(|x| x.to_string() == mod_file_sha.display().to_string()) {
+        match sha_list.iter().position(|x| x == &mod_file_sha) {
             Some(index) => sha_list.remove(index),
             None => {
                 files_changed = true;

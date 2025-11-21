@@ -17,3 +17,4 @@ pub mod mod_logic {
     pub mod existing_mod;
     pub mod mod_entry;
 }
+pub mod walk_dir;

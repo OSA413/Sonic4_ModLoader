@@ -1,23 +1,8 @@
-use std::{fs, path::{Path, PathBuf}};
-use glob::glob;
+use std::{fs, path::Path};
 use crate::{amb::Amb, amb_management};
 
 pub fn add_dir_of_files_to_amb(amb: &mut Amb, dir_to_add: &Path) -> usize {
-    let mut files_chain: Vec<PathBuf> = vec![];
-    let files = glob(&format!("{}/**/*.*", dir_to_add.display().to_string()));
-    match files {
-        Ok(files) => {
-            for entry in files {
-                match entry {
-                    Ok(path) => {
-                        files_chain.push(path);
-                    },
-                    Err(e) => println!("Glob error: {}", e),
-                }
-            }
-        },
-        Err(e) => println!("Error reading directory: {}", e),
-    }
+    let mut files_chain = common::walk_dir::walk_dir(dir_to_add, None);
 
     files_chain.sort();
 

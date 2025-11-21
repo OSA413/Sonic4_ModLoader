@@ -2,7 +2,6 @@ use std::{collections::HashMap, fs, path::{Path, PathBuf}};
 
 use amb_rs_lib::{amb::Amb, amb_management};
 use common::Launcher;
-use glob::glob;
 use crate::{help, sha_checker};
 use indicatif::ProgressBar;
 
@@ -59,36 +58,20 @@ fn get_mod_files() -> HashMap<String, Vec<ModFile>> {
             continue;
         }
 
-        let filenames = glob(&format!("mods/{}/**/*.*", mmod.path));
-        let mut paths = Vec::new();
-        match filenames {
-            Ok(filenames) => {
-                for entry in filenames {
-                    match entry {
-                        Ok(path) => {
-                            // glob returns all entries, even if it's a folder that contains files
-                            if path.is_dir() {
-                                continue;
-                            }
-                            paths.push(path);
-                        },
-                        Err(e) => println!("Glob error: {}", e),
-                    }
-                }
-            },
-            Err(e) => println!("Error: {e}"),
-        }
-
-        paths.sort_by(|a, b| a.display().to_string().cmp(&b.display().to_string()));
-        // Needs confirmation
-        // // We have to replicate .Net default sort to not break some mods that rely on file addition order
-        // // For example, SSON_DRAG.ZNM must come after SSON_DRAG_L.ZNM keeping overal file order the same
-        // // TODO: optimize
-        // // paths.sort_by(
-        // //     |a, b| 
-        // //         a.display().to_string().replace("_", ".")
-        // //             .cmp(&b.display().to_string().replace("_", "."))
-        // // );
+        let paths = {
+            let mut paths = common::walk_dir::walk_dir(&Path::new("mods").join(mmod.path.clone()), None);
+            paths.sort_by(|a, b| a.display().to_string().cmp(&b.display().to_string()));
+            // Needs confirmation
+            // // We have to replicate .Net default sort to not break some mods that rely on file addition order
+            // // For example, SSON_DRAG.ZNM must come after SSON_DRAG_L.ZNM keeping overal file order the same
+            // // TODO: optimize
+            // // paths.sort_by(
+            // //     |a, b| 
+            // //         a.display().to_string().replace("_", ".")
+            // //             .cmp(&b.display().to_string().replace("_", "."))
+            // // );
+            paths
+        };
 
         for path in paths {
             //Getting "folder/file" from "mods/mod/folder/file/mod_file"
