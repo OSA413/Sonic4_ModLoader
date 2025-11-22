@@ -236,7 +236,7 @@ pub fn load_file_mods() {
 
     let file_patcher_config = common::settings::file_patcher::load();
     if file_patcher_config.use_amb_rs_instead {
-        println!("Using amb-rs instead of AMBPathcer");
+        println!("Using amb-rs...");
     } else {
         println!("Using AMBPathcer...");
         match common::Launcher::launch_amb_patcher(vec![]) {
