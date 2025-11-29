@@ -3,7 +3,7 @@ pub enum Endianness {
     Big,
 }
 
-pub fn read_string32(source: &Vec<u8>, pointer: usize) -> String {
+pub fn read_string32(source: &[u8], pointer: usize) -> String {
     let mut result = String::new();
     // Isn't it cool that you can do that in Rust?
     let mut pointer = pointer;
@@ -16,7 +16,7 @@ pub fn read_string32(source: &Vec<u8>, pointer: usize) -> String {
     result
 }
 
-pub fn read_u32(source: &Vec<u8>, pointer: usize, endianness: &Option<Endianness>) -> Result<u32, &'static str> {
+pub fn read_u32(source: &[u8], pointer: usize, endianness: &Option<Endianness>) -> Result<u32, &'static str> {
     // This approach won't eat up the RAM and should be safe and fast
     // And is using Rust's built in conversion to type from binary
     if source.len() < pointer + size_of::<u32>() {

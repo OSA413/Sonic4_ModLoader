@@ -20,7 +20,7 @@ impl BinaryObject {
     }
 
     pub fn new_from_src_ptr_len(
-        source: &Vec<u8>,
+        source: &[u8],
         pointer: usize,
         length: usize
     ) -> Self {

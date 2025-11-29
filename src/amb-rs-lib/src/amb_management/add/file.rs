@@ -1,7 +1,7 @@
 use std::{path::Path};
 use crate::{amb::Amb, binary_object::BinaryObject};
 
-pub fn add_vec_u8_to_amb(amb: &mut Amb, file_name: &String, file_data: &Vec<u8>, new_name: Option<String>) {
+pub fn add_vec_u8_to_amb(amb: &mut Amb, file_name: &str, file_data: &[u8], new_name: Option<String>) {
     let new_obj = BinaryObject::new_from_src_ptr_len(file_data, 0, file_data.len());
     let internal_name = new_name.unwrap_or(Amb::get_relative_name(amb.amb_path.clone(), file_name.replace("_extracted", ""))).replace('/', "\\");
     amb.add_binary_object(new_obj, internal_name);

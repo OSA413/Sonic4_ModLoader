@@ -45,7 +45,7 @@ impl Amb {
         }
     }
 
-    pub fn is_source_amb(source: &Vec<u8>, ptr: Option<usize>) -> bool {
+    pub fn is_source_amb(source: &[u8], ptr: Option<usize>) -> bool {
         let ptr = ptr.unwrap_or(0);
         source.len() - ptr >= 0x20
             && source[ptr] == b'#'
@@ -54,7 +54,7 @@ impl Amb {
             && source[ptr + 3] == b'B'
     }
 
-    pub fn get_version(source: &Vec<u8>, ptr: Option<usize>) -> (Version, Option<Endianness>) {
+    pub fn get_version(source: &[u8], ptr: Option<usize>) -> (Version, Option<Endianness>) {
         let ptr = ptr.unwrap_or(0);
         match binary_reader::read_u32(source, ptr + 0x4, &None).unwrap() {
             0x20 => (Version::PC, Some(Endianness::Little)),
@@ -88,7 +88,7 @@ impl Amb {
     }
 
     pub fn new_from_src_ptr_name(
-        source: &Vec<u8>,
+        source: &[u8],
         ptr: Option<usize>,
         name: &String
     ) -> Self {
@@ -257,7 +257,7 @@ impl Amb {
         }
     }
 
-    pub fn make_name_safe(raw_name: &String) -> String {
+    pub fn make_name_safe(raw_name: &str) -> String {
         //removing ".\" in the names (Windows can't create "." folders)
         //sometimes they can have several ".\" in the names
         //Turns out there's a double dot directory in file names

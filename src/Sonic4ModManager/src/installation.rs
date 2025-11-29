@@ -204,7 +204,7 @@ pub fn uninstall(options: UninstallationOptions) {
     if options.delete_all_mod_loader_files {
         for file in installation_order {
             if file.modloader_file && Path::new(&file.orig_name).exists()
-                && (!options.keep_configs || !(options.keep_configs && (file.orig_name.ends_with(".cfg") || file.orig_name.ends_with(".config")))) {
+                && (!options.keep_configs || !file.orig_name.ends_with(".cfg") && !file.orig_name.ends_with(".config")) {
                     if Path::new(&file.orig_name).is_file() {
                         match fs::remove_file(&file.orig_name) {
                             Ok(_) => println!("Removed file [{}]", file.orig_name),

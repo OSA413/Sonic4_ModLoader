@@ -249,8 +249,11 @@ impl SettingsWindow {
         });
 
         match result {
-            Ok(_) => can_close = can_close && true,
-            Err(e) => println!("Error saving settings: {e}")
+            Ok(_) => (),
+            Err(e) => {
+                println!("Error saving settings: {e}");
+                can_close = false;
+            }
         }
 
         let current_or_default_config_csb_editor = common::settings::csb_editor::load();
