@@ -64,10 +64,10 @@ impl GModEntry {
         Self::new(
             mod_entry.path.as_str(),
             mod_entry.enabled,
-            mod_entry.title.as_ref().map(|s| s.as_str()),
-            mod_entry.authors.as_ref().map(|s| s.as_str()),
-            mod_entry.version.as_ref().map(|s| s.as_str()),
-            mod_entry.description.as_ref().map(|s| s.as_str()),
+            mod_entry.title.as_deref(),
+            mod_entry.authors.as_deref(),
+            mod_entry.version.as_deref(),
+            mod_entry.description.as_deref(),
         )
     }
 }

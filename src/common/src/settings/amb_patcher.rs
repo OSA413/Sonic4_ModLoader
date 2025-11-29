@@ -21,14 +21,14 @@ pub fn load() -> AMBPatcherConfig {
                     let sha_check = section
                         .get("sha_check")
                         .unwrap_or("1");
-                    return AMBPatcherConfig { progress_bar: progress_bar == "1", sha_check: sha_check == "1" };
+                    AMBPatcherConfig { progress_bar: progress_bar == "1", sha_check: sha_check == "1" }
                 },
-                None => return default_settings
+                None => default_settings
             }
         },
         Err(e) => {
-            println!("Error loading AMBPatcher.cfg: {}", e);
-            return default_settings
+            println!("Error loading AMBPatcher.cfg: {e}");
+            default_settings
         }
     }
 }

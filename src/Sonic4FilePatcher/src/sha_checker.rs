@@ -4,7 +4,7 @@ use sha1::{Digest, Sha1};
 use crate::mod_management::ModFile;
 
 pub fn get(data: impl AsRef<[u8]>) -> String {
-    Sha1::digest(data).iter().map(|x| format!("{:02x}", x)).collect()
+    Sha1::digest(data).iter().map(|x| format!("{x:02x}")).collect()
 }
 
 pub fn remove(file_name: &String)
@@ -53,7 +53,7 @@ pub fn is_changed(do_sha_check: bool, file_name: &String, mod_files: &Vec<ModFil
 
     //Checking if there're removed files
     //And removing those SHAs
-    if sha_list.len() > 0
+    if !sha_list.is_empty()
     {
         files_changed = true;
 
@@ -62,7 +62,7 @@ pub fn is_changed(do_sha_check: bool, file_name: &String, mod_files: &Vec<ModFil
         }
     }
 
-    return files_changed;
+    files_changed
 }
 
 pub fn write(relative_mod_file_path: String, full_mod_file_path: PathBuf) {

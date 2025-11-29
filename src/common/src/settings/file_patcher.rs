@@ -17,14 +17,14 @@ pub fn load() -> FilePatcherConfig {
                     let use_amb_rs_instead = section
                         .get("use_amb_rs_instead")
                         .unwrap_or("1");
-                    return FilePatcherConfig { use_amb_rs_instead: use_amb_rs_instead == "1" };
+                    FilePatcherConfig { use_amb_rs_instead: use_amb_rs_instead == "1" }
                 },
-                None => return default_settings
+                None => default_settings
             }
         },
         Err(e) => {
-            println!("Error loading AMBPatcher.cfg: {}", e);
-            return default_settings
+            println!("Error loading AMBPatcher.cfg: {e}");
+            default_settings
         }
     }
 }

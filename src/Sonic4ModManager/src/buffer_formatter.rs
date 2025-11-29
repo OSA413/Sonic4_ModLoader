@@ -1,9 +1,9 @@
 use gtk::{pango, prelude::{TextBufferExt, TextTagExt}, TextSearchFlags};
 
 pub fn format_buffer(text: String) -> gtk::TextBuffer {
-    let formatting_markers = vec!["b", "i", "u", "strike"];
-    let alignment_markers = vec!["l", "c", "r", "f"];
-    let special_chars = vec![("\\n", "\n"), ("\\t", "\t"), ("\n* ", "\n • ")];
+    let formatting_markers = ["b", "i", "u", "strike"];
+    let alignment_markers = ["l", "c", "r", "f"];
+    let special_chars = [("\\n", "\n"), ("\\t", "\t"), ("\n* ", "\n • ")];
 
     let mut text = text.clone();
 
@@ -57,10 +57,10 @@ pub fn format_buffer(text: String) -> gtk::TextBuffer {
     let mut search_position = buffer.start_iter();
     for marker in formatting_markers.iter() {
         while !search_position.is_end() {
-            match search_position.forward_search(format!("[{}]", marker).as_str(), TextSearchFlags::empty(), None) {
+            match search_position.forward_search(format!("[{marker}]").as_str(), TextSearchFlags::empty(), None) {
                 Some(mut tag_start) => {
                     buffer.delete(&mut tag_start.0, &mut tag_start.1);
-                    match tag_start.1.forward_search(format!("[\\{}]", marker).as_str(), TextSearchFlags::empty(), None) {
+                    match tag_start.1.forward_search(format!("[\\{marker}]").as_str(), TextSearchFlags::empty(), None) {
                         Some(mut tag_end) => {
                             buffer.apply_tag_by_name(marker, &tag_start.0, &tag_end.0);
                             buffer.delete(&mut tag_end.0, &mut tag_end.1);
@@ -77,7 +77,7 @@ pub fn format_buffer(text: String) -> gtk::TextBuffer {
 
     for marker in alignment_markers.iter() {
         while !search_position.is_end() {
-            let tag_start = search_position.forward_search(format!("[{}]", marker).as_str(), TextSearchFlags::empty(), None);
+            let tag_start = search_position.forward_search(format!("[{marker}]").as_str(), TextSearchFlags::empty(), None);
             match tag_start {
                 Some(mut tag_start) => {
                     buffer.delete(&mut tag_start.0, &mut tag_start.1);

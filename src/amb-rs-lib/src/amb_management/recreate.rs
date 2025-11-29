@@ -7,17 +7,17 @@ pub fn recreate_amb(file: String, save_as_file_name: Option<String>) {
         Ok(amb) => {
             match fs::write(save_as_file_name.unwrap_or(file), amb.write()) {
                 Ok(_) => (),
-                Err(e) => println!("Error: {}", e),
+                Err(e) => println!("Error: {e}"),
             }
         },
-        Err(e) => println!("Error: {}", e),
+        Err(e) => println!("Error: {e}"),
     };
 }
 
 pub fn recreate_amb_from_dir(dir: String) {
     let dir_path = Path::new(&dir);
     if !dir_path.is_dir() {
-        println!("Error: {:?} is not a directory", dir);
+        println!("Error: {dir:?} is not a directory");
         return;
     }
 
@@ -43,5 +43,5 @@ pub fn recreate_amb_from_dir(dir: String) {
         result
     };
 
-    amb_management::add::directory::add_dir_to_amb_from_dir_path(&amb_file_path, &dir_path);
+    amb_management::add::directory::add_dir_to_amb_from_dir_path(&amb_file_path, dir_path);
 }

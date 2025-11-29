@@ -43,7 +43,7 @@ impl Launcher {
             return Game::Episode2;
         }
 
-        return Game::Unknown;
+        Game::Unknown
     }
 
     pub fn get_current_game() -> Game {
@@ -54,7 +54,7 @@ impl Launcher {
         let game = Launcher::get_current_game();
         let current_dir = env::current_dir().unwrap();
         match game {
-            Game::Unknown => Err(io::Error::new(io::ErrorKind::Other, "Game not found")),
+            Game::Unknown => Err(io::Error::other("Game not found")),
             Game::Episode1 => {
                 if Path::new("main.conf").exists() {
                     Command::new(current_dir.join("Sonic_vis.exe")).spawn()
@@ -70,7 +70,7 @@ impl Launcher {
         let game = Launcher::get_current_game();
         let current_dir = env::current_dir().unwrap();
         match game {
-            Game::Unknown => Err(io::Error::new(io::ErrorKind::Other, "Game not found")),
+            Game::Unknown => Err(io::Error::other("Game not found")),
             Game::Episode1 => Command::new(current_dir.join("SonicLauncher.orig.exe")).spawn(),
             Game::Episode2 => Command::new(current_dir.join("Launcher.orig.exe")).spawn()
         }

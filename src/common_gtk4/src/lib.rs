@@ -1,6 +1,6 @@
 use gtk::glib;
 
-pub fn set_gsk_renderer_from_config() -> () {
+pub fn set_gsk_renderer_from_config() {
     println!("Trying to load GTK4 config...");
     let gtk4_config = common::config::config::GTKConfig::load_config();
     match gtk4_config {
@@ -10,7 +10,7 @@ pub fn set_gsk_renderer_from_config() -> () {
             glib::setenv("GSK_RENDERER", config.gsk_renderer, false).expect("Failed to set GSK_RENDERER");
         }
         Err(err) => {
-            println!("Error loading GTK4 config: {}", err);
+            println!("Error loading GTK4 config: {err}");
             println!("That's OK, continuing without GTK4 config");
         }
     }

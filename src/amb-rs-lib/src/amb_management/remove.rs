@@ -17,9 +17,9 @@ pub fn remove_object_from_file_and_write_to_file(target_file: String, object_nam
             remove_object_from_amb(&mut amb, object_name);
             match fs::write(target_file, amb.write()) {
                 Ok(_) => (),
-                Err(e) => println!("Error: {}", e),
+                Err(e) => println!("Error: {e}"),
             }
         },
-        Err(e) => println!("Error: {}", e),
+        Err(e) => println!("Error: {e}"),
     }
 }

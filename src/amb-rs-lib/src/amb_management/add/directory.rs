@@ -7,7 +7,7 @@ pub fn add_dir_of_files_to_amb(amb: &mut Amb, dir_to_add: &Path) -> usize {
     files_chain.sort();
 
     for file_path in &files_chain {
-        match amb_management::add::file::add_file_to_amb(amb, &file_path, None) {
+        match amb_management::add::file::add_file_to_amb(amb, file_path, None) {
             Ok(_) => (),
             Err(e) => println!("Error: {e}"),
         };
@@ -25,10 +25,10 @@ pub fn add_dir_to_amb_from_dir_path(target_file: &Path, dir_to_add: &Path) {
             } else {
                 match fs::write(&amb.amb_path, amb.write()) {
                     Ok(_) => (),
-                    Err(e) => println!("Error: {}", e),
+                    Err(e) => println!("Error: {e}"),
                 }
             }
         },
-        Err(e) => println!("Error reading AMB file: {}", e),
+        Err(e) => println!("Error reading AMB file: {e}"),
     }
 }

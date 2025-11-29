@@ -100,11 +100,11 @@ impl Sonic4ModManagerWindow {
     fn save_mods_ini(&self, mods: Vec<String>) {
         match fs::create_dir_all("mods") {
             Ok(_) => println!("Created [mods] directory"),
-            Err(e) => println!("Coudn't create directories, they probably already exist {}", e),
+            Err(e) => println!("Coudn't create directories, they probably already exist {e}"),
         };
         match fs::write("mods/mods.ini", mods.join("\n")) {
             Ok(_) => println!("Saved mods/mods.ini"),
-            Err(e) => println!("Coudn't save mods/mods.ini: {}", e),
+            Err(e) => println!("Coudn't save mods/mods.ini: {e}"),
         }
     }
 
@@ -113,39 +113,30 @@ impl Sonic4ModManagerWindow {
         let game_lauched = common::Launcher::launch_game();
         match game_lauched {
             Ok(_) => self.application().unwrap().quit(),
-            Err(e) => println!("{}", e),
+            Err(e) => println!("{e}"),
         }
     }
 
     fn get_selected_mod_index(&self) -> Option<u32> {
-        match self.imp().mod_list.selected_row() {
-            Some(row) => Some(row.index() as u32),
-            None => None,
-        }
+        self.imp().mod_list.selected_row().map(|row| row.index() as u32)
     }
 
     fn move_selected_mod(&self, offset: Offset) {
-        match self.get_selected_mod_index() {
-            Some(index) => {
-                let mod_to_move = self.imp().mod_store.get().item(index);
-                match mod_to_move {
-                    Some(mod_to_move) => {
-                        self.imp().mod_store.remove(index);
-                        let final_index = match offset {
-                            Offset::Top => 0,
-                            Offset::Up => match index {0 => 0, _ => index - 1},
-                            Offset::Down => cmp::min(index + 1, self.imp().mod_store.n_items()),
-                            Offset::Bottom => self.imp().mod_store.n_items(),
-                        };
+        if let Some(index) = self.get_selected_mod_index() {
+            let mod_to_move = self.imp().mod_store.get().item(index);
+            if let Some(mod_to_move) = mod_to_move {
+                self.imp().mod_store.remove(index);
+                let final_index = match offset {
+                    Offset::Top => 0,
+                    Offset::Up => match index {0 => 0, _ => index - 1},
+                    Offset::Down => cmp::min(index + 1, self.imp().mod_store.n_items()),
+                    Offset::Bottom => self.imp().mod_store.n_items(),
+                };
 
-                        let mod_folder = mod_to_move.downcast_ref::<GModEntry>().unwrap().path();
-                        self.imp().mod_store.insert(final_index , &mod_to_move);
-                        self.imp().selected_mod_index.replace(Some(mod_folder));
-                    }
-                    None => (),
-                }
+                let mod_folder = mod_to_move.downcast_ref::<GModEntry>().unwrap().path();
+                self.imp().mod_store.insert(final_index , &mod_to_move);
+                self.imp().selected_mod_index.replace(Some(mod_folder));
             }
-            None => (),
         }
     }
 
@@ -230,12 +221,12 @@ impl Sonic4ModManagerWindow {
         let version_string = match g_mod_entry.version() {
             Some(version) => {
                 match g_mod_entry.authors() {
-                    Some(authors) => format!("Version {} by {}", version, authors),
-                    None => format!("Version {}", version)
+                    Some(authors) => format!("Version {version} by {authors}"),
+                    None => format!("Version {version}")
                 }
             },
             None => match g_mod_entry.authors() {
-                Some(authors) => format!("by {}", authors),
+                Some(authors) => format!("by {authors}"),
                 None => "".to_string()
             },
         };
@@ -246,14 +237,14 @@ impl Sonic4ModManagerWindow {
             .build();
         row.add_prefix(&check_button);
 
-        let row = row.upcast::<gtk::Widget>();
+        
 
-        row
+        row.upcast::<gtk::Widget>()
     }
 
     fn refresh_mod_list(&self) {
         let mod_entries = ModEntry::load("./mods");
-        let g_mod_entries = mod_entries.iter().map(|x| GModEntry::from_mod_entry(x)).collect::<Vec<_>>();
+        let g_mod_entries = mod_entries.iter().map(GModEntry::from_mod_entry).collect::<Vec<_>>();
         self.imp().mod_store.remove_all();
         self.imp().mod_store.extend_from_slice(&g_mod_entries);
     }
@@ -261,11 +252,11 @@ impl Sonic4ModManagerWindow {
     fn open_mods_folder(&self) {
         match fs::create_dir_all("mods") {
             Ok(_) => println!("Created [mods] directory"),
-            Err(e) => println!("Coudn't create directories, they probably already exist {}", e),
+            Err(e) => println!("Coudn't create directories, they probably already exist {e}"),
         };
         match Launcher::open_mods_folder() {
             Ok(_) => println!("Opening mods directory..."),
-            Err(e) => println!("Coudn't open [mods] directory {}", e),
+            Err(e) => println!("Coudn't open [mods] directory {e}"),
         };
     }
 
@@ -320,7 +311,7 @@ You can install/uninstall and configure it through the settings menu at any time
                     Some(description) => {
                         if description.starts_with("file=") {
                             let description_file = description.replacen("file=", "", 1);
-                            let description_file = Path::new("mods").join(&g_mod_entry.path()).join(&description_file);
+                            let description_file = Path::new("mods").join(g_mod_entry.path()).join(&description_file);
                             fs::read_to_string(&description_file)
                                 .unwrap_or(format!("Description file {:?} not found.", &description_file).to_string())
                         } else {
@@ -358,13 +349,10 @@ You can install/uninstall and configure it through the settings menu at any time
         self.refresh_mod_list();
 
         let description = fs::read_to_string("Mod Loader - Whats new.txt").unwrap_or("File \"Mod Loader - Whats new.txt\" not found.".to_string());
-        let description = format!("Select a mod to read its description\n\n[c][b][i]What's new:[\\i][\\b]\n{}\n\nHome page: https://github.com/OSA413/Sonic4_ModLoader", description);
+        let description = format!("Select a mod to read its description\n\n[c][b][i]What's new:[\\i][\\b]\n{description}\n\nHome page: https://github.com/OSA413/Sonic4_ModLoader");
         let description = buffer_formatter::format_buffer(description);
         self.imp().description.set_buffer(Some(&description));
         
-        match installation::get_installation_status() {
-            installation::InstallationStatus::FirstLaunch => self.show_first_time_dialog(),
-            _ => ()
-        };
+        if let installation::InstallationStatus::FirstLaunch = installation::get_installation_status() { self.show_first_time_dialog() };
     }
 }

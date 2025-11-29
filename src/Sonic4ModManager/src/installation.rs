@@ -34,7 +34,7 @@ pub fn get_installation_status() -> InstallationStatus {
         return InstallationStatus::FirstLaunch;
     }
 
-    return InstallationStatus::NotInstalled;
+    InstallationStatus::NotInstalled
 }
 
 pub struct InstallationInstruction {
@@ -62,8 +62,8 @@ fn get_installation_order() -> Vec<InstallationInstruction> {
         _ => return vec![],
     };
 
-    let original_launcher_bkp = format!("{}.orig.exe", original_launcher);
-    let original_launcher = format!("{}.exe", original_launcher);
+    let original_launcher_bkp = format!("{original_launcher}.orig.exe");
+    let original_launcher = format!("{original_launcher}.exe");
 
     //Original files
     installation_order.push(InstallationInstruction::new(
@@ -120,16 +120,16 @@ pub fn install() {
             && i.new_name.is_some()
             && !Path::new(&i.new_name.clone().unwrap()).exists()
             && match i.only_if_this_file_exists { Some(path) => Path::new(&path).exists(), None => true, } {
-            match fs::rename(&i.orig_name, &i.new_name.unwrap()) {
+            match fs::rename(&i.orig_name, i.new_name.unwrap()) {
                 Ok(_) => (),
-                Err(e) => println!("Failed to move some files: {}", e)
+                Err(e) => println!("Failed to move some files: {e}")
             }
         }
     }
 
     match fs::write("ModManager.cfg", "") {
         Ok(_) => (),
-        Err(e) => println!("Couldn't write ModManager.cfg: {}", e),
+        Err(e) => println!("Couldn't write ModManager.cfg: {e}"),
     }
     settings::alice_mod_loader::save("Sonic4FilePatcher.exe");
 }
@@ -155,7 +155,7 @@ pub fn uninstall(options: UninstallationOptions) {
             && match &i.only_if_this_file_exists { Some(path) => Path::new(&path).exists(), None => true } {
             match fs::rename(i.new_name.clone().unwrap(), &i.orig_name) {
                 Ok(_) => (),
-                Err(e) => println!("Error: {}", e),
+                Err(e) => println!("Error: {e}"),
             }
         }
     }
@@ -167,13 +167,13 @@ pub fn uninstall(options: UninstallationOptions) {
             .arg("recover")
             .output() {
             Ok(_) => println!("Original files should be recovered"),
-            Err(e) => println!("Error: {}", e),
+            Err(e) => println!("Error: {e}"),
         }
 
         if options.delete_all_mod_loader_files {
             match fs::remove_dir_all("mods_sha") {
                 Ok(_) => println!("Removed directory [mods_sha]"),
-                Err(e) => println!("Error removing directory [mods_sha]: {}", e)
+                Err(e) => println!("Error removing directory [mods_sha]: {e}")
             }
         }
     }
@@ -184,27 +184,27 @@ pub fn uninstall(options: UninstallationOptions) {
                 .arg("--uninstall")
                 .output() {
                 Ok(_) => println!("OneClickModInstaller should be uninstalled"),
-                Err(e) => println!("Error: {}", e),
+                Err(e) => println!("Error: {e}"),
             }
 
             match fs::remove_file("OneClickModInstaller.exe") {
                 Ok(_) => println!("OneClickModInstaller.exe deleted"),
-                Err(e) => println!("Error removing file [OneClickModInstaller.exe]: {}", e)
+                Err(e) => println!("Error removing file [OneClickModInstaller.exe]: {e}")
             }
         }
 
         if !options.keep_configs {
             match fs::remove_file("OneClickModInstaller.cfg") {
                 Ok(_) => (),
-                Err(e) => println!("Error removing file [OneClickModInstaller.cfg]: {}", e)
+                Err(e) => println!("Error removing file [OneClickModInstaller.cfg]: {e}")
             };
         }
     }
 
     if options.delete_all_mod_loader_files {
         for file in installation_order {
-            if file.modloader_file && Path::new(&file.orig_name).exists() {
-                if !options.keep_configs || !(options.keep_configs && (file.orig_name.ends_with(".cfg") || file.orig_name.ends_with(".config"))) {
+            if file.modloader_file && Path::new(&file.orig_name).exists()
+                && (!options.keep_configs || !(options.keep_configs && (file.orig_name.ends_with(".cfg") || file.orig_name.ends_with(".config")))) {
                     if Path::new(&file.orig_name).is_file() {
                         match fs::remove_file(&file.orig_name) {
                             Ok(_) => println!("Removed file [{}]", file.orig_name),
@@ -217,7 +217,6 @@ pub fn uninstall(options: UninstallationOptions) {
                         }
                     }
                 }
-            }
         }
 
         let bat = format!("{}\n{}\n{}",
@@ -229,10 +228,10 @@ pub fn uninstall(options: UninstallationOptions) {
             Ok(_) => {
                 match process::Command::new("FinishInstallation.bat").spawn() {
                     Ok(_) => process::exit(0),
-                    Err(e) => println!("Error launching FinishInstallation.bat: {}", e),
+                    Err(e) => println!("Error launching FinishInstallation.bat: {e}"),
                 }
             },
-            Err(e) => println!("Error writing FinishInstallation.bat: {}", e),
+            Err(e) => println!("Error writing FinishInstallation.bat: {e}"),
         }
     }
 }

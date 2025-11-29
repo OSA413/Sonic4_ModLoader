@@ -4,7 +4,7 @@ mod help;
 mod mod_management;
 mod sha_checker;
 
-fn main() -> () {
+fn main() {
     let mut args = env::args().skip(1);
     match args.next() {
         Some(arg) => {

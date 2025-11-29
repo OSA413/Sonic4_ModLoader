@@ -15,7 +15,7 @@ impl ModDummy {
         path: String,
     ) -> Self {
         ModDummy {
-            path: path,
+            path,
         }
     }
 
@@ -29,7 +29,7 @@ impl ModDummy {
                     result.push(ModDummy::new(line.to_string()));
                 }
             }
-            Err(e) => println!("Error reading file: {}", e),
+            Err(e) => println!("Error reading file: {e}"),
         }
         result
     }
@@ -59,11 +59,11 @@ impl ModDummy {
                                 }
                             }
                         }
-                        Err(e) => println!("Error reading directory enrty: {}", e),
+                        Err(e) => println!("Error reading directory enrty: {e}"),
                     }
                 }
             }
-            Err(e) => println!("Error reading folder: {}", e),
+            Err(e) => println!("Error reading folder: {e}"),
         }
         result
     }

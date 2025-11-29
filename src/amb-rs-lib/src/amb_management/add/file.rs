@@ -10,7 +10,8 @@ pub fn add_vec_u8_to_amb(amb: &mut Amb, file_name: &String, file_data: &Vec<u8>,
 pub fn add_file_to_amb(amb: &mut Amb, file_to_add: &Path, internal_file_name: Option<String>) -> Result<(), Box<dyn std::error::Error>> {
     let file_path = file_to_add.display().to_string();
     let new_object = BinaryObject::new_from_file_path(file_to_add.display().to_string())?;
-    Ok(add_vec_u8_to_amb(amb, &file_path, &new_object.data, internal_file_name))
+    add_vec_u8_to_amb(amb, &file_path, &new_object.data, internal_file_name);
+    Ok(())
 }
 
 pub fn add_file_to_file(target_amb_file: &Path, file_to_add: &Path, internal_file_name: Option<String>) {

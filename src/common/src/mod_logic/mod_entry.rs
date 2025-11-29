@@ -22,12 +22,12 @@ impl ModEntry {
         description: Option<String>
     ) -> Self {
         ModEntry {
-            path: path,
-            enabled: enabled,
-            title: title,
-            authors: authors,
-            version: version,
-            description: description
+            path,
+            enabled,
+            title,
+            authors,
+            version,
+            description
         }
     }
 
@@ -78,6 +78,6 @@ impl ModEntry {
 
     pub fn load(path: &str) -> Vec<Self> {
         let existing_mods = ExistingMod::load(path);
-        existing_mods.iter().map(|x| ModEntry::from_existing_mod(x)).collect()
+        existing_mods.iter().map(ModEntry::from_existing_mod).collect()
     }
 }

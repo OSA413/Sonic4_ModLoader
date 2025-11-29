@@ -48,10 +48,10 @@ impl Amb {
     pub fn is_source_amb(source: &Vec<u8>, ptr: Option<usize>) -> bool {
         let ptr = ptr.unwrap_or(0);
         source.len() - ptr >= 0x20
-            && source[ptr + 0] == '#' as u8
-            && source[ptr + 1] == 'A' as u8
-            && source[ptr + 2] == 'M' as u8
-            && source[ptr + 3] == 'B' as u8
+            && source[ptr] == b'#'
+            && source[ptr + 1] == b'A'
+            && source[ptr + 2] == b'M'
+            && source[ptr + 3] == b'B'
     }
 
     pub fn get_version(source: &Vec<u8>, ptr: Option<usize>) -> (Version, Option<Endianness>) {
@@ -84,7 +84,7 @@ impl Amb {
     }
 
     pub fn new_from_file_name(file_path: &String) -> Result<Self, std::io::Error> {
-        Ok(Self::new_from_src_ptr_name(&std::fs::read(&file_path)?, Some(0), file_path))
+        Ok(Self::new_from_src_ptr_name(&std::fs::read(file_path)?, Some(0), file_path))
     }
 
     pub fn new_from_src_ptr_name(
@@ -165,8 +165,8 @@ impl Amb {
             Version::PC => 0x20,
             Version::Mobile => 0x28,
         }, &self.endianness);
-        binary_writer::write_u32(&mut result, 0x8, self.flag1 as u32, &self.endianness);
-        binary_writer::write_u32(&mut result, 0x10, self.objects.iter().count() as u32, &self.endianness);
+        binary_writer::write_u32(&mut result, 0x8, self.flag1, &self.endianness);
+        binary_writer::write_u32(&mut result, 0x10, self.objects.len() as u32, &self.endianness);
         binary_writer::write_u32(&mut result, 0x14, pointers.list as u32, &self.endianness);
         binary_writer::write_u32(&mut result, 0x18, pointers.data as u32, &self.endianness);
         if self.has_names {
@@ -176,11 +176,11 @@ impl Amb {
         for o in self.objects.iter() {
             binary_writer::write_u32(&mut result, pointers.list, pointers.data as u32, &self.endianness);
             binary_writer::write_u32(&mut result, pointers.list + 4, o.length() as u32, &self.endianness);
-            binary_writer::write_u32(&mut result, pointers.list + 8, o.flag1 as u32, &self.endianness);
-            binary_writer::write_u32(&mut result, pointers.list + 12, o.flag2 as u32, &self.endianness);
+            binary_writer::write_u32(&mut result, pointers.list + 8, o.flag1, &self.endianness);
+            binary_writer::write_u32(&mut result, pointers.list + 12, o.flag2, &self.endianness);
 
             let object_data = &o.data;
-            result[pointers.data..pointers.data + o.length()].copy_from_slice(&object_data);
+            result[pointers.data..pointers.data + o.length()].copy_from_slice(object_data);
             if self.has_names {
                 o.real_name.as_bytes().read_exact(&mut result[pointers.name..pointers.name + o.real_name.len()]).unwrap();
                 pointers.name += 0x20;
@@ -210,28 +210,25 @@ impl Amb {
         };
 
         //This may occur when main file and added file have the same name
-        if internal_name == "" {
+        if internal_name.is_empty() {
             return mod_path_parts.last().expect("That one bad thing happened that you thought would not happen #3").to_string();
         }
 
-        return internal_name;
+        internal_name
     }
 
     pub fn add_binary_object(&mut self, binary_object: BinaryObject, internal_name: String) {
-        match self.objects.iter().position(|x| x.name == internal_name) {
-            Some(internal_index) => {
-                let existing_object = &self.objects[internal_index];                
-                self.objects[internal_index] = BinaryObject {
-                    name: existing_object.name.clone(),
-                    real_name: existing_object.real_name.clone(),
-                    flag1: existing_object.flag1,
-                    flag2: existing_object.flag2,
-                    pointer: existing_object.pointer,
-                    data: binary_object.data,
-                };
-                return;
-            },
-            None => (),
+        if let Some(internal_index) = self.objects.iter().position(|x| x.name == internal_name) {
+            let existing_object = &self.objects[internal_index];                
+            self.objects[internal_index] = BinaryObject {
+                name: existing_object.name.clone(),
+                real_name: existing_object.real_name.clone(),
+                flag1: existing_object.flag1,
+                flag2: existing_object.flag2,
+                pointer: existing_object.pointer,
+                data: binary_object.data,
+            };
+            return;
         }
 
         match self.objects.iter().position(|x| x.name == internal_name.split('\\').take(x.name.chars().filter(|&c| c == '\\').count() + 1).collect::<Vec<_>>().join("\\")) {
@@ -275,7 +272,7 @@ impl Amb {
             }
         }
 
-        return raw_name.chars().skip(safe_index).collect();
+        raw_name.chars().skip(safe_index).collect()
     }
 
     // Make recursive as `add`?

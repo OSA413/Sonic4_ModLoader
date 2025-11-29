@@ -92,6 +92,12 @@ glib::wrapper! {
             gtk::Native;
 }
 
+impl Default for SettingsWindow {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl SettingsWindow {
     pub fn new() -> Self {
         glib::Object::builder().build()
@@ -112,22 +118,19 @@ impl SettingsWindow {
     }
 
     fn un_install(&self) {
-        match self.imp().button_un_install.label() {
-            Some(label) => {
-                let label = label.to_string();
-                if label == "Install" {
-                    installation::install();
-                } else if label == "Uninstall" {
-                    installation::uninstall(UninstallationOptions {
-                        recover_original_files: self.imp().checkbutton_recover_original_files.is_active(),
-                        delete_all_mod_loader_files: self.imp().checkbutton_delete_all_mod_loader_files.is_active(),
-                        keep_configs: self.imp().checkbutton_keep_configs.is_active(),
-                        uninstall_and_delete_ocmi: self.imp().checkbutton_uninstall_and_delete_ocmi.is_active()
-                            && self.imp().checkbutton_delete_all_mod_loader_files.is_active(),
-                    });
-                }
+        if let Some(label) = self.imp().button_un_install.label() {
+            let label = label.to_string();
+            if label == "Install" {
+                installation::install();
+            } else if label == "Uninstall" {
+                installation::uninstall(UninstallationOptions {
+                    recover_original_files: self.imp().checkbutton_recover_original_files.is_active(),
+                    delete_all_mod_loader_files: self.imp().checkbutton_delete_all_mod_loader_files.is_active(),
+                    keep_configs: self.imp().checkbutton_keep_configs.is_active(),
+                    uninstall_and_delete_ocmi: self.imp().checkbutton_uninstall_and_delete_ocmi.is_active()
+                        && self.imp().checkbutton_delete_all_mod_loader_files.is_active(),
+                });
             }
-            None => (),
         }
 
         self.update_installation_status();
@@ -213,14 +216,14 @@ impl SettingsWindow {
                 println!("Recovered files with Sonic4FilePatcher");
                 match fs::remove_file("mods/mods_prev") {
                     Ok(_) => println!("Removed mods_prev"),
-                    Err(e) => println!("Error removing mods_prev: {}", e)
+                    Err(e) => println!("Error removing mods_prev: {e}")
                 }
                 match fs::remove_file("mods/mods_sha") {
                     Ok(_) => println!("Removed mods_sha"),
-                    Err(e) => println!("Error removing mods_sha: {}", e)
+                    Err(e) => println!("Error removing mods_sha: {e}")
                 }
             },
-            Err(e) => println!("Error recovering files: {}", e)
+            Err(e) => println!("Error recovering files: {e}")
         }
     }
 
@@ -237,7 +240,7 @@ impl SettingsWindow {
 
         match result {
             Ok(_) => can_close = true,
-            Err(e) => println!("Error saving settings: {}", e)
+            Err(e) => println!("Error saving settings: {e}")
         }
 
         let file_patcher_use_amb_rs = self.imp().checkbutton_use_amb_rs_instead.is_active();
@@ -247,7 +250,7 @@ impl SettingsWindow {
 
         match result {
             Ok(_) => can_close = can_close && true,
-            Err(e) => println!("Error saving settings: {}", e)
+            Err(e) => println!("Error saving settings: {e}")
         }
 
         let current_or_default_config_csb_editor = common::settings::csb_editor::load();
@@ -264,7 +267,7 @@ impl SettingsWindow {
             Ok(_) => if can_close {
                 self.close()
             },
-            Err(e) => println!("Error saving settings: {}", e)
+            Err(e) => println!("Error saving settings: {e}")
         }
     }
 

@@ -12,11 +12,11 @@ pub struct BinaryObject {
 
 impl BinaryObject {
     pub fn length(&self) -> usize {
-        return self.data.len();
+        self.data.len()
     }
 
     pub fn length_nice(&self) -> usize {
-        self.length() + (16 - self.length() % 16) % 16 as usize
+        self.length() + (16 - self.length() % 16) % 16_usize
     }
 
     pub fn new_from_src_ptr_len(

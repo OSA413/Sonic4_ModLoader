@@ -11,8 +11,8 @@ impl ExistingMod {
         enabled: bool,
     ) -> Self {
         ExistingMod {
-            path: path,
-            enabled: enabled,
+            path,
+            enabled,
         }
     }
 

@@ -11,10 +11,10 @@ pub fn extract_amb(target_file: String, dir_to_extract: Option<String>) {
             for binary_object in amb.objects {
                 match fs::write(base_dir.join(&binary_object.name), &binary_object.data) {
                     Ok(_) => println!("Extracted {}", &binary_object.name),
-                    Err(e) => println!("Error: {}", e),
+                    Err(e) => println!("Error: {e}"),
                 }
             }
         },
-        Err(e) => println!("Error: {}", e),
+        Err(e) => println!("Error: {e}"),
     };
 }

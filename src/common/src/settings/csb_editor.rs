@@ -86,17 +86,17 @@ pub fn load() -> CSBEditorConfig {
                         None => default_config.buffer_size
                     };
 
-                    return CSBEditorConfig { enable_threading, max_threads, buffer_size }
+                    CSBEditorConfig { enable_threading, max_threads, buffer_size }
                 }
                 Err(e) => {
-                    println!("Error parsing CsbEditor.exe.config: {}", e);
-                    return default_config;
+                    println!("Error parsing CsbEditor.exe.config: {e}");
+                    default_config
                 }
             }
         },
         Err(e) => {
-            println!("Error reading CsbEditor.exe.config: {}", e);
-            return default_config;
+            println!("Error reading CsbEditor.exe.config: {e}");
+            default_config
         }
     }
 }

@@ -3,11 +3,11 @@ use crate::amb::{Amb, Version};
 use crate::binary_reader::Endianness;
 
 fn add_json_entry_str(field: &'static str, value: &String) -> String {
-    add_json_entry(field, &format!("\"{}\"", value))
+    add_json_entry(field, &format!("\"{value}\""))
 }
 
 fn add_json_entry(field: &'static str, value: &String) -> String {
-    format!("\"{}\":{}", field, value)
+    format!("\"{field}\":{value}")
 }
 
 pub fn print_from_file_to_stdout(target_file: String) {
@@ -15,10 +15,10 @@ pub fn print_from_file_to_stdout(target_file: String) {
 }
 
 pub fn print_from_file(target_file: &String) -> String {
-    let source = std::fs::read(&target_file);
+    let source = std::fs::read(target_file);
     match source {
-        Ok(source) => format!("{}", print_from_vec_u8(source, target_file)),
-        Err(e) => format!("Error reading file: {}", e),
+        Ok(source) => print_from_vec_u8(source, target_file).to_string(),
+        Err(e) => format!("Error reading file: {e}"),
     }
 }
 
