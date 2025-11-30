@@ -254,7 +254,7 @@ impl Amb {
                 data: binary_object.data,
             }),
         }
-        return Ok(())
+        Ok(())
     }
 
     pub fn make_name_safe(raw_name: &str) -> String {

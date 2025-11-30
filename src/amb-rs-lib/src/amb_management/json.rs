@@ -12,7 +12,8 @@ fn add_json_entry(field: &'static str, value: &String) -> String {
 }
 
 pub fn print_from_file_to_stdout(target_file: String) -> Result<(), AmbLibRsError> {
-    Ok(print!("{}", print_from_file(&target_file)?))
+    print!("{}", print_from_file(&target_file)?);
+    Ok(())
 }
 
 pub fn print_from_file(target_file: &String) -> Result<String, AmbLibRsError> {
