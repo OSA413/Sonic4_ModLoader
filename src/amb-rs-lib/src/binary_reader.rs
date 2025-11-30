@@ -1,26 +1,48 @@
+use crate::error::{AmbLibRsError, PointerOutOfBoundsDetails, StringTooLongDetails};
+
 pub enum Endianness {
     Little,
     Big,
 }
 
-pub fn read_string32(source: &[u8], pointer: usize) -> String {
+pub fn read_string32(source: &[u8], pointer: usize) -> Result<String, AmbLibRsError> {
     let mut result = String::new();
     // Isn't it cool that you can do that in Rust?
     let mut pointer = pointer;
 
-    while source[pointer] != 0x00 || result.len() >= 31 {
+    while source[pointer] != 0x00 {
+        if result.len() >= 31 {
+            return Err(AmbLibRsError::StringTooLong(StringTooLongDetails {
+                pointer,
+                target_string: result,
+                when: "Reading a string".to_string(),
+            }))
+        }
+
         result.push(source[pointer] as char);
         pointer += 1;
+
+        if source.len() >= pointer {
+            return Err(AmbLibRsError::PointerOutOfBounds(PointerOutOfBoundsDetails { 
+                pointer,
+                source_len: source.len(),
+                when: "Reading a string".to_string(),
+            }));
+        }
     }
 
-    result
+    Ok(result)
 }
 
-pub fn read_u32(source: &[u8], pointer: usize, endianness: &Option<Endianness>) -> Result<u32, &'static str> {
+pub fn read_u32(source: &[u8], pointer: usize, endianness: &Option<Endianness>) -> Result<u32, AmbLibRsError> {
     // This approach won't eat up the RAM and should be safe and fast
     // And is using Rust's built in conversion to type from binary
     if source.len() < pointer + size_of::<u32>() {
-        return Err("Test");
+        return Err(AmbLibRsError::PointerOutOfBounds(PointerOutOfBoundsDetails {
+            when: "Reading an u32".to_string(),
+            pointer,
+            source_len: source.len(),
+        }));
     }
 
     let slice = [

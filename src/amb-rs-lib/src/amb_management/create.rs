@@ -1,10 +1,8 @@
 use std::fs;
-use crate::amb::Amb;
+use crate::{amb::Amb, error::AmbLibRsError};
 
-pub fn create_amb(file_name: String) {
+pub fn create_amb(file_name: String) -> Result<(), AmbLibRsError>  {
     let amb = Amb::new_empty();
-    match fs::write(file_name, amb.write()) {
-        Ok(_) => (),
-        Err(e) => println!("Error: {e}"),
-    };
+    fs::write(file_name, amb.write())?;
+    Ok(())
 }

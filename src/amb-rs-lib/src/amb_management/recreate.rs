@@ -1,24 +1,16 @@
 use std::{fs, path::{Path, PathBuf}};
-use crate::{amb::Amb, amb_management};
+use crate::{amb::Amb, amb_management, error::AmbLibRsError};
 
-pub fn recreate_amb(file: String, save_as_file_name: Option<String>) {
-    let amb = Amb::new_from_file_name(&file);
-    match amb {
-        Ok(amb) => {
-            match fs::write(save_as_file_name.unwrap_or(file), amb.write()) {
-                Ok(_) => (),
-                Err(e) => println!("Error: {e}"),
-            }
-        },
-        Err(e) => println!("Error: {e}"),
-    };
+pub fn recreate_amb(file: String, save_as_file_name: Option<String>) -> Result<(), AmbLibRsError> {
+    let amb = Amb::new_from_file_name(&file)?;
+    fs::write(save_as_file_name.unwrap_or(file), amb.write())?;
+    Ok(())
 }
 
-pub fn recreate_amb_from_dir(dir: String) {
+pub fn recreate_amb_from_dir(dir: String) -> Result<(), AmbLibRsError> {
     let dir_path = Path::new(&dir);
     if !dir_path.is_dir() {
-        println!("Error: {dir:?} is not a directory");
-        return;
+        return Err(AmbLibRsError::Io(std::io::Error::other("Error: {dir:?} is not a directory")));
     }
 
     let extracted_prefix = "_extracted";
@@ -43,5 +35,5 @@ pub fn recreate_amb_from_dir(dir: String) {
         result
     };
 
-    amb_management::add::directory::add_dir_to_amb_from_dir_path(&amb_file_path, dir_path);
+    amb_management::add::directory::add_dir_to_amb_from_dir_path(&amb_file_path, dir_path)
 }

@@ -7,7 +7,7 @@ use crate::amb_print::AmbPrint;
 fn empty() {
     let file_name = "../amb-rs-tests/amb_files/pc/EMPTY.AMB".to_string();
     assert_eq!(
-        amb_management::json::print_from_file(&file_name),
+        amb_management::json::print_from_file(&file_name).unwrap(),
         serde_json::to_string(&AmbPrint {
             name: file_name,
             endianness: "little".to_string(),

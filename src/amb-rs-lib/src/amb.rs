@@ -1,5 +1,5 @@
 use std::{io::Read, path::Path};
-use crate::{binary_object::BinaryObject, binary_reader::{self, Endianness}, binary_writer};
+use crate::{binary_object::BinaryObject, binary_reader::{self, Endianness}, binary_writer, error::AmbLibRsError};
 
 pub enum Version {
     PC = 0x20,
@@ -83,17 +83,17 @@ impl Amb {
         }
     }
 
-    pub fn new_from_file_name(file_path: &String) -> Result<Self, std::io::Error> {
-        Ok(Self::new_from_src_ptr_name(&std::fs::read(file_path)?, Some(0), file_path))
+    pub fn new_from_file_name(file_path: &String) -> Result<Self, AmbLibRsError> {
+        Self::new_from_src_ptr_name(&std::fs::read(file_path)?, Some(0), file_path)
     }
 
     pub fn new_from_src_ptr_name(
         source: &[u8],
         ptr: Option<usize>,
         name: &String
-    ) -> Self {
+    ) -> Result<Self, AmbLibRsError> {
         if !Amb::is_source_amb(source, ptr) {
-            panic!("Provided source is not an AMB file");
+            return Err(AmbLibRsError::ProvidedSourceIsNotAnAmb(format!("Provided source is not an AMB file, ptr: {ptr:?}, name: {name}")));
         }
         let (version, endianness) = Amb::get_version(source, ptr);
         let shift: usize = match version {
@@ -123,7 +123,7 @@ impl Amb {
             let object_length = binary_reader::read_u32(source, list_pointer as usize + (0x10 + shift) * i + 4 + shift, &endianness).expect("Who's bad? (2)");
             let mut new_object = BinaryObject::new_from_src_ptr_len(source, object_pointer as usize, object_length as usize);
             new_object.real_name = match has_names {
-                true => binary_reader::read_string32(source, names_pointer as usize + 0x20 * i),
+                true => binary_reader::read_string32(source, names_pointer as usize + 0x20 * i)?,
                 false =>  i.to_string(),
             };
             new_object.name = Amb::make_name_safe(&new_object.real_name);
@@ -135,17 +135,17 @@ impl Amb {
             i += 1;
         }
 
-        Amb {
+        Ok(Amb {
             amb_path: name.to_string(),
             endianness,
             flag1,
             objects,
             has_names,
             version,
-        }
+        })
     }
 
-    pub fn new_from_binary_object(bo: &BinaryObject) -> Self {
+    pub fn new_from_binary_object(bo: &BinaryObject) -> Result<Self, AmbLibRsError> {
         Amb::new_from_src_ptr_name(&bo.data, None, &bo.name)
     }
 
@@ -217,7 +217,7 @@ impl Amb {
         internal_name
     }
 
-    pub fn add_binary_object(&mut self, binary_object: BinaryObject, internal_name: String) {
+    pub fn add_binary_object(&mut self, binary_object: BinaryObject, internal_name: String) -> Result<(), AmbLibRsError> {
         if let Some(internal_index) = self.objects.iter().position(|x| x.name == internal_name) {
             let existing_object = &self.objects[internal_index];                
             self.objects[internal_index] = BinaryObject {
@@ -228,15 +228,14 @@ impl Amb {
                 pointer: existing_object.pointer,
                 data: binary_object.data,
             };
-            return;
+            return Ok(());
         }
 
         match self.objects.iter().position(|x| x.name == internal_name.split('\\').take(x.name.chars().filter(|&c| c == '\\').count() + 1).collect::<Vec<_>>().join("\\")) {
             Some(parent_index) => {
                 let parent_object = &self.objects[parent_index];
-                // Why do we consider that this object is an AMB?
-                let mut parent_amb = Amb::new_from_binary_object(parent_object);
-                parent_amb.add_binary_object(binary_object, internal_name.chars().skip(parent_object.real_name.chars().count() + 1).collect::<String>());
+                let mut parent_amb = Amb::new_from_binary_object(parent_object)?;
+                parent_amb.add_binary_object(binary_object, internal_name.chars().skip(parent_object.real_name.chars().count() + 1).collect::<String>())?;
                 self.objects[parent_index] = BinaryObject {
                     name: parent_object.name.clone(),
                     real_name: parent_object.real_name.clone(),
@@ -255,6 +254,7 @@ impl Amb {
                 data: binary_object.data,
             }),
         }
+        return Ok(())
     }
 
     pub fn make_name_safe(raw_name: &str) -> String {
