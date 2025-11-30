@@ -169,9 +169,14 @@ pub fn patch_all(file_name: &String, mod_files: Vec<ModFile>, bar: Option<&Progr
                     sha_checker::write(mod_file.file_path.clone(), mod_file_full);
                 }
 
-                match fs::write(file_name, amb.write()) {
-                    Ok(_) => {},
-                    Err(e) => println!("Error writing AMB file: {e}"),
+                match amb.write() {
+                    Ok(content) => {
+                        match fs::write(file_name, content) {
+                            Ok(_) => {},
+                            Err(e) => eprintln!("Error writing AMB file: {e}"),
+                        }
+                    }
+                    Err(e) => eprintln!("Error creating AMB file: {e:?}"),
                 }
             }
         }
@@ -199,16 +204,16 @@ pub fn patch_all(file_name: &String, mod_files: Vec<ModFile>, bar: Option<&Progr
                                     Ok(mut child) => {
                                         match child.wait() {
                                             Ok(_) => (),
-                                            Err(e) => println!("Error waiting for CsbEditor: {e}"),
+                                            Err(e) => eprintln!("Error waiting for CsbEditor: {e}"),
                                         }
                                     },
-                                    Err(e) => println!("Error launching CsbEditor: {e}"),
+                                    Err(e) => eprintln!("Error launching CsbEditor: {e}"),
                                 }
                             },
-                            Err(e) => println!("Error waiting for CsbEditor: {e}"),
+                            Err(e) => eprintln!("Error waiting for CsbEditor: {e}"),
                         }
                     },
-                    Err(e) => println!("Error launching CsbEditor: {e}"),
+                    Err(e) => eprintln!("Error launching CsbEditor: {e}"),
                 }
             }
     }
@@ -229,10 +234,10 @@ pub fn load_file_mods() {
             Ok(mut child) => {
                 match child.wait() {
                     Ok(_) => println!("AMBPatcher finished"),
-                    Err(e) => println!("Error waiting for AMBPatcher: {e}"),
+                    Err(e) => eprintln!("Error waiting for AMBPatcher: {e}"),
                 }
             },
-            Err(e) => println!("Error launching AMBPatcher: {e}"),
+            Err(e) => eprintln!("Error launching AMBPatcher: {e}"),
         }
         return;
     }

@@ -23,11 +23,11 @@ pub fn walk_dir(dir: &Path, extension: Option<&OsStr>) -> Vec<PathBuf> {
                             }
                         }
                     },
-                    Err(e) => println!("Error: {e}"),
+                    Err(e) => eprintln!("Error: {e}"),
                 }
             }
         },
-        Err(e) => println!("Error: {e}"),
+        Err(e) => eprintln!("Error: {e}"),
     }
     files
 }

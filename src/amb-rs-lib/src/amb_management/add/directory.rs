@@ -21,7 +21,7 @@ pub fn add_dir_to_amb_from_dir_path(target_file: &Path, dir_to_add: &Path) -> Re
     if add_dir_of_files_to_amb(&mut amb, dir_to_add) == 0 {
         println!("No files were added to AMB file, I'm not rewriting the file now.");
     } else {
-        fs::write(&amb.amb_path, amb.write())?;
+        fs::write(&amb.amb_path, amb.write()?)?;
     }
     Ok(())
 }

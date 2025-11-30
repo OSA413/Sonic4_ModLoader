@@ -3,14 +3,14 @@ use crate::{amb::Amb, amb_management, error::AmbLibRsError};
 
 pub fn recreate_amb(file: String, save_as_file_name: Option<String>) -> Result<(), AmbLibRsError> {
     let amb = Amb::new_from_file_name(&file)?;
-    fs::write(save_as_file_name.unwrap_or(file), amb.write())?;
+    fs::write(save_as_file_name.unwrap_or(file), amb.write()?)?;
     Ok(())
 }
 
 pub fn recreate_amb_from_dir(dir: String) -> Result<(), AmbLibRsError> {
     let dir_path = Path::new(&dir);
     if !dir_path.is_dir() {
-        return Err(AmbLibRsError::Io(std::io::Error::other("Error: {dir:?} is not a directory")));
+        return Err(AmbLibRsError::Io(std::io::Error::other(format!("Error: {dir:?} is not a directory"))));
     }
 
     let extracted_prefix = "_extracted";
@@ -26,7 +26,7 @@ pub fn recreate_amb_from_dir(dir: String) -> Result<(), AmbLibRsError> {
         if possible_file.is_file() {
             result = possible_file
         }
-        
+
         let possible_file = dir_path.join(".AMB");
         if possible_file.is_file() {
             result = possible_file

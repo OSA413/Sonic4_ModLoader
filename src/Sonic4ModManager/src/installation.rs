@@ -122,14 +122,14 @@ pub fn install() {
             && match i.only_if_this_file_exists { Some(path) => Path::new(&path).exists(), None => true, } {
             match fs::rename(&i.orig_name, i.new_name.unwrap()) {
                 Ok(_) => (),
-                Err(e) => println!("Failed to move some files: {e}")
+                Err(e) => eprintln!("Failed to move some files: {e}")
             }
         }
     }
 
     match fs::write("ModManager.cfg", "") {
         Ok(_) => (),
-        Err(e) => println!("Couldn't write ModManager.cfg: {e}"),
+        Err(e) => eprintln!("Couldn't write ModManager.cfg: {e}"),
     }
     settings::alice_mod_loader::save("Sonic4FilePatcher.exe");
 }
@@ -155,7 +155,7 @@ pub fn uninstall(options: UninstallationOptions) {
             && match &i.only_if_this_file_exists { Some(path) => Path::new(&path).exists(), None => true } {
             match fs::rename(i.new_name.clone().unwrap(), &i.orig_name) {
                 Ok(_) => (),
-                Err(e) => println!("Error: {e}"),
+                Err(e) => eprintln!("Error: {e}"),
             }
         }
     }
@@ -167,13 +167,13 @@ pub fn uninstall(options: UninstallationOptions) {
             .arg("recover")
             .output() {
             Ok(_) => println!("Original files should be recovered"),
-            Err(e) => println!("Error: {e}"),
+            Err(e) => eprintln!("Error: {e}"),
         }
 
         if options.delete_all_mod_loader_files {
             match fs::remove_dir_all("mods_sha") {
                 Ok(_) => println!("Removed directory [mods_sha]"),
-                Err(e) => println!("Error removing directory [mods_sha]: {e}")
+                Err(e) => eprintln!("Error removing directory [mods_sha]: {e}")
             }
         }
     }
@@ -184,19 +184,19 @@ pub fn uninstall(options: UninstallationOptions) {
                 .arg("--uninstall")
                 .output() {
                 Ok(_) => println!("OneClickModInstaller should be uninstalled"),
-                Err(e) => println!("Error: {e}"),
+                Err(e) => eprintln!("Error: {e}"),
             }
 
             match fs::remove_file("OneClickModInstaller.exe") {
                 Ok(_) => println!("OneClickModInstaller.exe deleted"),
-                Err(e) => println!("Error removing file [OneClickModInstaller.exe]: {e}")
+                Err(e) => eprintln!("Error removing file [OneClickModInstaller.exe]: {e}")
             }
         }
 
         if !options.keep_configs {
             match fs::remove_file("OneClickModInstaller.cfg") {
                 Ok(_) => (),
-                Err(e) => println!("Error removing file [OneClickModInstaller.cfg]: {e}")
+                Err(e) => eprintln!("Error removing file [OneClickModInstaller.cfg]: {e}")
             };
         }
     }
@@ -208,12 +208,12 @@ pub fn uninstall(options: UninstallationOptions) {
                     if Path::new(&file.orig_name).is_file() {
                         match fs::remove_file(&file.orig_name) {
                             Ok(_) => println!("Removed file [{}]", file.orig_name),
-                            Err(e) => println!("Error removing file [{}]: {}", file.orig_name, e),
+                            Err(e) => eprintln!("Error removing file [{}]: {}", file.orig_name, e),
                         }
                     } else if Path::new(&file.orig_name).is_dir() {
                         match fs::remove_dir_all(&file.orig_name) {
                             Ok(_) => println!("Removed directory [{}]", file.orig_name),
-                            Err(e) => println!("Error removing directory [{}]: {}", file.orig_name, e),
+                            Err(e) => eprintln!("Error removing directory [{}]: {}", file.orig_name, e),
                         }
                     }
                 }
@@ -228,10 +228,10 @@ pub fn uninstall(options: UninstallationOptions) {
             Ok(_) => {
                 match process::Command::new("FinishInstallation.bat").spawn() {
                     Ok(_) => process::exit(0),
-                    Err(e) => println!("Error launching FinishInstallation.bat: {e}"),
+                    Err(e) => eprintln!("Error launching FinishInstallation.bat: {e}"),
                 }
             },
-            Err(e) => println!("Error writing FinishInstallation.bat: {e}"),
+            Err(e) => eprintln!("Error writing FinishInstallation.bat: {e}"),
         }
     }
 }

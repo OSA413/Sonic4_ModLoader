@@ -149,7 +149,7 @@ impl Amb {
         Amb::new_from_src_ptr_name(&bo.data, None, &bo.name)
     }
 
-    pub fn write(&self) -> Vec<u8> {
+    pub fn write(&self) -> Result<Vec<u8>, AmbLibRsError> {
         let amb_length = self.length();
         let mut result = Vec::<u8>::with_capacity(amb_length);
         let mut pointers = self.predict_pointers();
@@ -164,20 +164,20 @@ impl Amb {
         binary_writer::write_u32(&mut result, 0x4, match self.version {
             Version::PC => 0x20,
             Version::Mobile => 0x28,
-        }, &self.endianness);
-        binary_writer::write_u32(&mut result, 0x8, self.flag1, &self.endianness);
-        binary_writer::write_u32(&mut result, 0x10, self.objects.len() as u32, &self.endianness);
-        binary_writer::write_u32(&mut result, 0x14, pointers.list as u32, &self.endianness);
-        binary_writer::write_u32(&mut result, 0x18, pointers.data as u32, &self.endianness);
+        }, &self.endianness)?;
+        binary_writer::write_u32(&mut result, 0x8, self.flag1, &self.endianness)?;
+        binary_writer::write_u32(&mut result, 0x10, self.objects.len() as u32, &self.endianness)?;
+        binary_writer::write_u32(&mut result, 0x14, pointers.list as u32, &self.endianness)?;
+        binary_writer::write_u32(&mut result, 0x18, pointers.data as u32, &self.endianness)?;
         if self.has_names {
-            binary_writer::write_u32(&mut result, 0x1C, pointers.name as u32, &self.endianness);
+            binary_writer::write_u32(&mut result, 0x1C, pointers.name as u32, &self.endianness)?;
         }
 
         for o in self.objects.iter() {
-            binary_writer::write_u32(&mut result, pointers.list, pointers.data as u32, &self.endianness);
-            binary_writer::write_u32(&mut result, pointers.list + 4, o.length() as u32, &self.endianness);
-            binary_writer::write_u32(&mut result, pointers.list + 8, o.flag1, &self.endianness);
-            binary_writer::write_u32(&mut result, pointers.list + 12, o.flag2, &self.endianness);
+            binary_writer::write_u32(&mut result, pointers.list, pointers.data as u32, &self.endianness)?;
+            binary_writer::write_u32(&mut result, pointers.list + 4, o.length() as u32, &self.endianness)?;
+            binary_writer::write_u32(&mut result, pointers.list + 8, o.flag1, &self.endianness)?;
+            binary_writer::write_u32(&mut result, pointers.list + 12, o.flag2, &self.endianness)?;
 
             let object_data = &o.data;
             result[pointers.data..pointers.data + o.length()].copy_from_slice(object_data);
@@ -190,7 +190,7 @@ impl Amb {
             pointers.data += o.length_nice();
         }
 
-        result
+        Ok(result)
     }
 
     pub fn get_relative_name(main_file_name: String, object_name: String) -> String {
@@ -236,13 +236,14 @@ impl Amb {
                 let parent_object = &self.objects[parent_index];
                 let mut parent_amb = Amb::new_from_binary_object(parent_object)?;
                 parent_amb.add_binary_object(binary_object, internal_name.chars().skip(parent_object.real_name.chars().count() + 1).collect::<String>())?;
+                let parent_amb_content = parent_amb.write()?;
                 self.objects[parent_index] = BinaryObject {
                     name: parent_object.name.clone(),
                     real_name: parent_object.real_name.clone(),
                     flag1: parent_object.flag1,
                     flag2: parent_object.flag2,
                     pointer: 0,
-                    data: parent_amb.write(),
+                    data: parent_amb_content,
                 };
             }
             None => self.objects.push(BinaryObject {

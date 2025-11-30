@@ -64,7 +64,7 @@ impl ManagerLauncherWindow {
                 let res = common::Launcher::launch_game();
                 match res {
                     Ok(_) => process::exit(0),
-                    Err(e) => println!("{e}"),
+                    Err(e) => eprintln!("{e}"),
                 }
             })
             .build();
@@ -74,7 +74,7 @@ impl ManagerLauncherWindow {
                 let res = common::Launcher::launch_config();
                 match res {
                     Ok(_) => process::exit(0),
-                    Err(e) => println!("{e}"),
+                    Err(e) => eprintln!("{e}"),
                 }
             })
             .build();
@@ -84,7 +84,7 @@ impl ManagerLauncherWindow {
                 let res = common::Launcher::launch_mod_manager(vec![]);
                 match res {
                     Ok(_) => process::exit(0),
-                    Err(e) => println!("{e}"),
+                    Err(e) => eprintln!("{e}"),
                 }
             })
             .build();

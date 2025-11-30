@@ -216,14 +216,14 @@ impl SettingsWindow {
                 println!("Recovered files with Sonic4FilePatcher");
                 match fs::remove_file("mods/mods_prev") {
                     Ok(_) => println!("Removed mods_prev"),
-                    Err(e) => println!("Error removing mods_prev: {e}")
+                    Err(e) => eprintln!("Error removing mods_prev: {e}")
                 }
                 match fs::remove_file("mods/mods_sha") {
                     Ok(_) => println!("Removed mods_sha"),
-                    Err(e) => println!("Error removing mods_sha: {e}")
+                    Err(e) => eprintln!("Error removing mods_sha: {e}")
                 }
             },
-            Err(e) => println!("Error recovering files: {e}")
+            Err(e) => eprintln!("Error recovering files: {e}")
         }
     }
 
@@ -240,7 +240,7 @@ impl SettingsWindow {
 
         match result {
             Ok(_) => can_close = true,
-            Err(e) => println!("Error saving settings: {e}")
+            Err(e) => eprintln!("Error saving settings: {e}")
         }
 
         let file_patcher_use_amb_rs = self.imp().checkbutton_use_amb_rs_instead.is_active();
@@ -270,7 +270,7 @@ impl SettingsWindow {
             Ok(_) => if can_close {
                 self.close()
             },
-            Err(e) => println!("Error saving settings: {e}")
+            Err(e) => eprintln!("Error saving settings: {e}")
         }
     }
 

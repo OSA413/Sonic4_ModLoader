@@ -18,6 +18,6 @@ pub fn swap_endianness_and_save(target_file: String, save_as_file_name: Option<S
         return Ok(());
     }
 
-    fs::write(save_as_file_name.unwrap_or(target_file), amb.write())?;
+    fs::write(save_as_file_name.unwrap_or(target_file), amb.write()?)?;
     Ok(())
 }

@@ -100,11 +100,11 @@ impl Sonic4ModManagerWindow {
     fn save_mods_ini(&self, mods: Vec<String>) {
         match fs::create_dir_all("mods") {
             Ok(_) => println!("Created [mods] directory"),
-            Err(e) => println!("Coudn't create directories, they probably already exist {e}"),
+            Err(e) => eprintln!("Coudn't create directories, they probably already exist {e}"),
         };
         match fs::write("mods/mods.ini", mods.join("\n")) {
             Ok(_) => println!("Saved mods/mods.ini"),
-            Err(e) => println!("Coudn't save mods/mods.ini: {e}"),
+            Err(e) => eprintln!("Coudn't save mods/mods.ini: {e}"),
         }
     }
 
@@ -113,7 +113,7 @@ impl Sonic4ModManagerWindow {
         let game_lauched = common::Launcher::launch_game();
         match game_lauched {
             Ok(_) => self.application().unwrap().quit(),
-            Err(e) => println!("{e}"),
+            Err(e) => eprintln!("{e}"),
         }
     }
 
@@ -252,11 +252,11 @@ impl Sonic4ModManagerWindow {
     fn open_mods_folder(&self) {
         match fs::create_dir_all("mods") {
             Ok(_) => println!("Created [mods] directory"),
-            Err(e) => println!("Coudn't create directories, they probably already exist {e}"),
+            Err(e) => eprintln!("Coudn't create directories, they probably already exist {e}"),
         };
         match Launcher::open_mods_folder() {
             Ok(_) => println!("Opening mods directory..."),
-            Err(e) => println!("Coudn't open [mods] directory {e}"),
+            Err(e) => eprintln!("Coudn't open [mods] directory {e}"),
         };
     }
 

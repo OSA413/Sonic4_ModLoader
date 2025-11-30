@@ -12,7 +12,7 @@ pub fn load() -> String {
                 return config.get("PatcherDir").unwrap_or("").to_string();
             }
         },
-        Err(e) => println!("Error reading AML/AliceML.ini: {e}"),
+        Err(e) => eprintln!("Error reading AML/AliceML.ini: {e}"),
     }
     default
 }
@@ -32,9 +32,9 @@ pub fn save(patcher_dir: &str) {
             
             match fs::write("AML/AliceML.ini", result_lines.join("\n")) {
                 Ok(_) => (),
-                Err(e) => println!("Couldn't write AML/AliceML.ini: {e}"),
+                Err(e) => eprintln!("Couldn't write AML/AliceML.ini: {e}"),
             }
         },
-        Err(e) => println!("Error reading AML config: {e}"),
+        Err(e) => eprintln!("Error reading AML config: {e}"),
     }
 }
