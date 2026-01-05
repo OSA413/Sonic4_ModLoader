@@ -92,7 +92,7 @@ impl Sonic4ModManagerApplication {
             .website("https://github.com/OSA413/Sonic4_ModLoader")
             .issue_url("https://github.com/OSA413/Sonic4_ModLoader/issues")
             .support_url("https://discord.gg/WCp8BFyFxN")
-            .copyright("© 2018-2025 Oleg \"OSA413\" Sokolov")
+            .copyright("© 2018-2026 Oleg \"OSA413\" Sokolov")
             .build();
 
         let window = self.active_window();  

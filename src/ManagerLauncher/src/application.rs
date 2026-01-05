@@ -93,7 +93,7 @@ impl ManagerLauncherApplication {
             .website("https://github.com/OSA413/Sonic4_ModLoader")
             .issue_url("https://github.com/OSA413/Sonic4_ModLoader/issues")
             .support_url("https://discord.gg/WCp8BFyFxN")
-            .copyright("© 2018-2025 Oleg \"OSA413\" Sokolov")
+            .copyright("© 2018-2026 Oleg \"OSA413\" Sokolov")
             .build();
 
         about.present(window.as_ref());
