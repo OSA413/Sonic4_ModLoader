@@ -23,6 +23,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "OneClickModInstaller"
+version = "1.0.0"
+dependencies = [
+ "common",
+ "common_gtk4",
+ "glib-build-tools",
+ "gtk4",
+ "libadwaita",
+ "winresource",
+]
+
+[[package]]
 name = "Sonic4FilePatcher"
 version = "1.0.0"
 dependencies = [

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <menu id="main-menu">
+    <item>
+      <attribute name="label" translatable="yes">_Close window</attribute>
+      <attribute name="action">app.quit</attribute>
+    </item>
+    <item>
+      <attribute name="label" translatable="yes">_About</attribute>
+      <attribute name="action">app.about</attribute>
+    </item>
+  </menu>
+  <template class="OneClickModInstaller" parent="AdwApplicationWindow">
+    <property name="title">One-Click Mod Installer</property>
+    <child>
+      <object class="AdwBreakpoint">
+        <condition>max-width: 550sp</condition>
+      </object>
+    </child>
+    <property name="content">
+      <object class="AdwToolbarView">
+        <child type="top">
+          <object class="AdwHeaderBar">
+            <child type ="start">
+              <object class="GtkImage">
+                <property name="icon-name">icon</property>
+                <property name="icon-size">2</property>
+                <property name="margin-start">4</property>
+                <property name="margin-end">4</property>
+              </object>
+            </child>
+            <child type ="end">
+              <object class="GtkMenuButton">
+                <property name="icon-name">open-menu-symbolic</property>
+                <property name="menu-model">main-menu</property>
+                <property name="tooltip-text" translatable="yes">Main Menu</property>
+              </object>
+            </child>
+          </object>
+        </child>
+        <property name="content">
+          <object class="AdwViewStack" id="stack">
+            <child>
+              <object class="AdwViewStackPage">
+                <property name="name">overview</property>
+                <property name="title">Overview</property>
+                <property name="child">
+                  <object class="GtkBox">
+                    <child type ="start">
+                      <object class="GtkPicture" id="logo" />
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+          </object>
+        </property>
+        <child type="bottom">
+          <object class="AdwViewSwitcher">
+            <property name="stack">stack</property>
+            <property name="policy">wide</property>
+          </object>
+        </child>
+      </object>
+    </property>
+  </template>
+</interface>

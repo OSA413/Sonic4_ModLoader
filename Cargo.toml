@@ -7,6 +7,7 @@ members = [
     "src/ManagerLauncher_link",
     "src/Sonic4ModManager",
     "src/Sonic4ModManager_link",
-    "src/Sonic4FilePatcher"
+    "src/Sonic4FilePatcher",
+    "src/OneClickModInstaller"
 ]
 resolver = "3"
