@@ -23,7 +23,7 @@ sudo apt install libgtk-4-1 libadwaita-1-0
 sudo pacman -S gtk4 libadwaita
 ```
 
-To get AMBPatcher working, you need to install .Net 6 via `protontricks`.
+Also, to get AMBPatcher working, you need to install .Net 6 via `protontricks`.
 
 You also should use the `_linux` distribution of the Mod Loader
 

@@ -110,7 +110,7 @@ impl Sonic4ModManagerWindow {
 
     fn save_mods_and_play(&self) {
         self.save_mods();
-        let game_lauched = common::Launcher::launch_game();
+        let game_lauched = common::Launcher::launch_current_game();
         match game_lauched {
             Ok(_) => self.application().unwrap().quit(),
             Err(e) => eprintln!("{e}"),

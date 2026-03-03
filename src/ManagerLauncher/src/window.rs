@@ -61,7 +61,7 @@ impl ManagerLauncherWindow {
     fn setup_actions(&self) {
         let action_play = ActionEntry::builder("play")
             .activate(move |_window: &Self, _action, _parameter| {
-                let res = common::Launcher::launch_game();
+                let res = common::Launcher::launch_current_game();
                 match res {
                     Ok(_) => process::exit(0),
                     Err(e) => eprintln!("{e}"),

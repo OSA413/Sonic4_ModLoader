@@ -50,19 +50,42 @@ impl Launcher {
         Launcher::get_game("")
     }
 
-    pub fn launch_game() -> Result<Child, io::Error> {
-        let game = Launcher::get_current_game();
+    pub fn launch_steam_game(id: u32) -> Result<Child, io::Error> {
+        Command::new("xdg-open").arg(format!("steam://launch/{id}/dialog")).spawn()
+    }
+
+    #[cfg(target_os = "windows")]
+    fn launch_ep1() -> Result<Child, io::Error> {
         let current_dir = env::current_dir().unwrap();
+        if Path::new("main.conf").exists() {
+            Command::new(current_dir.join("Sonic_vis.exe")).spawn()
+        } else {
+            Command::new(current_dir.join("SonicLauncher.orig.exe")).spawn()
+        }
+    }
+
+    #[cfg(not(target_os = "windows"))]
+    fn launch_ep1() -> Result<Child, io::Error> {
+        Launcher::launch_steam_game(202530)
+    }
+
+    #[cfg(target_os = "windows")]
+    fn launch_ep2() -> Result<Child, io::Error> {
+        let current_dir = env::current_dir().unwrap();
+        Command::new(current_dir.join("Sonic.exe")).spawn()
+    }
+
+    #[cfg(not(target_os = "windows"))]
+    fn launch_ep2() -> Result<Child, io::Error> {
+        Launcher::launch_steam_game(203650)
+    }
+
+    pub fn launch_current_game() -> Result<Child, io::Error> {
+        let game = Launcher::get_current_game();
         match game {
             Game::Unknown => Err(io::Error::other("Game not found")),
-            Game::Episode1 => {
-                if Path::new("main.conf").exists() {
-                    Command::new(current_dir.join("Sonic_vis.exe")).spawn()
-                } else {
-                    Command::new(current_dir.join("SonicLauncher.orig.exe")).spawn()
-                }
-            },
-            Game::Episode2 => Command::new(current_dir.join("Sonic.exe")).spawn()
+            Game::Episode1 => Launcher::launch_ep1(),
+            Game::Episode2 => Launcher::launch_ep2()
         }
     }
 

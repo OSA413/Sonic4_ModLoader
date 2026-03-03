@@ -229,7 +229,7 @@ pub fn load_file_mods() {
     if file_patcher_config.use_amb_rs_instead {
         println!("Using amb-rs...");
     } else {
-        println!("Using AMBPathcer...");
+        println!("Using AMBPatcher...");
         match common::Launcher::launch_amb_patcher(vec![]) {
             Ok(mut child) => {
                 match child.wait() {
