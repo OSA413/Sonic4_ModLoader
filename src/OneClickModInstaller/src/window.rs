@@ -67,5 +67,6 @@ impl OneClickModInstallerWindow {
 
     fn startup(&self) {
         self.imp().logo.set_resource(Some("/Sonic4ModLoader/OneClickModInstaller/logo.svg"));
+        common_gtk4::show_admin_warning(self);
     }
 }

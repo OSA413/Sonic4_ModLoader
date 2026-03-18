@@ -28,6 +28,7 @@ mod imp {
         fn constructed(&self) {
             self.parent_constructed();
             self.obj().setup_actions();
+            self.obj().startup();
         }
     }
 
@@ -90,5 +91,9 @@ impl ManagerLauncherWindow {
             .build();
 
         self.add_action_entries([action_play, action_launch_config_tool, action_launch_mod_manager]);
+    }
+
+    fn startup(&self) {
+        common_gtk4::show_admin_warning(self);
     }
 }

@@ -276,10 +276,13 @@ impl Sonic4ModManagerWindow {
     }
 
     fn show_first_time_dialog(&self) {
-        let alert = adw::AlertDialog::new(Some("First Launch Dialog"), Some("Hello!
+        let alert = adw::AlertDialog::new(
+            Some("First Launch Dialog"),
+            Some("Hello!
 It seems that you have launched the Mod Manager for the first time. Do you want to install the Mod Loader to be able to launch it from other shortcuts (e.g. Steam)?
 
-You can install/uninstall and configure it through the settings menu at any time."));
+You can install/uninstall and configure it through the settings menu at any time.")
+        );
 
         alert.add_response("no", "No");
         alert.set_response_appearance("no", adw::ResponseAppearance::Destructive);
@@ -353,6 +356,10 @@ You can install/uninstall and configure it through the settings menu at any time
         let description = buffer_formatter::format_buffer(description);
         self.imp().description.set_buffer(Some(&description));
         
-        if let installation::InstallationStatus::FirstLaunch = installation::get_installation_status() { self.show_first_time_dialog() };
+        common_gtk4::show_admin_warning(self);
+
+        if let installation::InstallationStatus::FirstLaunch = installation::get_installation_status() {
+            self.show_first_time_dialog();
+        }
     }
 }

@@ -7,5 +7,9 @@ homepage = "https://github.com/OSA413/Sonic4_ModLoader"
 license = "MIT"
 
 [dependencies]
+adw = { version = "0.8", package = "libadwaita", features = ["v1_5"] }
 gtk = { version = "0.10.0", package = "gtk4", features = ["v4_14"] }
 common = { path = "../common" }
+
+[target.'cfg(target_os = "windows")'.dependencies]
+is_elevated = "0.1.2"

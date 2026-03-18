@@ -1,4 +1,5 @@
 use gtk::glib;
+use adw::{prelude::{AdwDialogExt, AlertDialogExt}};
 
 pub fn set_gsk_renderer_from_config() {
     println!("Trying to load GTK4 config...");
@@ -13,5 +14,31 @@ pub fn set_gsk_renderer_from_config() {
             println!("Error loading GTK4 config: {err}");
             println!("That's OK, continuing without GTK4 config");
         }
+    }
+}
+
+fn show_admin_warning_common<W: glib::prelude::IsA<gtk::Widget>>(window: &W) {
+    let alert = adw::AlertDialog::new(
+        Some("Run as admin detected"),
+        Some("It seems that you have launched the program as admin.
+
+Generally you shouldn't do that.")
+    );
+
+    alert.add_response("ok", "OK, I got it!");
+    alert.set_response_appearance("ok", adw::ResponseAppearance::Suggested);
+    alert.set_close_response("ok");
+    alert.present(Some(window));
+}
+
+#[cfg(not(target_os = "windows"))]
+pub fn show_admin_warning<W: glib::prelude::IsA<gtk::Widget>>(window: &W) {
+    // TODO
+}
+
+#[cfg(target_os = "windows")]
+pub fn show_admin_warning<W: glib::prelude::IsA<gtk::Widget>>(window: &W) {
+    if is_elevated::is_elevated() {
+        show_admin_warning_common(window);
     }
 }

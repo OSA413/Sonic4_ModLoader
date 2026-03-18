@@ -172,6 +172,8 @@ version = "0.0.0"
 dependencies = [
  "common",
  "gtk4",
+ "is_elevated",
+ "libadwaita",
 ]
 
 [[package]]
@@ -761,6 +763,15 @@ dependencies = [
  "unicode-width",
  "unit-prefix",
  "web-time",
+]
+
+[[package]]
+name = "is_elevated"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5299060ff5db63e788015dcb9525ad9b84f4fd9717ed2cbdeba5018cbf42f9b5"
+dependencies = [
+ "winapi",
 ]
 
 [[package]]
