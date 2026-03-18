@@ -14,15 +14,30 @@
     <property name="title">Sonic 4 Mod Manager</property>
     <child type="titlebar">
       <object class="GtkHeaderBar">
-        <child type ="start">
-          <object class="GtkImage">
-            <property name="icon-name">icon</property>
-            <property name="icon-size">2</property>
-            <property name="margin-start">4</property>
-            <property name="margin-end">4</property>
+        <property name="title-widget">
+          <object class="GtkBox">
+            <child>
+              <object class="GtkImage">
+                <property name="icon-name">icon</property>
+                <property name="icon-size">2</property>
+                <property name="margin-start">4</property>
+                <property name="margin-end">4</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel">
+                <property name="label" translatable="yes">Sonic 4 Mod Manager</property>
+                <property name="single-line-mode">True</property>
+                <property name="ellipsize">end</property>
+                <property name="width-chars">5</property>
+                <style>
+                  <class name="title"/>
+                </style>
+              </object>
+            </child>
           </object>
-        </child>
-        <child type ="end">
+        </property>
+        <child type="end">
           <object class="GtkMenuButton">
             <property name="icon-name">open-menu-symbolic</property>
             <property name="menu-model">main-menu</property>
