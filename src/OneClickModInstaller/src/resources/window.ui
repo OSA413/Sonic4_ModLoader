@@ -42,12 +42,53 @@
           <object class="AdwViewStack" id="stack">
             <child>
               <object class="AdwViewStackPage">
-                <property name="name">overview</property>
-                <property name="title">Overview</property>
+                <property name="name">current_installation</property>
+                <property name="title">Current Installation</property>
                 <property name="child">
                   <object class="GtkBox">
-                    <child type ="start">
+                    <child type="start">
+                      <object class="GtkPicture" />
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Select an installation location</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwViewStackPage">
+                <property name="name">installation_locations</property>
+                <property name="title">Installation Locations</property>
+                <property name="child">
+                  <object class="GtkBox">
+                    <child type="start">
                       <object class="GtkPicture" id="logo" />
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Select an installation location</property>
+                      </object>
+                    </child>
+                  </object>
+                </property>
+              </object>
+            </child>
+            <child>
+              <object class="AdwViewStackPage">
+                <property name="name">mod_installation</property>
+                <property name="title">Mod Installation</property>
+                <property name="child">
+                  <object class="GtkBox">
+                    <child type="start">
+                      <object class="GtkPicture" />
+                    </child>
+                    <child>
+                      <object class="GtkLabel">
+                        <property name="label">Select an installation location</property>
+                      </object>
                     </child>
                   </object>
                 </property>
