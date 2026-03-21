@@ -15,4 +15,4 @@ common = { path = "../common" }
 is_elevated = "0.1.2"
 
 [target.'cfg(target_os = "linux")'.dependencies]
-is_root = "0.0.1"
+is_sudo = "0.0.1"
