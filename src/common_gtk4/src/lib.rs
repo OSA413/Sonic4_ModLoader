@@ -1,5 +1,6 @@
 use gtk::glib;
 use adw::{prelude::{AdwDialogExt, AlertDialogExt}};
+use is_sudo::RunningAs;
 
 pub fn set_gsk_renderer_from_config() {
     println!("Trying to load GTK4 config...");
@@ -31,14 +32,10 @@ Generally you shouldn't do that.")
     alert.present(Some(window));
 }
 
-#[cfg(not(target_os = "windows"))]
 pub fn show_admin_warning<W: glib::prelude::IsA<gtk::Widget>>(window: &W) {
-    // TODO
-}
-
-#[cfg(target_os = "windows")]
-pub fn show_admin_warning<W: glib::prelude::IsA<gtk::Widget>>(window: &W) {
-    if is_elevated::is_elevated() {
-        show_admin_warning_common(window);
+    let running_as = is_sudo::check();
+    match running_as {
+        RunningAs::Root => show_admin_warning_common(window),
+        RunningAs::User => {},
     }
 }
