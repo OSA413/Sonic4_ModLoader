@@ -47,8 +47,9 @@ cargo install cargo-bundle-licenses
 
 cargo bundle-licenses --format json --output "./dist/Sonic4ModLoader/Mod Loader - licenses/Rust-THIRDPARTY.json"
 
-cp ./target/release/amb-rs ./dist/Sonic4ModLoader/amb-rs
-cp ./target/release/Sonic4FilePatcher ./dist/Sonic4ModLoader/Sonic4FilePatcher
+# We need to name them as "exe" because otherwise Proton doesn't launch them
+cp ./target/release/amb-rs ./dist/Sonic4ModLoader/amb-rs.exe
+cp ./target/release/Sonic4FilePatcher ./dist/Sonic4ModLoader/Sonic4FilePatcher.exe
 cp ./target/release/Sonic4ModManager ./dist/Sonic4ModLoader/Sonic4ModManager
 
 # SHA256SUMS
