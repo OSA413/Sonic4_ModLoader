@@ -109,7 +109,8 @@ impl Launcher {
     }
 
     pub fn launch_amb_patcher(args: Vec<String>) -> Result<Child, io::Error> {
-        Command::new("AMBPatcher.exe").args(args).spawn()
+        let current_dir = env::current_dir().unwrap();
+        Command::new(current_dir.join("AMBPatcher.exe")).args(args).spawn()
     }
 
     pub fn launch_amb_rs(args: Vec<String>) -> Result<Child, io::Error> {
