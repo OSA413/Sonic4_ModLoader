@@ -50,6 +50,7 @@ impl Launcher {
         Launcher::get_game("")
     }
 
+    #[cfg(not(target_os = "windows"))]
     pub fn launch_steam_game(id: u32) -> Result<Child, io::Error> {
         Command::new("xdg-open").arg(format!("steam://launch/{id}/dialog")).spawn()
     }
@@ -125,7 +126,13 @@ impl Launcher {
         Command::new("OneClickModInstaller.exe").args(args).spawn()
     }
 
+    #[cfg(target_os = "windows")]
     pub fn open_mods_folder() -> Result<Child, io::Error> {
         Command::new("explorer.exe").arg("mods").spawn()
+    }
+
+    #[cfg(not(target_os = "windows"))]
+    pub fn open_mods_folder() -> Result<Child, io::Error> {
+        Command::new("xdg-open").arg("mods").spawn()
     }
 }
