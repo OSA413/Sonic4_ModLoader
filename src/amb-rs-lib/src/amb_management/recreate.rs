@@ -1,16 +1,17 @@
 use std::{fs, path::{Path, PathBuf}};
-use crate::{amb::Amb, amb_management, error::AmbLibRsError};
+use crate::{amb::Amb, amb_management};
+use common_binary::error::CommonBinaryError;
 
-pub fn recreate_amb(file: String, save_as_file_name: Option<String>) -> Result<(), AmbLibRsError> {
+pub fn recreate_amb(file: String, save_as_file_name: Option<String>) -> Result<(), CommonBinaryError> {
     let amb = Amb::new_from_file_name(&file)?;
     fs::write(save_as_file_name.unwrap_or(file), amb.write()?)?;
     Ok(())
 }
 
-pub fn recreate_amb_from_dir(dir: String) -> Result<(), AmbLibRsError> {
+pub fn recreate_amb_from_dir(dir: String) -> Result<(), CommonBinaryError> {
     let dir_path = Path::new(&dir);
     if !dir_path.is_dir() {
-        return Err(AmbLibRsError::Io(std::io::Error::other(format!("Error: {dir:?} is not a directory"))));
+        return Err(CommonBinaryError::Io(std::io::Error::other(format!("Error: {dir:?} is not a directory"))));
     }
 
     let extracted_prefix = "_extracted";

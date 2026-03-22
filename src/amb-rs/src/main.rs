@@ -1,5 +1,6 @@
 use std::{env, ops, path::Path};
-use amb_rs_lib::{amb_management, error::AmbLibRsError};
+use amb_rs_lib::{amb_management};
+use common_binary::error::CommonBinaryError;
 
 mod help;
 
@@ -8,7 +9,7 @@ fn exit_with_error(error: String) {
     std::process::exit(1);
 }
 
-fn handle_result(result: Result<(), AmbLibRsError>) {
+fn handle_result(result: Result<(), CommonBinaryError>) {
     match result {
         Ok(_) => (),
         Err(e) => exit_with_error(format!("{e:?}")),

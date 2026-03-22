@@ -1,6 +1,6 @@
-use crate::{binary_reader::Endianness, error::{AmbLibRsError, PointerOutOfBoundsDetails}};
+use crate::{endianness::Endianness, error::{CommonBinaryError, PointerOutOfBoundsDetails}};
 
-pub fn write_u32(target: &mut [u8], pointer: usize, data: u32, endianness: &Option<Endianness>) -> Result<(), AmbLibRsError> {
+pub fn write_u32(target: &mut [u8], pointer: usize, data: u32, endianness: &Option<Endianness>) -> Result<(), CommonBinaryError> {
     let bytes = match endianness {
         Some(Endianness::Little) => data.to_le_bytes(),
         Some(Endianness::Big) => data.to_be_bytes(),
@@ -8,7 +8,7 @@ pub fn write_u32(target: &mut [u8], pointer: usize, data: u32, endianness: &Opti
     };
 
     if target.len() >= pointer + 4 {
-        return Err(AmbLibRsError::PointerOutOfBounds(PointerOutOfBoundsDetails { 
+        return Err(CommonBinaryError::PointerOutOfBounds(PointerOutOfBoundsDetails { 
             pointer,
             source_len: target.len(),
             when: "Writing an u32".to_string(),

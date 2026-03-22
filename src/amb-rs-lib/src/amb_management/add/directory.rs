@@ -1,5 +1,6 @@
 use std::{fs, path::Path};
-use crate::{amb::Amb, amb_management, error::AmbLibRsError};
+use crate::{amb::Amb, amb_management};
+use common_binary::error::CommonBinaryError;
 
 pub fn add_dir_of_files_to_amb(amb: &mut Amb, dir_to_add: &Path) -> usize {
     let mut files_chain = common::walk_dir::walk_dir(dir_to_add, None);
@@ -16,7 +17,7 @@ pub fn add_dir_of_files_to_amb(amb: &mut Amb, dir_to_add: &Path) -> usize {
     files_chain.len()
 }
 
-pub fn add_dir_to_amb_from_dir_path(target_file: &Path, dir_to_add: &Path) -> Result<(), AmbLibRsError> {
+pub fn add_dir_to_amb_from_dir_path(target_file: &Path, dir_to_add: &Path) -> Result<(), CommonBinaryError> {
     let mut amb = Amb::new_from_file_name(&target_file.display().to_string())?;
     if add_dir_of_files_to_amb(&mut amb, dir_to_add) == 0 {
         println!("No files were added to AMB file, I'm not rewriting the file now.");

@@ -72,6 +72,7 @@ version = "1.0.0"
 dependencies = [
  "amb-rs-lib",
  "common",
+ "common_binary",
 ]
 
 [[package]]
@@ -79,6 +80,7 @@ name = "amb-rs-lib"
 version = "1.0.0"
 dependencies = [
  "common",
+ "common_binary",
 ]
 
 [[package]]
@@ -165,6 +167,10 @@ dependencies = [
  "serde-xml-rs",
  "serde_json",
 ]
+
+[[package]]
+name = "common_binary"
+version = "0.0.0"
 
 [[package]]
 name = "common_gtk4"

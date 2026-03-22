@@ -13,3 +13,4 @@ license = "MIT"
 [dependencies]
 amb-rs-lib = { path = "../amb-rs-lib" }
 common = { path = "../common" }
+common_binary = { path = "../common_binary" }

@@ -1,7 +1,7 @@
 use std;
 use crate::amb::{Amb, Version};
-use crate::binary_reader::Endianness;
-use crate::error::AmbLibRsError;
+use common_binary::endianness::Endianness;
+use common_binary::error::CommonBinaryError;
 
 fn add_json_entry_str(field: &'static str, value: &String) -> String {
     add_json_entry(field, &format!("\"{value}\""))
@@ -11,17 +11,17 @@ fn add_json_entry(field: &'static str, value: &String) -> String {
     format!("\"{field}\":{value}")
 }
 
-pub fn print_from_file_to_stdout(target_file: String) -> Result<(), AmbLibRsError> {
+pub fn print_from_file_to_stdout(target_file: String) -> Result<(), CommonBinaryError> {
     print!("{}", print_from_file(&target_file)?);
     Ok(())
 }
 
-pub fn print_from_file(target_file: &String) -> Result<String, AmbLibRsError> {
+pub fn print_from_file(target_file: &String) -> Result<String, CommonBinaryError> {
     let source = std::fs::read(target_file)?;
     Ok(print_from_vec_u8(source, target_file)?.to_string())
 }
 
-pub fn print_from_vec_u8(source: Vec<u8>, name: &String) -> Result<String, AmbLibRsError> {
+pub fn print_from_vec_u8(source: Vec<u8>, name: &String) -> Result<String, CommonBinaryError> {
     let amb = Amb::new_from_src_ptr_name(&source, Some(0), name)?;
     let mut amb_toc = Vec::<String>::new();
 

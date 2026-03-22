@@ -1,5 +1,6 @@
 use std::{io::Read, path::Path};
-use crate::{binary_object::BinaryObject, binary_reader::{self, Endianness}, binary_writer, error::AmbLibRsError};
+use crate::{binary_object::BinaryObject};
+use common_binary::{error::CommonBinaryError, endianness::Endianness, binary_reader, binary_writer};
 
 pub enum Version {
     PC = 0x20,
@@ -83,7 +84,7 @@ impl Amb {
         }
     }
 
-    pub fn new_from_file_name(file_path: &String) -> Result<Self, AmbLibRsError> {
+    pub fn new_from_file_name(file_path: &String) -> Result<Self, CommonBinaryError> {
         Self::new_from_src_ptr_name(&std::fs::read(file_path)?, Some(0), file_path)
     }
 
@@ -91,9 +92,9 @@ impl Amb {
         source: &[u8],
         ptr: Option<usize>,
         name: &String
-    ) -> Result<Self, AmbLibRsError> {
+    ) -> Result<Self, CommonBinaryError> {
         if !Amb::is_source_amb(source, ptr) {
-            return Err(AmbLibRsError::ProvidedSourceIsNotAnAmb(format!("Provided source is not an AMB file, ptr: {ptr:?}, name: {name}")));
+            return Err(CommonBinaryError::ProvidedSourceIsNotAnAmb(format!("Provided source is not an AMB file, ptr: {ptr:?}, name: {name}")));
         }
         let (version, endianness) = Amb::get_version(source, ptr);
         let shift: usize = match version {
@@ -145,11 +146,11 @@ impl Amb {
         })
     }
 
-    pub fn new_from_binary_object(bo: &BinaryObject) -> Result<Self, AmbLibRsError> {
+    pub fn new_from_binary_object(bo: &BinaryObject) -> Result<Self, CommonBinaryError> {
         Amb::new_from_src_ptr_name(&bo.data, None, &bo.name)
     }
 
-    pub fn write(&self) -> Result<Vec<u8>, AmbLibRsError> {
+    pub fn write(&self) -> Result<Vec<u8>, CommonBinaryError> {
         let amb_length = self.length();
         let mut result = Vec::<u8>::with_capacity(amb_length);
         let mut pointers = self.predict_pointers();
@@ -217,7 +218,7 @@ impl Amb {
         internal_name
     }
 
-    pub fn add_binary_object(&mut self, binary_object: BinaryObject, internal_name: String) -> Result<(), AmbLibRsError> {
+    pub fn add_binary_object(&mut self, binary_object: BinaryObject, internal_name: String) -> Result<(), CommonBinaryError> {
         if let Some(internal_index) = self.objects.iter().position(|x| x.name == internal_name) {
             let existing_object = &self.objects[internal_index];                
             self.objects[internal_index] = BinaryObject {
