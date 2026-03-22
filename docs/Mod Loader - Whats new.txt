@@ -1,3 +1,12 @@
+[c]Version: v0.3.1
+* Fixed a lot of Linux issues that were reported and discovered (thank you!).
+* Added a warning if you launch GUI apps with admin priveleges (you generally shouldn't launch them if it's not needed)
+* Moved the app icon to the center.
+* Removed `glob` crate, replaced with hand-written function in Sonic4FilePatcher.
+
+[c]Version: v0.3.0
+* Introduced Sonic4FilePatcher, it allows to switch between AMBPatcher and amb-rs
+
 [c]Version: v0.2.3
 * Native Linux version is now available!
 * Mod Manager stability improvements
