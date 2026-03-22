@@ -234,6 +234,7 @@ impl Sonic4ModManagerWindow {
         let row = ActionRow::builder()
             .title(g_mod_entry.title().unwrap_or(g_mod_entry.path()))
             .subtitle(version_string)
+            .use_markup(false)
             .build();
         row.add_prefix(&check_button);
 
