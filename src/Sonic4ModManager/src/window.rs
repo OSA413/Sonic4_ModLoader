@@ -238,8 +238,6 @@ impl Sonic4ModManagerWindow {
             .build();
         row.add_prefix(&check_button);
 
-        
-
         row.upcast::<gtk::Widget>()
     }
 
