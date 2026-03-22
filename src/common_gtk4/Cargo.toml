@@ -10,9 +10,4 @@ license = "MIT"
 adw = { version = "0.8", package = "libadwaita", features = ["v1_5"] }
 gtk = { version = "0.10.0", package = "gtk4", features = ["v4_14"] }
 common = { path = "../common" }
-
-[target.'cfg(target_os = "windows")'.dependencies]
-is_elevated = "0.1.2"
-
-[target.'cfg(not(target_os = "windows"))'.dependencies]
-is_sudo = "0.0.1"
+is_sudo = "0.0.2"

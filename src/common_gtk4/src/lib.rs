@@ -31,19 +31,10 @@ Generally you shouldn't do that.")
     alert.present(Some(window));
 }
 
-
-#[cfg(not(target_os = "windows"))]
 pub fn show_admin_warning<W: glib::prelude::IsA<gtk::Widget>>(window: &W) {
     let running_as = is_sudo::check();
     match running_as {
         is_sudo::RunningAs::Root => show_admin_warning_common(window),
         is_sudo::RunningAs::User => {},
-    }
-}
-
-#[cfg(target_os = "windows")]
-pub fn show_admin_warning<W: glib::prelude::IsA<gtk::Widget>>(window: &W) {
-    if is_elevated::is_elevated() {
-        show_admin_warning_common(window);
     }
 }

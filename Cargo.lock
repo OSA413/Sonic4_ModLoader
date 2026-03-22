@@ -172,7 +172,6 @@ version = "0.0.0"
 dependencies = [
  "common",
  "gtk4",
- "is_elevated",
  "is_sudo",
  "libadwaita",
 ]
@@ -767,22 +766,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "is_elevated"
-version = "0.1.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5299060ff5db63e788015dcb9525ad9b84f4fd9717ed2cbdeba5018cbf42f9b5"
-dependencies = [
- "winapi",
-]
-
-[[package]]
 name = "is_sudo"
-version = "0.0.1"
+version = "0.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "05935db05cd98fb5b1abd88691f1a6061e1d0bc68f79a6d25e0410a7419de4b9"
+checksum = "7101f97fc03b7659e91fdde6440d550fea43fe3e9c30cfe4ee3860c256a89248"
 dependencies = [
  "libc",
- "log",
  "winapi",
 ]
 
@@ -835,9 +824,9 @@ dependencies = [
 
 [[package]]
 name = "libc"
-version = "0.2.155"
+version = "0.2.183"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "97b3888a4aecf77e811145cadf6eef5901f4782c53886191b2f693f24761847c"
+checksum = "b5b646652bf6661599e1da8901b3b9522896f01e736bad5f723fe7a3a27f899d"
 
 [[package]]
 name = "log"
