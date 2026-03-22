@@ -4,6 +4,14 @@ Note: See `.github/workflows/release_linux.yml` for up-to-date instructions.
 
 You will need .Net 6 and Rust.
 
+In order to make the game load all needed files via the patcher, you will need to cross compile some of the executables:
+
+```sh
+sudo apt install mingw-w64
+rustup target add x86_64-pc-windows-gnu
+cargo build --bin Sonic4FilePatcher --target x86_64-pc-windows-gnu
+```
+
 After that, run these commands:
 
 ```sh

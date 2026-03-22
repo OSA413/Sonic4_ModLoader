@@ -29,7 +29,8 @@ jobs:
       - uses: actions/checkout@v2
 
       - run: sudo apt update
-      - run: sudo apt install libgtk-4-dev libadwaita-1-dev build-essential
+      - run: sudo apt install libgtk-4-dev libadwaita-1-dev build-essential mingw-w64
+      - run: rustup target add x86_64-pc-windows-gnu
 
       - name: Update dependencies
         run: bash update_dependencies_linux.sh
@@ -52,6 +53,8 @@ jobs:
 
       - name: Build Rust
         run: cargo build --release
+
+      - run: cargo build --bin Sonic4FilePatcher --target x86_64-pc-windows-gnu --release
 
       - name: Pack
         run: bash pack_linux.sh
