@@ -31,6 +31,8 @@ Note that you will not be able to launch the Manager Launcher from Steam, instea
 
 In order to debug your installation (if it doesn't work for some reason), you can use [`protontricks-launch`](https://github.com/Matoking/protontricks?tab=readme-ov-file#flatpak-recommended) to run `AMBPatcher`, `Sonic4FilePatcher`, `amb-rs`, and `CsbEditor`. They all should work if .Net 6 and the packages needed for the game that Steam installs are installed. If not, [file an issue in this repository](https://github.com/OSA413/Sonic4_ModLoader/issues).
 
+ I'll probably like that it's possible to install application shortcut to the Mod Manager so you don't have to open your Folder manager again. Just after installation (when Mod Manager asks or when you press "Install" button in the settings) the `Sonic4Episode1ModManager.desktop` or `Sonic4Episode2ModManager.desktop` file appears in the root directory of the game. Just install the desktop file following [these steps (step 4.2 and step 4.3)](https://wiki.archlinux.org/title/Desktop_entries#Installation). After that you'll recieve the app installed and available in your shell/app list (idk how it's called please help).
+
 ----------------
 
 **If you are looking for AMBPatcher** (the predecessor of amb-rs):

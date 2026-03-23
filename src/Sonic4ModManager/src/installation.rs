@@ -1,6 +1,7 @@
 use std::{fs, path::Path, process};
 
 use common::{settings, Game, Launcher};
+use std::process::Command;    
 
 pub enum InstallationStatus {
     Installed,
@@ -132,6 +133,41 @@ pub fn install() {
         Err(e) => eprintln!("Couldn't write ModManager.cfg: {e}"),
     }
     settings::alice_mod_loader::save("Sonic4FilePatcher.exe");
+
+    install_to_local_user();
+}
+
+#[cfg(target_os = "linux")]
+fn install_to_local_user() {
+    let game = Launcher::get_current_game();
+    let game_readable_prefix = match game {
+        Game::Episode1 => ": 1",
+        Game::Episode2 => ": 2",
+        Game::Unknown => ""
+    };
+    let game_prefix = match game {
+        Game::Episode1 => "Episode1",
+        Game::Episode2 => "Episode2",
+        Game::Unknown => ""
+    };
+    let current_path = std::env::current_exe().unwrap();
+    let current_path = current_path.parent().unwrap().display();
+    let desktop_entry = format!("[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Sonic 4{game_readable_prefix} Mod Manager
+Comment=The thing that manages mods
+Path={current_path}
+Exec=Sonic4ModManager
+Icon={current_path}/icon.svg
+");
+    fs::write(format!("Sonic4{game_prefix}ModManager.desktop"), desktop_entry).unwrap();
+    Command::new("desktop-file-install").arg("--dir=$HOME/.local/share/applications").arg(format!("./Sonic4{game_prefix}ModManager.desktop")).spawn().unwrap().wait().unwrap();
+}
+
+#[cfg(target_os = "windows")]
+fn install_to_local_user() {
+    // TODO
 }
 
 pub struct UninstallationOptions {

@@ -54,6 +54,9 @@ cp ./target/release/amb-rs ./dist/Sonic4ModLoader/amb-rs.exe
 cp ./target/x86_64-pc-windows-gnu/release/Sonic4FilePatcher.exe ./dist/Sonic4ModLoader/Sonic4FilePatcher.exe
 cp ./target/release/Sonic4ModManager ./dist/Sonic4ModLoader/Sonic4ModManager
 
+# Add icon for .desktop integration
+cp ./icon.svg ./dist/Sonic4ModLoader/icon.svg
+
 # SHA256SUMS
 echo "Creating SHA256SUMS..."
 cd dist
