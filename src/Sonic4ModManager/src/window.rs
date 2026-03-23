@@ -329,6 +329,8 @@ You can install/uninstall and configure it through the settings menu at any time
     }
 
     fn startup(&self) {
+        common::Launcher::where_in_the_world_am_i();
+
         let closure = {
             clone!(
                 #[strong (rename_to = this)] self,

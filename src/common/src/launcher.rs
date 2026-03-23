@@ -46,6 +46,15 @@ impl Launcher {
         Game::Unknown
     }
 
+    pub fn where_in_the_world_am_i() {
+        let game = Launcher::get_current_game();
+        match game {
+            Game::Episode1 => println!("Detected: Episode 1"),
+            Game::Episode2 => println!("Detected: Episode 2"),
+            Game::Unknown => println!("Game not found, you are probably running the app not from the game's directory.\nThe Mod Loader must be placed in the game's root directory."),
+        };
+    }
+
     pub fn get_current_game() -> Game {
         Launcher::get_game("")
     }

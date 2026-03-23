@@ -94,6 +94,7 @@ impl ManagerLauncherWindow {
     }
 
     fn startup(&self) {
+        common::Launcher::where_in_the_world_am_i();
         common_gtk4::show_admin_warning(self);
     }
 }
