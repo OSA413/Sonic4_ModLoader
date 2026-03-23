@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 cd "$(dirname "$0")"
 
 echo "Removing old distribution package..."
@@ -89,6 +90,7 @@ tiff
 zlib
 '
 
+set +e
 while IFS= read -r dep; do
     if [[ $dep != "" ]]; then 
         cp "C:/gtk-build/gtk/x64/release/share/doc/$dep/COPYING" "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-"$dep || \
@@ -99,6 +101,7 @@ while IFS= read -r dep; do
         cp "C:/gtk-build/gtk/x64/release/share/doc/$dep/manual/html/project/license.html" "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-"$dep".html"
     fi
 done <<< "$dependenciesGtk"
+set -e
 
 # SHA256SUMS
 echo "Creating SHA256SUMS..."

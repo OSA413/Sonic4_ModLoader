@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 cd "$(dirname "$0")"
 
 echo "Removing old distribution package..."
