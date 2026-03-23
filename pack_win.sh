@@ -53,11 +53,15 @@ cp ./target/release/amb-rs.exe ./dist/Sonic4ModLoader/amb-rs.exe
 cp ./target/release/Sonic4FilePatcher.exe ./dist/Sonic4ModLoader/Sonic4FilePatcher.exe
 
 cp ./target/release/ManagerLauncher.exe ./dist/Sonic4ModLoader/bin/ManagerLauncher.exe
+set +e
 copydeps --search-dir C:/gtk-build/gtk/x64/release/bin ./dist/Sonic4ModLoader/bin/ManagerLauncher.exe
+set -e
 cp ./target/release/ManagerLauncher_link.exe ./dist/Sonic4ModLoader/ManagerLauncher_link.exe
 
 cp ./target/release/Sonic4ModManager.exe ./dist/Sonic4ModLoader/bin/Sonic4ModManager.exe
+set +e
 copydeps --search-dir C:/gtk-build/gtk/x64/release/bin ./dist/Sonic4ModLoader/bin/Sonic4ModManager.exe
+set -e
 cp ./target/release/Sonic4ModManager_link.exe ./dist/Sonic4ModLoader/Sonic4ModManager_link.exe
 
 # GTK4 icon files

@@ -20,6 +20,8 @@ cp "./docs/Mod Loader - Whats new.txt" "./dist/Sonic4ModLoader/Mod Loader - What
 #Dependencies
 for dir in $(ls ./dependencies); do
     [ $dir == "readme.md" ] && continue
+    # We don't need a bundled 7-Zip on Linux
+    [ $dir == "7-Zip" ] && continue
 
     #Files
     for file in $(cat ./dependencies/$dir/files); do
