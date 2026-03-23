@@ -21,14 +21,29 @@
       <object class="AdwToolbarView">
         <child type="top">
           <object class="AdwHeaderBar">
-            <child type ="start">
-              <object class="GtkImage">
-                <property name="icon-name">icon</property>
-                <property name="icon-size">2</property>
-                <property name="margin-start">4</property>
-                <property name="margin-end">4</property>
+            <property name="title-widget">
+              <object class="GtkBox">
+                <child>
+                  <object class="GtkImage">
+                    <property name="icon-name">icon</property>
+                    <property name="icon-size">2</property>
+                    <property name="margin-start">4</property>
+                    <property name="margin-end">4</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel">
+                    <property name="label" translatable="yes">One-Click Mod Installer</property>
+                    <property name="single-line-mode">True</property>
+                    <property name="ellipsize">end</property>
+                    <property name="width-chars">5</property>
+                    <style>
+                      <class name="title"/>
+                    </style>
+                  </object>
+                </child>
               </object>
-            </child>
+            </property>
             <child type ="end">
               <object class="GtkMenuButton">
                 <property name="icon-name">open-menu-symbolic</property>
@@ -39,59 +54,61 @@
           </object>
         </child>
         <property name="content">
-          <object class="AdwViewStack" id="stack">
+          <object class="GtkBox">
+            <property name="orientation">vertical</property>
             <child>
-              <object class="AdwViewStackPage">
-                <property name="name">current_installation</property>
-                <property name="title">Current Installation</property>
-                <property name="child">
-                  <object class="GtkBox">
-                    <child type="start">
-                      <object class="GtkPicture" />
-                    </child>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="label">Select an installation location</property>
-                      </object>
-                    </child>
-                  </object>
-                </property>
-              </object>
+              <object class="GtkPicture" id="logo" />
             </child>
             <child>
-              <object class="AdwViewStackPage">
-                <property name="name">installation_locations</property>
-                <property name="title">Installation Locations</property>
-                <property name="child">
-                  <object class="GtkBox">
-                    <child type="start">
-                      <object class="GtkPicture" id="logo" />
-                    </child>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="label">Select an installation location</property>
+             <object class="AdwViewStack" id="stack">
+                <child>
+                  <object class="AdwViewStackPage">
+                    <property name="name">current_installation</property>
+                    <property name="title">Current Installation</property>
+                    <property name="child">
+                      <object class="GtkBox">
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label">Select an installation location</property>
+                          </object>
+                        </child>
                       </object>
-                    </child>
+                    </property>
                   </object>
-                </property>
-              </object>
-            </child>
-            <child>
-              <object class="AdwViewStackPage">
-                <property name="name">mod_installation</property>
-                <property name="title">Mod Installation</property>
-                <property name="child">
-                  <object class="GtkBox">
-                    <child type="start">
-                      <object class="GtkPicture" />
-                    </child>
-                    <child>
-                      <object class="GtkLabel">
-                        <property name="label">Select an installation location</property>
+                </child>
+                <child>
+                  <object class="AdwViewStackPage">
+                    <property name="name">installation_locations</property>
+                    <property name="title">Installation Locations</property>
+                    <property name="child">
+                      <object class="GtkBox">          
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label">Select an installation location</property>
+                          </object>
+                        </child>
                       </object>
-                    </child>
+                    </property>
                   </object>
-                </property>
+                </child>
+                <child>
+                  <object class="AdwViewStackPage">
+                    <property name="name">mod_installation</property>
+                    <property name="title">Mod Installation</property>
+                    <property name="child">
+                      <object class="GtkBox">          
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label">Select an installation location</property>
+                          </object>
+                        </child>
+                      </object>
+                    </property>
+                  </object>
+                </child>
               </object>
             </child>
           </object>
