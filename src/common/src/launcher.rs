@@ -51,7 +51,12 @@ impl Launcher {
         match game {
             Game::Episode1 => println!("Detected: Episode 1"),
             Game::Episode2 => println!("Detected: Episode 2"),
-            Game::Unknown => println!("Game not found, you are probably running the app not from the game's directory.\nThe Mod Loader must be placed in the game's root directory."),
+            Game::Unknown => println!("
+##############################
+Game not found, you are probably running the app not from the game's directory.
+The Mod Loader must be placed in the game's root directory.
+##############################
+"),
         };
     }
 
