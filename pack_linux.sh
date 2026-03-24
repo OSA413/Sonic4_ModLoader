@@ -46,7 +46,7 @@ done
 
 # Rust
 mkdir -p "./dist/Sonic4ModLoader"
-# cargo install cargo-bundle-licenses
+cargo install cargo-bundle-licenses
 
 cargo bundle-licenses --format json --output "./dist/Sonic4ModLoader/Mod Loader - licenses/Rust-THIRDPARTY.json"
 
