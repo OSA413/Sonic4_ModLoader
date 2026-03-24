@@ -184,7 +184,9 @@
                               </object>
                             </child>
                             <child>
-                              <object class="GtkEntry" id="entry_buffer_size"/>
+                              <object class="GtkEntry" id="entry_buffer_size">                      
+                                <property name="input-hints">GTK_INPUT_HINT_NO_EMOJI</property>
+                              </object>
                             </child>
                           </object>
                         </child>
@@ -201,7 +203,9 @@
                               </object>
                             </child>
                             <child>
-                              <object class="GtkEntry" id="entry_max_threads"></object>
+                              <object class="GtkEntry" id="entry_max_threads">
+                                <property name="input-hints">GTK_INPUT_HINT_NO_EMOJI</property>
+                              </object>
                             </child>
                           </object>
                         </child>

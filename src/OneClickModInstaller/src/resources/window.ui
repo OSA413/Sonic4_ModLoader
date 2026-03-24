@@ -66,11 +66,54 @@
                     <property name="name">current_installation</property>
                     <property name="title">Current Installation</property>
                     <property name="child">
-                      <object class="GtkBox">
+                      <object class="GtkBox">          
                         <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkLabel">
-                            <property name="label">Select an installation location</property>
+                            <property name="label">Installation for current game</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox">
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label">Game: </property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label">Not Found</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox">
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label">Installation status:</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label">None</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label">Installation requires administrator privileges.</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton">
+                            <property name="label">Install/Fix</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton">
+                            <property name="label">Uninstall</property>
                           </object>
                         </child>
                       </object>
@@ -89,6 +132,54 @@
                             <property name="label">Select an installation location</property>
                           </object>
                         </child>
+                        <child>
+                          <object class="GtkBox">
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label">Episode 1</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label">Installed</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton">
+                                <property name="label">Install</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label">/path/to/episode1</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox">
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label">Episode 2</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel">
+                                <property name="label">Installed</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton">
+                                <property name="label">Install</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label">/path/to/episode2</property>
+                          </object>
+                        </child>
                       </object>
                     </property>
                   </object>
@@ -102,7 +193,42 @@
                         <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkLabel">
-                            <property name="label">Select an installation location</property>
+                            <property name="label">Mod Installation</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="label">Enter a path or URL to a mod to install it.</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkBox">
+                            <child>
+                              <object class="GtkEntry" id="description_entry">
+                                <property name="input-hints">GTK_INPUT_HINT_NO_EMOJI</property>
+                                <layout>
+                                  <property name="column">1</property>
+                                  <property name="row">0</property>
+                                  <property name="row-span">1</property>
+                                  <property name="column-span">1</property>
+                                </layout>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkButton">
+                                <property name="label">…</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckButton">
+                            <property name="label">Launch Mod Manager and exit after installation</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton">
+                            <property name="label">Install</property>
                           </object>
                         </child>
                       </object>

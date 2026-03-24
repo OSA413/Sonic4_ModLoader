@@ -1,5 +1,5 @@
 use adw::subclass::prelude::*;
-use gtk::{gio, glib};
+use gtk::{gio, glib, prelude::{PopoverExt, WidgetExt}};
 
 mod imp {
     use super::*;
