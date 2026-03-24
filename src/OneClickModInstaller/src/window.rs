@@ -95,11 +95,11 @@ impl OneClickModInstallerWindow {
                 self.imp().mod_path_entry.set_text(archive);
             },
             InitialArgs::FromGameBanana { url, type_, id } => {
-                println!("Provied args for mod from directoryFromGameBanana: {url}, {type_}, {id}");
+                println!("Provied args for mod from GameBanana: {url}, {type_}, {id}");
                 self.imp().mod_path_entry.set_text(url);
             },
             InitialArgs::FromInternet(url) => {
-                println!("Provied args for mod from directoryFromInternet: {url}");
+                println!("Provied args for mod from the internet: {url}");
                 self.imp().mod_path_entry.set_text(url);
             },
             InitialArgs::None => {
