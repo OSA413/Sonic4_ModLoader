@@ -42,6 +42,7 @@ pub fn install() {
     let current_path = current_path.display();
     shell_key.set_value("", &format!("\"{current_path}\" \"%1\"")).unwrap();
 }
+
 #[cfg(target_os = "windows")]
 pub fn uninstall() {
     use std::path::Path;
@@ -79,4 +80,3 @@ pub fn fix() {
     let current_path = current_path.display();
     shell_key.set_value("", &format!("\"{current_path}\" \"%1\"")).unwrap();
 }
-

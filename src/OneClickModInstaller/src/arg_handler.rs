@@ -1,12 +1,12 @@
 // Handle with care!
-use std::{env::Args, ops, path::{Path, PathBuf}, sync::{LazyLock, Mutex, MutexGuard}};
+use std::{env::Args, ops, path::Path, sync::{LazyLock, Mutex, MutexGuard}};
 use crate::handler_installer;
 
 static MOD_ARG: LazyLock<Mutex<InitialArgs>> = LazyLock::new(|| Mutex::new(InitialArgs::None));
 
 pub enum InitialArgs {
-    FromDir(Box<PathBuf>),
-    FromFile(Box<PathBuf>),
+    FromDir(String),
+    FromArchive(String),
     FromGameBanana { url: String, type_: String, id: u32 },
     FromInternet(String),
     None,
@@ -36,11 +36,7 @@ impl ArgHandler {
                 }
 
                 let path = Path::new(&arg);
-                if path.is_dir() {
-                    *MOD_ARG.lock().unwrap() = InitialArgs::FromDir(Box::new(path.to_owned()));
-                } else if path.is_file() {
-                    *MOD_ARG.lock().unwrap() = InitialArgs::FromFile(Box::new(path.to_owned()));
-                } else if arg.starts_with("https://") {
+                if arg.starts_with("https://") {
                     *MOD_ARG.lock().unwrap() = InitialArgs::FromInternet(arg);
                 } else if arg.starts_with("sonic4mmep1:") || arg.starts_with("sonic4mmep2:") {
                     // sonic4mmepx:url,mod_type,mod_id
@@ -51,6 +47,15 @@ impl ArgHandler {
                         type_: args.next().unwrap().to_owned(),
                         id: args.next().unwrap().parse::<u32>().unwrap()
                     };
+                } else if path.is_dir() {
+                    *MOD_ARG.lock().unwrap() = InitialArgs::FromDir(path.display().to_string());
+                } else if path.is_file() && match path.extension() {
+                    Some(extension) => extension == "zip"
+                        || extension == "7z"
+                        || extension == "rar",
+                    None => false
+                } {
+                    *MOD_ARG.lock().unwrap() = InitialArgs::FromArchive(path.display().to_string());
                 }
             }
             None => {}

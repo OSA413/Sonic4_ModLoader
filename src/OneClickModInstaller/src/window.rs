@@ -1,5 +1,9 @@
+use std::ops::Deref;
+
 use adw::subclass::prelude::*;
-use gtk::{gio, glib};
+use gtk::{gio, glib, prelude::{EditableExt, WidgetExt}};
+
+use crate::arg_handler::{ArgHandler, InitialArgs};
 
 mod imp {
     use super::*;
@@ -9,6 +13,16 @@ mod imp {
     pub struct OneClickModInstallerWindow {
         #[template_child]
         pub logo: TemplateChild<gtk::Picture>,
+        #[template_child]
+        pub stack: TemplateChild<adw::ViewStack>,
+
+        // Mod Installation
+        #[template_child]
+        pub mod_path_entry: TemplateChild<gtk::Entry>,
+        #[template_child]
+        pub mod_path_button: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub exit_after_install_checkbutton: TemplateChild<gtk::CheckButton>,
     }
 
     #[glib::object_subclass]
@@ -65,9 +79,42 @@ impl OneClickModInstallerWindow {
         
     }
 
+    fn handle_initial_args(&self) {
+        let initial_args = ArgHandler::get();
+        let initial_args = initial_args.deref();
+        self.imp().mod_path_entry.set_sensitive(false);
+        self.imp().mod_path_button.set_sensitive(false);
+        self.imp().stack.set_visible_child_name("mod_installation");
+        match initial_args {
+            InitialArgs::FromDir(dir) => {
+                println!("Provied args for mod from directory: {dir}");        
+                self.imp().mod_path_entry.set_text(dir);
+            },
+            InitialArgs::FromArchive(archive) => {
+                println!("Provied args for mod from archive: {archive}");
+                self.imp().mod_path_entry.set_text(archive);
+            },
+            InitialArgs::FromGameBanana { url, type_, id } => {
+                println!("Provied args for mod from directoryFromGameBanana: {url}, {type_}, {id}");
+                self.imp().mod_path_entry.set_text(url);
+            },
+            InitialArgs::FromInternet(url) => {
+                println!("Provied args for mod from directoryFromInternet: {url}");
+                self.imp().mod_path_entry.set_text(url);
+            },
+            InitialArgs::None => {
+                println!("No initial args provided");
+                self.imp().mod_path_entry.set_sensitive(true);
+                self.imp().mod_path_button.set_sensitive(true);
+                self.imp().stack.set_visible_child_name("current_installation");
+            },
+        };
+    }
+
     fn startup(&self) {
         self.imp().logo.set_resource(Some("/Sonic4ModLoader/OneClickModInstaller/logo.svg"));
         common::Launcher::where_in_the_world_am_i();
         common_gtk4::show_admin_warning(self);
+        self.handle_initial_args();
     }
 }
