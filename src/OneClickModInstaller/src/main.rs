@@ -1,14 +1,20 @@
 mod application;
 mod window;
+mod arg_handler;
+mod handler_installer;
 
 use self::application::OneClickModInstallerApplication;
 use self::window::OneClickModInstallerWindow;
 use gtk::{gio, glib};
 use adw::prelude::ApplicationExtManual;
+use self::arg_handler::ArgHandler;
 
 const APP_ID: &str = "Sonic4ModLoader.OneClickModInstaller";
 
 fn main() -> glib::ExitCode {
+    // This will either install and exit, or prepare the config for the mod installer
+    ArgHandler::init(std::env::args());
+
     common_gtk4::set_gsk_renderer_from_config();
 
     // Load resources

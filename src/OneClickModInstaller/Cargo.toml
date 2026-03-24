@@ -15,6 +15,7 @@ adw = { version = "0.8", package = "libadwaita", features = ["v1_5"] }
 gtk = { version = "0.10.0", package = "gtk4", features = ["v4_14"] }
 common = { path = "../common" }
 common_gtk4 = { path = "../common_gtk4" }
+winreg = "0.56"
 
 [build-dependencies]
 glib-build-tools = "0.20"
