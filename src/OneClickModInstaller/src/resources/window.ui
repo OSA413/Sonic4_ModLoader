@@ -231,6 +231,12 @@
                             <property name="label">Install</property>
                           </object>
                         </child>
+                        <child>
+                          <object class="GtkProgressBar">
+                            <property name="show-text">True</property>
+                            <property name="text">This is the status bar above the progress bar</property>
+                          </object>
+                        </child>
                       </object>
                     </property>
                   </object>
