@@ -227,12 +227,13 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkButton">
+                          <object class="GtkButton" id="install_button">
+                            <property name="action-name">win.install_mod</property>
                             <property name="label">Install</property>
                           </object>
                         </child>
                         <child>
-                          <object class="GtkProgressBar">
+                          <object class="GtkProgressBar" id="progress_bar">
                             <property name="show-text">True</property>
                             <property name="text">This is the status bar above the progress bar</property>
                           </object>

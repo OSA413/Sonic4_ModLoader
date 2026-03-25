@@ -1,9 +1,35 @@
-use std::ops::Deref;
-
+use std::{fs::File, io::Write, ops::Deref};
+use futures_util::StreamExt;
 use adw::subclass::prelude::*;
-use gtk::{gio, glib, prelude::{EditableExt, WidgetExt}};
+use gtk::{ProgressBar, gio::{self, ActionEntry, prelude::ActionMapExtManual}, glib::{self, clone}, prelude::{ButtonExt, EditableExt, WidgetExt}};
 
-use crate::arg_handler::{ArgHandler, InitialArgs};
+use crate::{arg_handler::{ArgHandler, InitialArgs}, tokio_runtime};
+
+async fn download_mod(url: String, to: String) {
+    let response = reqwest::Client::new()
+        .get(url)
+        .send()
+        .await
+        .unwrap();
+    let total_size = response.content_length().unwrap();
+    println!("Downloading...");
+    // progress_bar.set_text(Some("Downloading..."));
+
+    let mut file = File::create(to).unwrap();
+    let mut downloaded = 0;
+    let mut stream = response.bytes_stream();
+
+    while let Some(item) = stream.next().await {
+        let chunk = item.unwrap();
+        file.write_all(&chunk).unwrap();
+        downloaded += chunk.len();
+        println!("{}", downloaded as f64 / total_size as f64);
+        // progress_bar.set_fraction(downloaded as f64 / total_size as f64);
+    }
+
+    println!("Done!");
+    // progress_bar.set_fraction(1.0);
+}
 
 mod imp {
     use super::*;
@@ -23,6 +49,10 @@ mod imp {
         pub mod_path_button: TemplateChild<gtk::Button>,
         #[template_child]
         pub exit_after_install_checkbutton: TemplateChild<gtk::CheckButton>,
+        #[template_child]
+        pub install_button: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub progress_bar: TemplateChild<gtk::ProgressBar>,
     }
 
     #[glib::object_subclass]
@@ -76,7 +106,23 @@ impl OneClickModInstallerWindow {
     }
 
     fn setup_actions(&self) {
-        
+        let install_mod_action = gio::ActionEntry::builder("install_mod")
+            .activate(move |app: &Self, _, _| app.download_mod())
+            .build();
+
+        self.add_action_entries([install_mod_action]);
+    }
+
+    fn download_mod(&self) {
+        glib::spawn_future_local(clone!(
+            #[weak (rename_to = this)]
+            self,
+            async move {
+                this.imp().install_button.set_sensitive(false);
+                tokio_runtime::tokio_runtime().spawn(download_mod(this.imp().mod_path_entry.text().to_string(), "./mod".to_string())).await;
+                this.imp().install_button.set_sensitive(true);
+            }
+        ));
     }
 
     fn handle_initial_args(&self) {

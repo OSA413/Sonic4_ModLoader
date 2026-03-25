@@ -2,6 +2,7 @@ mod application;
 mod window;
 mod arg_handler;
 mod handler_installer;
+mod tokio_runtime;
 
 use self::application::OneClickModInstallerApplication;
 use self::window::OneClickModInstallerWindow;
