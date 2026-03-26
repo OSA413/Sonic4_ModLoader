@@ -16,3 +16,4 @@ pub mod mod_logic {
     pub mod mod_entry;
 }
 pub mod walk_dir;
+pub mod copy_dir;

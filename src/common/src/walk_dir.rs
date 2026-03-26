@@ -31,3 +31,25 @@ pub fn walk_dir(dir: &Path, extension: Option<&OsStr>) -> Vec<PathBuf> {
     }
     files
 }
+
+pub fn walk_dir_for_dirs(dir: &Path) -> Vec<PathBuf> {
+    let mut dirs: Vec<PathBuf> = vec![];
+    match dir.read_dir() {
+        Ok(entries) => {
+            for entry in entries {
+                match entry {
+                    Ok(entry) => {
+                        let path = entry.path();
+                        if path.is_dir() {
+                            dirs.extend(walk_dir_for_dirs(&path));
+                            dirs.push(path);
+                        }
+                    },
+                    Err(e) => eprintln!("Error: {e}"),
+                }
+            }
+        },
+        Err(e) => eprintln!("Error: {e}"),
+    }
+    dirs
+}

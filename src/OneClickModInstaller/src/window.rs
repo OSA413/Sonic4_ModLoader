@@ -1,8 +1,8 @@
-use std::{fs::{self, File}, io::Write, ops::Deref, path::{self, Path}};
+use std::{collections::HashSet, fs::{self, File}, io::Write, ops::Deref, path::{self, Path}};
 use async_channel::Sender;
 use futures_util::StreamExt;
 use adw::subclass::prelude::*;
-use gtk::{gio::{self, prelude::ActionMapExtManual}, glib::{self, clone}, prelude::{EditableExt, WidgetExt}};
+use gtk::{gio::{self, prelude::ActionMapExtManual}, glib::{self, clone}, prelude::{CheckButtonExt, EditableExt, WidgetExt}};
 
 use crate::{arg_handler::{ArgHandler, InitialArgs}, tokio_runtime};
 
@@ -132,10 +132,31 @@ impl OneClickModInstallerWindow {
                 self.download_mod(url);
             },
             InitialArgs::FromArchive(path) => {
-                self.unpack_archive(path);
+                let dir = self.unpack_archive(path);
+                let root = &self.find_mod_roots(dir)[0];
+                let mod_path = self.place_mod_in_mods_folder(root);
+                self.launch_mod_manager_if_needed(mod_path);
             },
-            InitialArgs::FromDir(path) => todo!(),
-            InitialArgs::None => todo!(),
+            InitialArgs::FromDir(dir) => {
+                let root = &self.find_mod_roots(dir)[0];
+                let mod_path = self.place_mod_in_mods_folder(root);
+                self.launch_mod_manager_if_needed(mod_path);
+            },
+            InitialArgs::None => {},
+        }
+    }
+
+    fn place_mod_in_mods_folder(&self, root: &String) -> String {
+        let root = Path::new(&root);
+        let root_file_name = root.file_name().unwrap();
+        common::copy_dir::copy_dir(&root.to_path_buf(), &Path::new("mods").join(root_file_name));
+        return root_file_name.to_str().unwrap().to_owned();
+    }
+
+    fn launch_mod_manager_if_needed(&self, mod_path: String) {
+        if self.imp().exit_after_install_checkbutton.is_active() {
+            Launcher::launch_mod_manager(vec![mod_path]).unwrap();
+            std::process::exit(0);
         }
     }
 
@@ -156,7 +177,9 @@ impl OneClickModInstallerWindow {
                         progress_bar_text_sender,
                         archive_path_sender,
                     )
-                ).await;
+                )
+                .await
+                .unwrap();
                 // this.imp().install_button.set_sensitive(true);
             }
         ));
@@ -186,7 +209,10 @@ impl OneClickModInstallerWindow {
             self,
             async move {
                 while let Ok(text) = archive_path_receiver.recv().await {
-                    this.unpack_archive(text);
+                    let dir = this.unpack_archive(text);
+                    let root = &this.find_mod_roots(dir)[0];
+                    let mod_path = this.place_mod_in_mods_folder(root);
+                    this.launch_mod_manager_if_needed(mod_path);
                 }
             }
         ));
@@ -194,15 +220,54 @@ impl OneClickModInstallerWindow {
 
     fn unpack_archive(&self, url: String) -> String {
         self.imp().progress_bar.set_text(Some(&format!("Extracting {url}...")));
-        Launcher::launch_7zip(format!("x {url} -o\"{url}_extracted\"")).unwrap().wait().unwrap();
+        self.imp().progress_bar.set_fraction(0.0);
+
+        let dir_path = format!("{url}_extracted");
+
+        fs::remove_dir_all(&dir_path).unwrap();
+
+        self.imp().progress_bar.set_fraction(0.5);
+
+        Launcher::launch_7zip(vec![
+            "x".to_string(),
+            url.clone(),
+            format!("-o{dir_path}"),
+        ]).unwrap().wait().unwrap();
+
         self.imp().progress_bar.set_fraction(1.0);
         self.imp().progress_bar.set_text(Some(&format!("Archive extraction complete!")));
 
-        return format!("{}_extracted", url);
+        return dir_path;
     }
 
-    fn find_mod_roots(&self, dir_path: String) {
+    fn find_mod_roots(&self, dir_path: String) -> Vec<String> {
+        let mut result = HashSet::<String>::new();
+
+        let game_folders_array = [
+            "CUTSCENE,DEMO,G_COM,G_SS,G_EP1COM,G_EP1ZONE2,G_EP1ZONE3,G_EP1ZONE4,G_ZONE1,G_ZONE2,G_ZONE3,G_ZONE4,G_ZONEF,MSG,NNSTDSHADER,SOUND",
+            //"WSNE8P,WSNP8P,WSNJ8P"
+            "Sonic4ModLoader",
+        ];
+
+        let game_folders_array = [
+            game_folders_array[0].split(',').map(|x| x.to_owned()).collect::<Vec<String>>(),
+            game_folders_array[1].split(',').map(|x| x.to_owned()).collect::<Vec<String>>(),
+        ];
+
+        let downloaded_mod_folders = common::walk_dir::walk_dir_for_dirs(Path::new(&dir_path));
+
+        for downloaded_mod_folder in downloaded_mod_folders {
+            for game_folders in &game_folders_array {
+                for game_folder in game_folders {
+                    if downloaded_mod_folder.ends_with(&game_folder) {
+                        result.insert(downloaded_mod_folder.parent().unwrap().display().to_string());
+                        break;
+                    }
+                }
+            }
+        }
         
+        return Vec::from_iter(result);
     }
     
 
