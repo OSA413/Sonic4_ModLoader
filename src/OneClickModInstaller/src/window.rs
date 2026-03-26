@@ -1,19 +1,23 @@
 use std::{fs::File, io::Write, ops::Deref};
+use async_channel::Sender;
 use futures_util::StreamExt;
 use adw::subclass::prelude::*;
 use gtk::{ProgressBar, gio::{self, ActionEntry, prelude::ActionMapExtManual}, glib::{self, clone}, prelude::{ButtonExt, EditableExt, WidgetExt}};
 
 use crate::{arg_handler::{ArgHandler, InitialArgs}, tokio_runtime};
 
-async fn download_mod(url: String, to: String) {
+async fn download_mod(url: String, to: String, progress_bar: Sender<f64>, progress_bar_text: Sender<String>) {
+    progress_bar_text.send_blocking("Connecting to the server...".to_string()).unwrap();
+
     let response = reqwest::Client::new()
         .get(url)
         .send()
         .await
         .unwrap();
     let total_size = response.content_length().unwrap();
-    println!("Downloading...");
-    // progress_bar.set_text(Some("Downloading..."));
+
+    progress_bar_text.send_blocking("Downloading...".to_string()).unwrap();
+    progress_bar.send_blocking(0.0).unwrap();
 
     let mut file = File::create(to).unwrap();
     let mut downloaded = 0;
@@ -24,11 +28,11 @@ async fn download_mod(url: String, to: String) {
         file.write_all(&chunk).unwrap();
         downloaded += chunk.len();
         println!("{}", downloaded as f64 / total_size as f64);
-        // progress_bar.set_fraction(downloaded as f64 / total_size as f64);
+        progress_bar.send_blocking(downloaded as f64 / total_size as f64).unwrap();
     }
 
-    println!("Done!");
-    // progress_bar.set_fraction(1.0);
+    progress_bar_text.send_blocking("Done!".to_string()).unwrap();
+    progress_bar.send_blocking(1.0).unwrap();
 }
 
 mod imp {
@@ -114,13 +118,42 @@ impl OneClickModInstallerWindow {
     }
 
     fn download_mod(&self) {
+        let (progress_bar_sender, progress_bar_receiver) = async_channel::bounded(1);
+        let (progress_bar_text_sender, progress_bar_text_receiver) = async_channel::bounded(1);
         glib::spawn_future_local(clone!(
             #[weak (rename_to = this)]
             self,
             async move {
                 this.imp().install_button.set_sensitive(false);
-                tokio_runtime::tokio_runtime().spawn(download_mod(this.imp().mod_path_entry.text().to_string(), "./mod".to_string())).await;
+                tokio_runtime::tokio_runtime().spawn(
+                    download_mod(
+                        this.imp().mod_path_entry.text().to_string(),
+                        "./mod".to_string(),
+                        progress_bar_sender,
+                        progress_bar_text_sender
+                    )
+                ).await;
                 this.imp().install_button.set_sensitive(true);
+            }
+        ));
+
+        glib::spawn_future_local(clone!(
+            #[weak (rename_to = this)]
+            self,
+            async move {
+                while let Ok(fraction) = progress_bar_receiver.recv().await {
+                    this.imp().progress_bar.set_fraction(fraction);
+                }
+            }
+        ));
+        
+        glib::spawn_future_local(clone!(
+            #[weak (rename_to = this)]
+            self,
+            async move {
+                while let Ok(text) = progress_bar_text_receiver.recv().await {
+                    this.imp().progress_bar.set_text(Some(&text));
+                }
             }
         ));
     }
