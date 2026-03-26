@@ -40,6 +40,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "OneClickModInstaller_link"
+version = "1.0.0"
+dependencies = [
+ "hide_console",
+ "winresource",
+]
+
+[[package]]
 name = "Sonic4FilePatcher"
 version = "1.0.0"
 dependencies = [

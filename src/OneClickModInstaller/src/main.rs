@@ -16,6 +16,15 @@ fn main() -> glib::ExitCode {
     // This will either install and exit, or prepare the config for the mod installer
     ArgHandler::init(std::env::args());
 
+    // This thing is needed when launching from URI handler on Windows
+    if let Ok(current_directory) = std::env::current_dir() {
+        if current_directory.to_str().unwrap() == "C:\\WINDOWS\\system32" {
+            let current_exe = std::env::current_exe().unwrap();
+            let actual_directory = current_exe.parent().unwrap();
+            std::env::set_current_dir(actual_directory).unwrap();
+        }
+    }
+
     common_gtk4::set_gsk_renderer_from_config();
 
     // Load resources

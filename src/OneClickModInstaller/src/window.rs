@@ -22,7 +22,10 @@ async fn download_mod(url: String, progress_bar: Sender<f64>, progress_bar_text:
     progress_bar_text.send_blocking(format!("Downloading {file_name}...")).unwrap();
     progress_bar.send_blocking(0.0).unwrap();
 
-    fs::create_dir_all("downloaded_mods").unwrap();
+    match fs::create_dir_all("downloaded_mods") {
+        Ok(()) => println!("Alan please write description"),
+        Err(e) => println!("Alan please write error: {e}"),
+    };
     let to = Path::new("downloaded_mods").join(&file_name);
     let mut file = File::create(&to).unwrap();
     let mut downloaded = 0;
@@ -224,7 +227,10 @@ impl OneClickModInstallerWindow {
 
         let dir_path = format!("{url}_extracted");
 
-        fs::remove_dir_all(&dir_path).unwrap();
+        match fs::remove_dir_all(&dir_path) {
+            Ok(()) => (),
+            Err(e) => eprintln!("Error removing directory: {e}"),
+        };
 
         self.imp().progress_bar.set_fraction(0.5);
 

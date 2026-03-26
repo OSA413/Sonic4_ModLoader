@@ -130,7 +130,15 @@ The Mod Loader must be placed in the game's root directory.
 
     pub fn launch_7zip(args: Vec<String>) -> Result<Child, io::Error> {
         let current_dir = env::current_dir().unwrap();
-        Command::new(current_dir.join("7z.exe")).args(args).spawn()
+        let local_7z = current_dir.join("7z.exe");
+        let global_7z = Path::new("C:\\").join("Program Files").join("7-Zip").join("7z.exe");
+        if local_7z.is_file() {
+            Command::new(local_7z).args(args).spawn()
+        } else if global_7z.is_file() {
+            Command::new(global_7z).args(args).spawn()
+        } else {
+            Command::new("7z").args(args).spawn()
+        }
     }
 
     pub fn launch_amb_rs(args: Vec<String>) -> Result<Child, io::Error> {
