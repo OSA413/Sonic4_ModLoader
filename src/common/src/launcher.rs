@@ -1,3 +1,4 @@
+use std::os::windows::process::CommandExt;
 use std::{env, io};
 use std::path::Path;
 use std::process::{Child, Command};
@@ -126,6 +127,11 @@ The Mod Loader must be placed in the game's root directory.
     pub fn launch_amb_patcher(args: Vec<String>) -> Result<Child, io::Error> {
         let current_dir = env::current_dir().unwrap();
         Command::new(current_dir.join("AMBPatcher.exe")).args(args).spawn()
+    }
+
+    pub fn launch_7zip(arg_as_it: String) -> Result<Child, io::Error> {
+        let current_dir = env::current_dir().unwrap();
+        Command::new(current_dir.join("7z.exe")).raw_arg(arg_as_it).spawn()
     }
 
     pub fn launch_amb_rs(args: Vec<String>) -> Result<Child, io::Error> {

@@ -228,7 +228,7 @@
                         </child>
                         <child>
                           <object class="GtkButton" id="install_button">
-                            <property name="action-name">win.install_mod</property>
+                            <property name="action-name">win.initialize_installation</property>
                             <property name="label">Install</property>
                           </object>
                         </child>

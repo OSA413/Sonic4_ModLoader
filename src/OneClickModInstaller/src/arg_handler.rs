@@ -15,6 +15,33 @@ pub enum InitialArgs {
 pub struct ArgHandler {}
 
 impl ArgHandler {
+    pub fn convert_url_to_args(arg: String) -> InitialArgs {
+        let path = Path::new(&arg);
+        if arg.starts_with("https://") {
+           return InitialArgs::FromInternet(arg);
+        } else if arg.starts_with("sonic4mmep1:") || arg.starts_with("sonic4mmep2:") {
+            // sonic4mmepx:url,mod_type,mod_id
+            let arg = arg.chars().skip(12).collect::<String>();
+            let mut args = arg.split(',');
+            return InitialArgs::FromGameBanana{
+                url: args.next().unwrap().to_owned(),
+                type_: args.next().unwrap().to_owned(),
+                id: args.next().unwrap().parse::<u32>().unwrap()
+            };
+        } else if path.is_dir() {
+            return InitialArgs::FromDir(path.display().to_string());
+        } else if path.is_file() && match path.extension() {
+            Some(extension) => extension == "zip"
+                || extension == "7z"
+                || extension == "rar",
+            None => false
+        } {
+            return InitialArgs::FromArchive(path.display().to_string());
+        }
+
+        return InitialArgs::None;
+    }
+
     pub fn init(args: Args) {
         let mut args = args.skip(1);
         match args.next() {
@@ -35,28 +62,7 @@ impl ArgHandler {
                     _ => ()
                 }
 
-                let path = Path::new(&arg);
-                if arg.starts_with("https://") {
-                    *MOD_ARG.lock().unwrap() = InitialArgs::FromInternet(arg);
-                } else if arg.starts_with("sonic4mmep1:") || arg.starts_with("sonic4mmep2:") {
-                    // sonic4mmepx:url,mod_type,mod_id
-                    let arg = arg.chars().skip(12).collect::<String>();
-                    let mut args = arg.split(',');
-                    *MOD_ARG.lock().unwrap() = InitialArgs::FromGameBanana{
-                        url: args.next().unwrap().to_owned(),
-                        type_: args.next().unwrap().to_owned(),
-                        id: args.next().unwrap().parse::<u32>().unwrap()
-                    };
-                } else if path.is_dir() {
-                    *MOD_ARG.lock().unwrap() = InitialArgs::FromDir(path.display().to_string());
-                } else if path.is_file() && match path.extension() {
-                    Some(extension) => extension == "zip"
-                        || extension == "7z"
-                        || extension == "rar",
-                    None => false
-                } {
-                    *MOD_ARG.lock().unwrap() = InitialArgs::FromArchive(path.display().to_string());
-                }
+                *MOD_ARG.lock().unwrap() = ArgHandler::convert_url_to_args(arg);
             }
             None => {}
         }

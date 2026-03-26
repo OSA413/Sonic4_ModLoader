@@ -1,12 +1,14 @@
-use std::{fs::File, io::Write, ops::Deref};
+use std::{fs::{self, File}, io::Write, ops::Deref, path::{self, Path}};
 use async_channel::Sender;
 use futures_util::StreamExt;
 use adw::subclass::prelude::*;
-use gtk::{ProgressBar, gio::{self, ActionEntry, prelude::ActionMapExtManual}, glib::{self, clone}, prelude::{ButtonExt, EditableExt, WidgetExt}};
+use gtk::{gio::{self, prelude::ActionMapExtManual}, glib::{self, clone}, prelude::{EditableExt, WidgetExt}};
 
 use crate::{arg_handler::{ArgHandler, InitialArgs}, tokio_runtime};
 
-async fn download_mod(url: String, to: String, progress_bar: Sender<f64>, progress_bar_text: Sender<String>) {
+use common::Launcher;
+
+async fn download_mod(url: String, progress_bar: Sender<f64>, progress_bar_text: Sender<String>, file_path: Sender<String>) {
     progress_bar_text.send_blocking("Connecting to the server...".to_string()).unwrap();
 
     let response = reqwest::Client::new()
@@ -15,11 +17,14 @@ async fn download_mod(url: String, to: String, progress_bar: Sender<f64>, progre
         .await
         .unwrap();
     let total_size = response.content_length().unwrap();
+    let file_name = response.url().path_segments().unwrap().last().unwrap().to_owned();
 
-    progress_bar_text.send_blocking("Downloading...".to_string()).unwrap();
+    progress_bar_text.send_blocking(format!("Downloading {file_name}...")).unwrap();
     progress_bar.send_blocking(0.0).unwrap();
 
-    let mut file = File::create(to).unwrap();
+    fs::create_dir_all("downloaded_mods").unwrap();
+    let to = Path::new("downloaded_mods").join(&file_name);
+    let mut file = File::create(&to).unwrap();
     let mut downloaded = 0;
     let mut stream = response.bytes_stream();
 
@@ -27,12 +32,12 @@ async fn download_mod(url: String, to: String, progress_bar: Sender<f64>, progre
         let chunk = item.unwrap();
         file.write_all(&chunk).unwrap();
         downloaded += chunk.len();
-        println!("{}", downloaded as f64 / total_size as f64);
         progress_bar.send_blocking(downloaded as f64 / total_size as f64).unwrap();
     }
 
-    progress_bar_text.send_blocking("Done!".to_string()).unwrap();
+    progress_bar_text.send_blocking(format!("Finished downloading {file_name}!")).unwrap();
     progress_bar.send_blocking(1.0).unwrap();
+    file_path.send_blocking(path::absolute(to).unwrap().display().to_string()).unwrap();
 }
 
 mod imp {
@@ -110,16 +115,35 @@ impl OneClickModInstallerWindow {
     }
 
     fn setup_actions(&self) {
-        let install_mod_action = gio::ActionEntry::builder("install_mod")
-            .activate(move |app: &Self, _, _| app.download_mod())
+        let initialize_installation_action = gio::ActionEntry::builder("initialize_installation")
+            .activate(move |app: &Self, _, _| app.initialize_installation())
             .build();
 
-        self.add_action_entries([install_mod_action]);
+        self.add_action_entries([initialize_installation_action]);
     }
 
-    fn download_mod(&self) {
+    fn initialize_installation(&self) {
+        let args = ArgHandler::convert_url_to_args(self.imp().mod_path_entry.text().to_string());
+        match args {
+            InitialArgs::FromGameBanana { url, type_, id } => {
+                self.download_mod(url);
+            },
+            InitialArgs::FromInternet(url) => {
+                self.download_mod(url);
+            },
+            InitialArgs::FromArchive(path) => {
+                self.unpack_archive(path);
+            },
+            InitialArgs::FromDir(path) => todo!(),
+            InitialArgs::None => todo!(),
+        }
+    }
+
+    fn download_mod(&self, url: String) {
         let (progress_bar_sender, progress_bar_receiver) = async_channel::bounded(1);
         let (progress_bar_text_sender, progress_bar_text_receiver) = async_channel::bounded(1);
+        let (archive_path_sender, archive_path_receiver) = async_channel::bounded(1);
+
         glib::spawn_future_local(clone!(
             #[weak (rename_to = this)]
             self,
@@ -127,13 +151,13 @@ impl OneClickModInstallerWindow {
                 this.imp().install_button.set_sensitive(false);
                 tokio_runtime::tokio_runtime().spawn(
                     download_mod(
-                        this.imp().mod_path_entry.text().to_string(),
-                        "./mod".to_string(),
+                        url,
                         progress_bar_sender,
-                        progress_bar_text_sender
+                        progress_bar_text_sender,
+                        archive_path_sender,
                     )
                 ).await;
-                this.imp().install_button.set_sensitive(true);
+                // this.imp().install_button.set_sensitive(true);
             }
         ));
 
@@ -156,7 +180,31 @@ impl OneClickModInstallerWindow {
                 }
             }
         ));
+
+        glib::spawn_future_local(clone!(
+            #[weak (rename_to = this)]
+            self,
+            async move {
+                while let Ok(text) = archive_path_receiver.recv().await {
+                    this.unpack_archive(text);
+                }
+            }
+        ));
     }
+
+    fn unpack_archive(&self, url: String) -> String {
+        self.imp().progress_bar.set_text(Some(&format!("Extracting {url}...")));
+        Launcher::launch_7zip(format!("x {url} -o\"{url}_extracted\"")).unwrap().wait().unwrap();
+        self.imp().progress_bar.set_fraction(1.0);
+        self.imp().progress_bar.set_text(Some(&format!("Archive extraction complete!")));
+
+        return format!("{}_extracted", url);
+    }
+
+    fn find_mod_roots(&self, dir_path: String) {
+        
+    }
+    
 
     fn handle_initial_args(&self) {
         let initial_args = ArgHandler::get();
