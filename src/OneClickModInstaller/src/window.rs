@@ -1,4 +1,4 @@
-use std::{collections::HashSet, fs::{self, File}, io::Write, ops::Deref, path::{self, Path}};
+use std::{collections::HashSet, ffi::OsStr, fs::{self, File}, io::Write, ops::Deref, path::{self, Path}};
 use async_channel::Sender;
 use futures_util::StreamExt;
 use adw::subclass::prelude::*;
@@ -136,11 +136,13 @@ impl OneClickModInstallerWindow {
             },
             InitialArgs::FromArchive(path) => {
                 let dir = self.unpack_archive(path);
+                self.check_suspicious_files(&dir);
                 let root = &self.find_mod_roots(dir)[0];
                 let mod_path = self.place_mod_in_mods_folder(root);
                 self.launch_mod_manager_if_needed(mod_path);
             },
             InitialArgs::FromDir(dir) => {
+                self.check_suspicious_files(&dir);
                 let root = &self.find_mod_roots(dir)[0];
                 let mod_path = self.place_mod_in_mods_folder(root);
                 self.launch_mod_manager_if_needed(mod_path);
@@ -213,12 +215,62 @@ impl OneClickModInstallerWindow {
             async move {
                 while let Ok(text) = archive_path_receiver.recv().await {
                     let dir = this.unpack_archive(text);
+                    this.check_suspicious_files(&dir);
                     let root = &this.find_mod_roots(dir)[0];
                     let mod_path = this.place_mod_in_mods_folder(root);
                     this.launch_mod_manager_if_needed(mod_path);
                 }
             }
         ));
+    }
+
+    fn check_suspicious_files(&self, dir_path: &String) {
+        let good_formats = "TXT,INI,DDS,TXB,AMA,AME,ZNO,ZNM,ZNV,DC,EV,RG,MD,MP,AT,DF,DI,PSH,VSH,LTS,XNM,MFS,SSS,GPB,MSG,AYK,ADX,AMB,CPK,CSB,PNG,CT,TGA";
+
+        let good_formats = good_formats.split(',').collect::<Vec<_>>();
+
+        let dir_path_path = Path::new(&dir_path);
+
+        let all_files = common::walk_dir::walk_dir(dir_path_path, None);
+        let mut suspicious_files = Vec::<String>::new();
+
+        for file in all_files {
+            let file_short = file.to_str().unwrap().chars().skip(dir_path.len() + 1).collect::<String>();
+
+            let file_short_name = Path::new(&file_short).file_name().unwrap();
+            let file_short_extension = Path::new(&file_short).extension().unwrap_or(OsStr::new(""));
+
+            if file_short_name.to_str().unwrap().parse::<u32>().is_ok()
+                && file_short.contains(Path::new("DEMO").join("WORLDMAP").join("WORLDMAP.AMB").to_str().unwrap()) {
+                continue;
+            }
+
+            if good_formats.contains(&file_short_extension.to_ascii_uppercase().to_str().unwrap()) {
+                continue;
+            }
+
+            suspicious_files.push(file_short);
+        }
+
+        println!("{:?}", suspicious_files);
+
+        // var continuee = true;
+        // if (suspicious_files.Count != 0)
+        // {
+        //     continuee = false;
+        //     var SuspiciousDialog = new Suspicious(suspicious_files.ToArray());
+
+        //     var result = SuspiciousDialog.ShowDialog();
+
+        //     //Continue
+        //     if (result != DialogResult.Cancel)
+        //         continuee = true;
+
+        //     if (result == DialogResult.Yes)
+        //         foreach (var file in suspicious_files)
+        //             MyFile.DeleteAnyway(Path.Combine(dir_name, file));
+        // }
+        // return continuee;
     }
 
     fn unpack_archive(&self, url: String) -> String {
