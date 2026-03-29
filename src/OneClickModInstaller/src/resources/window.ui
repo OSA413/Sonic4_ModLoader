@@ -104,7 +104,7 @@
                         </child>
                         <child>
                           <object class="GtkLabel">
-                            <property name="label">✨No longer needs administrator privileges!💪</property>
+                            <property name="label">✨No longer needs administrator privileges to install!💪</property>
                           </object>
                         </child>
                         <child>
@@ -147,8 +147,8 @@
                               </object>
                             </child>
                             <child>
-                              <object class="GtkButton" id="episode1_install_button">
-                                <property name="label">Install</property>
+                              <object class="GtkButton" id="episode1_open_button">
+                                <property name="label">Open</property>
                               </object>
                             </child>
                           </object>
@@ -171,8 +171,8 @@
                               </object>
                             </child>
                             <child>
-                              <object class="GtkButton" id="episode2_install_button">
-                                <property name="label">Install</property>
+                              <object class="GtkButton" id="episode2_open_button">
+                                <property name="label">Open</property>
                               </object>
                             </child>
                           </object>

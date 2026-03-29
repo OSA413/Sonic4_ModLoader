@@ -4,9 +4,9 @@ use futures_util::StreamExt;
 use adw::{ActionRow, prelude::{AdwDialogExt, AlertDialogExt}, subclass::prelude::*};
 use gtk::{Widget, gio::{self, prelude::ActionMapExtManual}, glib::{self, clone, object::{Cast, ObjectExt}}, prelude::{BoxExt, ButtonExt, CheckButtonExt, EditableExt, WidgetExt}};
 
-use crate::{arg_handler::{ArgHandler, InitialArgs}, models::my_g_string::MyGString, tokio_runtime};
+use crate::{arg_handler::{ArgHandler, InitialArgs}, handler_installer, models::my_g_string::MyGString, tokio_runtime};
 
-use common::Launcher;
+use common::{Game, Launcher};
 
 #[derive(PartialEq, Eq, Hash, Clone)]
 pub enum ModType {
@@ -78,17 +78,17 @@ mod imp {
 
         // Installation Locations
         #[template_child]
-        episode1_status_label: TemplateChild<gtk::Label>,
+        pub episode1_status_label: TemplateChild<gtk::Label>,
         #[template_child]
-        episode1_install_button: TemplateChild<gtk::Button>,
+        pub episode1_open_button: TemplateChild<gtk::Button>,
         #[template_child]
-        episode1_path_label: TemplateChild<gtk::Label>,
+        pub episode1_path_label: TemplateChild<gtk::Label>,
         #[template_child]
-        episode2_status_label: TemplateChild<gtk::Label>,
+        pub episode2_status_label: TemplateChild<gtk::Label>,
         #[template_child]
-        episode2_install_button: TemplateChild<gtk::Button>,
+        pub episode2_open_button: TemplateChild<gtk::Button>,
         #[template_child]
-        episode2_path_label: TemplateChild<gtk::Label>,
+        pub episode2_path_label: TemplateChild<gtk::Label>,
 
         // Mod Installation
         #[template_child]
@@ -151,14 +151,6 @@ impl OneClickModInstallerWindow {
         glib::Object::builder()
             .property("application", application)
             .build()
-    }
-
-    fn setup_actions(&self) {
-        let initialize_installation_action = gio::ActionEntry::builder("initialize_installation")
-            .activate(move |app: &Self, _, _| app.initialize_installation())
-            .build();
-
-        self.add_action_entries([initialize_installation_action]);
     }
 
     fn initialize_installation(&self) {
@@ -494,10 +486,94 @@ impl OneClickModInstallerWindow {
         };
     }
 
+    fn load_current_installation(&self) {
+        let current_installation_info = handler_installer::get_info(None);
+        self.imp().current_game_label.set_text(match current_installation_info.0 {
+            Game::Episode1 => "Episode 1",
+            Game::Episode2 => "Episode 2",
+            Game::Unknown => "Unknown game (you are probabaly not in the game directory)",
+        });
+        match current_installation_info.1 {
+            handler_installer::InstallationInfo::Installed(_) => {
+                self.imp().current_install_button.set_label("Install");
+                self.imp().current_install_button.set_sensitive(false);
+                self.imp().current_uninstall_button.set_sensitive(true);
+                self.imp().current_installation_status_label.set_text("Installed");
+            },
+            handler_installer::InstallationInfo::AnotherInstallationPresent(_) => {
+                self.imp().current_install_button.set_label("Fix/change path to current OCMI");
+                self.imp().current_install_button.set_sensitive(true);
+                self.imp().current_uninstall_button.set_sensitive(true);
+                self.imp().current_installation_status_label.set_text("Another installation present");
+            },
+            handler_installer::InstallationInfo::NotInstalled => {
+                self.imp().current_install_button.set_label("Install");
+                self.imp().current_install_button.set_sensitive(true);
+                self.imp().current_uninstall_button.set_sensitive(false);
+                self.imp().current_installation_status_label.set_text("Not installed");
+            },
+        }
+    }
+
+    fn load_other_installations(&self) {
+        let episode1_installation_info = handler_installer::get_info(Some(Game::Episode1));
+        assert_eq!(episode1_installation_info.0, Game::Episode1);
+        match episode1_installation_info.1 {
+            handler_installer::InstallationInfo::Installed(path) => {
+                self.imp().episode1_status_label.set_text("Installed");
+                self.imp().episode1_path_label.set_text(path.as_str());
+                self.imp().episode1_open_button.set_sensitive(true);
+            },
+            handler_installer::InstallationInfo::AnotherInstallationPresent(path) => {
+                self.imp().episode1_status_label.set_text("Installed");
+                self.imp().episode1_path_label.set_text(path.as_str());
+                self.imp().episode1_open_button.set_sensitive(true);
+            },
+            handler_installer::InstallationInfo::NotInstalled => {
+                self.imp().episode1_status_label.set_text("Not installed");
+                self.imp().episode1_path_label.set_text("");
+                self.imp().episode1_open_button.set_sensitive(false);
+            },
+        }
+
+        let episode2_installation_info = handler_installer::get_info(Some(Game::Episode2));
+        assert_eq!(episode2_installation_info.0, Game::Episode2);
+        match episode2_installation_info.1 {
+            handler_installer::InstallationInfo::Installed(path) => {
+                self.imp().episode2_status_label.set_text("Installed");
+                self.imp().episode2_path_label.set_text(path.as_str());
+                self.imp().episode2_open_button.set_sensitive(true);
+            },
+            handler_installer::InstallationInfo::AnotherInstallationPresent(path) => {
+                self.imp().episode2_status_label.set_text("Installed");
+                self.imp().episode2_path_label.set_text(path.as_str());
+                self.imp().episode2_open_button.set_sensitive(true);
+            },
+            handler_installer::InstallationInfo::NotInstalled => {
+                self.imp().episode2_status_label.set_text("Not installed");
+                self.imp().episode2_path_label.set_text("");
+                self.imp().episode2_open_button.set_sensitive(false);
+            },
+        }
+    }
+
+    fn setup_actions(&self) {
+        let initialize_installation_action = gio::ActionEntry::builder("initialize_installation")
+            .activate(move |app: &Self, _, _| app.initialize_installation())
+            .build();
+
+        // TODO connect all the buttons
+
+        self.add_action_entries([initialize_installation_action]);
+    }
+
     fn startup(&self) {
         self.imp().logo.set_resource(Some("/Sonic4ModLoader/OneClickModInstaller/logo.svg"));
         common::Launcher::where_in_the_world_am_i();
         common_gtk4::show_admin_warning(self);
+        // TODO load config
         self.handle_initial_args();
+        self.load_current_installation();
+        self.load_other_installations();
     }
 }

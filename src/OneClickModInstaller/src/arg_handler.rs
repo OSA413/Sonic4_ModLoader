@@ -48,15 +48,15 @@ impl ArgHandler {
             Some(arg) => {
                 match &arg[ops::RangeFull] {
                     "--install" => {
-                        handler_installer::install();
+                        handler_installer::install(None);
                         std::process::exit(0);
                     }
                     "--uninstall" => {
-                        handler_installer::uninstall();
+                        handler_installer::uninstall(None);
                         std::process::exit(0);
                     }
                     "--fix" => {
-                        handler_installer::fix();
+                        handler_installer::fix(None);
                         std::process::exit(0);
                     }
                     _ => ()

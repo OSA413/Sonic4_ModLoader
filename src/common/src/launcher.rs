@@ -2,6 +2,7 @@ use std::{env, io};
 use std::path::Path;
 use std::process::{Child, Command};
 
+#[derive(PartialEq, Clone, Debug)]
 pub enum Game {
     Unknown,
     Episode1,
