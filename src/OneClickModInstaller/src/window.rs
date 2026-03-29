@@ -66,6 +66,30 @@ mod imp {
         #[template_child]
         pub stack: TemplateChild<adw::ViewStack>,
 
+        // Current Installation
+        #[template_child]
+        pub current_game_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub current_installation_status_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        pub current_install_button: TemplateChild<gtk::Button>,
+        #[template_child]
+        pub current_uninstall_button: TemplateChild<gtk::Button>,
+
+        // Installation Locations
+        #[template_child]
+        episode1_status_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        episode1_install_button: TemplateChild<gtk::Button>,
+        #[template_child]
+        episode1_path_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        episode2_status_label: TemplateChild<gtk::Label>,
+        #[template_child]
+        episode2_install_button: TemplateChild<gtk::Button>,
+        #[template_child]
+        episode2_path_label: TemplateChild<gtk::Label>,
+
         // Mod Installation
         #[template_child]
         pub mod_path_entry: TemplateChild<gtk::Entry>,

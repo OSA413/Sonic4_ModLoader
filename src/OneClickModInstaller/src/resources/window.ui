@@ -82,7 +82,7 @@
                               </object>
                             </child>
                             <child>
-                              <object class="GtkLabel">
+                              <object class="GtkLabel" id="current_game_label">
                                 <property name="label">Not Found</property>
                               </object>
                             </child>
@@ -96,7 +96,7 @@
                               </object>
                             </child>
                             <child>
-                              <object class="GtkLabel">
+                              <object class="GtkLabel" id="current_installation_status_label">
                                 <property name="label">None</property>
                               </object>
                             </child>
@@ -104,16 +104,16 @@
                         </child>
                         <child>
                           <object class="GtkLabel">
-                            <property name="label">No longer needs administrator privileges!</property>
+                            <property name="label">✨No longer needs administrator privileges!💪</property>
                           </object>
                         </child>
                         <child>
-                          <object class="GtkButton">
+                          <object class="GtkButton" id="current_install_button">
                             <property name="label">Install/Fix</property>
                           </object>
                         </child>
                         <child>
-                          <object class="GtkButton">
+                          <object class="GtkButton" id="current_uninstall_button">
                             <property name="label">Uninstall</property>
                           </object>
                         </child>
@@ -142,19 +142,19 @@
                               </object>
                             </child>
                             <child>
-                              <object class="GtkLabel">
+                              <object class="GtkLabel" id="episode1_status_label">
                                 <property name="label">Installed</property>
                               </object>
                             </child>
                             <child>
-                              <object class="GtkButton">
+                              <object class="GtkButton" id="episode1_install_button">
                                 <property name="label">Install</property>
                               </object>
                             </child>
                           </object>
                         </child>
                         <child>
-                          <object class="GtkLabel">
+                          <object class="GtkLabel" id="episode1_path_label">
                             <property name="label">/path/to/episode1</property>
                           </object>
                         </child>
@@ -166,19 +166,19 @@
                               </object>
                             </child>
                             <child>
-                              <object class="GtkLabel">
+                              <object class="GtkLabel" id="episode2_status_label">
                                 <property name="label">Installed</property>
                               </object>
                             </child>
                             <child>
-                              <object class="GtkButton">
+                              <object class="GtkButton" id="episode2_install_button">
                                 <property name="label">Install</property>
                               </object>
                             </child>
                           </object>
                         </child>
                         <child>
-                          <object class="GtkLabel">
+                          <object class="GtkLabel" id="episode2_path_label">
                             <property name="label">/path/to/episode2</property>
                           </object>
                         </child>
