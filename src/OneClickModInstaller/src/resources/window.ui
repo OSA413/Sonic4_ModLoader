@@ -65,6 +65,7 @@
                   <object class="AdwViewStackPage">
                     <property name="name">current_installation</property>
                     <property name="title">Current Installation</property>
+                    <property name="icon-name">application-x-executable-symbolic</property>
                     <property name="child">
                       <object class="GtkBox">          
                         <property name="orientation">vertical</property>
@@ -124,6 +125,7 @@
                   <object class="AdwViewStackPage">
                     <property name="name">installation_locations</property>
                     <property name="title">Installation Locations</property>
+                    <property name="icon-name">emoji-symbols-symbolic</property>
                     <property name="child">
                       <object class="GtkBox">          
                         <property name="orientation">vertical</property>
@@ -188,6 +190,7 @@
                   <object class="AdwViewStackPage">
                     <property name="name">mod_installation</property>
                     <property name="title">Mod Installation</property>
+                    <property name="icon-name">document-save-symbolic</property>
                     <property name="child">
                       <object class="GtkBox">          
                         <property name="orientation">vertical</property>
