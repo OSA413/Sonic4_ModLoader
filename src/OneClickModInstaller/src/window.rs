@@ -1,12 +1,24 @@
-use std::{collections::HashSet, ffi::OsStr, fs::{self, File}, io::Write, ops::Deref, path::{self, Path}};
+use std::{collections::HashSet, ffi::OsStr, fs::{self, File}, io::Write, ops::{Deref}, path::{self, Path}};
 use async_channel::Sender;
 use futures_util::StreamExt;
-use adw::subclass::prelude::*;
-use gtk::{gio::{self, prelude::ActionMapExtManual}, glib::{self, clone}, prelude::{CheckButtonExt, EditableExt, WidgetExt}};
+use adw::{ActionRow, prelude::{AdwDialogExt, AlertDialogExt}, subclass::prelude::*};
+use gtk::{Widget, gio::{self, prelude::ActionMapExtManual}, glib::{self, clone, object::{Cast, ObjectExt}}, prelude::{BoxExt, ButtonExt, CheckButtonExt, EditableExt, WidgetExt}};
 
-use crate::{arg_handler::{ArgHandler, InitialArgs}, tokio_runtime};
+use crate::{arg_handler::{ArgHandler, InitialArgs}, models::my_g_string::MyGString, tokio_runtime};
 
 use common::Launcher;
+
+#[derive(PartialEq, Eq, Hash, Clone)]
+pub enum ModType {
+    PC,
+    ModLoader,
+}
+
+pub enum SuspiciousResolution {
+    CancelInstallation,
+    ContinueInstallation,
+    RemoveSuspiciousFilesAndContinueInstallation,
+}
 
 async fn download_mod(url: String, progress_bar: Sender<f64>, progress_bar_text: Sender<String>, file_path: Sender<String>) {
     progress_bar_text.send_blocking("Connecting to the server...".to_string()).unwrap();
@@ -128,7 +140,7 @@ impl OneClickModInstallerWindow {
     fn initialize_installation(&self) {
         let args = ArgHandler::convert_url_to_args(self.imp().mod_path_entry.text().to_string());
         match args {
-            InitialArgs::FromGameBanana { url, type_, id } => {
+            InitialArgs::FromGameBanana { url, type_: _, id: _ } => {
                 self.download_mod(url);
             },
             InitialArgs::FromInternet(url) => {
@@ -137,15 +149,9 @@ impl OneClickModInstallerWindow {
             InitialArgs::FromArchive(path) => {
                 let dir = self.unpack_archive(path);
                 self.check_suspicious_files(&dir);
-                let root = &self.find_mod_roots(dir)[0];
-                let mod_path = self.place_mod_in_mods_folder(root);
-                self.launch_mod_manager_if_needed(mod_path);
             },
             InitialArgs::FromDir(dir) => {
-                self.check_suspicious_files(&dir);
-                let root = &self.find_mod_roots(dir)[0];
-                let mod_path = self.place_mod_in_mods_folder(root);
-                self.launch_mod_manager_if_needed(mod_path);
+                self.check_suspicious_files(&dir)
             },
             InitialArgs::None => {},
         }
@@ -175,7 +181,7 @@ impl OneClickModInstallerWindow {
             self,
             async move {
                 this.imp().install_button.set_sensitive(false);
-                tokio_runtime::tokio_runtime().spawn(
+                tokio_runtime::get().spawn(
                     download_mod(
                         url,
                         progress_bar_sender,
@@ -216,12 +222,99 @@ impl OneClickModInstallerWindow {
                 while let Ok(text) = archive_path_receiver.recv().await {
                     let dir = this.unpack_archive(text);
                     this.check_suspicious_files(&dir);
-                    let root = &this.find_mod_roots(dir)[0];
-                    let mod_path = this.place_mod_in_mods_folder(root);
-                    this.launch_mod_manager_if_needed(mod_path);
                 }
             }
         ));
+    }
+
+    fn show_suspicious_dialog(&self, suspicios_files: &Vec<String>) -> adw::AlertDialog {
+        // Maybe redo that as a .ui file and class?
+        let dialog = adw::AlertDialog::new(Some("Suspicious files found"), None);
+        // dialog.set_title(Some("Suspicious files found"));
+
+        let root = gtk::Box::new(gtk::Orientation::Vertical, 4);
+        let button_root = gtk::Box::new(gtk::Orientation::Horizontal, 4);
+
+        let cancel_button = gtk::Button::builder()
+            .label("Cancel Installation")
+            .width_request(128)
+            .height_request(64)
+            .build();
+        cancel_button.connect_clicked(clone!(
+            #[weak]
+            dialog,
+            move |_| {
+                dialog.close();
+                dialog.emit_by_name("response", &[&"cancel".to_string()])
+            }
+        ));
+        button_root.insert_child_after(&cancel_button, None::<&Widget>);
+
+        let continue_button = gtk::Button::builder()
+            .label("Continue installation as is")
+            .width_request(128)
+            .height_request(64)
+            .build();
+        continue_button.connect_clicked(clone!(
+            #[weak]
+            dialog,
+            move |_| {
+                dialog.close();
+                dialog.emit_by_name("response", &[&"continue".to_string()])
+            }
+        ));
+        button_root.insert_child_after(&continue_button, None::<&Widget>);
+
+        let remove_button = gtk::Button::builder()
+            .label("Remove suspicious files\nand continue installation")
+            .width_request(128)
+            .height_request(64)
+            .build();
+        remove_button.connect_clicked(clone!(
+            #[weak]
+            dialog,
+            move |_| {
+                dialog.close();
+                dialog.emit_by_name("response", &[&"remove".to_string()])
+            }
+        ));
+        button_root.insert_child_after(&remove_button, None::<&Widget>);
+
+        root.insert_child_after(&button_root, None::<&Widget>);
+
+        let list = gtk::ListBox::new();
+        let list_store = gio::ListStore::new::<MyGString>();
+        let list_entries = suspicios_files.iter().map(MyGString::from_string).collect::<Vec<_>>();
+        list_store.extend_from_slice(&list_entries);
+        list.bind_model(Some(&list_store), |obj | {
+            let g_mod_entry = obj
+                .downcast_ref::<MyGString>()
+                .expect("The object should be of type `MyGString`.");
+
+            let row = ActionRow::builder()
+                .title(g_mod_entry.value())
+                .use_markup(false)
+                .build();
+
+            row.upcast::<gtk::Widget>()
+        });
+
+        let scrollable_wrapper = gtk::ScrolledWindow::new();
+        scrollable_wrapper.set_child(Some(&list));
+        scrollable_wrapper.set_width_request(380);
+        scrollable_wrapper.set_height_request(300);
+        root.insert_child_after(&scrollable_wrapper, None::<&Widget>);
+
+        let label = gtk::Label::new(Some("Please review the list and select what to do with them."));
+        root.insert_child_after(&label, None::<&Widget>);
+
+        let label = gtk::Label::new(Some("Suspicious files found!"));
+        root.insert_child_after(&label, None::<&Widget>);
+
+        dialog.set_child(Some(&root));
+        dialog.present(None::<&Widget>);
+
+        dialog
     }
 
     fn check_suspicious_files(&self, dir_path: &String) {
@@ -252,25 +345,41 @@ impl OneClickModInstallerWindow {
             suspicious_files.push(file_short);
         }
 
-        println!("{:?}", suspicious_files);
+        let global_dir = dir_path.clone();
+        let global_files = suspicious_files.clone();
+        let dialog = self.show_suspicious_dialog(&suspicious_files);
 
-        // var continuee = true;
-        // if (suspicious_files.Count != 0)
-        // {
-        //     continuee = false;
-        //     var SuspiciousDialog = new Suspicious(suspicious_files.ToArray());
+        let closure = clone!(
+            #[weak (rename_to = this)]
+            self,
+            move |response: &str| {
+                let resolution = match response {
+                    "cancel" => SuspiciousResolution::CancelInstallation,
+                    "continue" => SuspiciousResolution::ContinueInstallation,
+                    "remove" => SuspiciousResolution::RemoveSuspiciousFilesAndContinueInstallation,
+                    _ => SuspiciousResolution::CancelInstallation,
+                };
 
-        //     var result = SuspiciousDialog.ShowDialog();
+                match resolution {
+                    SuspiciousResolution::CancelInstallation => {},
+                    SuspiciousResolution::ContinueInstallation => {
+                        let root = &this.find_mod_roots(&global_dir)[0];
+                        let mod_path = this.place_mod_in_mods_folder(&root.1);
+                        this.launch_mod_manager_if_needed(mod_path);
+                    },
+                    SuspiciousResolution::RemoveSuspiciousFilesAndContinueInstallation => {
+                        for file in &global_files {
+                            fs::remove_file(Path::new(&global_dir).join(&file)).unwrap();
+                        }
+                        let root = &this.find_mod_roots(&global_dir)[0];
+                        let mod_path = this.place_mod_in_mods_folder(&root.1);
+                        this.launch_mod_manager_if_needed(mod_path);
+                    },
+                };
+            }
+        );
 
-        //     //Continue
-        //     if (result != DialogResult.Cancel)
-        //         continuee = true;
-
-        //     if (result == DialogResult.Yes)
-        //         foreach (var file in suspicious_files)
-        //             MyFile.DeleteAnyway(Path.Combine(dir_name, file));
-        // }
-        // return continuee;
+        dialog.connect_response(None, move |_, response| closure(&response));
     }
 
     fn unpack_archive(&self, url: String) -> String {
@@ -298,8 +407,8 @@ impl OneClickModInstallerWindow {
         return dir_path;
     }
 
-    fn find_mod_roots(&self, dir_path: String) -> Vec<String> {
-        let mut result = HashSet::<String>::new();
+    fn find_mod_roots(&self, dir_path: &String) -> Vec<(ModType, String)> {
+        let mut result = HashSet::<(ModType, String)>::new();
 
         let game_folders_array = [
             "CUTSCENE,DEMO,G_COM,G_SS,G_EP1COM,G_EP1ZONE2,G_EP1ZONE3,G_EP1ZONE4,G_ZONE1,G_ZONE2,G_ZONE3,G_ZONE4,G_ZONEF,MSG,NNSTDSHADER,SOUND",
@@ -308,17 +417,17 @@ impl OneClickModInstallerWindow {
         ];
 
         let game_folders_array = [
-            game_folders_array[0].split(',').map(|x| x.to_owned()).collect::<Vec<String>>(),
-            game_folders_array[1].split(',').map(|x| x.to_owned()).collect::<Vec<String>>(),
+            (ModType::PC, game_folders_array[0].split(',').map(|x| x.to_owned()).collect::<Vec<String>>()),
+            (ModType::ModLoader, game_folders_array[1].split(',').map(|x| x.to_owned()).collect::<Vec<String>>()),
         ];
 
         let downloaded_mod_folders = common::walk_dir::walk_dir_for_dirs(Path::new(&dir_path));
 
         for downloaded_mod_folder in downloaded_mod_folders {
             for game_folders in &game_folders_array {
-                for game_folder in game_folders {
+                for game_folder in &game_folders.1 {
                     if downloaded_mod_folder.ends_with(&game_folder) {
-                        result.insert(downloaded_mod_folder.parent().unwrap().display().to_string());
+                        result.insert((game_folders.0.clone(), downloaded_mod_folder.parent().unwrap().display().to_string()));
                         break;
                     }
                 }

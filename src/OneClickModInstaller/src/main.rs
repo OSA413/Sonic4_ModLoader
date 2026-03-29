@@ -3,6 +3,7 @@ mod window;
 mod arg_handler;
 mod handler_installer;
 mod tokio_runtime;
+mod models;
 
 use self::application::OneClickModInstallerApplication;
 use self::window::OneClickModInstallerWindow;
