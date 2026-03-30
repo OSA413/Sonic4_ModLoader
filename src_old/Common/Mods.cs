@@ -37,56 +37,13 @@ namespace Common.Mods
     public class Mod
     {
         public string Path { get; private set; }
-        public string Name { get { return name; } }
-        public string Authors { get { return authors; } }
-        public string Version { get { return version; } }
-        public string Description { get { return description; } }
-
-        private string name;
-        private string authors = "???";
-        private string version = "???";
-        private string description = "No description.";
 
         public bool Enabled = false;
         public int Priority;
 
         public Mod(string path)
         {
-            name = System.IO.Path.GetFileName(path);
-            Path = name;
-            ReadIni(System.IO.Path.Combine(path, "mod.ini"));
-            ReadDescription();
-        }
-
-        private void ReadIni(string iniPath)
-        {
-            var ini = Ini.IniReader.Read(iniPath);
-            if (ini.Count == 0) return;
-
-            UpdateIfKeyPresent(ini, "Name", ref name);
-            UpdateIfKeyPresent(ini, "Authors", ref authors);
-            UpdateIfKeyPresent(ini, "Version", ref version);
-            UpdateIfKeyPresent(ini, "Description", ref description);
-        }
-
-        private void ReadDescription()
-        {
-            if (description.StartsWith("file="))
-            {
-                var descriptionPath = System.IO.Path.Combine("mods", Path, description.Substring(5));
-                if (File.Exists(descriptionPath))
-                    //todo: wrap try-catch
-                    if (descriptionPath.EndsWith("txt", StringComparison.OrdinalIgnoreCase))
-                        description = File.ReadAllText(descriptionPath);
-                    else description = "Error: unsupported format of \"" + descriptionPath + "\" file.";
-                else description = "Error: \"" + descriptionPath + "\" file not found.";
-            }
-        }
-
-        private void UpdateIfKeyPresent<T, V>(Dictionary<T, V> d, T key, ref V value)
-        {
-            if (d.ContainsKey(key))
-                value = d[key];
+            Path = System.IO.Path.GetFileName(path);
         }
     }
 }

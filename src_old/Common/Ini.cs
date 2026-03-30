@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Common.Ini
 {
@@ -25,12 +24,5 @@ namespace Common.Ini
             }
             return result;
         }
-    }
-    public static class IniWriter
-    {
-        public static Dictionary<string, string> CreateIni() => new();
-
-        public static void Write(Dictionary<string, string> ini, string path) => 
-            File.WriteAllText(path, string.Join("\n", ini.Select(v => v.Key + (v.Value == null ? "" : ("=" + v.Value)))));
     }
 }
