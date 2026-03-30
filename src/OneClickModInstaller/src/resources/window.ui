@@ -219,14 +219,22 @@
                             </child>
                             <child>
                               <object class="GtkButton" id="mod_path_button">
+                                <property name="action-name">win.select_mod_clicked</property>
                                 <property name="label">…</property>
                               </object>
                             </child>
                           </object>
                         </child>
                         <child>
-                          <object class="GtkCheckButton" id="exit_after_install_checkbutton">
-                            <property name="label">Launch Mod Manager and exit after installation</property>
+                          <object class="GtkCheckButton" id="exit_on_install_checkbutton">
+                            <property name="action-name">win.exit_on_install_toggle</property>
+                            <property name="label">Exit after installation</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkCheckButton" id="launch_mod_manager_on_exit_checkbutton">
+                            <property name="action-name">win.launch_mod_manager_on_exit_toggle</property>
+                            <property name="label">Exit after installation and launch Mod Manager</property>
                           </object>
                         </child>
                         <child>

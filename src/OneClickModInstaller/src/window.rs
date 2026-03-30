@@ -1,12 +1,12 @@
-use std::{collections::HashSet, ffi::OsStr, fs::{self, File}, io::Write, ops::{Deref}, path::{self, Path}};
+use std::{collections::HashSet, ffi::OsStr, fs::{self, File}, io::Write, ops::{self, Deref}, path::{self, Path}};
 use async_channel::Sender;
 use futures_util::StreamExt;
 use adw::{ActionRow, prelude::{AdwDialogExt, AlertDialogExt}, subclass::prelude::*};
-use gtk::{Widget, gio::{self, prelude::ActionMapExtManual}, glib::{self, clone, object::{Cast, ObjectExt}}, prelude::{BoxExt, ButtonExt, CheckButtonExt, EditableExt, WidgetExt}};
+use gtk::{Widget, gio::{self, Cancellable, prelude::{ActionMapExtManual, FileExt}}, glib::{self, clone, object::{Cast, ObjectExt}}, prelude::{BoxExt, ButtonExt, CheckButtonExt, EditableExt, WidgetExt}};
 
 use crate::{arg_handler::{ArgHandler, InitialArgs}, handler_installer, models::my_g_string::MyGString, tokio_runtime};
 
-use common::{Game, Launcher};
+use common::{Game, Launcher, config::OneClickModInstallerConfig};
 
 #[derive(PartialEq, Eq, Hash, Clone)]
 pub enum ModType {
@@ -96,7 +96,9 @@ mod imp {
         #[template_child]
         pub mod_path_button: TemplateChild<gtk::Button>,
         #[template_child]
-        pub exit_after_install_checkbutton: TemplateChild<gtk::CheckButton>,
+        pub exit_on_install_checkbutton: TemplateChild<gtk::CheckButton>,
+        #[template_child]
+        pub launch_mod_manager_on_exit_checkbutton: TemplateChild<gtk::CheckButton>,
         #[template_child]
         pub install_button: TemplateChild<gtk::Button>,
         #[template_child]
@@ -181,8 +183,10 @@ impl OneClickModInstallerWindow {
     }
 
     fn launch_mod_manager_if_needed(&self, mod_path: String) {
-        if self.imp().exit_after_install_checkbutton.is_active() {
-            Launcher::launch_mod_manager(vec![mod_path]).unwrap();
+        if self.imp().exit_on_install_checkbutton.is_active() {
+            if self.imp().launch_mod_manager_on_exit_checkbutton.is_active() {
+                Launcher::launch_mod_manager(vec![mod_path]).unwrap();
+            }
             std::process::exit(0);
         }
     }
@@ -557,21 +561,95 @@ impl OneClickModInstallerWindow {
         }
     }
 
+    fn load_config(&self) {
+        match OneClickModInstallerConfig::load_config() {
+            Ok(config) => {
+                self.imp().exit_on_install_checkbutton.set_active(config.exit_on_install);
+                self.imp().launch_mod_manager_on_exit_checkbutton.set_active(config.launch_mod_manager_on_exit_on_install);
+            },
+            Err(e) => {
+                self.imp().exit_on_install_checkbutton.set_active(true);
+                self.imp().launch_mod_manager_on_exit_checkbutton.set_active(true);
+            }
+        }
+    }
+
+    fn save_config(&self) {
+        let config = OneClickModInstallerConfig {
+            exit_on_install: self.imp().exit_on_install_checkbutton.is_active(),
+            launch_mod_manager_on_exit_on_install: self.imp().launch_mod_manager_on_exit_checkbutton.is_active(),
+        };
+
+        config.save_config().unwrap();
+    }
+
     fn setup_actions(&self) {
         let initialize_installation_action = gio::ActionEntry::builder("initialize_installation")
             .activate(move |app: &Self, _, _| app.initialize_installation())
             .build();
 
-        // TODO connect all the buttons
+        let exit_on_install_action = gio::ActionEntry::builder("exit_on_install_toggle")
+            .activate(move |app: &Self, _, _| {
+                app.imp().exit_on_install_checkbutton.set_active(!app.imp().exit_on_install_checkbutton.is_active());
+                if !app.imp().exit_on_install_checkbutton.is_active() {
+                    app.imp().launch_mod_manager_on_exit_checkbutton.set_active(false);
+                }
+                app.save_config();
+            })
+            .build();
 
-        self.add_action_entries([initialize_installation_action]);
+        let launch_mod_manager_on_exit_action = gio::ActionEntry::builder("launch_mod_manager_on_exit_toggle")
+            .activate(move |app: &Self, _, _| {
+                app.imp().launch_mod_manager_on_exit_checkbutton.set_active(!app.imp().launch_mod_manager_on_exit_checkbutton.is_active());
+                app.save_config();
+            })
+            .build();
+
+        let select_mod_clicked_action = gio::ActionEntry::builder("select_mod_clicked")
+            .activate(move |app: &Self, _, _| {
+                let file_dialog = gtk::FileDialog::builder()
+                    .title("Select a mod to install (archive or folder, for folder select any file in the root of the mod folder)")
+                    .build();
+
+                gtk::FileDialog::open(&file_dialog, None::<&gtk::Window>, None::<&Cancellable>, clone!(
+                    #[weak (rename_to = this)]
+                    app,
+                    move |result| {
+                        match result {
+                            Ok(file) => {
+                                // This will crash if you choose a file without extension
+                                let file = match &file.basename().unwrap().extension().unwrap().display().to_string().to_owned()[ops::RangeFull] {
+                                    "7z" | "zip" | "rar" => file,
+                                    _ => file.parent().unwrap().parent().unwrap(),
+                                };
+
+                                match file.path() {
+                                    Some(path) => this.imp().mod_path_entry.set_text(path.display().to_string().as_str()),
+                                    None => {},
+                                };
+                            },
+                            Err(_) => {},
+                        }
+                    }
+                ));
+            })
+            .build();
+
+        
+
+        self.add_action_entries([
+            initialize_installation_action,
+            exit_on_install_action,
+            launch_mod_manager_on_exit_action,
+            select_mod_clicked_action,
+        ]);
     }
 
     fn startup(&self) {
         self.imp().logo.set_resource(Some("/Sonic4ModLoader/OneClickModInstaller/logo.svg"));
         common::Launcher::where_in_the_world_am_i();
         common_gtk4::show_admin_warning(self);
-        // TODO load config
+        self.load_config();
         self.handle_initial_args();
         self.load_current_installation();
         self.load_other_installations();
