@@ -7,6 +7,11 @@ pub enum InstallationInfo {
 }
 
 #[cfg(not(target_os = "windows"))]
+pub fn get_info(game: Option<Game>) -> (Game, InstallationInfo) {
+    todo!()
+}
+
+#[cfg(not(target_os = "windows"))]
 pub fn install(game: Option<Game>) {
     todo!()
 }
