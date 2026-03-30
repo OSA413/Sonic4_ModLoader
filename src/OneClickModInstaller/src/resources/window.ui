@@ -109,11 +109,13 @@
                         </child>
                         <child>
                           <object class="GtkButton" id="current_install_button">
+                            <property name="action-name">win.install_or_fix_path_to_current_game</property>
                             <property name="label">Install/Fix</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkButton" id="current_uninstall_button">
+                            <property name="action-name">win.uninstall_current_game</property>
                             <property name="label">Uninstall</property>
                           </object>
                         </child>
@@ -148,6 +150,8 @@
                             </child>
                             <child>
                               <object class="GtkButton" id="episode1_open_button">
+                                <property name="action-name">win.open_episode1</property>
+                                <property name="sensitive">false</property>
                                 <property name="label">Open</property>
                               </object>
                             </child>
@@ -172,6 +176,7 @@
                             </child>
                             <child>
                               <object class="GtkButton" id="episode2_open_button">
+                                <property name="action-name">win.open_episode2</property>
                                 <property name="label">Open</property>
                               </object>
                             </child>

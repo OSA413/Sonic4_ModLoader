@@ -8,7 +8,10 @@ pub fn set_gsk_renderer_from_config() {
         Ok(config) => {
             println!("GTK4 config loaded");
             println!("Applying GSK_RENDERER variable to {} (without overwriting)", config.gsk_renderer);
-            glib::setenv("GSK_RENDERER", config.gsk_renderer, false).expect("Failed to set GSK_RENDERER");
+            // Nooooo, not the unsafe :cry:
+            unsafe { 
+                glib::setenv("GSK_RENDERER", config.gsk_renderer, false).expect("Failed to set GSK_RENDERER")
+            };
         }
         Err(err) => {
             println!("Error loading GTK4 config: {err}");

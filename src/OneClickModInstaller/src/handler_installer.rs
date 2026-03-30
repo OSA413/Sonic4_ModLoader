@@ -50,7 +50,7 @@ pub fn get_info(game: Option<Game>) -> (Game, InstallationInfo) {
                     let current_path = current_path.display().to_string();
                     match shell_key.get_value::<String, _>("") {
                         Ok(value) => {
-                            let installed_path = value.chars().skip(1).take("\" \"%1\"".len()).collect::<String>();
+                            let installed_path = value.chars().skip(1).take(value.len() - "\" \"%1\"".len() - 1).collect::<String>();
                             if installed_path == current_path {
                                 return (game_to_check, InstallationInfo::Installed(installed_path))
                             }

@@ -163,4 +163,14 @@ The Mod Loader must be placed in the game's root directory.
     pub fn open_mods_folder() -> Result<Child, io::Error> {
         Command::new("xdg-open").arg("mods").spawn()
     }
+    
+    #[cfg(target_os = "windows")]
+    pub fn open_folder(folder: &String) -> Result<Child, io::Error> {
+        Command::new("explorer.exe").arg(folder).spawn()
+    }
+
+    #[cfg(not(target_os = "windows"))]
+    pub fn open_folder(folder: &String) -> Result<Child, io::Error> {
+        Command::new("xdg-open").arg(folder).spawn()
+    }
 }

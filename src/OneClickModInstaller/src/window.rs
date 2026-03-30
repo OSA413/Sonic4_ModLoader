@@ -517,6 +517,10 @@ impl OneClickModInstallerWindow {
                 self.imp().current_installation_status_label.set_text("Not installed");
             },
         }
+        if current_installation_info.0 == Game::Unknown {
+            self.imp().current_install_button.set_sensitive(false);
+            self.imp().current_uninstall_button.set_sensitive(false);
+        }
     }
 
     fn load_other_installations(&self) {
@@ -635,13 +639,63 @@ impl OneClickModInstallerWindow {
             })
             .build();
 
-        
+        let install_or_fix_path_to_current_game_action = gio::ActionEntry::builder("install_or_fix_path_to_current_game")
+            .activate(move |app: &Self, _, _| {
+                match handler_installer::get_info(None) {
+                    (_, handler_installer::InstallationInfo::Installed(_)) => {},
+                    (_, handler_installer::InstallationInfo::AnotherInstallationPresent(_)) => handler_installer::fix(None),
+                    (_, handler_installer::InstallationInfo::NotInstalled) => handler_installer::install(None),
+                };
+                app.load_current_installation();
+                app.load_other_installations();
+            })
+            .build();
+
+        let uninstall_current_game_action = gio::ActionEntry::builder("uninstall_current_game")
+            .activate(move |app: &Self, _, _| {
+                handler_installer::uninstall(None);
+                app.load_current_installation();
+                app.load_other_installations();
+            })
+            .build();
+
+        let open_episode1_action = gio::ActionEntry::builder("open_episode1")
+            .activate(move |_, _, _| {
+                match handler_installer::get_info(Some(Game::Episode1)) {
+                    (_, handler_installer::InstallationInfo::Installed(path)) => {
+                        Launcher::open_folder(&Path::new(&path).parent().unwrap().display().to_string()).unwrap();
+                    },
+                    (_, handler_installer::InstallationInfo::AnotherInstallationPresent(path)) => {
+                        Launcher::open_folder(&Path::new(&path).parent().unwrap().display().to_string()).unwrap();
+                    },
+                    (_, handler_installer::InstallationInfo::NotInstalled) => {},
+                };
+            })
+            .build();
+
+        let open_episode2_action = gio::ActionEntry::builder("open_episode2")
+            .activate(move |_, _, _| {
+                match handler_installer::get_info(Some(Game::Episode2)) {
+                    (_, handler_installer::InstallationInfo::Installed(path)) => {
+                        Launcher::open_folder(&Path::new(&path).parent().unwrap().display().to_string()).unwrap();
+                    },
+                    (_, handler_installer::InstallationInfo::AnotherInstallationPresent(path)) => {
+                        Launcher::open_folder(&Path::new(&path).parent().unwrap().display().to_string()).unwrap();
+                    },
+                    (_, handler_installer::InstallationInfo::NotInstalled) => {},
+                };
+            })
+            .build();
 
         self.add_action_entries([
             initialize_installation_action,
             exit_on_install_action,
             launch_mod_manager_on_exit_action,
             select_mod_clicked_action,
+            install_or_fix_path_to_current_game_action,
+            uninstall_current_game_action,
+            open_episode1_action,
+            open_episode2_action,
         ]);
     }
 

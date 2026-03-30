@@ -7,7 +7,7 @@ homepage = "https://github.com/OSA413/Sonic4_ModLoader"
 license = "MIT"
 
 [dependencies]
-adw = { version = "0.8", package = "libadwaita", features = ["v1_5"] }
-gtk = { version = "0.10.0", package = "gtk4", features = ["v4_14"] }
+adw = { version = "0.9.1", package = "libadwaita", features = ["v1_5"] }
+gtk = { version = "0.11.1", package = "gtk4", features = ["v4_14"] }
 common = { path = "../common" }
 is_sudo = "0.0.2"
