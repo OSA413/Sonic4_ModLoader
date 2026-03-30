@@ -704,8 +704,16 @@ impl OneClickModInstallerWindow {
         common::Launcher::where_in_the_world_am_i();
         common_gtk4::show_admin_warning(self);
         self.load_config();
-        self.handle_initial_args();
-        self.load_current_installation();
-        self.load_other_installations();
+
+        // HACK FIXME
+        glib::spawn_future_local(clone!(
+            #[weak(rename_to = this)]
+            self,
+            async move {
+                this.handle_initial_args();
+                this.load_current_installation();
+                this.load_other_installations();
+            }
+        ));
     }
 }
