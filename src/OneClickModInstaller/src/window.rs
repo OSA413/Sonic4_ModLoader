@@ -367,6 +367,14 @@ impl OneClickModInstallerWindow {
 
         let global_dir = dir_path.clone();
         let global_files = suspicious_files.clone();
+
+        if suspicious_files.is_empty() {
+            let root = &self.find_mod_roots(&global_dir)[0];
+            let mod_path = self.place_mod_in_mods_folder(&root.1);
+            self.launch_mod_manager_if_needed(mod_path);
+            return;
+        }
+
         let dialog = self.show_suspicious_dialog(&suspicious_files);
 
         let closure = clone!(

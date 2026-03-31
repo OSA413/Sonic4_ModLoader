@@ -12,11 +12,8 @@
   </menu>
   <template class="OneClickModInstaller" parent="AdwApplicationWindow">
     <property name="title">One-Click Mod Installer</property>
-    <child>
-      <object class="AdwBreakpoint">
-        <condition>max-width: 550sp</condition>
-      </object>
-    </child>
+    <property name="default-width">650</property>
+    <property name="default-height">400</property>
     <property name="content">
       <object class="AdwToolbarView">
         <child type="top">

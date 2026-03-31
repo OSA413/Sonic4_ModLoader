@@ -1,9 +1,24 @@
+use std::path::{Path, PathBuf};
+
 use common::{Launcher, Game};
 
 pub enum InstallationInfo {
     Installed(String),
     AnotherInstallationPresent(String),
     NotInstalled,
+}
+
+pub fn get_path_to_exe() -> (usize, Result<PathBuf, std::io::Error>) {
+    match std::env::args().skip(1).next() {
+        Some(arg) => {
+            println!("{arg}");
+            if arg.ends_with("_link.exe") {
+                return (1, Ok(Path::new(&arg).to_path_buf()));
+            }
+            (0, std::env::current_exe())
+        },
+        None => (0, std::env::current_exe())
+    }
 }
 
 #[cfg(not(target_os = "windows"))]
@@ -46,8 +61,7 @@ pub fn get_info(game: Option<Game>) -> (Game, InstallationInfo) {
             let shell_path = Path::new(&root_path).join("Shell").join("Open").join("Command");
             match HKCU.open_subkey(&shell_path) {
                 Ok(shell_key) => {
-                    let current_path = std::env::current_exe().unwrap();
-                    let current_path = current_path.display().to_string();
+                    let current_path = get_path_to_exe().1.unwrap().display().to_string();
                     match shell_key.get_value::<String, _>("") {
                         Ok(value) => {
                             let installed_path = value.chars().skip(1).take(value.len() - "\" \"%1\"".len() - 1).collect::<String>();
@@ -96,7 +110,7 @@ pub fn install(game: Option<Game>) {
     
     let shell_path = Path::new(&root_path).join("Shell").join("Open").join("Command");
     let (shell_key, _) = HKCU.create_subkey(&shell_path).unwrap();
-    let current_path = std::env::current_exe().unwrap();
+    let current_path = get_path_to_exe().1.unwrap();
     let current_path = current_path.display();
     shell_key.set_value("", &format!("\"{current_path}\" \"%1\"")).unwrap();
 }
@@ -140,7 +154,7 @@ pub fn fix(game: Option<Game>) {
 
     let shell_path = Path::new(&root_path).join("Shell").join("Open").join("Command");
     let (shell_key, _) = HKCU.create_subkey(&shell_path).unwrap();
-    let current_path = std::env::current_exe().unwrap();
+    let current_path = get_path_to_exe().1.unwrap();
     let current_path = current_path.display();
     shell_key.set_value("", &format!("\"{current_path}\" \"%1\"")).unwrap();
 }

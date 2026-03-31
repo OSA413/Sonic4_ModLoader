@@ -43,7 +43,9 @@ impl ArgHandler {
     }
 
     pub fn init(args: Args) {
-        let mut args = args.skip(1);
+        let skip_shift = handler_installer::get_path_to_exe().0;
+        let mut args = args.skip(1 + skip_shift);
+
         match args.next() {
             Some(arg) => {
                 match &arg[ops::RangeFull] {
