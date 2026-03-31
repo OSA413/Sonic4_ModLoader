@@ -64,13 +64,10 @@ pub fn get_info(game: Option<Game>) -> (Game, InstallationInfo) {
                     match shell_key.get_value::<String, _>("") {
                         Ok(value) => {
                             let installed_path = value.chars().skip(1).take(value.len() - "\" \"%1\"".len() - 1).collect::<String>();
-                            if installed_path == current_path {
+                            if installed_path == current_path || !check_another_installation {
                                 return (game_to_check, InstallationInfo::Installed(installed_path))
                             }
-                            if check_another_installation {
-                                return (game_to_check, InstallationInfo::AnotherInstallationPresent(installed_path))
-                            }
-                            return (game_to_check, InstallationInfo::NotInstalled)
+                            return (game_to_check, InstallationInfo::AnotherInstallationPresent(installed_path))
                         }
                         Err(_) => (game_to_check, InstallationInfo::NotInstalled)
                     }
