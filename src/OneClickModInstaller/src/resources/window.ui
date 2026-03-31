@@ -13,7 +13,7 @@
   <template class="OneClickModInstaller" parent="AdwApplicationWindow">
     <property name="title">One-Click Mod Installer</property>
     <property name="default-width">650</property>
-    <property name="default-height">400</property>
+    <property name="default-height">480</property>
     <property name="content">
       <object class="AdwToolbarView">
         <child type="top">
@@ -64,7 +64,12 @@
                     <property name="title">Current Installation</property>
                     <property name="icon-name">application-x-executable-symbolic</property>
                     <property name="child">
-                      <object class="GtkBox">          
+                      <object class="GtkBox">
+                        <property name="margin-top">12</property>
+                        <property name="margin-bottom">12</property>
+                        <property name="margin-start">12</property>
+                        <property name="margin-end">12</property>
+                        <property name="spacing">12</property>
                         <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkLabel">
@@ -73,6 +78,9 @@
                         </child>
                         <child>
                           <object class="GtkBox">
+                            <property name="margin-start">12</property>
+                            <property name="margin-end">12</property>
+                            <property name="spacing">12</property>
                             <child>
                               <object class="GtkLabel">
                                 <property name="label">Game: </property>
@@ -87,6 +95,9 @@
                         </child>
                         <child>
                           <object class="GtkBox">
+                            <property name="margin-start">12</property>
+                            <property name="margin-end">12</property>
+                            <property name="spacing">12</property>
                             <child>
                               <object class="GtkLabel">
                                 <property name="label">Installation status: </property>
@@ -126,7 +137,12 @@
                     <property name="title">Installation Locations</property>
                     <property name="icon-name">emoji-symbols-symbolic</property>
                     <property name="child">
-                      <object class="GtkBox">          
+                      <object class="GtkBox">
+                        <property name="margin-top">12</property>
+                        <property name="margin-bottom">12</property>
+                        <property name="margin-start">12</property>
+                        <property name="margin-end">12</property>
+                        <property name="spacing">12</property>
                         <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkLabel">
@@ -135,6 +151,9 @@
                         </child>
                         <child>
                           <object class="GtkBox">
+                            <property name="margin-start">12</property>
+                            <property name="margin-end">12</property>
+                            <property name="spacing">12</property>
                             <child>
                               <object class="GtkLabel">
                                 <property name="label">Episode 1</property>
@@ -161,6 +180,9 @@
                         </child>
                         <child>
                           <object class="GtkBox">
+                            <property name="margin-start">12</property>
+                            <property name="margin-end">12</property>
+                            <property name="spacing">12</property>
                             <child>
                               <object class="GtkLabel">
                                 <property name="label">Episode 2</property>
@@ -194,7 +216,12 @@
                     <property name="title">Mod Installation</property>
                     <property name="icon-name">document-save-symbolic</property>
                     <property name="child">
-                      <object class="GtkBox">          
+                      <object class="GtkBox">
+                        <property name="margin-top">12</property>
+                        <property name="margin-bottom">12</property>
+                        <property name="margin-start">12</property>
+                        <property name="margin-end">12</property>
+                        <property name="spacing">12</property>
                         <property name="orientation">vertical</property>
                         <child>
                           <object class="GtkLabel">
@@ -208,15 +235,13 @@
                         </child>
                         <child>
                           <object class="GtkBox">
+                            <property name="margin-start">12</property>
+                            <property name="margin-end">12</property>
+                            <property name="spacing">12</property>
                             <child>
                               <object class="GtkEntry" id="mod_path_entry">
                                 <property name="input-hints">GTK_INPUT_HINT_NO_EMOJI</property>
-                                <layout>
-                                  <property name="column">1</property>
-                                  <property name="row">0</property>
-                                  <property name="row-span">1</property>
-                                  <property name="column-span">1</property>
-                                </layout>
+                                <property name="width-chars">64</property>
                               </object>
                             </child>
                             <child>
