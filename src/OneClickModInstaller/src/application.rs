@@ -82,7 +82,7 @@ impl OneClickModInstallerApplication {
 
     fn show_about(&self) {              
         let about = adw::AboutDialog::builder()
-            .application_name("Sonic 4 Mod Manager")
+            .application_name("One-Click Mod Installer")
             .license_type(License::MitX11)
             .application_icon("icon")
             .developer_name("Oleg \"OSA413\" Sokolov")
