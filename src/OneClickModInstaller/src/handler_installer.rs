@@ -11,7 +11,6 @@ pub enum InstallationInfo {
 pub fn get_path_to_exe() -> (usize, Result<PathBuf, std::io::Error>) {
     match std::env::args().skip(1).next() {
         Some(arg) => {
-            println!("{arg}");
             if arg.ends_with("_link.exe") {
                 return (1, Ok(Path::new(&arg).to_path_buf()));
             }
