@@ -11,6 +11,7 @@ pub struct Amb {
     pub amb_path: String,
     pub endianness: Option<Endianness>,
     pub flag1: u32,
+    pub flag2: u32,
     pub objects: Vec<BinaryObject>,
     pub has_names: bool,
     pub version: Version,
@@ -78,6 +79,7 @@ impl Amb {
             amb_path: String::new(),
             endianness: Some(Endianness::Little),
             flag1: 0,
+            flag2: 0,
             objects: Vec::new(),
             has_names: true,
             version: Version::PC,
@@ -105,6 +107,7 @@ impl Amb {
         let ptr = ptr.unwrap_or(0);
 
         let flag1 = binary_reader::read_u32(source, ptr + 0x8, &endianness).expect("Another bad thing happened that you didn't account for #9");
+        let flag2 = binary_reader::read_u32(source, ptr + 0xC, &endianness).expect("Another bad thing happened that you didn't account for #9 and a half");
         // Btw this also might be incorrect, this actually shows number of entries in the list, but any entry can be empty resulting in "skips" and a bit smaller number of actual objects
         let object_number = binary_reader::read_u32(source, ptr + 0x10, &endianness).expect("Another bad thing happened that you didn't account for #10");
         let list_pointer = binary_reader::read_u32(source, ptr + 0x14, &endianness).expect("Another bad thing happened that you didn't account for #11") + ptr as u32;
@@ -140,6 +143,7 @@ impl Amb {
             amb_path: name.to_string(),
             endianness,
             flag1,
+            flag2,
             objects,
             has_names,
             version,
@@ -167,6 +171,7 @@ impl Amb {
             Version::Mobile => 0x28,
         }, &self.endianness)?;
         binary_writer::write_u32(&mut result, 0x8, self.flag1, &self.endianness)?;
+        binary_writer::write_u32(&mut result, 0xC, self.flag2, &self.endianness)?;
         binary_writer::write_u32(&mut result, 0x10, self.objects.len() as u32, &self.endianness)?;
         binary_writer::write_u32(&mut result, 0x14, pointers.list as u32, &self.endianness)?;
         binary_writer::write_u32(&mut result, 0x18, pointers.data as u32, &self.endianness)?;
