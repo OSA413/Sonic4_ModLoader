@@ -5,3 +5,4 @@ pub mod recreate;
 pub mod create;
 pub mod endianness;
 pub mod extract;
+pub mod extract_all;

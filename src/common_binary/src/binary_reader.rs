@@ -18,7 +18,7 @@ pub fn read_string32(source: &[u8], pointer: usize) -> Result<String, CommonBina
         result.push(source[pointer] as char);
         pointer += 1;
 
-        if source.len() >= pointer {
+        if pointer >= source.len() {
             return Err(CommonBinaryError::PointerOutOfBounds(PointerOutOfBoundsDetails { 
                 pointer,
                 source_len: source.len(),

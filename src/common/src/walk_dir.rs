@@ -14,7 +14,7 @@ pub fn walk_dir(dir: &Path, extension: Option<&OsStr>) -> Vec<PathBuf> {
                             match extension {
                                 Some(desired_extension) => {
                                     if let Some(file_extension) = path.extension() {
-                                        if file_extension == desired_extension {
+                                        if file_extension.to_ascii_lowercase() == desired_extension {
                                             files.push(path);
                                         }
                                     }
