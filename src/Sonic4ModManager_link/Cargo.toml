@@ -2,7 +2,7 @@
 name = "Sonic4ModManager_link"
 description = "Link to the Sonic 4 Mod Manager"
 version = "1.0.0"
-edition = "2021"
+edition = "2024"
 authors = ["Oleg \"OSA413\" Sokolov"]
 repository = "https://github.com/OSA413/Sonic4_ModLoader"
 homepage = "https://github.com/OSA413/Sonic4_ModLoader"
