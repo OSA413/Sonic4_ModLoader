@@ -67,7 +67,7 @@ add_tests! {
     add_empty: vec![],
     add_1: vec![("../amb-rs-tests/test_files/files/1", "1", 0x30, 73)],
     add_2: vec![("../amb-rs-tests/test_files/files/2", "2", 0x30, 45)],
-    add_3: vec![("../amb-rs-tests/test_files/files/3", "3", 0x30, 24)],
+    add_3: vec![("../amb-rs-tests/test_files/files/3", "3", 0x30, 23)],
     add_1_2: vec![
         ("../amb-rs-tests/test_files/files/1", "1", 0x40, 73),
         ("../amb-rs-tests/test_files/files/2", "2", 0x90, 45),
@@ -77,48 +77,48 @@ add_tests! {
         ("../amb-rs-tests/test_files/files/1", "1", 0x70, 73),
     ],
     add_3_1: vec![
-        ("../amb-rs-tests/test_files/files/3", "3", 0x40, 24),
+        ("../amb-rs-tests/test_files/files/3", "3", 0x40, 23),
         ("../amb-rs-tests/test_files/files/1", "1", 0x60, 73),
     ],
     add_1_3: vec![
         ("../amb-rs-tests/test_files/files/1", "1", 0x40, 73),
-        ("../amb-rs-tests/test_files/files/3", "3", 0x90, 24),
+        ("../amb-rs-tests/test_files/files/3", "3", 0x90, 23),
     ],
     add_2_3: vec![
         ("../amb-rs-tests/test_files/files/2", "2", 0x40, 45),
-        ("../amb-rs-tests/test_files/files/3", "3", 0x70, 24),
+        ("../amb-rs-tests/test_files/files/3", "3", 0x70, 23),
     ],
     add_3_2: vec![
-        ("../amb-rs-tests/test_files/files/3", "3", 0x40, 24),
+        ("../amb-rs-tests/test_files/files/3", "3", 0x40, 23),
         ("../amb-rs-tests/test_files/files/2", "2", 0x60, 45),
     ],
     add_1_2_3: vec![
         ("../amb-rs-tests/test_files/files/1", "1", 0x50, 73),
         ("../amb-rs-tests/test_files/files/2", "2", 0xA0, 45),
-        ("../amb-rs-tests/test_files/files/3", "3", 0xD0, 24),
+        ("../amb-rs-tests/test_files/files/3", "3", 0xD0, 23),
     ],
     add_1_3_2: vec![
         ("../amb-rs-tests/test_files/files/1", "1", 0x50, 73),
-        ("../amb-rs-tests/test_files/files/3", "3", 0xA0, 24),
+        ("../amb-rs-tests/test_files/files/3", "3", 0xA0, 23),
         ("../amb-rs-tests/test_files/files/2", "2", 0xC0, 45),
     ],
     add_2_1_3: vec![
         ("../amb-rs-tests/test_files/files/2", "2", 0x50, 45),
         ("../amb-rs-tests/test_files/files/1", "1", 0x80, 73),
-        ("../amb-rs-tests/test_files/files/3", "3", 0xD0, 24),
+        ("../amb-rs-tests/test_files/files/3", "3", 0xD0, 23),
     ],
     add_2_3_1: vec![
         ("../amb-rs-tests/test_files/files/2", "2", 0x50, 45),
-        ("../amb-rs-tests/test_files/files/3", "3", 0x80, 24),
+        ("../amb-rs-tests/test_files/files/3", "3", 0x80, 23),
         ("../amb-rs-tests/test_files/files/1", "1", 0xA0, 73),
     ],
     add_3_1_2: vec![
-        ("../amb-rs-tests/test_files/files/3", "3", 0x50, 24),
+        ("../amb-rs-tests/test_files/files/3", "3", 0x50, 23),
         ("../amb-rs-tests/test_files/files/1", "1", 0x70, 73),
         ("../amb-rs-tests/test_files/files/2", "2", 0xC0, 45),
     ],
     add_3_2_1: vec![
-        ("../amb-rs-tests/test_files/files/3", "3", 0x50, 24),
+        ("../amb-rs-tests/test_files/files/3", "3", 0x50, 23),
         ("../amb-rs-tests/test_files/files/2", "2", 0x70, 45),
         ("../amb-rs-tests/test_files/files/1", "1", 0xA0, 73),
     ],
