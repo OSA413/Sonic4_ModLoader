@@ -26,14 +26,9 @@ struct AmbPointersPrediction {
 impl Amb {
     pub fn length(&self) -> usize {
         let pointers_predition = self.predict_pointers();
-        match self.has_names {
-            true => {
-                pointers_predition.name + self.objects.len() * match self.has_names {
-                    true => 0x20,
-                    false => 0
-                }
-            },
-            false => pointers_predition.name,
+        pointers_predition.name + self.objects.len() * match self.has_names {
+            true => 0x20,
+            false => 0
         }
     }
 
@@ -169,21 +164,21 @@ impl Amb {
         binary_writer::write_u32(&mut result, 0x4, match self.version {
             Version::PC => 0x20,
             Version::Mobile => 0x28,
-        }, &self.endianness)?;
-        binary_writer::write_u32(&mut result, 0x8, self.flag1, &self.endianness)?;
-        binary_writer::write_u32(&mut result, 0xC, self.flag2, &self.endianness)?;
-        binary_writer::write_u32(&mut result, 0x10, self.objects.len() as u32, &self.endianness)?;
-        binary_writer::write_u32(&mut result, 0x14, pointers.list as u32, &self.endianness)?;
-        binary_writer::write_u32(&mut result, 0x18, pointers.data as u32, &self.endianness)?;
+        }, &self.endianness, "version".to_string())?;
+        binary_writer::write_u32(&mut result, 0x8, self.flag1, &self.endianness, "flag1".to_string())?;
+        binary_writer::write_u32(&mut result, 0xC, self.flag2, &self.endianness, "flag2".to_string())?;
+        binary_writer::write_u32(&mut result, 0x10, self.objects.len() as u32, &self.endianness, "object length".to_string())?;
+        binary_writer::write_u32(&mut result, 0x14, pointers.list as u32, &self.endianness, "list pointer".to_string())?;
+        binary_writer::write_u32(&mut result, 0x18, pointers.data as u32, &self.endianness, "data pointer".to_string())?;
         if self.has_names {
-            binary_writer::write_u32(&mut result, 0x1C, pointers.name as u32, &self.endianness)?;
+            binary_writer::write_u32(&mut result, 0x1C, pointers.name as u32, &self.endianness, "name pointer".to_string())?;
         }
 
         for o in self.objects.iter() {
-            binary_writer::write_u32(&mut result, pointers.list, pointers.data as u32, &self.endianness)?;
-            binary_writer::write_u32(&mut result, pointers.list + 4, o.length() as u32, &self.endianness)?;
-            binary_writer::write_u32(&mut result, pointers.list + 8, o.flag1, &self.endianness)?;
-            binary_writer::write_u32(&mut result, pointers.list + 12, o.flag2, &self.endianness)?;
+            binary_writer::write_u32(&mut result, pointers.list, pointers.data as u32, &self.endianness, "object data pointer".to_string())?;
+            binary_writer::write_u32(&mut result, pointers.list + 4, o.length() as u32, &self.endianness, "object length".to_string())?;
+            binary_writer::write_u32(&mut result, pointers.list + 8, o.flag1, &self.endianness, "object flag1".to_string())?;
+            binary_writer::write_u32(&mut result, pointers.list + 12, o.flag2, &self.endianness, "object flag2".to_string())?;
 
             let object_data = &o.data;
             result[pointers.data..pointers.data + o.length()].copy_from_slice(object_data);
