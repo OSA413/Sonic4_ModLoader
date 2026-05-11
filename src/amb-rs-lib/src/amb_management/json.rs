@@ -18,10 +18,10 @@ pub fn print_from_file_to_stdout(target_file: String) -> Result<(), CommonBinary
 
 pub fn print_from_file(target_file: &String) -> Result<String, CommonBinaryError> {
     let source = std::fs::read(target_file)?;
-    Ok(print_from_vec_u8(source, target_file)?.to_string())
+    Ok(print_from_vec_u8(&source, target_file)?.to_string())
 }
 
-pub fn print_from_vec_u8(source: Vec<u8>, name: &String) -> Result<String, CommonBinaryError> {
+pub fn print_from_vec_u8(source: &Vec<u8>, name: &String) -> Result<String, CommonBinaryError> {
     let amb = Amb::new_from_src_ptr_name(&source, Some(0), name)?;
     Ok(print_from_amb(amb))
 }
