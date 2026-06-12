@@ -7,7 +7,7 @@ pub fn read_string32(source: &[u8], pointer: usize) -> Result<String, CommonBina
     let mut pointer = pointer;
 
     loop {
-        if result.len() >= 31 {
+        if result.len() > 31 {
             return Err(CommonBinaryError::StringTooLong(StringTooLongDetails {
                 pointer,
                 target_string: result,
@@ -45,7 +45,7 @@ pub fn read_u32(source: &[u8], pointer: usize, endianness: &Option<Endianness>) 
         }));
     }
 
-    let slice = [
+    let bytes = [
         source[pointer],
         source[pointer + 1],
         source[pointer + 2],
@@ -53,14 +53,14 @@ pub fn read_u32(source: &[u8], pointer: usize, endianness: &Option<Endianness>) 
     ];
 
     match endianness {
-        Some(Endianness::Little) => Ok(u32::from_le_bytes(slice)),
-        Some(Endianness::Big) => Ok(u32::from_be_bytes(slice)),
-        None => Ok(u32::from_le_bytes(slice))
+        Some(Endianness::Little) => Ok(u32::from_le_bytes(bytes)),
+        Some(Endianness::Big) => Ok(u32::from_be_bytes(bytes)),
+        None => Ok(u32::from_le_bytes(bytes))
     }
 }
 
 #[cfg(test)]
-mod tests {
+mod binary_tests {
     use super::*;
 
     static HELLO_WORLD: [u8; 12] = [
@@ -69,6 +69,24 @@ mod tests {
 
     static HELLO_WORLD_WO_NULL: [u8; 11] = [
         0x48, 0x65, 0x6C, 0x6C, 0x6F, 0x20, 0x57, 0x6F, 0x72, 0x6C, 0x64,
+    ];
+
+    static EXACTLY_32_BYTE_LONG_STRING: [u8; 32] = [
+        0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f, 0x70,
+        0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7a, 0x41, 0x42, 0x43, 0x44, 0x45, 0x00,
+    ];
+
+    static EXACTLY_33_BYTE_LONG_STRING: [u8; 33] = [
+        0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f, 0x70,
+        0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7a, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46,
+        0x00,
+    ];
+
+    static VERY_LONG_STRING: [u8; 53] = [
+        0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69, 0x6a, 0x6b, 0x6c, 0x6d, 0x6e, 0x6f, 0x70,
+        0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79, 0x7a, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46,
+        0x47, 0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x4e, 0x4f, 0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56,
+        0x57, 0x58, 0x59, 0x5A, 0x00,
     ];
 
     #[test]
@@ -158,6 +176,78 @@ mod tests {
         );
     }
 
+    #[test]
+    fn read_exactly_32_string_0() {
+        assert_eq!(read_string32(&EXACTLY_32_BYTE_LONG_STRING, 0).unwrap(), "abcdefghijklmnopqrstuvwxyzABCDE".to_string());
+    }
+
+    #[test]
+    fn read_exactly_32_string_1() {
+        assert_eq!(read_string32(&EXACTLY_32_BYTE_LONG_STRING, 16).unwrap(), "qrstuvwxyzABCDE".to_string());
+    }
+
+    #[test]
+    fn read_exactly_33_string_0() {
+        let result = read_string32(&EXACTLY_33_BYTE_LONG_STRING, 0).unwrap_err();
+        assert_eq!(
+            format!("{result:?}"),
+            "StringTooLong when Reading a string at 32 with value abcdefghijklmnopqrstuvwxyzABCDEF"
+        );
+    }
+
+    #[test]
+    fn read_exactly_33_string_1() {
+        assert_eq!(read_string32(&EXACTLY_33_BYTE_LONG_STRING, 1).unwrap(), "bcdefghijklmnopqrstuvwxyzABCDEF".to_string());
+    }
+    
+    #[test]
+    fn read_exactly_33_string_2() {
+        assert_eq!(read_string32(&EXACTLY_33_BYTE_LONG_STRING, 16).unwrap(), "qrstuvwxyzABCDEF".to_string());
+    }
+
+    #[test]
+    fn read_very_long_string_0() {
+        let result = read_string32(&VERY_LONG_STRING, 0).unwrap_err();
+        assert_eq!(
+            format!("{result:?}"),
+            "StringTooLong when Reading a string at 32 with value abcdefghijklmnopqrstuvwxyzABCDEF"
+        );
+    }
+
+    #[test]
+    fn read_very_long_string_1() {
+        let result = read_string32(&VERY_LONG_STRING, 8).unwrap_err();
+        assert_eq!(
+            format!("{result:?}"),
+            "StringTooLong when Reading a string at 40 with value ijklmnopqrstuvwxyzABCDEFGHIJKLMN"
+        );
+    }
+
+    #[test]
+    fn read_very_long_string_2() {
+        let result = read_string32(&VERY_LONG_STRING, 20).unwrap_err();
+        assert_eq!(
+            format!("{result:?}"),
+            "StringTooLong when Reading a string at 52 with value uvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        );
+    }
+
+    #[test]
+    fn read_very_long_string_3() {
+        assert_eq!(
+            read_string32(&VERY_LONG_STRING, 21).unwrap(),
+            "vwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".to_string()
+        );
+    }
+
+    #[test]
+    fn read_very_long_string_4() {
+        assert_eq!(
+            read_string32(&VERY_LONG_STRING, 22).unwrap(),
+            "wxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".to_string()
+        );
+    }
+
     // We only care about null terminated strings
     #[test]
     fn read_string32_wo_null_0() {
@@ -186,7 +276,6 @@ mod tests {
         );
     }
 
-    
     #[test]
     fn read_string32_wo_null_out_of_bounds() {
         let result = read_string32(&HELLO_WORLD_WO_NULL, 12).unwrap_err();
@@ -196,3 +285,10 @@ mod tests {
         );
     }
 }
+
+// Maybe add string_tests to check Rust interoperability?
+
+// Maybe add garbage_tests to check that bad characters are not returned when read?
+
+// Looks like I'll need to add a multi-string test to check that it actually takes exaclty one string from that
+// I mean, more like the real use-case (like in TXB)
