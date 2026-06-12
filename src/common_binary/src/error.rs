@@ -4,6 +4,13 @@ pub struct PointerOutOfBoundsDetails {
     pub when: String,
 }
 
+pub struct StringBadCharacterDetails {
+    pub pointer: usize,
+    pub target_string: String,
+    pub bad_character: u8,
+    pub when: String,
+}
+
 pub struct StringTooLongDetails {
     pub pointer: usize,
     pub target_string: String,
@@ -15,6 +22,7 @@ pub enum CommonBinaryError {
     PointerOutOfBounds(PointerOutOfBoundsDetails),
     ProvidedSourceIsNotAnAmb(String),
     StringTooLong(StringTooLongDetails),
+    StringBadCharacter(StringBadCharacterDetails),
 }
 
 impl From<std::io::Error> for CommonBinaryError {
@@ -30,6 +38,7 @@ impl std::fmt::Debug for CommonBinaryError {
             CommonBinaryError::PointerOutOfBounds(e) => write!(f, "PointerOutOfBounds when {} for {} at {}", e.when, e.source_len, e.pointer),
             CommonBinaryError::ProvidedSourceIsNotAnAmb(e) => write!(f, "{e}"),
             CommonBinaryError::StringTooLong(e) => write!(f, "StringTooLong when {} at {} with value {}", e.when, e.pointer, e.target_string),
+            CommonBinaryError::StringBadCharacter(e) => write!(f, "Detected non-ASCII character {:#04X} when {} at {} with value {}", e.bad_character, e.when, e.pointer, e.target_string),
         }
     }
 }
