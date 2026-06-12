@@ -30,8 +30,6 @@ jobs:
         uses: microsoft/setup-msbuild@v1.1
 
       - uses: actions/setup-python@v2
-        with:
-          python-version: '3.14'
 
       - name: Set gtk-build-moment-stamp for cache
         run: echo "stamp=$([Math]::Truncate(($(Get-Date).DayofYear / 7)))" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
@@ -45,13 +43,11 @@ jobs:
             C:/gtk-build/src
           key: ${{ runner.os }}-gtk-build-binaries-${{ steps.gtk-build-moment-stamp.outputs.stamp }}
 
-      - run: py -3.14 -m pip install --user pipx
+      - run: winget install --id=astral-sh.uv  -e
         if: ${{ steps.cache-gtk.outputs.cache-hit != 'true' }}
-      - run: py -3.14 -m pipx ensurepath
+      - run: uv tool install gvsbuild
         if: ${{ steps.cache-gtk.outputs.cache-hit != 'true' }}
-      - run: pipx install gvsbuild
-        if: ${{ steps.cache-gtk.outputs.cache-hit != 'true' }}
-      - run: gvsbuild build gtk4 libadwaita librsvg
+      - run: uv run gvsbuild build gtk4 libadwaita librsvg
         if: ${{ steps.cache-gtk.outputs.cache-hit != 'true' }}
       - run: echo "C:\gtk-build\gtk\x64\release\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
