@@ -1,7 +1,6 @@
 use std::ops::RangeInclusive;
 
 use crate::error::{CommonBinaryError, PointerOutOfBoundsDetails, StringBadCharacterDetails, StringTooLongDetails};
-use crate::endianness::Endianness;
 
 static ALLOWED_CHARACTER_RANGES: [RangeInclusive<u8>; 7] = [
     0x20..=0x20, // Space
@@ -13,7 +12,7 @@ static ALLOWED_CHARACTER_RANGES: [RangeInclusive<u8>; 7] = [
     0x61..=0x7A, // a-z
 ];
 
-pub fn read_string32(source: &[u8], pointer: usize) -> Result<String, CommonBinaryError> {
+pub fn read(source: &[u8], pointer: usize) -> Result<String, CommonBinaryError> {
     let mut result = String::new();
     // Isn't it cool that you can do that in Rust?
     let mut pointer = pointer;
@@ -57,31 +56,6 @@ pub fn read_string32(source: &[u8], pointer: usize) -> Result<String, CommonBina
     Ok(result)
 }
 
-pub fn read_u32(source: &[u8], pointer: usize, endianness: &Option<Endianness>) -> Result<u32, CommonBinaryError> {
-    // This approach won't eat up the RAM and should be safe and fast
-    // And is using Rust's built in conversion to type from binary
-    if source.len() < pointer + size_of::<u32>() {
-        return Err(CommonBinaryError::PointerOutOfBounds(PointerOutOfBoundsDetails {
-            when: "Reading an u32".to_string(),
-            pointer,
-            source_len: source.len(),
-        }));
-    }
-
-    let bytes = [
-        source[pointer],
-        source[pointer + 1],
-        source[pointer + 2],
-        source[pointer + 3]
-    ];
-
-    match endianness {
-        Some(Endianness::Little) => Ok(u32::from_le_bytes(bytes)),
-        Some(Endianness::Big) => Ok(u32::from_be_bytes(bytes)),
-        None => Ok(u32::from_le_bytes(bytes))
-    }
-}
-
 #[cfg(test)]
 mod binary_tests {
     use super::*;
@@ -114,67 +88,67 @@ mod binary_tests {
 
     #[test]
     fn read_string32_0() {
-        assert_eq!(read_string32(&HELLO_WORLD, 0).unwrap(), "Hello World".to_string());
+        assert_eq!(read(&HELLO_WORLD, 0).unwrap(), "Hello World".to_string());
     }
 
     #[test]
     fn read_string32_1() {
-        assert_eq!(read_string32(&HELLO_WORLD, 1).unwrap(), "ello World".to_string());
+        assert_eq!(read(&HELLO_WORLD, 1).unwrap(), "ello World".to_string());
     }
     
     #[test]
     fn read_string32_2() {
-        assert_eq!(read_string32(&HELLO_WORLD, 2).unwrap(), "llo World".to_string());
+        assert_eq!(read(&HELLO_WORLD, 2).unwrap(), "llo World".to_string());
     }
 
     #[test]
     fn read_string32_3() {
-        assert_eq!(read_string32(&HELLO_WORLD, 3).unwrap(), "lo World".to_string());
+        assert_eq!(read(&HELLO_WORLD, 3).unwrap(), "lo World".to_string());
     }
 
     #[test]
     fn read_string32_4() {
-        assert_eq!(read_string32(&HELLO_WORLD, 4).unwrap(), "o World".to_string());
+        assert_eq!(read(&HELLO_WORLD, 4).unwrap(), "o World".to_string());
     }
 
     #[test]
     fn read_string32_5() {
-        assert_eq!(read_string32(&HELLO_WORLD, 5).unwrap(), " World".to_string());
+        assert_eq!(read(&HELLO_WORLD, 5).unwrap(), " World".to_string());
     }
 
     #[test]
     fn read_string32_6() {
-        assert_eq!(read_string32(&HELLO_WORLD, 6).unwrap(), "World".to_string());
+        assert_eq!(read(&HELLO_WORLD, 6).unwrap(), "World".to_string());
     }
 
     #[test]
     fn read_string32_7() {
-        assert_eq!(read_string32(&HELLO_WORLD, 7).unwrap(), "orld".to_string());
+        assert_eq!(read(&HELLO_WORLD, 7).unwrap(), "orld".to_string());
     }
 
     #[test]
     fn read_string32_8() {
-        assert_eq!(read_string32(&HELLO_WORLD, 8).unwrap(), "rld".to_string());
+        assert_eq!(read(&HELLO_WORLD, 8).unwrap(), "rld".to_string());
     }
 
     #[test]
     fn read_string32_9() {
-        assert_eq!(read_string32(&HELLO_WORLD, 9).unwrap(), "ld".to_string());
+        assert_eq!(read(&HELLO_WORLD, 9).unwrap(), "ld".to_string());
     }
 
     #[test]
     fn read_string32_10() {
-        assert_eq!(read_string32(&HELLO_WORLD, 10).unwrap(), "d".to_string());
+        assert_eq!(read(&HELLO_WORLD, 10).unwrap(), "d".to_string());
     }
 
     #[test]
     fn read_string32_11() {
-        assert_eq!(read_string32(&HELLO_WORLD, 11).unwrap(), "".to_string());
+        assert_eq!(read(&HELLO_WORLD, 11).unwrap(), "".to_string());
     }
 
     #[test]
     fn read_string32_out_of_bounds_0() {
-        let result = read_string32(&HELLO_WORLD, 12).unwrap_err();
+        let result = read(&HELLO_WORLD, 12).unwrap_err();
         assert_eq!(
             format!("{result:?}"),
             "PointerOutOfBounds when Reading a string for 12 at 12"
@@ -183,7 +157,7 @@ mod binary_tests {
 
     #[test]
     fn read_string32_out_of_bounds_1() {
-        let result = read_string32(&HELLO_WORLD, 13).unwrap_err();
+        let result = read(&HELLO_WORLD, 13).unwrap_err();
         assert_eq!(
             format!("{result:?}"),
             "PointerOutOfBounds when Reading a string for 12 at 13"
@@ -192,7 +166,7 @@ mod binary_tests {
 
     #[test]
     fn read_string32_out_of_bounds_2() {
-        let result = read_string32(&HELLO_WORLD, 99).unwrap_err();
+        let result = read(&HELLO_WORLD, 99).unwrap_err();
         assert_eq!(
             format!("{result:?}"),
             "PointerOutOfBounds when Reading a string for 12 at 99"
@@ -201,17 +175,17 @@ mod binary_tests {
 
     #[test]
     fn read_exactly_32_string_0() {
-        assert_eq!(read_string32(&EXACTLY_32_BYTE_LONG_STRING, 0).unwrap(), "abcdefghijklmnopqrstuvwxyzABCDE".to_string());
+        assert_eq!(read(&EXACTLY_32_BYTE_LONG_STRING, 0).unwrap(), "abcdefghijklmnopqrstuvwxyzABCDE".to_string());
     }
 
     #[test]
     fn read_exactly_32_string_1() {
-        assert_eq!(read_string32(&EXACTLY_32_BYTE_LONG_STRING, 16).unwrap(), "qrstuvwxyzABCDE".to_string());
+        assert_eq!(read(&EXACTLY_32_BYTE_LONG_STRING, 16).unwrap(), "qrstuvwxyzABCDE".to_string());
     }
 
     #[test]
     fn read_exactly_33_string_0() {
-        let result = read_string32(&EXACTLY_33_BYTE_LONG_STRING, 0).unwrap_err();
+        let result = read(&EXACTLY_33_BYTE_LONG_STRING, 0).unwrap_err();
         assert_eq!(
             format!("{result:?}"),
             "StringTooLong when Reading a string at 32 with value abcdefghijklmnopqrstuvwxyzABCDEF"
@@ -220,17 +194,17 @@ mod binary_tests {
 
     #[test]
     fn read_exactly_33_string_1() {
-        assert_eq!(read_string32(&EXACTLY_33_BYTE_LONG_STRING, 1).unwrap(), "bcdefghijklmnopqrstuvwxyzABCDEF".to_string());
+        assert_eq!(read(&EXACTLY_33_BYTE_LONG_STRING, 1).unwrap(), "bcdefghijklmnopqrstuvwxyzABCDEF".to_string());
     }
     
     #[test]
     fn read_exactly_33_string_2() {
-        assert_eq!(read_string32(&EXACTLY_33_BYTE_LONG_STRING, 16).unwrap(), "qrstuvwxyzABCDEF".to_string());
+        assert_eq!(read(&EXACTLY_33_BYTE_LONG_STRING, 16).unwrap(), "qrstuvwxyzABCDEF".to_string());
     }
 
     #[test]
     fn read_very_long_string_0() {
-        let result = read_string32(&VERY_LONG_STRING, 0).unwrap_err();
+        let result = read(&VERY_LONG_STRING, 0).unwrap_err();
         assert_eq!(
             format!("{result:?}"),
             "StringTooLong when Reading a string at 32 with value abcdefghijklmnopqrstuvwxyzABCDEF"
@@ -239,7 +213,7 @@ mod binary_tests {
 
     #[test]
     fn read_very_long_string_1() {
-        let result = read_string32(&VERY_LONG_STRING, 8).unwrap_err();
+        let result = read(&VERY_LONG_STRING, 8).unwrap_err();
         assert_eq!(
             format!("{result:?}"),
             "StringTooLong when Reading a string at 40 with value ijklmnopqrstuvwxyzABCDEFGHIJKLMN"
@@ -248,7 +222,7 @@ mod binary_tests {
 
     #[test]
     fn read_very_long_string_2() {
-        let result = read_string32(&VERY_LONG_STRING, 20).unwrap_err();
+        let result = read(&VERY_LONG_STRING, 20).unwrap_err();
         assert_eq!(
             format!("{result:?}"),
             "StringTooLong when Reading a string at 52 with value uvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -258,7 +232,7 @@ mod binary_tests {
     #[test]
     fn read_very_long_string_3() {
         assert_eq!(
-            read_string32(&VERY_LONG_STRING, 21).unwrap(),
+            read(&VERY_LONG_STRING, 21).unwrap(),
             "vwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".to_string()
         );
     }
@@ -266,7 +240,7 @@ mod binary_tests {
     #[test]
     fn read_very_long_string_4() {
         assert_eq!(
-            read_string32(&VERY_LONG_STRING, 22).unwrap(),
+            read(&VERY_LONG_STRING, 22).unwrap(),
             "wxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".to_string()
         );
     }
@@ -274,7 +248,7 @@ mod binary_tests {
     // We only care about null terminated strings
     #[test]
     fn read_string32_wo_null_0() {
-        let result = read_string32(&HELLO_WORLD_WO_NULL, 0).unwrap_err();
+        let result = read(&HELLO_WORLD_WO_NULL, 0).unwrap_err();
         assert_eq!(
             format!("{result:?}"),
             "PointerOutOfBounds when Reading a string for 11 at 11"
@@ -283,7 +257,7 @@ mod binary_tests {
 
     #[test]
     fn read_string32_wo_null_1() {
-        let result = read_string32(&HELLO_WORLD_WO_NULL, 6).unwrap_err();
+        let result = read(&HELLO_WORLD_WO_NULL, 6).unwrap_err();
         assert_eq!(
             format!("{result:?}"),
             "PointerOutOfBounds when Reading a string for 11 at 11"
@@ -292,7 +266,7 @@ mod binary_tests {
     
     #[test]
     fn read_string32_wo_null_2() {
-        let result = read_string32(&HELLO_WORLD_WO_NULL, 11).unwrap_err();
+        let result = read(&HELLO_WORLD_WO_NULL, 11).unwrap_err();
         assert_eq!(
             format!("{result:?}"),
             "PointerOutOfBounds when Reading a string for 11 at 11"
@@ -301,7 +275,7 @@ mod binary_tests {
 
     #[test]
     fn read_string32_wo_null_out_of_bounds() {
-        let result = read_string32(&HELLO_WORLD_WO_NULL, 12).unwrap_err();
+        let result = read(&HELLO_WORLD_WO_NULL, 12).unwrap_err();
         assert_eq!(
             format!("{result:?}"),
             "PointerOutOfBounds when Reading a string for 11 at 12"
@@ -325,67 +299,67 @@ mod string_tests {
 
     #[test]
     fn read_string32_0() {
-        assert_eq!(read_string32(&HELLO_WORLD, 0).unwrap(), "Hello World".to_string());
+        assert_eq!(read(&HELLO_WORLD, 0).unwrap(), "Hello World".to_string());
     }
 
     #[test]
     fn read_string32_1() {
-        assert_eq!(read_string32(&HELLO_WORLD, 1).unwrap(), "ello World".to_string());
+        assert_eq!(read(&HELLO_WORLD, 1).unwrap(), "ello World".to_string());
     }
     
     #[test]
     fn read_string32_2() {
-        assert_eq!(read_string32(&HELLO_WORLD, 2).unwrap(), "llo World".to_string());
+        assert_eq!(read(&HELLO_WORLD, 2).unwrap(), "llo World".to_string());
     }
 
     #[test]
     fn read_string32_3() {
-        assert_eq!(read_string32(&HELLO_WORLD, 3).unwrap(), "lo World".to_string());
+        assert_eq!(read(&HELLO_WORLD, 3).unwrap(), "lo World".to_string());
     }
 
     #[test]
     fn read_string32_4() {
-        assert_eq!(read_string32(&HELLO_WORLD, 4).unwrap(), "o World".to_string());
+        assert_eq!(read(&HELLO_WORLD, 4).unwrap(), "o World".to_string());
     }
 
     #[test]
     fn read_string32_5() {
-        assert_eq!(read_string32(&HELLO_WORLD, 5).unwrap(), " World".to_string());
+        assert_eq!(read(&HELLO_WORLD, 5).unwrap(), " World".to_string());
     }
 
     #[test]
     fn read_string32_6() {
-        assert_eq!(read_string32(&HELLO_WORLD, 6).unwrap(), "World".to_string());
+        assert_eq!(read(&HELLO_WORLD, 6).unwrap(), "World".to_string());
     }
 
     #[test]
     fn read_string32_7() {
-        assert_eq!(read_string32(&HELLO_WORLD, 7).unwrap(), "orld".to_string());
+        assert_eq!(read(&HELLO_WORLD, 7).unwrap(), "orld".to_string());
     }
 
     #[test]
     fn read_string32_8() {
-        assert_eq!(read_string32(&HELLO_WORLD, 8).unwrap(), "rld".to_string());
+        assert_eq!(read(&HELLO_WORLD, 8).unwrap(), "rld".to_string());
     }
 
     #[test]
     fn read_string32_9() {
-        assert_eq!(read_string32(&HELLO_WORLD, 9).unwrap(), "ld".to_string());
+        assert_eq!(read(&HELLO_WORLD, 9).unwrap(), "ld".to_string());
     }
 
     #[test]
     fn read_string32_10() {
-        assert_eq!(read_string32(&HELLO_WORLD, 10).unwrap(), "d".to_string());
+        assert_eq!(read(&HELLO_WORLD, 10).unwrap(), "d".to_string());
     }
 
     #[test]
     fn read_string32_11() {
-        assert_eq!(read_string32(&HELLO_WORLD, 11).unwrap(), "".to_string());
+        assert_eq!(read(&HELLO_WORLD, 11).unwrap(), "".to_string());
     }
 
     #[test]
     fn read_string32_out_of_bounds_0() {
-        let result = read_string32(&HELLO_WORLD, 12).unwrap_err();
+        let result = read(&HELLO_WORLD, 12).unwrap_err();
         assert_eq!(
             format!("{result:?}"),
             "PointerOutOfBounds when Reading a string for 12 at 12"
@@ -394,7 +368,7 @@ mod string_tests {
 
     #[test]
     fn read_string32_out_of_bounds_1() {
-        let result = read_string32(&HELLO_WORLD, 13).unwrap_err();
+        let result = read(&HELLO_WORLD, 13).unwrap_err();
         assert_eq!(
             format!("{result:?}"),
             "PointerOutOfBounds when Reading a string for 12 at 13"
@@ -403,7 +377,7 @@ mod string_tests {
 
     #[test]
     fn read_string32_out_of_bounds_2() {
-        let result = read_string32(&HELLO_WORLD, 99).unwrap_err();
+        let result = read(&HELLO_WORLD, 99).unwrap_err();
         assert_eq!(
             format!("{result:?}"),
             "PointerOutOfBounds when Reading a string for 12 at 99"
@@ -412,17 +386,17 @@ mod string_tests {
 
     #[test]
     fn read_exactly_32_string_0() {
-        assert_eq!(read_string32(&EXACTLY_32_BYTE_LONG_STRING, 0).unwrap(), "abcdefghijklmnopqrstuvwxyzABCDE".to_string());
+        assert_eq!(read(&EXACTLY_32_BYTE_LONG_STRING, 0).unwrap(), "abcdefghijklmnopqrstuvwxyzABCDE".to_string());
     }
 
     #[test]
     fn read_exactly_32_string_1() {
-        assert_eq!(read_string32(&EXACTLY_32_BYTE_LONG_STRING, 16).unwrap(), "qrstuvwxyzABCDE".to_string());
+        assert_eq!(read(&EXACTLY_32_BYTE_LONG_STRING, 16).unwrap(), "qrstuvwxyzABCDE".to_string());
     }
 
     #[test]
     fn read_exactly_33_string_0() {
-        let result = read_string32(&EXACTLY_33_BYTE_LONG_STRING, 0).unwrap_err();
+        let result = read(&EXACTLY_33_BYTE_LONG_STRING, 0).unwrap_err();
         assert_eq!(
             format!("{result:?}"),
             "StringTooLong when Reading a string at 32 with value abcdefghijklmnopqrstuvwxyzABCDEF"
@@ -431,17 +405,17 @@ mod string_tests {
 
     #[test]
     fn read_exactly_33_string_1() {
-        assert_eq!(read_string32(&EXACTLY_33_BYTE_LONG_STRING, 1).unwrap(), "bcdefghijklmnopqrstuvwxyzABCDEF".to_string());
+        assert_eq!(read(&EXACTLY_33_BYTE_LONG_STRING, 1).unwrap(), "bcdefghijklmnopqrstuvwxyzABCDEF".to_string());
     }
     
     #[test]
     fn read_exactly_33_string_2() {
-        assert_eq!(read_string32(&EXACTLY_33_BYTE_LONG_STRING, 16).unwrap(), "qrstuvwxyzABCDEF".to_string());
+        assert_eq!(read(&EXACTLY_33_BYTE_LONG_STRING, 16).unwrap(), "qrstuvwxyzABCDEF".to_string());
     }
 
     #[test]
     fn read_very_long_string_0() {
-        let result = read_string32(&VERY_LONG_STRING, 0).unwrap_err();
+        let result = read(&VERY_LONG_STRING, 0).unwrap_err();
         assert_eq!(
             format!("{result:?}"),
             "StringTooLong when Reading a string at 32 with value abcdefghijklmnopqrstuvwxyzABCDEF"
@@ -450,7 +424,7 @@ mod string_tests {
 
     #[test]
     fn read_very_long_string_1() {
-        let result = read_string32(&VERY_LONG_STRING, 8).unwrap_err();
+        let result = read(&VERY_LONG_STRING, 8).unwrap_err();
         assert_eq!(
             format!("{result:?}"),
             "StringTooLong when Reading a string at 40 with value ijklmnopqrstuvwxyzABCDEFGHIJKLMN"
@@ -459,7 +433,7 @@ mod string_tests {
 
     #[test]
     fn read_very_long_string_2() {
-        let result = read_string32(&VERY_LONG_STRING, 20).unwrap_err();
+        let result = read(&VERY_LONG_STRING, 20).unwrap_err();
         assert_eq!(
             format!("{result:?}"),
             "StringTooLong when Reading a string at 52 with value uvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -469,7 +443,7 @@ mod string_tests {
     #[test]
     fn read_very_long_string_3() {
         assert_eq!(
-            read_string32(&VERY_LONG_STRING, 21).unwrap(),
+            read(&VERY_LONG_STRING, 21).unwrap(),
             "vwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".to_string()
         );
     }
@@ -477,7 +451,7 @@ mod string_tests {
     #[test]
     fn read_very_long_string_4() {
         assert_eq!(
-            read_string32(&VERY_LONG_STRING, 22).unwrap(),
+            read(&VERY_LONG_STRING, 22).unwrap(),
             "wxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".to_string()
         );
     }
@@ -485,7 +459,7 @@ mod string_tests {
     // We only care about null terminated strings
     #[test]
     fn read_string32_wo_null_0() {
-        let result = read_string32(&HELLO_WORLD_WO_NULL, 0).unwrap_err();
+        let result = read(&HELLO_WORLD_WO_NULL, 0).unwrap_err();
         assert_eq!(
             format!("{result:?}"),
             "PointerOutOfBounds when Reading a string for 11 at 11"
@@ -494,7 +468,7 @@ mod string_tests {
 
     #[test]
     fn read_string32_wo_null_1() {
-        let result = read_string32(&HELLO_WORLD_WO_NULL, 6).unwrap_err();
+        let result = read(&HELLO_WORLD_WO_NULL, 6).unwrap_err();
         assert_eq!(
             format!("{result:?}"),
             "PointerOutOfBounds when Reading a string for 11 at 11"
@@ -503,7 +477,7 @@ mod string_tests {
     
     #[test]
     fn read_string32_wo_null_2() {
-        let result = read_string32(&HELLO_WORLD_WO_NULL, 11).unwrap_err();
+        let result = read(&HELLO_WORLD_WO_NULL, 11).unwrap_err();
         assert_eq!(
             format!("{result:?}"),
             "PointerOutOfBounds when Reading a string for 11 at 11"
@@ -512,7 +486,7 @@ mod string_tests {
 
     #[test]
     fn read_string32_wo_null_out_of_bounds() {
-        let result = read_string32(&HELLO_WORLD_WO_NULL, 12).unwrap_err();
+        let result = read(&HELLO_WORLD_WO_NULL, 12).unwrap_err();
         assert_eq!(
             format!("{result:?}"),
             "PointerOutOfBounds when Reading a string for 11 at 12"
@@ -545,7 +519,7 @@ mod garbage_tests {
         let pointer = (SystemTime::now()
             .duration_since(SystemTime::UNIX_EPOCH).unwrap().as_nanos() as usize)
             % DISALLOWED_CHARACTERS.len();
-        let result = read_string32(&DISALLOWED_CHARACTERS, pointer).unwrap_err();
+        let result = read(&DISALLOWED_CHARACTERS, pointer).unwrap_err();
         let char = DISALLOWED_CHARACTERS[pointer];
         assert_eq!(
             format!("{result:?}"),
@@ -555,7 +529,7 @@ mod garbage_tests {
 
     #[test]
     fn garbage_string_in_beginning_0() {
-        let result = read_string32(&DISALLOWED_CHARACTER_IN_BEGINNING, 0).unwrap_err();
+        let result = read(&DISALLOWED_CHARACTER_IN_BEGINNING, 0).unwrap_err();
         assert_eq!(
             format!("{result:?}"),
             format!("Detected non-ASCII character 0x2B when Reading a string at 0 with value ")
@@ -565,14 +539,14 @@ mod garbage_tests {
     #[test]
     fn garbage_string_in_beginning_1() {
         assert_eq!(
-            read_string32(&DISALLOWED_CHARACTER_IN_BEGINNING, 1).unwrap(),
+            read(&DISALLOWED_CHARACTER_IN_BEGINNING, 1).unwrap(),
             "test".to_string()
         )
     }
     
     #[test]
     fn garbage_string_in_middle_0() {
-        let result = read_string32(&DISALLOWED_CHARACTER_IN_MIDDLE, 6).unwrap_err();
+        let result = read(&DISALLOWED_CHARACTER_IN_MIDDLE, 6).unwrap_err();
         assert_eq!(
             format!("{result:?}"),
             format!("Detected non-ASCII character 0x2B when Reading a string at 6 with value ")
@@ -581,7 +555,7 @@ mod garbage_tests {
 
     #[test]
     fn garbage_string_in_middle_2() {
-        let result = read_string32(&DISALLOWED_CHARACTER_IN_MIDDLE, 5).unwrap_err();
+        let result = read(&DISALLOWED_CHARACTER_IN_MIDDLE, 5).unwrap_err();
         assert_eq!(
             format!("{result:?}"),
             format!("Detected non-ASCII character 0x2B when Reading a string at 6 with value e")
@@ -591,14 +565,14 @@ mod garbage_tests {
     #[test]
     fn garbage_string_in_middle_3() {
         assert_eq!(
-            read_string32(&DISALLOWED_CHARACTER_IN_MIDDLE, 7).unwrap(),
+            read(&DISALLOWED_CHARACTER_IN_MIDDLE, 7).unwrap(),
             "after".to_string()
         )
     }
 
     #[test]
     fn garbage_string_in_end_0() {
-        let result = read_string32(&DISALLOWED_CHARACTER_IN_END, 0).unwrap_err();
+        let result = read(&DISALLOWED_CHARACTER_IN_END, 0).unwrap_err();
         assert_eq!(
             format!("{result:?}"),
             format!("Detected non-ASCII character 0x2B when Reading a string at 10 with value end_before")
@@ -607,7 +581,7 @@ mod garbage_tests {
 
     #[test]
     fn garbage_string_in_end_1() {
-        let result = read_string32(&DISALLOWED_CHARACTER_IN_END, 4).unwrap_err();
+        let result = read(&DISALLOWED_CHARACTER_IN_END, 4).unwrap_err();
         assert_eq!(
             format!("{result:?}"),
             format!("Detected non-ASCII character 0x2B when Reading a string at 10 with value before")
@@ -616,7 +590,7 @@ mod garbage_tests {
     
     #[test]
     fn garbage_string_in_end_2() {
-        let result = read_string32(&DISALLOWED_CHARACTER_IN_END, 10).unwrap_err();
+        let result = read(&DISALLOWED_CHARACTER_IN_END, 10).unwrap_err();
         assert_eq!(
             format!("{result:?}"),
             format!("Detected non-ASCII character 0x2B when Reading a string at 10 with value ")
@@ -626,11 +600,13 @@ mod garbage_tests {
     #[test]
     fn garbage_string_in_end_3() {
         assert_eq!(
-            read_string32(&DISALLOWED_CHARACTER_IN_END, 11).unwrap(),
+            read(&DISALLOWED_CHARACTER_IN_END, 11).unwrap(),
             "".to_string()
         )
     }
 }
 
-// Looks like I'll need to add a multi-string test to check that it actually takes exaclty one string from that
-// I mean, more like the real use-case (like in TXB)
+#[cfg(test)]
+mod complex_tests {
+    use super::*;
+}

@@ -53,7 +53,7 @@ impl Amb {
 
     pub fn get_version(source: &[u8], ptr: Option<usize>) -> (Version, Option<Endianness>) {
         let ptr = ptr.unwrap_or(0);
-        match binary_reader::read_u32(source, ptr + 0x4, &None).unwrap() {
+        match binary_reader::u32::read(source, ptr + 0x4, &None).unwrap() {
             0x20 => (Version::PC, Some(Endianness::Little)),
             0x28 => (Version::Mobile, Some(Endianness::Little)),
             value => {
@@ -101,33 +101,33 @@ impl Amb {
 
         let ptr = ptr.unwrap_or(0);
 
-        let flag1 = binary_reader::read_u32(source, ptr + 0x8, &endianness).expect("Another bad thing happened that you didn't account for #9");
-        let flag2 = binary_reader::read_u32(source, ptr + 0xC, &endianness).expect("Another bad thing happened that you didn't account for #9 and a half");
+        let flag1 = binary_reader::u32::read(source, ptr + 0x8, &endianness).expect("Another bad thing happened that you didn't account for #9");
+        let flag2 = binary_reader::u32::read(source, ptr + 0xC, &endianness).expect("Another bad thing happened that you didn't account for #9 and a half");
         // Btw this also might be incorrect, this actually shows number of entries in the list, but any entry can be empty resulting in "skips" and a bit smaller number of actual objects
-        let object_number = binary_reader::read_u32(source, ptr + 0x10, &endianness).expect("Another bad thing happened that you didn't account for #10");
-        let list_pointer = binary_reader::read_u32(source, ptr + 0x14, &endianness).expect("Another bad thing happened that you didn't account for #11") + ptr as u32;
-        //var dataPtr = binary_reader::read_u32(source, sourcePtr + 0x18 + shift) + sourcePtr; //this may be not dataPtr for mobile
-        let names_pointer = binary_reader::read_u32(source, ptr + 0x1C + shift, &endianness).expect("Another bad thing happened that you didn't account for #12") + ptr as u32;
+        let object_number = binary_reader::u32::read(source, ptr + 0x10, &endianness).expect("Another bad thing happened that you didn't account for #10");
+        let list_pointer = binary_reader::u32::read(source, ptr + 0x14, &endianness).expect("Another bad thing happened that you didn't account for #11") + ptr as u32;
+        //var dataPtr = binary_reader::u32::read(source, sourcePtr + 0x18 + shift) + sourcePtr; //this may be not dataPtr for mobile
+        let names_pointer = binary_reader::u32::read(source, ptr + 0x1C + shift, &endianness).expect("Another bad thing happened that you didn't account for #12") + ptr as u32;
         let has_names = names_pointer != 0;
 
         let mut objects = Vec::<BinaryObject>::new();
         let mut i: usize = 0;
         while i < object_number as usize {
-            let object_pointer = binary_reader::read_u32(source, list_pointer as usize + (0x10 + shift) * i, &endianness).expect("Who's bad?") + ptr as u32;
+            let object_pointer = binary_reader::u32::read(source, list_pointer as usize + (0x10 + shift) * i, &endianness).expect("Who's bad?") + ptr as u32;
             if object_pointer == 0 {
                 i += 1;
                 continue;
             }
 
-            let object_length = binary_reader::read_u32(source, list_pointer as usize + (0x10 + shift) * i + 4 + shift, &endianness).expect("Who's bad? (2)");
+            let object_length = binary_reader::u32::read(source, list_pointer as usize + (0x10 + shift) * i + 4 + shift, &endianness).expect("Who's bad? (2)");
             let mut new_object = BinaryObject::new_from_src_ptr_len(source, object_pointer as usize, object_length as usize);
             new_object.real_name = match has_names {
-                true => binary_reader::read_string32(source, names_pointer as usize + 0x20 * i)?,
+                true => binary_reader::string32::read(source, names_pointer as usize + 0x20 * i)?,
                 false =>  i.to_string(),
             };
             new_object.name = Amb::make_name_safe(&new_object.real_name);
-            new_object.flag1 = binary_reader::read_u32(source, list_pointer as usize + (0x10 + shift) * i + 8 + shift, &endianness).expect("Who's bad? (3)");
-            new_object.flag2 = binary_reader::read_u32(source, list_pointer as usize + (0x10 + shift) * i + 12 + shift, &endianness).expect("Who's bad? (4)");
+            new_object.flag1 = binary_reader::u32::read(source, list_pointer as usize + (0x10 + shift) * i + 8 + shift, &endianness).expect("Who's bad? (3)");
+            new_object.flag2 = binary_reader::u32::read(source, list_pointer as usize + (0x10 + shift) * i + 12 + shift, &endianness).expect("Who's bad? (4)");
 
             objects.push(new_object);
 
