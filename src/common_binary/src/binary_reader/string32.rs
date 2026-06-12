@@ -609,4 +609,59 @@ mod garbage_tests {
 #[cfg(test)]
 mod complex_tests {
     use super::*;
+
+    static AMB_EXAMPLE: [u8; 128] = [
+        0x23, 0x24, 0x2B, 0x3D, 0x23, 0x24, 0x2B, 0x3D, 0x23, 0x24, 0x2B, 0x3D, 0x23, 0x24, 0x2B, 0x3D,
+        0x23, 0x24, 0x2B, 0x3D, 0x23, 0x24, 0x2B, 0x3D, 0x23, 0x24, 0x2B, 0x00, 0x00, 0x00, 0x00, 0x00,
+        b'F', b'I', b'L', b'E', b'_', b'0', b'0', 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        b'F', b'I', b'L', b'E', b'_', b'0', b'1', 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+        b'F', b'I', b'L', b'E', b'_', b'0', b'1', b'2', b'3', b'4', b'5', b'6', b'7', b'8', b'9', b'0',
+        b'1', b'2', b'3', b'4', b'5', b'6', b'7', b'8', b'9', b'A', b'B', b'C', b'D', b'E', b'F', 0x00,
+    ];
+
+    static TXB_EXAMPLE: [u8; 64] = *b"#$+=#$+=#$+=#$+=FILE_00\0FILE_01\0FILE_01234567890123456789ABCDEF\0";
+
+    
+    #[test]
+    fn amb_example_0() {
+        let result = read(&AMB_EXAMPLE, 0x00).unwrap_err();
+        assert_eq!(
+            format!("{result:?}"),
+            "Detected non-ASCII character 0x23 when Reading a string at 0 with value "
+        );
+    }
+
+    #[test]
+    fn amb_example_1() {
+        assert_eq!(read(&AMB_EXAMPLE, 0x20).unwrap(), "FILE_00".to_string());
+    }
+
+    #[test]
+    fn amb_example_2() {
+        assert_eq!(read(&AMB_EXAMPLE, 0x40).unwrap(), "FILE_01".to_string());
+    }
+    
+    #[test]
+    fn amb_example_3() {
+        assert_eq!(read(&AMB_EXAMPLE, 0x60).unwrap(), "FILE_01234567890123456789ABCDEF".to_string());
+    }
+
+    #[test]
+    fn txb_example_0() {
+        let result = read(&TXB_EXAMPLE, 0x00).unwrap_err();
+        assert_eq!(
+            format!("{result:?}"),
+            "Detected non-ASCII character 0x23 when Reading a string at 0 with value "
+        );
+    }
+
+    #[test]
+    fn txb_example_1() {
+        assert_eq!(read(&TXB_EXAMPLE, 0x10).unwrap(), "FILE_00".to_string());
+        // That's a really good point, how to know when is the next string?
+        assert_eq!(read(&TXB_EXAMPLE, 0x18).unwrap(), "FILE_01".to_string());
+        assert_eq!(read(&TXB_EXAMPLE, 0x20).unwrap(), "FILE_01234567890123456789ABCDEF".to_string());
+    }
 }
