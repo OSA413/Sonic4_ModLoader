@@ -45,6 +45,8 @@ jobs:
 
       - run: pipx install uv
         if: ${{ steps.cache-gtk.outputs.cache-hit != 'true' }}
+      - run: uv tool update-shell
+        if: ${{ steps.cache-gtk.outputs.cache-hit != 'true' }}
       - run: uv tool install gvsbuild
         if: ${{ steps.cache-gtk.outputs.cache-hit != 'true' }}
       - run: uv run gvsbuild build gtk4 libadwaita librsvg
