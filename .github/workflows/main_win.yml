@@ -43,7 +43,7 @@ jobs:
             C:/gtk-build/src
           key: ${{ runner.os }}-gtk-build-binaries-${{ steps.gtk-build-moment-stamp.outputs.stamp }}
 
-      - run: winget install --id=astral-sh.uv  -e
+      - run: pipx install uv
         if: ${{ steps.cache-gtk.outputs.cache-hit != 'true' }}
       - run: uv tool install gvsbuild
         if: ${{ steps.cache-gtk.outputs.cache-hit != 'true' }}
