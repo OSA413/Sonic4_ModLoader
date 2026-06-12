@@ -122,7 +122,7 @@ impl Amb {
             let object_length = binary_reader::u32::read(source, list_pointer as usize + (0x10 + shift) * i + 4 + shift, &endianness).expect("Who's bad? (2)");
             let mut new_object = BinaryObject::new_from_src_ptr_len(source, object_pointer as usize, object_length as usize);
             new_object.real_name = match has_names {
-                true => binary_reader::string32::read(source, names_pointer as usize + 0x20 * i)?,
+                true => binary_reader::string32::read(source, names_pointer as usize + 0x20 * i)?.0,
                 false =>  i.to_string(),
             };
             new_object.name = Amb::make_name_safe(&new_object.real_name);

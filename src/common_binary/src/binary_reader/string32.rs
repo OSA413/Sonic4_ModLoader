@@ -12,7 +12,7 @@ static ALLOWED_CHARACTER_RANGES: [RangeInclusive<u8>; 7] = [
     0x61..=0x7A, // a-z
 ];
 
-pub fn read(source: &[u8], pointer: usize) -> Result<String, CommonBinaryError> {
+pub fn read(source: &[u8], pointer: usize) -> Result<(String, usize), CommonBinaryError> {
     let mut result = String::new();
     // Isn't it cool that you can do that in Rust?
     let mut pointer = pointer;
@@ -53,7 +53,7 @@ pub fn read(source: &[u8], pointer: usize) -> Result<String, CommonBinaryError> 
         pointer += 1;
     }
 
-    Ok(result)
+    Ok((result, pointer))
 }
 
 #[cfg(test)]
@@ -88,62 +88,62 @@ mod binary_tests {
 
     #[test]
     fn read_string32_0() {
-        assert_eq!(read(&HELLO_WORLD, 0).unwrap(), "Hello World".to_string());
+        assert_eq!(read(&HELLO_WORLD, 0).unwrap().0, "Hello World".to_string());
     }
 
     #[test]
     fn read_string32_1() {
-        assert_eq!(read(&HELLO_WORLD, 1).unwrap(), "ello World".to_string());
+        assert_eq!(read(&HELLO_WORLD, 1).unwrap().0, "ello World".to_string());
     }
     
     #[test]
     fn read_string32_2() {
-        assert_eq!(read(&HELLO_WORLD, 2).unwrap(), "llo World".to_string());
+        assert_eq!(read(&HELLO_WORLD, 2).unwrap().0, "llo World".to_string());
     }
 
     #[test]
     fn read_string32_3() {
-        assert_eq!(read(&HELLO_WORLD, 3).unwrap(), "lo World".to_string());
+        assert_eq!(read(&HELLO_WORLD, 3).unwrap().0, "lo World".to_string());
     }
 
     #[test]
     fn read_string32_4() {
-        assert_eq!(read(&HELLO_WORLD, 4).unwrap(), "o World".to_string());
+        assert_eq!(read(&HELLO_WORLD, 4).unwrap().0, "o World".to_string());
     }
 
     #[test]
     fn read_string32_5() {
-        assert_eq!(read(&HELLO_WORLD, 5).unwrap(), " World".to_string());
+        assert_eq!(read(&HELLO_WORLD, 5).unwrap().0, " World".to_string());
     }
 
     #[test]
     fn read_string32_6() {
-        assert_eq!(read(&HELLO_WORLD, 6).unwrap(), "World".to_string());
+        assert_eq!(read(&HELLO_WORLD, 6).unwrap().0, "World".to_string());
     }
 
     #[test]
     fn read_string32_7() {
-        assert_eq!(read(&HELLO_WORLD, 7).unwrap(), "orld".to_string());
+        assert_eq!(read(&HELLO_WORLD, 7).unwrap().0, "orld".to_string());
     }
 
     #[test]
     fn read_string32_8() {
-        assert_eq!(read(&HELLO_WORLD, 8).unwrap(), "rld".to_string());
+        assert_eq!(read(&HELLO_WORLD, 8).unwrap().0, "rld".to_string());
     }
 
     #[test]
     fn read_string32_9() {
-        assert_eq!(read(&HELLO_WORLD, 9).unwrap(), "ld".to_string());
+        assert_eq!(read(&HELLO_WORLD, 9).unwrap().0, "ld".to_string());
     }
 
     #[test]
     fn read_string32_10() {
-        assert_eq!(read(&HELLO_WORLD, 10).unwrap(), "d".to_string());
+        assert_eq!(read(&HELLO_WORLD, 10).unwrap().0, "d".to_string());
     }
 
     #[test]
     fn read_string32_11() {
-        assert_eq!(read(&HELLO_WORLD, 11).unwrap(), "".to_string());
+        assert_eq!(read(&HELLO_WORLD, 11).unwrap().0, "".to_string());
     }
 
     #[test]
@@ -175,12 +175,12 @@ mod binary_tests {
 
     #[test]
     fn read_exactly_32_string_0() {
-        assert_eq!(read(&EXACTLY_32_BYTE_LONG_STRING, 0).unwrap(), "abcdefghijklmnopqrstuvwxyzABCDE".to_string());
+        assert_eq!(read(&EXACTLY_32_BYTE_LONG_STRING, 0).unwrap().0, "abcdefghijklmnopqrstuvwxyzABCDE".to_string());
     }
 
     #[test]
     fn read_exactly_32_string_1() {
-        assert_eq!(read(&EXACTLY_32_BYTE_LONG_STRING, 16).unwrap(), "qrstuvwxyzABCDE".to_string());
+        assert_eq!(read(&EXACTLY_32_BYTE_LONG_STRING, 16).unwrap().0, "qrstuvwxyzABCDE".to_string());
     }
 
     #[test]
@@ -194,12 +194,12 @@ mod binary_tests {
 
     #[test]
     fn read_exactly_33_string_1() {
-        assert_eq!(read(&EXACTLY_33_BYTE_LONG_STRING, 1).unwrap(), "bcdefghijklmnopqrstuvwxyzABCDEF".to_string());
+        assert_eq!(read(&EXACTLY_33_BYTE_LONG_STRING, 1).unwrap().0, "bcdefghijklmnopqrstuvwxyzABCDEF".to_string());
     }
     
     #[test]
     fn read_exactly_33_string_2() {
-        assert_eq!(read(&EXACTLY_33_BYTE_LONG_STRING, 16).unwrap(), "qrstuvwxyzABCDEF".to_string());
+        assert_eq!(read(&EXACTLY_33_BYTE_LONG_STRING, 16).unwrap().0, "qrstuvwxyzABCDEF".to_string());
     }
 
     #[test]
@@ -232,7 +232,7 @@ mod binary_tests {
     #[test]
     fn read_very_long_string_3() {
         assert_eq!(
-            read(&VERY_LONG_STRING, 21).unwrap(),
+            read(&VERY_LONG_STRING, 21).unwrap().0,
             "vwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".to_string()
         );
     }
@@ -240,7 +240,7 @@ mod binary_tests {
     #[test]
     fn read_very_long_string_4() {
         assert_eq!(
-            read(&VERY_LONG_STRING, 22).unwrap(),
+            read(&VERY_LONG_STRING, 22).unwrap().0,
             "wxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".to_string()
         );
     }
@@ -299,62 +299,62 @@ mod string_tests {
 
     #[test]
     fn read_string32_0() {
-        assert_eq!(read(&HELLO_WORLD, 0).unwrap(), "Hello World".to_string());
+        assert_eq!(read(&HELLO_WORLD, 0).unwrap().0, "Hello World".to_string());
     }
 
     #[test]
     fn read_string32_1() {
-        assert_eq!(read(&HELLO_WORLD, 1).unwrap(), "ello World".to_string());
+        assert_eq!(read(&HELLO_WORLD, 1).unwrap().0, "ello World".to_string());
     }
     
     #[test]
     fn read_string32_2() {
-        assert_eq!(read(&HELLO_WORLD, 2).unwrap(), "llo World".to_string());
+        assert_eq!(read(&HELLO_WORLD, 2).unwrap().0, "llo World".to_string());
     }
 
     #[test]
     fn read_string32_3() {
-        assert_eq!(read(&HELLO_WORLD, 3).unwrap(), "lo World".to_string());
+        assert_eq!(read(&HELLO_WORLD, 3).unwrap().0, "lo World".to_string());
     }
 
     #[test]
     fn read_string32_4() {
-        assert_eq!(read(&HELLO_WORLD, 4).unwrap(), "o World".to_string());
+        assert_eq!(read(&HELLO_WORLD, 4).unwrap().0, "o World".to_string());
     }
 
     #[test]
     fn read_string32_5() {
-        assert_eq!(read(&HELLO_WORLD, 5).unwrap(), " World".to_string());
+        assert_eq!(read(&HELLO_WORLD, 5).unwrap().0, " World".to_string());
     }
 
     #[test]
     fn read_string32_6() {
-        assert_eq!(read(&HELLO_WORLD, 6).unwrap(), "World".to_string());
+        assert_eq!(read(&HELLO_WORLD, 6).unwrap().0, "World".to_string());
     }
 
     #[test]
     fn read_string32_7() {
-        assert_eq!(read(&HELLO_WORLD, 7).unwrap(), "orld".to_string());
+        assert_eq!(read(&HELLO_WORLD, 7).unwrap().0, "orld".to_string());
     }
 
     #[test]
     fn read_string32_8() {
-        assert_eq!(read(&HELLO_WORLD, 8).unwrap(), "rld".to_string());
+        assert_eq!(read(&HELLO_WORLD, 8).unwrap().0, "rld".to_string());
     }
 
     #[test]
     fn read_string32_9() {
-        assert_eq!(read(&HELLO_WORLD, 9).unwrap(), "ld".to_string());
+        assert_eq!(read(&HELLO_WORLD, 9).unwrap().0, "ld".to_string());
     }
 
     #[test]
     fn read_string32_10() {
-        assert_eq!(read(&HELLO_WORLD, 10).unwrap(), "d".to_string());
+        assert_eq!(read(&HELLO_WORLD, 10).unwrap().0, "d".to_string());
     }
 
     #[test]
     fn read_string32_11() {
-        assert_eq!(read(&HELLO_WORLD, 11).unwrap(), "".to_string());
+        assert_eq!(read(&HELLO_WORLD, 11).unwrap().0, "".to_string());
     }
 
     #[test]
@@ -386,12 +386,12 @@ mod string_tests {
 
     #[test]
     fn read_exactly_32_string_0() {
-        assert_eq!(read(&EXACTLY_32_BYTE_LONG_STRING, 0).unwrap(), "abcdefghijklmnopqrstuvwxyzABCDE".to_string());
+        assert_eq!(read(&EXACTLY_32_BYTE_LONG_STRING, 0).unwrap().0, "abcdefghijklmnopqrstuvwxyzABCDE".to_string());
     }
 
     #[test]
     fn read_exactly_32_string_1() {
-        assert_eq!(read(&EXACTLY_32_BYTE_LONG_STRING, 16).unwrap(), "qrstuvwxyzABCDE".to_string());
+        assert_eq!(read(&EXACTLY_32_BYTE_LONG_STRING, 16).unwrap().0, "qrstuvwxyzABCDE".to_string());
     }
 
     #[test]
@@ -405,12 +405,12 @@ mod string_tests {
 
     #[test]
     fn read_exactly_33_string_1() {
-        assert_eq!(read(&EXACTLY_33_BYTE_LONG_STRING, 1).unwrap(), "bcdefghijklmnopqrstuvwxyzABCDEF".to_string());
+        assert_eq!(read(&EXACTLY_33_BYTE_LONG_STRING, 1).unwrap().0, "bcdefghijklmnopqrstuvwxyzABCDEF".to_string());
     }
     
     #[test]
     fn read_exactly_33_string_2() {
-        assert_eq!(read(&EXACTLY_33_BYTE_LONG_STRING, 16).unwrap(), "qrstuvwxyzABCDEF".to_string());
+        assert_eq!(read(&EXACTLY_33_BYTE_LONG_STRING, 16).unwrap().0, "qrstuvwxyzABCDEF".to_string());
     }
 
     #[test]
@@ -443,7 +443,7 @@ mod string_tests {
     #[test]
     fn read_very_long_string_3() {
         assert_eq!(
-            read(&VERY_LONG_STRING, 21).unwrap(),
+            read(&VERY_LONG_STRING, 21).unwrap().0,
             "vwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".to_string()
         );
     }
@@ -451,7 +451,7 @@ mod string_tests {
     #[test]
     fn read_very_long_string_4() {
         assert_eq!(
-            read(&VERY_LONG_STRING, 22).unwrap(),
+            read(&VERY_LONG_STRING, 22).unwrap().0,
             "wxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".to_string()
         );
     }
@@ -539,7 +539,7 @@ mod garbage_tests {
     #[test]
     fn garbage_string_in_beginning_1() {
         assert_eq!(
-            read(&DISALLOWED_CHARACTER_IN_BEGINNING, 1).unwrap(),
+            read(&DISALLOWED_CHARACTER_IN_BEGINNING, 1).unwrap().0,
             "test".to_string()
         )
     }
@@ -565,7 +565,7 @@ mod garbage_tests {
     #[test]
     fn garbage_string_in_middle_3() {
         assert_eq!(
-            read(&DISALLOWED_CHARACTER_IN_MIDDLE, 7).unwrap(),
+            read(&DISALLOWED_CHARACTER_IN_MIDDLE, 7).unwrap().0,
             "after".to_string()
         )
     }
@@ -600,7 +600,7 @@ mod garbage_tests {
     #[test]
     fn garbage_string_in_end_3() {
         assert_eq!(
-            read(&DISALLOWED_CHARACTER_IN_END, 11).unwrap(),
+            read(&DISALLOWED_CHARACTER_IN_END, 11).unwrap().0,
             "".to_string()
         )
     }
@@ -635,17 +635,17 @@ mod complex_tests {
 
     #[test]
     fn amb_example_1() {
-        assert_eq!(read(&AMB_EXAMPLE, 0x20).unwrap(), "FILE_00".to_string());
+        assert_eq!(read(&AMB_EXAMPLE, 0x20).unwrap().0, "FILE_00".to_string());
     }
 
     #[test]
     fn amb_example_2() {
-        assert_eq!(read(&AMB_EXAMPLE, 0x40).unwrap(), "FILE_01".to_string());
+        assert_eq!(read(&AMB_EXAMPLE, 0x40).unwrap().0, "FILE_01".to_string());
     }
     
     #[test]
     fn amb_example_3() {
-        assert_eq!(read(&AMB_EXAMPLE, 0x60).unwrap(), "FILE_01234567890123456789ABCDEF".to_string());
+        assert_eq!(read(&AMB_EXAMPLE, 0x60).unwrap().0, "FILE_01234567890123456789ABCDEF".to_string());
     }
 
     #[test]
@@ -659,9 +659,13 @@ mod complex_tests {
 
     #[test]
     fn txb_example_1() {
-        assert_eq!(read(&TXB_EXAMPLE, 0x10).unwrap(), "FILE_00".to_string());
-        // That's a really good point, how to know when is the next string?
-        assert_eq!(read(&TXB_EXAMPLE, 0x18).unwrap(), "FILE_01".to_string());
-        assert_eq!(read(&TXB_EXAMPLE, 0x20).unwrap(), "FILE_01234567890123456789ABCDEF".to_string());
+        let result = read(&TXB_EXAMPLE, 0x10).unwrap();
+        assert_eq!(result.0, "FILE_00".to_string());
+        
+        let result = read(&TXB_EXAMPLE, result.1 + 1).unwrap();
+        assert_eq!(result.0, "FILE_01".to_string());
+
+        let result = read(&TXB_EXAMPLE, result.1 + 1).unwrap();
+        assert_eq!(result.0, "FILE_01234567890123456789ABCDEF".to_string());
     }
 }
