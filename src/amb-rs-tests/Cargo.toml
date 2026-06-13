@@ -13,6 +13,7 @@ license = "MIT"
 amb_rs_lib = { path = "../amb-rs-lib", package = "amb-rs-lib"}
 serde = "1.0.228"
 serde_json = "1.0.145"
+common = { path = "../common" }
 
 [[test]]
 name = "read"
@@ -33,3 +34,7 @@ path = "tests/create.rs"
 [[test]]
 name = "remove"
 path = "tests/remove.rs"
+
+[[test]]
+name = "extract"
+path = "tests/extract.rs"

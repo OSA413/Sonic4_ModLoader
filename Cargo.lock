@@ -101,6 +101,7 @@ name = "amb-rs-tests"
 version = "0.0.0"
 dependencies = [
  "amb-rs-lib",
+ "common",
  "serde",
  "serde_json",
 ]
