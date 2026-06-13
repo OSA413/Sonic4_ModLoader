@@ -133,4 +133,4 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: ${{ runner.os }}-cargo-test-${{ hashFiles('**/Cargo.lock') }}
-      - run: cargo test -p amb-rs-tests
+      - run: cargo test
