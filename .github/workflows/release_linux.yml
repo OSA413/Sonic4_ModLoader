@@ -90,4 +90,4 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: ${{ runner.os }}-cargo-test-${{ hashFiles('**/Cargo.lock') }}
-      - run: cargo test
+      - run: cargo test -p amb-rs-tests
