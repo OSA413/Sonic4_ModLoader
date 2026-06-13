@@ -41,6 +41,8 @@ You'll probably like that it's possible to install application shortcut to the M
 * Rewritten version of AMBPatcher (used for PC modding as for 2025): [Release v0.1.6.2p1](https://github.com/OSA413/Sonic4_ModLoader/releases/tag/v0.1.6.2p1)
 * Pre-rewritten version of AMBPatcher (should work with most AMB formats but is slow): [Release v0.1.4.3](https://github.com/OSA413/Sonic4_ModLoader/releases/tag/v0.1.4.3)
 
+----------------
+
 Join our [Sonic 4 Modding Discord server](https://discord.gg/WCp8BFyFxN)
 
 FAQ: https://github.com/OSA413/Sonic4_ModLoader/blob/main/docs/FAQ.md
