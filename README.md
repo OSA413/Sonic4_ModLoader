@@ -37,6 +37,7 @@ You'll probably like that it's possible to install application shortcut to the M
 
 **If you are looking for AMBPatcher** (the predecessor of amb-rs):
 
+* Give amb-rs a try, it properly handles big endian files and should be more stable than AMBPatcher (download it with the latest versions of the Mod Loader).
 * Rewritten version of AMBPatcher (used for PC modding as for 2025): [Release v0.1.6.2p1](https://github.com/OSA413/Sonic4_ModLoader/releases/tag/v0.1.6.2p1)
 * Pre-rewritten version of AMBPatcher (should work with most AMB formats but is slow): [Release v0.1.4.3](https://github.com/OSA413/Sonic4_ModLoader/releases/tag/v0.1.4.3)
 

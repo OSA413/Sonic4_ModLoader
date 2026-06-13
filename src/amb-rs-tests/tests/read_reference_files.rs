@@ -9,7 +9,7 @@ macro_rules! read_reference_tests {
             fn $name() {
                 let (file_name, expected_objects): (&str, Vec<(&str, &str)>) = $value;
 
-                let file_path = format!("../amb-rs-tests/tests/reference_files/{file_name}");
+                let file_path = format!("../amb-rs-tests/tests/reference_files/le/{file_name}");
                 let amb = amb::Amb::new_from_file_name(&file_path).unwrap();
 
                 assert_eq!(amb.objects.len(), expected_objects.len());

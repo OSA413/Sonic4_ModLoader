@@ -23,6 +23,10 @@ name = "read_reference_files"
 path = "tests/read_reference_files.rs"
 
 [[test]]
+name = "endianness"
+path = "tests/endianness.rs"
+
+[[test]]
 name = "create"
 path = "tests/create.rs"
 

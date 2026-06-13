@@ -10,7 +10,7 @@ macro_rules! remove_tests {
                 let (source_ref, objects_to_remove, expected_ref): (&str, Vec<&str>, &str) = $value;
 
                 let mut amb = Amb::new_from_file_name(
-                    &format!("../amb-rs-tests/tests/reference_files/{source_ref}")
+                    &format!("../amb-rs-tests/tests/reference_files/le/{source_ref}")
                 ).unwrap();
 
                 for object_name in objects_to_remove {
@@ -19,7 +19,7 @@ macro_rules! remove_tests {
 
                 let content = amb.write().unwrap();
                 let reference = fs::read(
-                    format!("../amb-rs-tests/tests/reference_files/{expected_ref}")
+                    format!("../amb-rs-tests/tests/reference_files/le/{expected_ref}")
                 ).unwrap();
                 assert_eq!(reference, content);
             }

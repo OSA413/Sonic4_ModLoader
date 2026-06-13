@@ -49,7 +49,7 @@ macro_rules! add_tests {
 
                 assert_eq!(amb.objects.len(), test_case.len());
 
-                let reference_file_name = format!("../amb-rs-tests/tests/reference_files/{}.amb", stringify!($name));
+                let reference_file_name = format!("../amb-rs-tests/tests/reference_files/le/{}.amb", stringify!($name));
                 // println!("{reference_file_name}");
                 // if !fs::exists(&reference_file_name).unwrap() {
                 //     fs::write(&reference_file_name, &content).unwrap();
