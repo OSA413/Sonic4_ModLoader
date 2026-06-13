@@ -17,3 +17,11 @@ serde_json = "1.0.145"
 [[test]]
 name = "read"
 path = "tests/read.rs"
+
+[[test]]
+name = "create"
+path = "tests/create.rs"
+
+[[test]]
+name = "remove"
+path = "tests/remove.rs"
