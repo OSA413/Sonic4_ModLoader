@@ -1,6 +1,6 @@
 use std::{fs, path::Path, vec};
 
-use amb_rs_lib::{amb, amb_management};
+use amb_rs_lib::{amb::Amb, amb_management};
 
 mod amb_print;
 use crate::amb_print::{AmbPrint, BinaryObjectPrint};
@@ -11,22 +11,23 @@ macro_rules! add_tests {
             #[test]
             fn $name() {
                 let amb_path = "amb-rs-tests/test_files/files";
-                let test_case: Vec<(&str, &str, u32, u32)> = $value;
-                let mut amb = amb::Amb::new_empty();
+                let test_case: Vec<(&str, &str, Option<String>, u32, u32)> = $value;
+                let mut amb = Amb::new_empty();
                 amb.amb_path = amb_path.to_string();
-                for (file_name, _, _, _) in &test_case {   
+                for (file_name, _, internal_name,  _, _) in &test_case {
                     amb_management::add::file::add_file_to_amb(
                         &mut amb,
                         Path::new(file_name),
-                        None
+                        // It's None or the name, so that should be ok
+                        internal_name.clone(),
                     ).unwrap();
                 }
 
                 let content = amb.write().unwrap();
 
-                let resulting_binary_objects = test_case.iter().map(|(_, object_name, pointer, length)| BinaryObjectPrint {
-                    name: object_name.to_string(),
-                    real_name: object_name.to_string(),
+                let resulting_binary_objects = test_case.iter().map(|(_, object_name, internal_name, pointer, length)| BinaryObjectPrint {
+                    name: Amb::make_name_safe(internal_name.clone().unwrap_or(object_name.to_string()).as_str()),
+                    real_name: internal_name.clone().unwrap_or(object_name.to_string()),
                     flag1: 0,
                     flag2: 0,
                     pointer: *pointer,
@@ -43,7 +44,7 @@ macro_rules! add_tests {
                     }).unwrap()
                 );
 
-                for (object, (file_name, _, _, _)) in amb.objects.iter().zip(&test_case) {   
+                for (object, (file_name, _, _, _, _)) in amb.objects.iter().zip(&test_case) {
                     assert_eq!(object.data, fs::read(file_name).unwrap());
                 }
 
@@ -65,61 +66,66 @@ macro_rules! add_tests {
 
 add_tests! {
     add_empty: vec![],
-    add_1: vec![("../amb-rs-tests/test_files/files/1", "1", 0x30, 73)],
-    add_2: vec![("../amb-rs-tests/test_files/files/2", "2", 0x30, 45)],
-    add_3: vec![("../amb-rs-tests/test_files/files/3", "3", 0x30, 23)],
+    add_1: vec![("../amb-rs-tests/test_files/files/1", "1", None, 0x30, 73)],
+    add_2: vec![("../amb-rs-tests/test_files/files/2", "2", None, 0x30, 45)],
+    add_3: vec![("../amb-rs-tests/test_files/files/3", "3", None, 0x30, 23)],
     add_1_2: vec![
-        ("../amb-rs-tests/test_files/files/1", "1", 0x40, 73),
-        ("../amb-rs-tests/test_files/files/2", "2", 0x90, 45),
+        ("../amb-rs-tests/test_files/files/1", "1", None, 0x40, 73),
+        ("../amb-rs-tests/test_files/files/2", "2", None, 0x90, 45),
     ],
     add_2_1: vec![
-        ("../amb-rs-tests/test_files/files/2", "2", 0x40, 45),
-        ("../amb-rs-tests/test_files/files/1", "1", 0x70, 73),
+        ("../amb-rs-tests/test_files/files/2", "2", None, 0x40, 45),
+        ("../amb-rs-tests/test_files/files/1", "1", None, 0x70, 73),
     ],
     add_3_1: vec![
-        ("../amb-rs-tests/test_files/files/3", "3", 0x40, 23),
-        ("../amb-rs-tests/test_files/files/1", "1", 0x60, 73),
+        ("../amb-rs-tests/test_files/files/3", "3", None, 0x40, 23),
+        ("../amb-rs-tests/test_files/files/1", "1", None, 0x60, 73),
     ],
     add_1_3: vec![
-        ("../amb-rs-tests/test_files/files/1", "1", 0x40, 73),
-        ("../amb-rs-tests/test_files/files/3", "3", 0x90, 23),
+        ("../amb-rs-tests/test_files/files/1", "1", None, 0x40, 73),
+        ("../amb-rs-tests/test_files/files/3", "3", None, 0x90, 23),
     ],
     add_2_3: vec![
-        ("../amb-rs-tests/test_files/files/2", "2", 0x40, 45),
-        ("../amb-rs-tests/test_files/files/3", "3", 0x70, 23),
+        ("../amb-rs-tests/test_files/files/2", "2", None, 0x40, 45),
+        ("../amb-rs-tests/test_files/files/3", "3", None, 0x70, 23),
     ],
     add_3_2: vec![
-        ("../amb-rs-tests/test_files/files/3", "3", 0x40, 23),
-        ("../amb-rs-tests/test_files/files/2", "2", 0x60, 45),
+        ("../amb-rs-tests/test_files/files/3", "3", None, 0x40, 23),
+        ("../amb-rs-tests/test_files/files/2", "2", None, 0x60, 45),
     ],
     add_1_2_3: vec![
-        ("../amb-rs-tests/test_files/files/1", "1", 0x50, 73),
-        ("../amb-rs-tests/test_files/files/2", "2", 0xA0, 45),
-        ("../amb-rs-tests/test_files/files/3", "3", 0xD0, 23),
+        ("../amb-rs-tests/test_files/files/1", "1", None, 0x50, 73),
+        ("../amb-rs-tests/test_files/files/2", "2", None, 0xA0, 45),
+        ("../amb-rs-tests/test_files/files/3", "3", None, 0xD0, 23),
     ],
     add_1_3_2: vec![
-        ("../amb-rs-tests/test_files/files/1", "1", 0x50, 73),
-        ("../amb-rs-tests/test_files/files/3", "3", 0xA0, 23),
-        ("../amb-rs-tests/test_files/files/2", "2", 0xC0, 45),
+        ("../amb-rs-tests/test_files/files/1", "1", None, 0x50, 73),
+        ("../amb-rs-tests/test_files/files/3", "3", None, 0xA0, 23),
+        ("../amb-rs-tests/test_files/files/2", "2", None, 0xC0, 45),
     ],
     add_2_1_3: vec![
-        ("../amb-rs-tests/test_files/files/2", "2", 0x50, 45),
-        ("../amb-rs-tests/test_files/files/1", "1", 0x80, 73),
-        ("../amb-rs-tests/test_files/files/3", "3", 0xD0, 23),
+        ("../amb-rs-tests/test_files/files/2", "2", None, 0x50, 45),
+        ("../amb-rs-tests/test_files/files/1", "1", None, 0x80, 73),
+        ("../amb-rs-tests/test_files/files/3", "3", None, 0xD0, 23),
     ],
     add_2_3_1: vec![
-        ("../amb-rs-tests/test_files/files/2", "2", 0x50, 45),
-        ("../amb-rs-tests/test_files/files/3", "3", 0x80, 23),
-        ("../amb-rs-tests/test_files/files/1", "1", 0xA0, 73),
+        ("../amb-rs-tests/test_files/files/2", "2", None, 0x50, 45),
+        ("../amb-rs-tests/test_files/files/3", "3", None, 0x80, 23),
+        ("../amb-rs-tests/test_files/files/1", "1", None, 0xA0, 73),
     ],
     add_3_1_2: vec![
-        ("../amb-rs-tests/test_files/files/3", "3", 0x50, 23),
-        ("../amb-rs-tests/test_files/files/1", "1", 0x70, 73),
-        ("../amb-rs-tests/test_files/files/2", "2", 0xC0, 45),
+        ("../amb-rs-tests/test_files/files/3", "3", None, 0x50, 23),
+        ("../amb-rs-tests/test_files/files/1", "1", None, 0x70, 73),
+        ("../amb-rs-tests/test_files/files/2", "2", None, 0xC0, 45),
     ],
     add_3_2_1: vec![
-        ("../amb-rs-tests/test_files/files/3", "3", 0x50, 23),
-        ("../amb-rs-tests/test_files/files/2", "2", 0x70, 45),
-        ("../amb-rs-tests/test_files/files/1", "1", 0xA0, 73),
+        ("../amb-rs-tests/test_files/files/3", "3", None, 0x50, 23),
+        ("../amb-rs-tests/test_files/files/2", "2", None, 0x70, 45),
+        ("../amb-rs-tests/test_files/files/1", "1", None, 0xA0, 73),
+    ],
+
+    add_as_0: vec![
+        ("../amb-rs-tests/test_files/files/1", "1", Some("..\\.\\folder\\file_1".to_string()), 0x40, 73),
+        ("../amb-rs-tests/test_files/files/2", "2", Some("..\\.\\folder\\file_2".to_string()), 0x90, 45),
     ],
 }
