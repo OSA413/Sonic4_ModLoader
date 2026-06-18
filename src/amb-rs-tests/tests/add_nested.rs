@@ -73,10 +73,14 @@ fn handle_recursive_add_way2_bo(root_amb: &mut Amb, object: &Object, parent_file
             }
         }
         Object::BinaryObject(name, path) => {
+            let parent_file = match parent_file.is_empty() {
+                true => name,
+                false => &format!("{parent_file}\\{name}")
+            };
             amb_management::add::file::add_file_to_amb(
                 root_amb,
                 Path::new(path),
-                Some(format!("{parent_file}\\{name}"))
+                Some(parent_file.clone())
             ).unwrap();
         }
     }
@@ -134,6 +138,7 @@ macro_rules! add_nested_tests {
     }
 }
 
+// TODO add header/flag values to AMB and binary objects
 add_nested_tests! {
     actions: (
         "actions.amb".to_string(),
@@ -142,30 +147,81 @@ add_nested_tests! {
                 "new.amb".to_string(),
                 vec![
                     Object::BinaryObject("address-book-new.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/address-book-new.png".to_string()),
-                    Object::BinaryObject("appointment-new.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/appointment-new.png".to_string()),
                     Object::BinaryObject("bookmark-new.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/bookmark-new.png".to_string()),
-                    Object::BinaryObject("contact-new.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/contact-new.png".to_string()),
-                    Object::BinaryObject("document-new.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/document-new.png".to_string()),
-                    Object::BinaryObject("folder-new.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/folder-new.png".to_string()),
                     Object::BinaryObject("tab-new.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/tab-new.png".to_string()),
+                    Object::BinaryObject("contact-new.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/contact-new.png".to_string()),
+                    Object::BinaryObject("appointment-new.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/appointment-new.png".to_string()),
                     Object::BinaryObject("window-new.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/window-new.png".to_string()),
+                    Object::BinaryObject("folder-new.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/folder-new.png".to_string()),
+                    Object::BinaryObject("document-new.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/document-new.png".to_string()),
                 ]
             ),
             Object::Amb(
                 "edit.amb".to_string(),
                 vec![
-                    Object::BinaryObject("edit-clear.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/edit-clear.png".to_string()),
-                    Object::BinaryObject("edit-copy.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/edit-copy.png".to_string()),
-                    Object::BinaryObject("edit-cut.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/edit-cut.png".to_string()),
-                    Object::BinaryObject("edit-delete.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/edit-delete.png".to_string()),
                     Object::BinaryObject("edit-find-replace.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/edit-find-replace.png".to_string()),
-                    Object::BinaryObject("edit-find.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/edit-find.png".to_string()),
-                    Object::BinaryObject("edit-paste.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/edit-paste.png".to_string()),
-                    Object::BinaryObject("edit-redo.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/edit-redo.png".to_string()),
                     Object::BinaryObject("edit-select-all.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/edit-select-all.png".to_string()),
+                    Object::BinaryObject("edit-cut.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/edit-cut.png".to_string()),
                     Object::BinaryObject("edit-undo.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/edit-undo.png".to_string()),
-                    Object::BinaryObject("list-add.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/list-add.png".to_string()),
                     Object::BinaryObject("list-remove.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/list-remove.png".to_string()),
+                    Object::BinaryObject("edit-copy.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/edit-copy.png".to_string()),
+                    Object::BinaryObject("edit-find.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/edit-find.png".to_string()),
+                    Object::BinaryObject("edit-redo.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/edit-redo.png".to_string()),
+                    Object::BinaryObject("list-add.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/list-add.png".to_string()),
+                    Object::BinaryObject("edit-delete.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/edit-delete.png".to_string()),
+                    Object::BinaryObject("edit-paste.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/edit-paste.png".to_string()),
+                    Object::BinaryObject("edit-clear.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/edit-clear.png".to_string()),
+                ]
+            )
+        ]
+    ),
+    devices: (
+        "devices.amb".to_string(),
+        vec![
+            Object::BinaryObject("input-mouse.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/input-mouse.png".to_string()),
+            Object::BinaryObject("drive-optical.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/drive-optical.png".to_string()),
+            Object::BinaryObject("drive-removable-media.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/drive-removable-media.png".to_string()),
+            Object::BinaryObject("input-keyboard.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/input-keyboard.png".to_string()),
+            Object::BinaryObject("network-wireless.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/network-wireless.png".to_string()),
+            Object::BinaryObject("battery.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/battery.png".to_string()),
+            Object::BinaryObject("multimedia-player.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/multimedia-player.png".to_string()),
+            Object::BinaryObject("audio-card.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/audio-card.png".to_string()),
+            Object::BinaryObject("media-optical.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/media-optical.png".to_string()),
+            Object::BinaryObject("audio-input-microphone.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/audio-input-microphone.png".to_string()),
+            Object::BinaryObject("camera-photo.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/camera-photo.png".to_string()),
+            Object::BinaryObject("video-display.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/video-display.png".to_string()),
+            Object::BinaryObject("media-floppy.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/media-floppy.png".to_string()),
+            Object::BinaryObject("input-gaming.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/input-gaming.png".to_string()),
+            Object::BinaryObject("printer.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/printer.png".to_string()),
+            Object::BinaryObject("network-wired.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/network-wired.png".to_string()),
+            Object::BinaryObject("drive-harddisk.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/drive-harddisk.png".to_string()),
+            Object::BinaryObject("media-flash.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/media-flash.png".to_string()),
+            Object::BinaryObject("computer.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/computer.png".to_string()),
+            Object::BinaryObject("camera-video.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/camera-video.png".to_string()),
+        ]
+    ),
+    notifications: (
+        "notifications.amb".to_string(),
+        vec![
+            Object::Amb(
+                "info.amb".to_string(),
+                vec![
+                    Object::BinaryObject("system-lock-screen.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/system-lock-screen.png".to_string()),
+                    Object::BinaryObject("software-update-available.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/software-update-available.png".to_string()),
+                    Object::BinaryObject("emblem-important.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/emblem-important.png".to_string()),
+                    Object::BinaryObject("mail-message-new.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/mail-message-new.png".to_string()),
+                    Object::BinaryObject("dialog-information.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/dialog-information.png".to_string()),
+                    Object::BinaryObject("document-print-preview.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/document-print-preview.png".to_string()),
+                ]
+            ),
+            Object::Amb(
+                "warnings.amb".to_string(),
+                vec![
+                    Object::BinaryObject("dialog-warning.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/dialog-warning.png".to_string()),
+                    Object::BinaryObject("emblem-unreadable.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/emblem-unreadable.png".to_string()),
+                    Object::BinaryObject("process-stop.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/process-stop.png".to_string()),
+                    Object::BinaryObject("dialog-error.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/dialog-error.png".to_string()),
+                    Object::BinaryObject("software-update-urgent.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/software-update-urgent.png".to_string()),
                 ]
             )
         ]
