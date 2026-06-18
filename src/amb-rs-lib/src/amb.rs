@@ -232,7 +232,13 @@ impl Amb {
             return Ok(());
         }
 
-        match self.objects.iter().position(|x| x.name == internal_name.split('\\').take(x.name.chars().filter(|&c| c == '\\').count() + 1).collect::<Vec<_>>().join("\\")) {
+        match self.objects.iter().position(|x|
+            x.name == internal_name
+                .split('\\')
+                .take(x.name.chars().filter(|&c| c == '\\').count() + 1)
+                .collect::<Vec<_>>()
+                .join("\\")
+        ) {
             Some(parent_index) => {
                 let parent_object = &self.objects[parent_index];
                 let mut parent_amb = Amb::new_from_binary_object(parent_object)?;

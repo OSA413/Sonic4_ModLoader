@@ -23,10 +23,10 @@ pub fn print_from_file(target_file: &String) -> Result<String, CommonBinaryError
 
 pub fn print_from_vec_u8(source: &Vec<u8>, name: &String) -> Result<String, CommonBinaryError> {
     let amb = Amb::new_from_src_ptr_name(&source, Some(0), name)?;
-    Ok(print_from_amb(amb))
+    Ok(print_from_amb(&amb))
 }
 
-pub fn print_from_amb(amb: Amb) -> String {
+pub fn print_from_amb(amb: &Amb) -> String {
     let mut amb_toc = Vec::<String>::new();
 
     amb_toc.push(add_json_entry_str("name", &amb.amb_path.replace("\\", "\\\\")));
@@ -39,7 +39,7 @@ pub fn print_from_amb(amb: Amb) -> String {
     };
     amb_toc.push(add_json_entry_str("endianness", &amb_endianness));
     let mut objects_toc = Vec::<String>::new();
-    for binary_object in amb.objects {
+    for binary_object in &amb.objects {
         let mut object_toc = Vec::<String>::new();
         object_toc.push(add_json_entry_str("name", &binary_object.name.replace("\\", "\\\\")));
         object_toc.push(add_json_entry_str("real_name", &binary_object.real_name.replace("\\", "\\\\")));
