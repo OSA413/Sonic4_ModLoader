@@ -330,6 +330,18 @@ impl Amb {
             self.objects.remove(target);
         }
     }
+
+    // This method is needed to recalculate pointers of newly added objects
+    // so that they corespond to the binary form of the AMB (like you just read it and print)
+    pub fn prepare_for_print(&mut self) {
+        let pointer_predition = self.predict_pointers();
+        let mut pointer = pointer_predition.data;
+        for object in &mut self.objects {
+            object.pointer = pointer;
+            object.name = Amb::make_name_safe(&object.name);
+            pointer += object.length_nice();
+        }
+    }
 }
 
 impl std::fmt::Display for Amb {

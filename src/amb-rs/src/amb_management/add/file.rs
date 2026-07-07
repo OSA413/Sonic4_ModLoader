@@ -39,6 +39,7 @@ mod tests {
                         length: *length,
                     }).collect();
 
+                    amb.prepare_for_print();
                     assert_eq!(
                         format!("{amb}"),
                         serde_json::to_string(&AmbPrint {

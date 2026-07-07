@@ -37,7 +37,7 @@ pub fn extract_amb(file_or_dir: String, destination: Option<String>) -> Result<(
         println!("Extracting {path}");
         let amb = Amb::new_from_file_name(&path)?;
         let base_dir = match destination {
-            Some(ref destination) => Path::new(destination).join(Path::new(&path).parent().unwrap()),
+            Some(ref destination) => Path::new(destination).join(Path::new(&path).file_name().unwrap()),
             None => Path::new(&format!("{path}_extracted")).to_path_buf(),
         };
         continue_extraction(amb, &base_dir);
@@ -57,7 +57,7 @@ mod tests {
             $(
                 #[test]
                 fn $name() {
-                    let (source_ref, expected_objects): (&str, Vec<(&str, &str)>) = $value;
+                    let (source_ref, expected_objects, expected_directories): (&str, Vec<(&str, &str)>, usize) = $value;
 
                     let file_path = format!("../amb-rs-tests/tests/reference_files/le/{source_ref}");
                     let temp_dir = std::env::temp_dir().join("amb-rs-tests").join(format!("extract_test_{source_ref}"));
@@ -80,7 +80,7 @@ mod tests {
                     let dir_dirs = walk_dir::walk_dir_for_dirs(&temp_dir);
 
                     assert_eq!(dir_files.len(), expected_objects.len());
-                    assert_eq!(dir_dirs.len(), 0);
+                    assert_eq!(dir_dirs.len(), expected_directories);
 
                     // AFTER, must not fail, or else something is wrong
                     if !expected_objects.is_empty() {
@@ -94,58 +94,67 @@ mod tests {
     extract_tests! {
         extract_from_empty: (
             "add_empty.amb",
-            vec![]
+            vec![],
+            0
         ),
         extract_from_1: (
             "add_1.amb",
-            vec![("1", "test_files/files/1")]
+            vec![("add_1.amb/1", "test_files/files/1")],
+            1
         ),
         extract_from_2: (
             "add_2.amb",
-            vec![("2", "test_files/files/2")]
+            vec![("add_2.amb/2", "test_files/files/2")],
+            1
         ),
         extract_from_3: (
             "add_3.amb",
-            vec![("3", "test_files/files/3")]
+            vec![("add_3.amb/3", "test_files/files/3")],
+            1
         ),
         extract_from_1_2: (
             "add_1_2.amb",
             vec![
-                ("1", "test_files/files/1"),
-                ("2", "test_files/files/2"),
-            ]
+                ("add_1_2.amb/1", "test_files/files/1"),
+                ("add_1_2.amb/2", "test_files/files/2"),
+            ],
+            1
         ),
         extract_from_1_3: (
             "add_1_3.amb",
             vec![
-                ("1", "test_files/files/1"),
-                ("3", "test_files/files/3"),
-            ]
+                ("add_1_3.amb/1", "test_files/files/1"),
+                ("add_1_3.amb/3", "test_files/files/3"),
+            ],
+            1
         ),
         extract_from_2_3: (
             "add_2_3.amb",
             vec![
-                ("2", "test_files/files/2"),
-                ("3", "test_files/files/3"),
-            ]
+                ("add_2_3.amb/2", "test_files/files/2"),
+                ("add_2_3.amb/3", "test_files/files/3"),
+            ],
+            1
         ),
         extract_from_1_2_3: (
             "add_1_2_3.amb",
             vec![
-                ("1", "test_files/files/1"),
-                ("2", "test_files/files/2"),
-                ("3", "test_files/files/3"),
-            ]
+                ("add_1_2_3.amb/1", "test_files/files/1"),
+                ("add_1_2_3.amb/2", "test_files/files/2"),
+                ("add_1_2_3.amb/3", "test_files/files/3"),
+            ],
+            1
         ),
 
         // Shuffled content doesn't affect the extraction result
         extract_from_3_2_1: (
             "add_3_2_1.amb",
             vec![
-                ("1", "test_files/files/1"),
-                ("2", "test_files/files/2"),
-                ("3", "test_files/files/3"),
-            ]
+                ("add_3_2_1.amb/1", "test_files/files/1"),
+                ("add_3_2_1.amb/2", "test_files/files/2"),
+                ("add_3_2_1.amb/3", "test_files/files/3"),
+            ],
+            1
         ),
     }
 }
