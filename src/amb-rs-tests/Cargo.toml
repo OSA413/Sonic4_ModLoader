@@ -9,7 +9,7 @@ license = "MIT"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
-[dev-dependencies]
+[dependencies]
 amb_rs_lib = { path = "../amb-rs-lib", package = "amb-rs-lib"}
 serde = "1.0.228"
 serde_json = "1.0.145"

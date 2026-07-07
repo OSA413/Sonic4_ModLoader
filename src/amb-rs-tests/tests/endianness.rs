@@ -1,13 +1,13 @@
 use std::fs;
 
-use amb_rs_lib::{amb::Amb, amb_management};
+use amb_rs_lib::amb::Amb;
 
 #[test]
 fn swap_endianness_le_to_be() {
     let file_path = "../amb-rs-tests/tests/reference_files/le/add_1_2_3.amb";
     let mut amb = Amb::new_from_file_name(&file_path.to_string()).unwrap();
 
-    amb_management::endianness::swap_endianness_of_amb(&mut amb);
+    amb.swap_endianness();
 
     let result = amb.write().unwrap();
 
@@ -29,8 +29,8 @@ fn swap_endianness_twice_le() {
     let original = fs::read(&file_path).unwrap();
 
     let mut amb = Amb::new_from_file_name(&file_path).unwrap();
-    amb_management::endianness::swap_endianness_of_amb(&mut amb);
-    amb_management::endianness::swap_endianness_of_amb(&mut amb);
+    amb.swap_endianness();
+    amb.swap_endianness();
 
     let result = amb.write().unwrap();
     assert_eq!(original, result);

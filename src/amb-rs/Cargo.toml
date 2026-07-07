@@ -14,3 +14,8 @@ license = "MIT"
 amb-rs-lib = { path = "../amb-rs-lib" }
 common = { path = "../common" }
 common_binary = { path = "../common_binary" }
+
+[dev-dependencies]
+serde = "1.0.228"
+serde_json = "1.0.145"
+amb-rs-tests = { path = "../amb-rs-tests" }

@@ -1,6 +1,6 @@
 use std::{collections::HashMap, fs, path::{Path, PathBuf}};
 
-use amb_rs_lib::{amb::Amb, amb_management};
+use amb_rs_lib::amb::Amb;
 use common::Launcher;
 use crate::{help, sha_checker};
 use indicatif::ProgressBar;
@@ -165,7 +165,7 @@ pub fn patch_all(file_name: &String, mod_files: Vec<ModFile>, bar: Option<&Progr
                 for mod_file in mod_files {
                     let mod_file_full = Path::new("mods").join(mod_file.mod_folder.clone()).join(mod_file.file_path.clone());
                     if let Some(bar) = bar { bar.inc(1) }
-                    amb_management::add::file::add_file_to_amb(&mut amb, &mod_file_full, None).unwrap();
+                    amb.add_file(&mod_file_full, None).unwrap();
                     sha_checker::write(mod_file.file_path.clone(), mod_file_full);
                 }
 

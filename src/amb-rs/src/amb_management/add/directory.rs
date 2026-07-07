@@ -1,5 +1,5 @@
 use std::{fs, path::Path};
-use crate::{amb::Amb, amb_management};
+use amb_rs_lib::{amb::Amb};
 use common_binary::error::CommonBinaryError;
 
 pub fn add_dir_of_files_to_amb(amb: &mut Amb, dir_to_add: &Path) -> usize {
@@ -8,7 +8,7 @@ pub fn add_dir_of_files_to_amb(amb: &mut Amb, dir_to_add: &Path) -> usize {
     files_chain.sort();
 
     for file_path in &files_chain {
-        match amb_management::add::file::add_file_to_amb(amb, file_path, None) {
+        match amb.add_file(file_path, None) {
             Ok(_) => (),
             Err(e) => eprintln!("Error: {e:?}"),
         };

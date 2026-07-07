@@ -1,5 +1,3 @@
-// TODO: move to tests/test_helpers/json
-
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize)]

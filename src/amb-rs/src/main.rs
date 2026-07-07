@@ -1,8 +1,8 @@
 use std::{env, ops, path::Path};
-use amb_rs_lib::{amb_management};
 use common_binary::error::CommonBinaryError;
 
 mod help;
+pub mod amb_management;
 
 fn exit_with_error(error: String) {
     eprintln!("{error}");
@@ -64,13 +64,13 @@ Or: add <target_file> <dir_of_files_to_add>".to_string()),
                 },
                 "extract_all" => {
                     match args.next() {
-                        Some(file) => handle_result(amb_management::extract_all::extract_amb(file)),
+                        Some(file) => handle_result(amb_management::extract_all::extract_amb(file, args.next())),
                         None => exit_with_error("Usage: extract_all <file_or_dir>".to_string()),
                     }
                 },
                 "read" => {
                     match args.next() {
-                        Some(file) => handle_result(amb_management::json::print_from_file_to_stdout(file)),
+                        Some(file) => handle_result(amb_management::json::print_from_file_to_stdout(&file)),
                         None => exit_with_error("Usage: read <file>".to_string()),
                     }
                 },

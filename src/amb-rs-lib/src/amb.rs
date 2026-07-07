@@ -1,6 +1,8 @@
 use std::{io::Read, path::Path};
-use crate::{binary_object::BinaryObject};
-use common_binary::{error::CommonBinaryError, endianness::Endianness, binary_reader, binary_writer};
+use crate::binary_object::BinaryObject;
+use common_binary::{
+    binary_reader, binary_writer, endianness::Endianness, error::CommonBinaryError, json_formatter
+};
 
 pub enum Version {
     PC = 0x20,
@@ -9,7 +11,7 @@ pub enum Version {
 
 pub struct Amb {
     pub amb_path: String,
-    pub endianness: Option<Endianness>,
+    pub endianness: Endianness,
     pub flag1: u32,
     pub flag2: u32,
     pub objects: Vec<BinaryObject>,
@@ -51,18 +53,18 @@ impl Amb {
             && source[ptr + 3] == b'B'
     }
 
-    pub fn get_version(source: &[u8], ptr: Option<usize>) -> (Version, Option<Endianness>) {
+    pub fn get_version(source: &[u8], ptr: Option<usize>) -> (Version, Endianness) {
         let ptr = ptr.unwrap_or(0);
-        match binary_reader::u32::read(source, ptr + 0x4, &None).unwrap() {
-            0x20 => (Version::PC, Some(Endianness::Little)),
-            0x28 => (Version::Mobile, Some(Endianness::Little)),
+        match binary_reader::u32::read(source, ptr + 0x4, &Endianness::Little).unwrap() {
+            0x20 => (Version::PC, Endianness::Little),
+            0x28 => (Version::Mobile, Endianness::Little),
             value => {
                 match value.swap_bytes() {
-                    0x20 => (Version::PC, Some(Endianness::Big)),
-                    0x28 => (Version::Mobile, Some(Endianness::Big)),
+                    0x20 => (Version::PC, Endianness::Big),
+                    0x28 => (Version::Mobile, Endianness::Big),
                     _ => {
-                        println!("Could not detect version of AMB file");
-                        (Version::PC, None)
+                        eprintln!("Could not detect version of AMB file, assuming it's little endian");
+                        (Version::PC, Endianness::Little)
                     },
                 }
             }
@@ -72,7 +74,7 @@ impl Amb {
     pub fn new_empty() -> Self {
         Self {
             amb_path: String::new(),
-            endianness: Some(Endianness::Little),
+            endianness: Endianness::Little,
             flag1: 0,
             flag2: 0,
             objects: Vec::new(),
@@ -218,8 +220,33 @@ impl Amb {
         internal_name
     }
 
-    pub fn add_binary_object(&mut self, binary_object: BinaryObject, internal_name: String) -> Result<(), CommonBinaryError> {
-        if let Some(internal_index) = self.objects.iter().position(|x| x.name == internal_name) {
+    pub fn add_file(&mut self, path: &Path, internal_file_name: Option<String>) -> Result<(), CommonBinaryError> {
+        let file_name = path.display().to_string();
+        let new_object = BinaryObject::new_from_file_path(path)?;
+        let internal_name = internal_file_name.unwrap_or(Amb::get_relative_name(
+            self.amb_path.clone(),
+            file_name.replace("_extracted", ""),
+        )).replace('/', "\\");
+        self.add_binary_object(new_object, &internal_name)
+    }
+
+    pub fn add_u8_vec(
+        &mut self,
+        source: &[u8],
+        pointer: Option<usize>,
+        length: Option<usize>,
+        internal_name: &String
+    ) -> Result<(), CommonBinaryError> {
+        let new_object = BinaryObject::new_from_src_ptr_len(
+            source,
+            pointer.unwrap_or(0),
+            length.unwrap_or(source.len()),
+        );
+        self.add_binary_object(new_object, internal_name)
+    }
+
+    pub fn add_binary_object(&mut self, binary_object: BinaryObject, internal_name: &String) -> Result<(), CommonBinaryError> {
+        if let Some(internal_index) = self.objects.iter().position(|x| &x.name == internal_name) {
             let existing_object = &self.objects[internal_index];                
             self.objects[internal_index] = BinaryObject {
                 name: existing_object.name.clone(),
@@ -242,7 +269,13 @@ impl Amb {
             Some(parent_index) => {
                 let parent_object = &self.objects[parent_index];
                 let mut parent_amb = Amb::new_from_binary_object(parent_object)?;
-                parent_amb.add_binary_object(binary_object, internal_name.chars().skip(parent_object.real_name.chars().count() + 1).collect::<String>())?;
+                parent_amb.add_binary_object(
+                    binary_object,
+                    &internal_name
+                        .chars()
+                        .skip(parent_object.real_name.chars().count() + 1)
+                        .collect::<String>()
+                )?;
                 let parent_amb_content = parent_amb.write()?;
                 self.objects[parent_index] = BinaryObject {
                     name: parent_object.name.clone(),
@@ -283,11 +316,38 @@ impl Amb {
         raw_name.chars().skip(safe_index).collect()
     }
 
+    pub fn swap_endianness(&mut self) {
+        self.endianness = match self.endianness {
+            Endianness::Little => Endianness::Big,
+            Endianness::Big => Endianness::Little,
+        };
+    }
+
     // Make recursive as `add`?
     pub fn remove(&mut self, object_name: String) {
         let target = self.objects.iter().position(|x| x.name == object_name);
         if let Some(target) = target {
             self.objects.remove(target);
         }
+    }
+}
+
+impl std::fmt::Display for Amb {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{{{}}}", [
+            json_formatter::add_str("name", &self.amb_path.replace("\\", "\\\\")),
+            json_formatter::add_str("version", match &self.version {
+                Version::PC => "PC",
+                Version::Mobile => "Mobile"
+            }),
+            json_formatter::add_str("endianness", match self.endianness {
+                Endianness::Little => "little",
+                Endianness::Big => "big",
+            }),
+            json_formatter::add_value(
+                "objects",
+                &format!("[{}]", &self.objects.iter().map(|x| format!("{x}")).collect::<Vec<_>>().join(","))
+            ),
+        ].join(","))
     }
 }

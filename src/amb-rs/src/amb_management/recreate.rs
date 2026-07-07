@@ -1,6 +1,8 @@
 use std::{fs, path::{Path, PathBuf}};
-use crate::{amb::Amb, amb_management};
+use amb_rs_lib::amb::Amb;
 use common_binary::error::CommonBinaryError;
+
+use crate::amb_management;
 
 pub fn recreate_amb(file: String, save_as_file_name: Option<String>) -> Result<(), CommonBinaryError> {
     let amb = Amb::new_from_file_name(&file)?;

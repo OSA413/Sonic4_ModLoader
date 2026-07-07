@@ -84,8 +84,11 @@ name = "amb-rs"
 version = "1.0.0"
 dependencies = [
  "amb-rs-lib",
+ "amb-rs-tests",
  "common",
  "common_binary",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]

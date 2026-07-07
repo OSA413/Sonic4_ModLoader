@@ -1,3 +1,6 @@
+use std::path::Path;
+
+use common_binary::json_formatter;
 
 pub struct BinaryObject {
     pub name: String,
@@ -35,7 +38,7 @@ impl BinaryObject {
     }
 
     pub fn new_from_file_path(
-        file_path: String
+        file_path: &Path
     ) -> Result<Self, std::io::Error> {
         let file_content = std::fs::read(file_path)?;
         Ok(BinaryObject {
@@ -46,5 +49,18 @@ impl BinaryObject {
             name: String::new(),
             real_name: String::new(),
         })
+    }
+}
+
+impl std::fmt::Display for BinaryObject {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{{{}}}", [
+            json_formatter::add_str("name", &self.name.replace("\\", "\\\\")),
+            json_formatter::add_str("real_name", &self.real_name.replace("\\", "\\\\")),
+            json_formatter::add_value("flag1", &self.flag1.to_string()),
+            json_formatter::add_value("flag2", &self.flag2.to_string()),
+            json_formatter::add_value("pointer", &self.pointer.to_string()),
+            json_formatter::add_value("length", &self.length().to_string()),
+        ].join(","))
     }
 }
