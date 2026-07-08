@@ -2,7 +2,7 @@ use std::{cmp, path::Path};
 
 use adw::{prelude::{ActionRowExt, AdwDialogExt, AlertDialogExt}, subclass::prelude::*, ActionRow};
 use common::{mod_logic::mod_entry::ModEntry, settings, Launcher};
-use gtk::{gio::{self, prelude::{ApplicationExt, ListModelExt, ListModelExtManual}}, glib::{self, clone, object::Cast, Object}, prelude::{ActionMapExtManual, CheckButtonExt, GtkWindowExt, ListBoxRowExt, TextViewExt, WidgetExt}, Align, CheckButton};
+use gtk::{Align, CheckButton, gio::{self, prelude::{ApplicationExt, ListModelExt, ListModelExtManual}}, glib::{self, Object, clone, object::Cast}, prelude::{ActionMapExtManual, CheckButtonExt, GtkWindowExt, ListBoxRowExt, TextViewExt, WidgetExt}};
 use crate::{buffer_formatter, installation, models::g_mod_entry::GModEntry, settings_dialog::SettingsWindow};
 use std::cell::RefCell;
 use std::fs;
@@ -24,6 +24,10 @@ mod imp {
     pub struct Sonic4ModManagerWindow {
         #[template_child]
         pub mod_list: TemplateChild<gtk::ListBox>,
+        #[template_child]
+        pub banana_container: TemplateChild<gtk::Box>,
+        #[template_child]
+        pub gamebanana_game_homepage: TemplateChild<gtk::Label>,
         #[template_child]
         pub description: TemplateChild<gtk::TextView>,
         #[template_child]
@@ -246,6 +250,7 @@ impl Sonic4ModManagerWindow {
         let g_mod_entries = mod_entries.iter().map(GModEntry::from_mod_entry).collect::<Vec<_>>();
         self.imp().mod_store.remove_all();
         self.imp().mod_store.extend_from_slice(&g_mod_entries);
+        self.imp().banana_container.set_visible(self.imp().mod_store.n_items() == 0);
     }
 
     fn open_mods_folder(&self) {
@@ -329,7 +334,17 @@ You can install/uninstall and configure it through the settings menu at any time
     }
 
     fn startup(&self) {
-        common::Launcher::where_in_the_world_am_i();
+        let game = common::Launcher::where_in_the_world_am_i();
+
+        let gamebanana_game_homepage = match game {
+            common::Game::Episode1 => "https://gamebanana.com/games/6595",
+            common::Game::Episode2 => "https://gamebanana.com/games/6597",
+            _ => "https://gamebanana.com/tools/6546",
+        };
+
+        self.imp().gamebanana_game_homepage.set_markup(
+            format!("<a href=\"{}\">Visit GameBanana to download mods</a>", gamebanana_game_homepage).as_str()
+        );
 
         let closure = {
             clone!(

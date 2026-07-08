@@ -47,7 +47,7 @@ impl Launcher {
         Game::Unknown
     }
 
-    pub fn where_in_the_world_am_i() {
+    pub fn where_in_the_world_am_i() -> Game {
         let game = Launcher::get_current_game();
         match game {
             Game::Episode1 => println!("Detected: Episode 1"),
@@ -59,6 +59,8 @@ The Mod Loader must be placed in the game's root directory.
 ##############################
 "),
         };
+
+        game
     }
 
     pub fn get_current_game() -> Game {

@@ -67,14 +67,41 @@
                 <child>
                   <object class="GListStore" id="mod_store" />
                 </child>
-                <!-- TODO: Add this when no mods loaded -->
-                <!-- https://gnome.pages.gitlab.gnome.org/libadwaita/doc/1.5/class.StatusPage.html -->
                 <child>
-                  <object class="GtkListBox" id="mod_list">
-                    <property name="selection-mode">2</property>
-                    <style>
-                      <class name="boxed-list" />
-                    </style>
+                  <object class="GtkBox">
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">8</property>
+                    <child>
+                      <object class="GtkListBox" id="mod_list">
+                        <property name="selection-mode">2</property>
+                        <style>
+                          <class name="boxed-list" />
+                        </style>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkBox" id="banana_container">
+                        <property name="orientation">vertical</property>
+                        <property name="spacing">8</property>
+                        <child>
+                          <object class="GtkLabel">
+                            <attributes>
+                              <attribute name="size" value="25600"/>
+                            </attributes>
+                            <property name="label">
+No mods found!</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="gamebanana_game_homepage">
+                            <attributes>
+                              <attribute name="size" value="12800"/>
+                            </attributes>
+                            <property name="label">gamebanana_game_homepage</property>
+                          </object>
+                        </child>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
