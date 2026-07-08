@@ -2,7 +2,7 @@ use std::{fs, path::Path};
 use amb_rs_lib::{amb::Amb};
 use common_binary::error::CommonBinaryError;
 
-pub fn add_dir_of_files_to_amb(amb: &mut Amb, dir_to_add: &Path) -> usize {
+fn add_dir_of_files_to_amb(amb: &mut Amb, dir_to_add: &Path) -> usize {
     let mut files_chain = common::walk_dir::walk_dir(dir_to_add, None);
 
     files_chain.sort();

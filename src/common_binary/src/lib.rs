@@ -8,3 +8,4 @@ pub mod binary_writer {
 pub mod error;
 pub mod endianness;
 pub mod json_formatter;
+pub mod path;

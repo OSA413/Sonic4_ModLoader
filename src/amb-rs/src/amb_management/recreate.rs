@@ -1,13 +1,14 @@
-use std::{fs, path::{Path, PathBuf}};
-use amb_rs_lib::amb::Amb;
+use std::path::{Path, PathBuf};
 use common_binary::error::CommonBinaryError;
 
-use crate::amb_management;
+use crate::amb_management::{self, common_hander::do_a_thing_over_an_amb_and_save};
 
 pub fn recreate_amb(file: String, save_as_file_name: Option<String>) -> Result<(), CommonBinaryError> {
-    let amb = Amb::new_from_file_name(&file)?;
-    fs::write(save_as_file_name.unwrap_or(file), amb.write()?)?;
-    Ok(())
+    do_a_thing_over_an_amb_and_save(
+        &file,
+        &|_| {},
+        &save_as_file_name.unwrap_or(file.clone()),
+    )
 }
 
 pub fn recreate_amb_from_dir(dir: String) -> Result<(), CommonBinaryError> {

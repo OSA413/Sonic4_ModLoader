@@ -65,7 +65,7 @@ Or: add <target_file> <dir_of_files_to_add>".to_string()),
                 "extract_all" => {
                     match args.next() {
                         Some(file) => handle_result(amb_management::extract_all::extract_amb(file, args.next())),
-                        None => exit_with_error("Usage: extract_all <file_or_dir>".to_string()),
+                        None => exit_with_error("Usage: extract_all <file_or_dir> [destination_directory]".to_string()),
                     }
                 },
                 "read" => {

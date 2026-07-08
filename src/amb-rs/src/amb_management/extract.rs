@@ -17,9 +17,6 @@ pub fn extract_amb(target_file: String, dir_to_extract: Option<String>) -> Resul
     Ok(())
 }
 
-
-
-
 #[cfg(test)]
 mod tests {
     use std::fs;

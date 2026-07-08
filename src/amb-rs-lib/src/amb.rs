@@ -1,7 +1,7 @@
 use std::{io::Read, path::Path};
 use crate::binary_object::BinaryObject;
 use common_binary::{
-    binary_reader, binary_writer, endianness::Endianness, error::CommonBinaryError, json_formatter
+    binary_reader, binary_writer, endianness::Endianness, error::CommonBinaryError, json_formatter, path::make_safe
 };
 
 pub enum Version {
@@ -127,7 +127,7 @@ impl Amb {
                 true => binary_reader::string32::read(source, names_pointer as usize + 0x20 * i)?.0,
                 false =>  i.to_string(),
             };
-            new_object.name = Amb::make_name_safe(&new_object.real_name);
+            new_object.name = make_safe(&new_object.real_name);
             new_object.flag1 = binary_reader::u32::read(source, list_pointer as usize + (0x10 + shift) * i + 8 + shift, &endianness).expect("Who's bad? (3)");
             new_object.flag2 = binary_reader::u32::read(source, list_pointer as usize + (0x10 + shift) * i + 12 + shift, &endianness).expect("Who's bad? (4)");
 
@@ -298,24 +298,6 @@ impl Amb {
         Ok(())
     }
 
-    pub fn make_name_safe(raw_name: &str) -> String {
-        //removing ".\" in the names (Windows can't create "." folders)
-        //sometimes they can have several ".\" in the names
-        //Turns out there's a double dot directory in file names
-        //And double backslash in file names
-        let mut safe_index = 0;
-        let mut chars = raw_name.chars();
-        while let Some(ch) = chars.nth(0) {
-            if ch == '.' || ch == '\\' || ch == '/' {
-                safe_index += 1;
-            } else {
-                break;
-            }
-        }
-
-        raw_name.chars().skip(safe_index).collect()
-    }
-
     pub fn swap_endianness(&mut self) {
         self.endianness = match self.endianness {
             Endianness::Little => Endianness::Big,
@@ -338,7 +320,7 @@ impl Amb {
         let mut pointer = pointer_predition.data;
         for object in &mut self.objects {
             object.pointer = pointer;
-            object.name = Amb::make_name_safe(&object.name);
+            object.name = make_safe(&object.name);
             pointer += object.length_nice();
         }
     }

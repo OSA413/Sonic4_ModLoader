@@ -20,8 +20,9 @@ Usage:
         If [dir_to_extract] is specified, extracts to the specified directory.
         Same as `amb-rs <file> [dir_to_extract]`.
 
-    `amb-rs extract_all <file_or_dir>`
+    `amb-rs extract_all <file_or_dir> [destination_directory]`
         Extract all files from provided \"<file_or_dir>\" recursively.
+        If [destination_directory] provided, sends extracted files there (preserving hierarchy of extracted files).
 
     `amb-rs read <file>`
         Print the contents of the AMB file to the stdout in JSON format.
