@@ -224,4 +224,35 @@ add_nested_tests! {
             )
         ]
     ),
+
+    // These files are used for mod loader (file patcher) tests
+    new_media_for_ml_3: (
+        "new_media_for_ml_3.amb".to_string(),
+        vec![
+            Object::BinaryObject("media-skip-backward.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/media-skip-backward.png".to_string()),
+            Object::BinaryObject("media-seek-backward.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/media-seek-backward.png".to_string()),
+            Object::BinaryObject("media-skip-forward.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/media-skip-forward.png".to_string()),
+            Object::BinaryObject("media-playback-start.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/media-playback-start.png".to_string()),
+            Object::BinaryObject("media-seek-forward.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/media-seek-forward.png".to_string()),
+            Object::BinaryObject("media-playback-stop.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/media-playback-stop.png".to_string()),
+            Object::BinaryObject("media-record.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/media-record.png".to_string()),
+            Object::BinaryObject("media-eject.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/media-eject.png".to_string()),
+            Object::BinaryObject("media-playback-pause.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/media-playback-pause.png".to_string()),
+        ],
+    ),
+    new_weather_for_ml_4: (
+        "new_weather_for_ml_4.amb".to_string(),
+        vec![
+            Object::BinaryObject("weather-few-clouds.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/weather-few-clouds.png".to_string()),
+            Object::BinaryObject("weather-few-clouds-night.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/weather-few-clouds-night.png".to_string()),
+            Object::BinaryObject("weather-storm.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/weather-storm.png".to_string()),
+            Object::BinaryObject("weather-clear-night.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/weather-clear-night.png".to_string()),
+            Object::BinaryObject("weather-clear.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/weather-clear.png".to_string()),
+            Object::BinaryObject("weather-severe-alert.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/weather-severe-alert.png".to_string()),
+            Object::BinaryObject("weather-overcast.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/weather-overcast.png".to_string()),
+            Object::BinaryObject("weather-showers.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/weather-showers.png".to_string()),
+            Object::BinaryObject("weather-showers-scattered.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/weather-showers-scattered.png".to_string()),
+            Object::BinaryObject("weather-snow.png".to_string(), "../amb-rs-tests/test_files/tango-icon-theme/weather-snow.png".to_string()),
+        ]
+    ),
 }

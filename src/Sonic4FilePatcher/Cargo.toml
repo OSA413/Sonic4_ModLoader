@@ -16,5 +16,9 @@ amb-rs-lib = { path = "../amb-rs-lib" }
 sha1 = "0.10.6"
 indicatif = "0.18.2"
 
+[dev-dependencies]
+assert_cmd = "2.2.2"
+predicates = "3.1.4"
+
 [build-dependencies]
 winresource = "0.1.17"

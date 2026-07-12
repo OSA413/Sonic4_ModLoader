@@ -23,7 +23,7 @@ pub fn load() -> FilePatcherConfig {
             }
         },
         Err(e) => {
-            println!("Error loading AMBPatcher.cfg: {e}");
+            println!("Error loading Sonic4FilePatcher.ini: {e}");
             default_settings
         }
     }
