@@ -14,7 +14,7 @@ permissions:
   contents: read
 
 jobs:
-  build-pack-win64:
+  build-pack-test-win64:
     permissions:
       contents: write
     runs-on: windows-latest
@@ -102,6 +102,8 @@ jobs:
           filename: 'gtk-src-win.zip'
           directory: C:/gtk-build/src
 
+      - run: cargo test --no-fail-fast
+
       - uses: softprops/action-gh-release@v2
         if: github.ref_type == 'tag'
         with:
@@ -110,20 +112,3 @@ jobs:
             dist/SHA256SUMS_win
             dist/Sonic4ModLoader_win.zip
             C:/gtk-build/src/gtk-src-win.zip
-
-
-
-  tests:
-    runs-on: windows-2022
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-test-${{ hashFiles('**/Cargo.lock') }}
-      - run: cargo test --no-fail-fast -p amb-rs-tests -p amb-rs -p amb-rs-lib -p common -p common_binary

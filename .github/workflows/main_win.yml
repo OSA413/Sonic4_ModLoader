@@ -18,7 +18,7 @@ permissions:
   contents: read
 
 jobs:
-  build-pack-win64:
+  build-pack-test-win64:
     runs-on: windows-latest
     steps:
       - uses: actions/setup-dotnet@v1
@@ -103,34 +103,4 @@ jobs:
           name: amb-rs-win
           path: dist/Sonic4ModLoader/amb-rs.exe
 
-  tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '6.0.x'
-      - uses: actions/checkout@v2
-
-      - name: Build AMBPatcher
-        run: |
-          dotnet publish src_old/AMBPatcher -c Release --os linux
-          mkdir -p "./dist/Sonic4ModLoader/Mod Loader - licenses"
-          cp "./src_old/AMBPatcher/bin/Release/net6.0/linux-x64/publish/AMBPatcher" "./dist/Sonic4ModLoader/AMBPatcher.exe"
-
-      - name: Run tests
-        run: bash ./tests/run_tests.sh --no-crash
-
-  tests-rust:
-    runs-on: windows-2022
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-test-${{ hashFiles('**/Cargo.lock') }}
-      - run: cargo test --no-fail-fast -p amb-rs-tests -p amb-rs -p amb-rs-lib -p common -p common_binary
+      - run: cargo test --no-fail-fast

@@ -14,7 +14,7 @@ permissions:
   contents: read
 
 jobs:
-  build-pack-linux:
+  build-pack-test-linux:
     permissions:
       contents: write
     runs-on: ubuntu-latest
@@ -70,28 +70,11 @@ jobs:
           name: AMBPatcher
           path: dist/Sonic4ModLoader/AMBPatcher.exe
 
+      - run: cargo test --no-fail-fast
+
       - uses: softprops/action-gh-release@v2
         if: github.ref_type == 'tag'
         with:
           files: |
             dist/SHA256SUMS_linux
             dist/Sonic4ModLoader_linux.zip
-
-  tests:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/bin/
-            ~/.cargo/registry/index/
-            ~/.cargo/registry/cache/
-            ~/.cargo/git/db/
-            target/
-          key: ${{ runner.os }}-cargo-test-${{ hashFiles('**/Cargo.lock') }}
-
-      - run: sudo apt update
-      - run: sudo apt install libgtk-4-dev libadwaita-1-dev build-essential mingw-w64
-
-      - run: cargo test --no-fail-fast
