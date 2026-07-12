@@ -90,4 +90,8 @@ jobs:
             ~/.cargo/git/db/
             target/
           key: ${{ runner.os }}-cargo-test-${{ hashFiles('**/Cargo.lock') }}
-      - run: cargo test --no-fail-fast -p amb-rs-tests -p amb-rs -p amb-rs-lib -p common -p common_binary
+
+      - run: sudo apt update
+      - run: sudo apt install libgtk-4-dev libadwaita-1-dev build-essential mingw-w64
+
+      - run: cargo test --no-fail-fast
