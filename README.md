@@ -127,6 +127,8 @@ https://gtk.org/
 
 * GTK4 via gtk-rs under the MIT license https://gtk-rs.org/
 
+* GTK on Windows is possible by the [gvsbuild](https://github.com/wingtk/gvsbuild)
+
 * For other licenses, see `Sonic4ModLoader/Mod Loader - licenses` folder of a downloaded copy of the Mod Loader.
 
 ## How to automatically update Mod Loader
