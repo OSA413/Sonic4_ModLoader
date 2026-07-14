@@ -1,4 +1,7 @@
-export SEVEN_ZIP_VERSION="26.01"
+#!/bin/bash
+set -e
+
+export SEVEN_ZIP_VERSION="26.01/7z2601-x64.exe"
 export ALICE_MOD_LOADER_VERSION="4301e9b"
 export SONIC_AUDIO_TOOLS_VERSION="v1.0.1"
 
