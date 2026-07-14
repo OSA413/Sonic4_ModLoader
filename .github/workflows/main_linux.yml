@@ -31,7 +31,7 @@ jobs:
       - run: rustup target add x86_64-pc-windows-gnu
 
       - name: Update dependencies
-        run: bash update_dependencies_linux.sh
+        run: bash update_dependencies.sh
 
       - name: Generate version
         run: bash src/common/src/generate-version.sh

@@ -54,7 +54,7 @@ jobs:
       - run: echo "C:\gtk-build\gtk\x64\release\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
       - name: Update dependencies
-        run: bash update_dependencies_win.sh
+        run: bash update_dependencies.sh
 
       - name: Generate version
         run: bash src/common/src/generate-version.sh

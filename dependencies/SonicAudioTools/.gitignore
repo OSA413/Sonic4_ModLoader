@@ -1,3 +1,4 @@
 *
 !.gitignore
 !files
+!update.sh
