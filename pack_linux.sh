@@ -50,7 +50,7 @@ cargo install -f cargo-bundle-licenses
 
 cargo bundle-licenses --format json --output "./dist/Sonic4ModLoader/Mod Loader - licenses/Rust-THIRDPARTY.json"
 
-cp ./target/release/amb-rs ./dist/Sonic4ModLoader/amb-rs.exe
+cp ./target/release/amb-rs ./dist/Sonic4ModLoader/amb-rs
 cp ./target/x86_64-pc-windows-gnu/release/Sonic4FilePatcher.exe ./dist/Sonic4ModLoader/Sonic4FilePatcher.exe
 cp ./target/release/Sonic4ModManager ./dist/Sonic4ModLoader/Sonic4ModManager
 
