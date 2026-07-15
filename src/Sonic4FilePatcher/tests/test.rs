@@ -3,7 +3,13 @@ mod tests {
     use std::{fs, path::Path};
 
     use assert_cmd::Command;
+    use common::walk_dir;
     use predicates::prelude::*;
+    use sha2::{Digest, Sha256};
+
+    pub fn get_sha256(data: impl AsRef<[u8]>) -> String {
+        Sha256::digest(data).iter().map(|x| format!("{x:02x}")).collect()
+    }
 
     fn ml_prepare(path: &str) {
         let temp_dir = std::env::temp_dir().join("mod-loader-tests").join(path);
@@ -162,8 +168,6 @@ mod tests {
                 |x: &[u8]| x.starts_with(b"Using amb-rs...\n")
                     && x.ends_with(b"Patching complete!\n")
             ));
-
-        // TODO check files
     }
 
     
@@ -179,8 +183,40 @@ mod tests {
 
         assert
             .success();
+    }
 
-        // TODO check files
+    fn ml_check(path: &str) {
+        let temp_dir = std::env::temp_dir().join("mod-loader-tests").join(path);
+        let dirs_to_check = [
+            temp_dir.join("textures")
+        ];
+
+        let files = {
+            let files = walk_dir::walk_dir(&temp_dir, None);
+            let mut files = files
+                .iter().filter(|path| dirs_to_check.iter().any(|d| path.starts_with(d)))
+                .map(|x| x.to_owned())
+                .collect::<Vec<_>>();
+            files.sort();
+            files
+        };
+        let temp_dir_str = temp_dir.display().to_string();
+
+        let result = files.iter()
+            .map(|file| format!(
+                "{} {}",
+                get_sha256(fs::read(file).unwrap()),
+                file.display().to_string().replace("\\", "/").chars().skip(temp_dir_str.len()).collect::<String>()
+            ))
+            .collect::<Vec<_>>()
+            .join("\n");
+
+        let reference_file = format!("../Sonic4FilePatcher/tests/hashes/{path}");
+        // if !Path::new(&reference_file).exists() {
+        //     fs::write(&reference_file, &result).unwrap();
+        // }
+
+        assert_eq!(result, fs::read_to_string(reference_file).unwrap());
     }
     
     #[test]
@@ -259,6 +295,7 @@ mod tests {
         ml_prepare(path);
         ml_change_mod_ini(path, "");
         ml_run(path);
+        ml_check(path);
     }
 
     #[test]
@@ -267,6 +304,7 @@ mod tests {
         ml_prepare(path);
         ml_change_mod_ini(path, "2");
         ml_run(path);
+        ml_check(path);
     }
 
     #[test]
@@ -275,6 +313,7 @@ mod tests {
         ml_prepare(path);
         ml_change_mod_ini(path, "1243");
         ml_run(path);
+        ml_check(path);
     }
 
     #[test]
@@ -283,6 +322,7 @@ mod tests {
         ml_prepare(path);
         ml_change_mod_ini(path, "3421");
         ml_run(path);
+        ml_check(path);
     }
 
     #[test]
@@ -292,6 +332,7 @@ mod tests {
         ml_change_mod_ini(path, "1243");
         ml_run(path);
         ml_recover(path);
+        ml_check(path);
     }
 
     #[test]
@@ -302,6 +343,7 @@ mod tests {
         ml_run(path);
         ml_change_mod_ini(path, "3");
         ml_run(path);
+        ml_check(path);
     }
 
     #[test]
@@ -312,6 +354,7 @@ mod tests {
         ml_run(path);
         ml_change_mod_ini(path, "134");
         ml_run(path);
+        ml_check(path);
     }
 
     #[test]
@@ -322,6 +365,7 @@ mod tests {
         ml_run(path);
         ml_change_mod_ini(path, "4123");
         ml_run(path);
+        ml_check(path);
     }
 
     #[test]
@@ -332,6 +376,7 @@ mod tests {
         ml_run(path);
         ml_change_mod_ini(path, "42");
         ml_run(path);
+        ml_check(path);
     }
 
     #[test]
@@ -342,6 +387,7 @@ mod tests {
         ml_run(path);
         ml_change_mod_ini(path, "4321");
         ml_run(path);
+        ml_check(path);
     }
 
     #[test]
@@ -352,6 +398,7 @@ mod tests {
         ml_run(path);
         ml_change_mod_ini(path, "1");
         ml_run(path);
+        ml_check(path);
     }
 
     #[test]
@@ -362,5 +409,6 @@ mod tests {
         ml_run(path);
         ml_change_mod_ini(path, "2314");
         ml_run(path);
+        ml_check(path);
     }
 }
