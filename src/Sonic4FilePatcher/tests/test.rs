@@ -210,15 +210,17 @@ mod tests {
                 get_sha256(fs::read(file).unwrap()),
                 file.display().to_string().replace("\\", "/").chars().skip(temp_dir_str.len()).collect::<String>()
             ))
-            .collect::<Vec<_>>()
-            .join("\n");
+            .collect::<Vec<_>>();
 
         let reference_file = format!("../Sonic4FilePatcher/tests/hashes/{path}");
         // if !Path::new(&reference_file).exists() {
-        //     fs::write(&reference_file, &result).unwrap();
+        //     fs::write(&reference_file, &result.join("\n")).unwrap();
         // }
 
-        assert_eq!(result, fs::read_to_string(reference_file).unwrap());
+        assert_eq!(
+            result,
+            fs::read_to_string(reference_file).unwrap().lines().collect::<Vec<_>>(),
+        );
     }
     
     #[test]
