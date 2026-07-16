@@ -187,14 +187,16 @@ mod tests {
 
     fn ml_check(path: &str) {
         let temp_dir = std::env::temp_dir().join("mod-loader-tests").join(path);
-        let dirs_to_check = [
-            temp_dir.join("textures")
+        let dirs_to_not_check = [
+            temp_dir.join("mods"),
+            temp_dir.join("Sonic4FilePatcher.ini"),
+            temp_dir.join("mods_sha"),
         ];
 
         let files = {
             let files = walk_dir::walk_dir(&temp_dir, None);
             let mut files = files
-                .iter().filter(|path| dirs_to_check.iter().any(|d| path.starts_with(d)))
+                .iter().filter(|path| !dirs_to_not_check.iter().any(|d| path.starts_with(d)))
                 .map(|x| x.to_owned())
                 .collect::<Vec<_>>();
             files.sort();
