@@ -142,7 +142,7 @@ pub fn save(config: &CSBEditorConfig) -> Result<(), Box<dyn std::error::Error>> 
     };
 
     // For some reason you have to add a new line after a tag closure so that .Net properly loads the config
-    let config_str = serde_xml_rs::to_string(&xml_config)?.replace("/>", "/>\n");
+    let config_str = serde_xml_rs::to_string(&xml_config)?.replace(">", ">\n");
     fs::write("CsbEditor.exe.config", config_str)?;
 
     Ok(())
