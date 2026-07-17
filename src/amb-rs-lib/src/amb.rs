@@ -273,7 +273,7 @@ impl Amb {
                     binary_object,
                     &internal_name
                         .chars()
-                        .skip(parent_object.real_name.chars().count() + 1)
+                        .skip(parent_object.name.chars().count() + 1)
                         .collect::<String>()
                 )?;
                 let parent_amb_content = parent_amb.write()?;
