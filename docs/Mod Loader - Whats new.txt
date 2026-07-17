@@ -2,6 +2,7 @@
 * amb-rs and Sonic4FilePathcer are now stable, this is the last version that will offer AMBPatcher
 * Add link to GameBanana when no mods found in Mod Manager
 * Actually fix CsbEditor's config format
+* Add a lot of automatic tests in CI/CD so things should break less often
 
 [c]Version: v0.4.0
 * Presenting... [b]One-Click Mod Installer rewritten[\b]! Enjoy
