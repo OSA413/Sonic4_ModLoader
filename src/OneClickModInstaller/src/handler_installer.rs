@@ -75,7 +75,7 @@ pub fn get_info(game: Option<Game>) -> (Game, InstallationInfo) {
                 Err(_) => (game_to_check, InstallationInfo::NotInstalled)
             }
         }
-        Err(e) => (game_to_check, InstallationInfo::NotInstalled)
+        Err(_) => (game_to_check, InstallationInfo::NotInstalled)
     }
 }
 

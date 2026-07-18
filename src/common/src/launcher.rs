@@ -126,11 +126,6 @@ The Mod Loader must be placed in the game's root directory.
         Command::new(current_dir.join("CsbEditor.exe")).args(args).spawn()
     }
 
-    pub fn launch_amb_patcher(args: Vec<String>) -> Result<Child, io::Error> {
-        let current_dir = env::current_dir().unwrap();
-        Command::new(current_dir.join("AMBPatcher.exe")).args(args).spawn()
-    }
-
     pub fn launch_7zip(args: Vec<String>) -> Result<Child, io::Error> {
         let current_dir = env::current_dir().unwrap();
         let local_7z = current_dir.join("7z.exe");

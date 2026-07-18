@@ -18,7 +18,6 @@ After that, run these commands:
 sudo apt install libgtk-4-dev libadwaita-1-dev build-essential
 bash update_dependencies_linux.sh
 bash src/common/src/generate-version.sh
-dotnet publish src_old/AMBPatcher -c Release -m
 cargo build --release
 bash pack_linux.sh
 ```

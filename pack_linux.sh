@@ -10,8 +10,6 @@ echo "Copying new distribution files..."
 #Sonic4ModLoader
 #License
 cp "LICENSE" "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-Sonic4_ModLoader"
-#EXEs
-cp "./src_old/AMBPatcher/bin/Release/net6.0/win-x64/publish/AMBPatcher.exe" "./dist/Sonic4ModLoader/AMBPatcher.exe"
 #README
 cp "./README.md" "./dist/Sonic4ModLoader/README.md"
 #Change log

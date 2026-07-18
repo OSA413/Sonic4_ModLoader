@@ -1,7 +1,7 @@
 use std::fs;
 
 use adw::subclass::prelude::*;
-use common::{Launcher, settings::{amb_patcher::AMBPatcherConfig, csb_editor::CSBEditorConfig, file_patcher::FilePatcherConfig}};
+use common::{Launcher, settings::{csb_editor::CSBEditorConfig, file_patcher::FilePatcherConfig}};
 use gtk::{gio::{self, prelude::ActionMapExtManual}, glib::{self, clone}, prelude::{ButtonExt, CheckButtonExt, EditableExt, GtkWindowExt, WidgetExt}};
 
 use crate::installation::{self, get_installation_status, InstallationStatus, UninstallationOptions};
@@ -32,13 +32,11 @@ mod imp {
         #[template_child]
         pub checkbutton_recover_original_files: TemplateChild<gtk::CheckButton>,
 
-        // AMBPatcher
+        // Sonic4FilePatcher
         #[template_child]
         pub checkbutton_progress_bar: TemplateChild<gtk::CheckButton>,
         #[template_child]
         pub checkbutton_check_sha_of_files: TemplateChild<gtk::CheckButton>,
-        #[template_child]
-        pub checkbutton_use_amb_rs_instead: TemplateChild<gtk::CheckButton>,
 
         // CSBEditor
         #[template_child]
@@ -196,14 +194,11 @@ impl SettingsWindow {
     }
 
     fn load_settings(&self) {
-        let amb_patcher_config = common::settings::amb_patcher::load();
         let file_patcher = common::settings::file_patcher::load();
         let csb_editor_config = common::settings::csb_editor::load();
 
-        self.imp().checkbutton_progress_bar.set_active(amb_patcher_config.progress_bar);
-        self.imp().checkbutton_check_sha_of_files.set_active(amb_patcher_config.sha_check);
-
-        self.imp().checkbutton_use_amb_rs_instead.set_active(file_patcher.use_amb_rs_instead);
+        self.imp().checkbutton_progress_bar.set_active(file_patcher.progress_bar);
+        self.imp().checkbutton_check_sha_of_files.set_active(file_patcher.sha_check);
 
         self.imp().entry_buffer_size.set_text(csb_editor_config.buffer_size.to_string().as_str());
         self.imp().checkbutton_enable_threading.set_active(csb_editor_config.enable_threading);
@@ -228,25 +223,15 @@ impl SettingsWindow {
     }
 
     fn save(&self) {
-        let amb_patcher_config_progress_bar = self.imp().checkbutton_progress_bar.is_active();
-        let amb_patcher_config_sha_check = self.imp().checkbutton_check_sha_of_files.is_active();
-        let result = common::settings::amb_patcher::save(&AMBPatcherConfig{
-            progress_bar: amb_patcher_config_progress_bar,
-            sha_check: amb_patcher_config_sha_check
+        let patcher_config_progress_bar = self.imp().checkbutton_progress_bar.is_active();
+        let patcher_config_sha_check = self.imp().checkbutton_check_sha_of_files.is_active();
+        let result = common::settings::file_patcher::save(&FilePatcherConfig {
+            progress_bar: patcher_config_progress_bar,
+            sha_check: patcher_config_sha_check
         });
 
 
         let mut can_close = false;
-
-        match result {
-            Ok(_) => can_close = true,
-            Err(e) => eprintln!("Error saving settings: {e}")
-        }
-
-        let file_patcher_use_amb_rs = self.imp().checkbutton_use_amb_rs_instead.is_active();
-        let result = common::settings::file_patcher::save(&FilePatcherConfig {
-            use_amb_rs_instead: file_patcher_use_amb_rs,
-        });
 
         match result {
             Ok(_) => (),

@@ -1,7 +1,6 @@
 use std::{fs, path::Path, process};
 
 use common::{settings, Game, Launcher};
-use std::process::Command;    
 
 pub enum InstallationStatus {
     Installed,
@@ -83,6 +82,7 @@ fn get_installation_order() -> Vec<InstallationInstruction> {
     //Mod Loader files
     installation_order.push(InstallationInstruction::new("7z.exe".to_string(), None, None, true));
     installation_order.push(InstallationInstruction::new("7z.dll".to_string(), None, None, true));
+    // TODO: remove after 01.01.2027
     installation_order.push(InstallationInstruction::new("AMBPatcher.exe".to_string(), None, None, true));
     installation_order.push(InstallationInstruction::new("amb-rs.exe".to_string(), None, None, true));
     installation_order.push(InstallationInstruction::new("Sonic4FilePatcher.exe".to_string(), None, None, true));
@@ -91,6 +91,7 @@ fn get_installation_order() -> Vec<InstallationInstruction> {
     installation_order.push(InstallationInstruction::new("README.md".to_string(), None, None, true));
     installation_order.push(InstallationInstruction::new("SonicAudioLib.dll".to_string(), None, None, true));
 
+    // TODO: remove after 01.01.2027
     installation_order.push(InstallationInstruction::new("AMBPatcher.cfg".to_string(), None, None, true));
     installation_order.push(InstallationInstruction::new("CsbEditor.exe.config".to_string(), None, None, true));
     installation_order.push(InstallationInstruction::new("ModManager.cfg".to_string(), None, None, true));
@@ -199,7 +200,7 @@ pub fn uninstall(options: UninstallationOptions) {
     settings::alice_mod_loader::save("");
 
     if options.recover_original_files {
-        match process::Command::new("AMBPatcher.exe")
+        match process::Command::new("Sonic4FilePatcher")
             .arg("recover")
             .output() {
             Ok(_) => println!("Original files should be recovered"),

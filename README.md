@@ -23,13 +23,11 @@ sudo apt install libgtk-4-1 libadwaita-1-0
 sudo pacman -S gtk4 libadwaita
 ```
 
-Also, to get AMBPatcher working, you need to install .Net 6 via `protontricks`.
-
 You also should use the `_linux` distribution of the Mod Loader
 
 Note that you will not be able to launch the Manager Launcher from Steam, instead to manage mods you will need to open the game's directory and launch `Sonic4ModManager` manually. This is related to the isolation mechanism that Steam uses that refuses to load external `.so` libraries from the system (e.g. without specifying `LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libadwaita-1.so:...` to `protontricks-launch`) when using Proton.
 
-In order to debug your installation (if it doesn't work for some reason), you can use [`protontricks-launch`](https://github.com/Matoking/protontricks?tab=readme-ov-file#flatpak-recommended) to run `AMBPatcher`, `Sonic4FilePatcher`, `amb-rs`, and `CsbEditor`. They all should work if .Net 6 and the packages needed for the game that Steam installs are installed. If not, [file an issue in this repository](https://github.com/OSA413/Sonic4_ModLoader/issues).
+In order to debug your installation (if it doesn't work for some reason), you can use [`protontricks-launch`](https://github.com/Matoking/protontricks?tab=readme-ov-file#flatpak-recommended) to run `Sonic4FilePatcher`, and `CsbEditor`. They all should work if the packages needed for the game that Steam installs are installed. If not, [file an issue in this repository](https://github.com/OSA413/Sonic4_ModLoader/issues).
 
 You'll probably like that it's possible to install application shortcut to the Mod Manager so you don't have to open your Folder manager again. Just after installation (when Mod Manager asks or when you press "Install" button in the settings) the `Sonic4Episode1ModManager.desktop` or `Sonic4Episode2ModManager.desktop` file appears in the root directory of the game. Just install the desktop file following [these steps (step 4.2 and step 4.3)](https://wiki.archlinux.org/title/Desktop_entries#Installation). After that you'll recieve the app installed and available in your App Launcher of your Desktop Environment.
 
@@ -68,9 +66,10 @@ This program is a mod loader for Sonic 4 (both episodes supported).
 The Mod Loader includes:
 
 * Mod Manager to manage your mods (enabling/disabling and changing mod priority)
+* AliceModLoader for loading code mods
 * One-Click Mod Installer for an easier mod installation through the web and local archives
-* AMBPatcher for editing .AMB files
-* CsbEditor for editing .CSB files
+* Sonic4FilePatcher that uses amb-rs, txb2json, and other [Sonic4_Tools](https://github.com/OSA413/Sonic4_Tools) to patch and create files, it also handles the mod installation
+* CsbEditor for editing .CSB files (dependency of Sonic4FilePatcher)
 * 7-Zip as a dependency for One-Click Mod Installer
 
 ## How to install the Mod Loader
@@ -141,7 +140,7 @@ https://gtk.org/
 3. Agree to replace current version with the downloaded one.
 
 ## Useful documentation for modders and contributors
-* How to use AMBPatcher: `AMBPatcher.exe --help`
+* [Tools](https://github.com/OSA413/Sonic4_Tools)
 * [Mod structure](https://github.com/OSA413/Sonic4_ModLoader/blob/main/docs/Mod%20structure.md)
 * [Description of file extensions](https://github.com/OSA413/Sonic4_Tools/blob/master/docs/File%20description.md)
 * [Modding as for its current state](https://gamebanana.com/tuts/14585)

@@ -1,4 +1,5 @@
 # Mod structure
+
 ---------------------------
 
 ## File placement
@@ -8,18 +9,20 @@ Everything starts with a mod folder. In this example it'll be called `My Cool Mo
 You'll have to place all files there keeping the original game file structure.
 
 If you changed something in a file, place the **modified** files in a folder:
+
 * `.AMB` - Name the folder as the file.
 * `.CSB` - Name the folder as the file but without the extension.
 
 Here's an example of mod structure:
-```
+
+```ini
 /mods/My Cool Mod/mod.ini
 /mods/My Cool Mod/description.txt
 /mods/My Cool Mod/G_COM/CPIT/CPIT_MAIN.AMB/G_FIX.AMB/USER_FONT00.DDS
 /mods/My Cool Mod/SOUND/SONICDL_SNG01/Synth/materials/SNG_EMERALD_AIF.aax/Intro.adx
 ```
 
-Note: AMBPatcher can do recursive patching, so there's no need to manually patch sub-archives.
+Note: Sonic4FilePatcher can do recursive patching of AMB files, so there's no need to manually patch sub-archives.
 
 ## mod.ini structure
 
@@ -29,7 +32,8 @@ Place `mod.ini` into the root directory of your mod.
 `/mods/My Cool Mod/mod.ini`
 
 Here's an example of mod.ini structure:
-```
+
+```ini
 Name=My Cool Mod
 Authors=Author0, Author1, and Author2
 Version=0.1.0.0-rc3
@@ -37,16 +41,19 @@ Description=This is my [b][i]cooool[\i][\b] mod!
 ```
 
 Missing parameters:
+
 * If `Name` is missed, folder name will be used instead.
 * If `Description` is missed, `No description.` will be shown.
 * Any other missing parameter will be replaced with `???`
 
 Don't want to write the whole description in the `mod.ini` file? **Make a link to that file!**
 
-Simply write
-```
+Simply write:
+
+```ini
 Description=file=description.txt
 ```
+
 where `description.txt` is relative path (from `/mods/My Cool Mod/`) to your description file (only `.txt` files are supported).
 
 ### Description formating

@@ -22,12 +22,8 @@ Run the following commands:
 # This command may fail, doesn't affect Mod Loader-only compilation
 bash update_dependencies_win.sh
 bash src/common/src/generate-version.sh
-dotnet publish src_old -c Release -m
 cargo build --release
 bash pack_win.sh
-
-# Run old tests for AMBPatcher
-bash tests/run_tests.sh --no-crash
 ```
 
 The files will go to `dist/Sonic4ModLoader` directory.

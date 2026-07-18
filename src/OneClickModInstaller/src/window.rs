@@ -579,7 +579,7 @@ impl OneClickModInstallerWindow {
                 self.imp().exit_on_install_checkbutton.set_active(config.exit_on_install);
                 self.imp().launch_mod_manager_on_exit_checkbutton.set_active(config.launch_mod_manager_on_exit_on_install);
             },
-            Err(e) => {
+            Err(_) => {
                 self.imp().exit_on_install_checkbutton.set_active(true);
                 self.imp().launch_mod_manager_on_exit_checkbutton.set_active(true);
             }

@@ -1,25 +1,33 @@
-use ini::Ini;
+use std::fs;
 
+use serde::{Deserialize, Serialize};
+
+#[derive(Serialize)]
 pub struct FilePatcherConfig {
-    pub use_amb_rs_instead: bool,
+    pub progress_bar: bool,
+    pub sha_check: bool
+}
+
+#[derive(Deserialize)]
+struct FilePatcherConfigPartial {
+    pub progress_bar: Option<bool>,
+    pub sha_check: Option<bool>,
 }
 
 pub fn load() -> FilePatcherConfig {
-    let default_settings = FilePatcherConfig { use_amb_rs_instead: false };
-    let ini_result = Ini::load_from_file("Sonic4FilePatcher.ini");
+    let default_settings = FilePatcherConfig {
+        progress_bar: true,
+        sha_check: true
+    };
 
-    match ini_result {
-        Ok(ini) => {
-            let default_section = ini.section(None::<String>);
-
-            match default_section {
-                Some(section) => {
-                    let use_amb_rs_instead = section
-                        .get("use_amb_rs_instead")
-                        .unwrap_or("1");
-                    FilePatcherConfig { use_amb_rs_instead: use_amb_rs_instead == "1" }
-                },
-                None => default_settings
+    let json_config = std::fs::read_to_string("Sonic4FilePatcher.json").unwrap();
+    let json_config = serde_json::from_str::<FilePatcherConfigPartial>(&json_config);
+    
+    match json_config {
+        Ok(json) => {
+            FilePatcherConfig {
+                progress_bar: json.progress_bar.unwrap_or(default_settings.progress_bar),
+                sha_check: json.sha_check.unwrap_or(default_settings.sha_check)
             }
         },
         Err(e) => {
@@ -30,14 +38,7 @@ pub fn load() -> FilePatcherConfig {
 }
 
 pub fn save(config: &FilePatcherConfig) -> Result<(), Box<dyn std::error::Error>> {
-    let mut ini = Ini::new();
-
-    ini.with_section(None::<String>).set("use_amb_rs_instead", match config.use_amb_rs_instead {
-        true => "1",
-        false => "0"
-    });
-
-    ini.write_to_file("Sonic4FilePatcher.ini")?;
-
+    let json_config = serde_json::to_string(config)?;
+    fs::write("Sonic4FilePatcher.json", json_config)?;
     Ok(())
 }

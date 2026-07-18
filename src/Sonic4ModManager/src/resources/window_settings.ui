@@ -31,7 +31,7 @@
                     <child type="top">
                       <object class="AdwHeaderBar">
                         <property name="show-end-title-buttons">false</property>
-                        <child type ="end">
+                        <child type="end">
                           <object class="GtkButton">
                             <property name="label" translatable="yes">Save</property>
                             <property name="action-name">win.save</property>
@@ -40,7 +40,7 @@
                             </style>
                           </object>
                         </child>
-                        <child type ="end">
+                        <child type="end">
                           <object class="GtkButton">
                             <property name="label" translatable="yes">Discard</property>
                             <property name="action-name">win.close</property>
@@ -116,7 +116,8 @@
                           </object>
                         </child>
                         <child>
-                          <object class="GtkCheckButton" id="checkbutton_delete_all_mod_loader_files">
+                          <object class="GtkCheckButton"
+                            id="checkbutton_delete_all_mod_loader_files">
                             <property name="label">Delete all Mod Loader files</property>
                           </object>
                         </child>
@@ -141,7 +142,7 @@
                 </child>
                 <child>
                   <object class="GtkStackPage">
-                    <property name="title" translatable="yes">AMBPatcher</property>
+                    <property name="title" translatable="yes">Sonic4FilePatcher</property>
                     <property name="child">
                       <object class="GtkBox">
                         <property name="orientation">vertical</property>
@@ -153,11 +154,6 @@
                         <child>
                           <object class="GtkCheckButton" id="checkbutton_check_sha_of_files">
                             <property name="label">Check SHA of files (recommended)</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkCheckButton" id="checkbutton_use_amb_rs_instead">
-                            <property name="label">Use amb-rs instead (WiP)</property>
                           </object>
                         </child>
                         <child>
@@ -184,7 +180,7 @@
                               </object>
                             </child>
                             <child>
-                              <object class="GtkEntry" id="entry_buffer_size">                      
+                              <object class="GtkEntry" id="entry_buffer_size">
                                 <property name="input-hints">GTK_INPUT_HINT_NO_EMOJI</property>
                               </object>
                             </child>

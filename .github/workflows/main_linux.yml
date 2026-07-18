@@ -21,9 +21,6 @@ jobs:
   build-pack-test-linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-dotnet@v1
-        with:
-          dotnet-version: '6.0.x'
       - uses: actions/checkout@v2
 
       - run: sudo apt update
@@ -35,9 +32,6 @@ jobs:
 
       - name: Generate version
         run: bash src/common/src/generate-version.sh
-
-      - name: Build .Net
-        run: dotnet publish src_old/AMBPatcher -c Release -m
 
       - uses: actions/cache@v4
         with:
@@ -66,11 +60,6 @@ jobs:
         with:
           name: SHA256SUMS_linux
           path: dist/SHA256SUMS_linux
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: AMBPatcher
-          path: dist/Sonic4ModLoader/AMBPatcher.exe
           
       - uses: actions/upload-artifact@v4
         with:

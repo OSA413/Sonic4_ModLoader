@@ -147,10 +147,10 @@ mod tests {
         ).unwrap();
     }
 
-    fn ml_change_mod_ini(path: &str, mods: &str) {
+    fn ml_change_mod_ini(path: &str, mods: Vec<&str>) {
         let temp_dir = std::env::temp_dir().join("mod-loader-tests").join(path);
         let mods_ini = temp_dir.join("mods/mods.ini");
-        fs::write(mods_ini, mods.split("").collect::<Vec<_>>().join("\n")).unwrap();
+        fs::write(mods_ini, mods.join("\n")).unwrap();
     }
 
     fn ml_run(path: &str) {
@@ -165,8 +165,8 @@ mod tests {
         assert
             .success()
             .stdout(predicate::function(
-                |x: &[u8]| x.starts_with(b"Using amb-rs...\n")
-                    && x.ends_with(b"Patching complete!\n")
+                |x: &[u8]| x.starts_with(b"Preparing list of files to patch...\n")
+                    && x.ends_with(b"\nPatching complete!\n")
             ));
     }
 
@@ -262,8 +262,8 @@ mod tests {
         assert
             .success()
             .stdout(predicate::function(
-                |x: &[u8]| x.starts_with(b"Error loading Sonic4FilePatcher.ini")
-                    && x.ends_with(b"Using AMBPatcher...\n")
+                |x: &[u8]| x.starts_with(b"Preparing list of files to patch...\n")
+                    && x.ends_with(b"\nPatching complete!\n")
             ));
     }
 
@@ -288,8 +288,8 @@ mod tests {
         assert
             .success()
             .stdout(predicate::function(
-                |x: &[u8]| x.starts_with(b"Using amb-rs...\n")
-                    && x.ends_with(b"Patching complete!\n")
+                |x: &[u8]| x.starts_with(b"Preparing list of files to patch...\n")
+                    && x.ends_with(b"\nPatching complete!\n")
             ));
     }
     
@@ -297,7 +297,7 @@ mod tests {
     fn ml_empty() {
         let path = "ml_empty";
         ml_prepare(path);
-        ml_change_mod_ini(path, "");
+        ml_change_mod_ini(path, vec![]);
         ml_run(path);
         ml_check(path);
     }
@@ -306,7 +306,7 @@ mod tests {
     fn ml_single() {
         let path = "ml_single";
         ml_prepare(path);
-        ml_change_mod_ini(path, "2");
+        ml_change_mod_ini(path, vec!["2"]);
         ml_run(path);
         ml_check(path);
     }
@@ -315,7 +315,7 @@ mod tests {
     fn ml_multiple() {
         let path = "ml_multiple";
         ml_prepare(path);
-        ml_change_mod_ini(path, "1243");
+        ml_change_mod_ini(path, vec!["1","2","4","3"]);
         ml_run(path);
         ml_check(path);
     }
@@ -324,7 +324,7 @@ mod tests {
     fn ml_inversed() {
         let path = "ml_inversed";
         ml_prepare(path);
-        ml_change_mod_ini(path, "3421");
+        ml_change_mod_ini(path, vec!["3","4","2","1"]);
         ml_run(path);
         ml_check(path);
     }
@@ -333,7 +333,7 @@ mod tests {
     fn ml_recover_test() {
         let path = "ml_recover";
         ml_prepare(path);
-        ml_change_mod_ini(path, "1243");
+        ml_change_mod_ini(path, vec!["1","2","4","3"]);
         ml_run(path);
         ml_recover(path);
         ml_check(path);
@@ -343,9 +343,9 @@ mod tests {
     fn ml_changed_0() {
         let path = "ml_changed_0";
         ml_prepare(path);
-        ml_change_mod_ini(path, "1");
+        ml_change_mod_ini(path, vec!["1"]);
         ml_run(path);
-        ml_change_mod_ini(path, "3");
+        ml_change_mod_ini(path, vec!["3"]);
         ml_run(path);
         ml_check(path);
     }
@@ -354,9 +354,9 @@ mod tests {
     fn ml_changed_1() {
         let path = "ml_changed_1";
         ml_prepare(path);
-        ml_change_mod_ini(path, "2");
+        ml_change_mod_ini(path, vec!["2"]);
         ml_run(path);
-        ml_change_mod_ini(path, "134");
+        ml_change_mod_ini(path, vec!["1","3","4"]);
         ml_run(path);
         ml_check(path);
     }
@@ -365,9 +365,9 @@ mod tests {
     fn ml_changed_2() {
         let path = "ml_changed_2";
         ml_prepare(path);
-        ml_change_mod_ini(path, "4");
+        ml_change_mod_ini(path, vec!["4"]);
         ml_run(path);
-        ml_change_mod_ini(path, "4123");
+        ml_change_mod_ini(path, vec!["4","1","2","3"]);
         ml_run(path);
         ml_check(path);
     }
@@ -376,9 +376,9 @@ mod tests {
     fn ml_changed_3() {
         let path = "ml_changed_3";
         ml_prepare(path);
-        ml_change_mod_ini(path, "31");
+        ml_change_mod_ini(path, vec!["3","1"]);
         ml_run(path);
-        ml_change_mod_ini(path, "42");
+        ml_change_mod_ini(path, vec!["4","2"]);
         ml_run(path);
         ml_check(path);
     }
@@ -387,9 +387,9 @@ mod tests {
     fn ml_changed_4() {
         let path = "ml_changed_4";
         ml_prepare(path);
-        ml_change_mod_ini(path, "24");
+        ml_change_mod_ini(path, vec!["2","4"]);
         ml_run(path);
-        ml_change_mod_ini(path, "4321");
+        ml_change_mod_ini(path, vec!["4","3","2","1"]);
         ml_run(path);
         ml_check(path);
     }
@@ -398,9 +398,9 @@ mod tests {
     fn ml_changed_5() {
         let path = "ml_changed_5";
         ml_prepare(path);
-        ml_change_mod_ini(path, "324");
+        ml_change_mod_ini(path, vec!["3","2","4"]);
         ml_run(path);
-        ml_change_mod_ini(path, "1");
+        ml_change_mod_ini(path, vec!["1"]);
         ml_run(path);
         ml_check(path);
     }
@@ -409,9 +409,9 @@ mod tests {
     fn ml_changed_6() {
         let path = "ml_changed_6";
         ml_prepare(path);
-        ml_change_mod_ini(path, "123");
+        ml_change_mod_ini(path, vec!["1","2","3"]);
         ml_run(path);
-        ml_change_mod_ini(path, "2314");
+        ml_change_mod_ini(path, vec!["2","3","1","4"]);
         ml_run(path);
         ml_check(path);
     }

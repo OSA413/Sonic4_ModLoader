@@ -225,23 +225,6 @@ pub fn load_file_mods() {
         return;
     }
 
-    let file_patcher_config = common::settings::file_patcher::load();
-    if file_patcher_config.use_amb_rs_instead {
-        println!("Using amb-rs...");
-    } else {
-        println!("Using AMBPatcher...");
-        match common::Launcher::launch_amb_patcher(vec![]) {
-            Ok(mut child) => {
-                match child.wait() {
-                    Ok(_) => println!("AMBPatcher finished"),
-                    Err(e) => eprintln!("Error waiting for AMBPatcher: {e}"),
-                }
-            },
-            Err(e) => eprintln!("Error launching AMBPatcher: {e}"),
-        }
-        return;
-    }
-
     println!("Preparing list of files to patch...");
     let files_that_i_have_to_patch = get_mod_files();
     println!("There are {} files to patch...", files_that_i_have_to_patch.len());
