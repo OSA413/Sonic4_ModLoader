@@ -74,13 +74,15 @@ jobs:
       contents: write
     runs-on: ubuntu-slim
     steps:
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v8
         with: 
           name: SHA256SUMS_linux
+          skip-decompress: true
 
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v8
         with: 
           name: Sonic4ModLoader_linux.zip
+          skip-decompress: true
 
       - uses: softprops/action-gh-release@v3
         if: github.ref_type == 'tag'
