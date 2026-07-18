@@ -30,7 +30,7 @@ jobs:
         run: echo "stamp=$([Math]::Truncate(($(Get-Date).DayofYear / 7)))" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
         id: gtk-build-moment-stamp
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         id: cache-gtk
         with:
           path: |
@@ -57,7 +57,7 @@ jobs:
       - name: Build .Net
         run: dotnet publish src_old -c Release -m
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/bin/
