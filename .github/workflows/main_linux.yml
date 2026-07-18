@@ -23,7 +23,7 @@ jobs:
   build-pack-test-linux:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v7
 
       - run: sudo apt update
       - run: sudo apt install libgtk-4-dev libadwaita-1-dev build-essential mingw-w64
