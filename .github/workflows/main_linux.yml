@@ -1,6 +1,8 @@
 name: Midday build (Linux)
 
 on:
+  release:
+    types: [published]
   push:
     branches:
      - "**"
@@ -64,3 +66,25 @@ jobs:
           archive: false
 
       - run: cargo test --no-fail-fast
+
+  publish-linux:
+    if: github.ref_type == 'tag'
+    needs: build-pack-test-linux
+    permissions:
+      contents: write
+    runs-on: ubuntu-slim
+    steps:
+      - uses: actions/download-artifact@v5
+        with: 
+          name: SHA256SUMS_linux
+
+      - uses: actions/download-artifact@v5
+        with: 
+          name: Sonic4ModLoader_linux.zip
+
+      - uses: softprops/action-gh-release@v3
+        if: github.ref_type == 'tag'
+        with:
+          files: |
+            SHA256SUMS_linux
+            Sonic4ModLoader_linux.zip

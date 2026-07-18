@@ -1,6 +1,6 @@
 # How to compile this program on Windows
 
-Note: See `.github/workflows/release_win.yml` for up-to-date instructions.
+Note: See `.github/workflows/main_win.yml` for up-to-date instructions.
 
 Things you'll need:
 

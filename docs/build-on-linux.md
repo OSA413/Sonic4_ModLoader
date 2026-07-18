@@ -1,6 +1,6 @@
 # How to compile this program on Linux (Ubuntu)
 
-Note: See `.github/workflows/release_linux.yml` for up-to-date instructions.
+Note: See `.github/workflows/main_linux.yml` for up-to-date instructions.
 
 You will need [Rust with Rustup](https://rustup.rs/).
 

@@ -1,6 +1,8 @@
 name: Midday build (Windows)
 
 on:
+  release:
+    types: [published]
   push:
     branches:
      - "**"
@@ -97,3 +99,30 @@ jobs:
           archive: false
 
       - run: cargo test --no-fail-fast
+
+  publish-win64:
+    if: github.ref_type == 'tag'
+    needs: build-pack-test-win64
+    permissions:
+      contents: write
+    runs-on: ubuntu-slim
+    steps:
+      - uses: actions/download-artifact@v5
+        with: 
+          name: gtk-src-win.zip
+
+      - uses: actions/download-artifact@v5
+        with: 
+          name: SHA256SUMS_win
+
+      - uses: actions/download-artifact@v5
+        with: 
+          name: Sonic4ModLoader_win.zip
+
+      - uses: softprops/action-gh-release@v3
+        if: github.ref_type == 'tag'
+        with:
+          files: |
+            SHA256SUMS_win
+            Sonic4ModLoader_win.zip
+            gtk-src-win.zip
