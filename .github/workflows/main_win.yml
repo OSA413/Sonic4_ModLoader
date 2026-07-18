@@ -77,12 +77,12 @@ jobs:
           type: 'zip'
           filename: 'gtk-src-win.zip'
           directory: C:/gtk-build/src
-          archive: false
 
       - uses: actions/upload-artifact@v7
         with:
           name: gtk-src-win.zip
           path: C:/gtk-build/src/gtk-src-win.zip
+          archive: false
 
       - uses: actions/upload-artifact@v7
         with:
