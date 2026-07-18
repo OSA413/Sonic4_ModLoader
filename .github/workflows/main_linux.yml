@@ -74,11 +74,11 @@ jobs:
       contents: write
     runs-on: ubuntu-slim
     steps:
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v8
         with: 
           name: SHA256SUMS_linux
 
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v8
         with: 
           name: Sonic4ModLoader_linux.zip
 
