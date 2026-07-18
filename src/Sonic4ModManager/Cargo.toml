@@ -18,5 +18,5 @@ common = { path = "../common" }
 common_gtk4 = { path = "../common_gtk4" }
 
 [build-dependencies]
-glib-build-tools = "0.20"
+glib-build-tools = "0.22"
 winresource = "0.1.31"
