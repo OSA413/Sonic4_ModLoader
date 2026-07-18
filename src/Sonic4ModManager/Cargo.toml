@@ -13,10 +13,10 @@ license = "MIT"
 [dependencies]
 adw = { version = "0.9.1", package = "libadwaita", features = ["v1_5"] }
 gtk = { version = "0.11.1", package = "gtk4", features = ["v4_14"] }
-rand = "0.10.1"
+rand = "0.10.2"
 common = { path = "../common" }
 common_gtk4 = { path = "../common_gtk4" }
 
 [build-dependencies]
 glib-build-tools = "0.20"
-winresource = "0.1.17"
+winresource = "0.1.31"

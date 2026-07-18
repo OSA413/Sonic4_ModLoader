@@ -14,4 +14,4 @@ license = "MIT"
 hide_console = "0.2.1"
 
 [build-dependencies]
-winresource = "0.1.17"
+winresource = "0.1.31"

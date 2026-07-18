@@ -16,13 +16,13 @@ gtk = { version = "0.11.1", package = "gtk4", features = ["v4_14"] }
 common = { path = "../common" }
 common_gtk4 = { path = "../common_gtk4" }
 reqwest = { version = "0.13.3", features = ["stream"] }
-futures-util = "0.3.32"
+futures-util = "0.3.33"
 async-channel = "2.5.0"
-tokio = { version = "1", features = ["rt-multi-thread"] }
+tokio = { version = "1.53.0", features = ["rt-multi-thread"] }
 
 [target.'cfg(target_os = "windows")'.dependencies]
 winreg = "0.56"
 
 [build-dependencies]
 glib-build-tools = "0.20"
-winresource = "0.1.17"
+winresource = "0.1.31"
