@@ -8,7 +8,7 @@ Looking for midday builds? Get it from [GitHub Actions](https://github.com/OSA41
 
 ## To run it on Windows
 
-In order to run it, you need [.Net Framework 4.5.2 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net452) installed.
+In order to run CsbEditor, you need [.Net Framework 4.5.2 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net452) installed.
 
 In order to run the games you will also need [Microsoft Visual C++ 2015 Redistributable](https://www.microsoft.com/en-us/download/details.aspx?id=52685) and [Latest Microsoft Visual C++ Redistributable](https://learn.microsoft.com/en-gb/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-microsoft-visual-c-redistributable-version) **both x86 and x64 for both packages**.
 
