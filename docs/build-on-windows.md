@@ -4,7 +4,6 @@ Note: See `.github/workflows/release_win.yml` for up-to-date instructions.
 
 Things you'll need:
 
-* [.Net 6 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
 * [Python 3](https://www.python.org)
 * [Bash from Git](https://gitforwindows.org/)
 * [Rust with Rustup](https://rustup.rs/)
@@ -12,15 +11,15 @@ Things you'll need:
 
 Prepare GTK4:
 
-```sh
+```bash
 gvsbuild build gtk4 libadwaita librsvg
 ```
 
-Run the following commands:
+Run the following commands from Git Bash (not WSL Bash):
 
-```sh
+```bash
 # This command may fail, doesn't affect Mod Loader-only compilation
-bash update_dependencies_win.sh
+bash update_dependencies.sh
 bash src/common/src/generate-version.sh
 cargo build --release
 bash pack_win.sh

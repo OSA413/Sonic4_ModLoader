@@ -8,14 +8,15 @@ Looking for midday builds? Get it from [GitHub Actions](https://github.com/OSA41
 
 ## To run it on Windows
 
-In order to run it, you need [.Net 6 Desktop Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) and [.Net Framework 4.5.2 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net452) installed.
+In order to run it, you need [.Net Framework 4.5.2 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet-framework/net452) installed.
 
 In order to run the games you will also need [Microsoft Visual C++ 2015 Redistributable](https://www.microsoft.com/en-us/download/details.aspx?id=52685) and [Latest Microsoft Visual C++ Redistributable](https://learn.microsoft.com/en-gb/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-microsoft-visual-c-redistributable-version) **both x86 and x64 for both packages**.
 
 ## To run it on Linux
 
 In order to run Mod Manager, you need to install these:
-```
+
+```bash
 # Debian/Ubuntu and derivatives
 sudo apt install libgtk-4-1 libadwaita-1-0
 
@@ -47,17 +48,17 @@ FAQ: https://github.com/OSA413/Sonic4_ModLoader/blob/main/docs/FAQ.md
 
 **Table of content:**
 
-- [Sonic 4 Mod Loader](#sonic-4-mod-loader)
-  - [What is this?](#what-is-this)
-  - [How to install the Mod Loader](#how-to-install-the-mod-loader)
-  - [How to uninstall the Mod Loader](#how-to-uninstall-the-mod-loader)
-  - [How to install mods](#how-to-install-mods)
-    - [Manually](#manually)
-    - [Automatically](#automatically)
-  - [Third party works](#third-party-works)
-  - [How to automatically update Mod Loader](#how-to-automatically-update-mod-loader)
-  - [Useful documentation for modders and contributors](#useful-documentation-for-modders-and-contributors)
-  - [See also](#see-also)
+* [Sonic 4 Mod Loader](#sonic-4-mod-loader)
+  * [What is this?](#what-is-this)
+  * [How to install the Mod Loader](#how-to-install-the-mod-loader)
+  * [How to uninstall the Mod Loader](#how-to-uninstall-the-mod-loader)
+  * [How to install mods](#how-to-install-mods)
+    * [Manually](#manually)
+    * [Automatically](#automatically)
+  * [Third party works](#third-party-works)
+  * [How to automatically update Mod Loader](#how-to-automatically-update-mod-loader)
+  * [Useful documentation for modders and contributors](#useful-documentation-for-modders-and-contributors)
+  * [See also](#see-also)
 
 ## What is this?
 
@@ -133,13 +134,16 @@ https://gtk.org/
 ## How to automatically update Mod Loader
 
 1. Do one of the following things:
+
 * Drag and drop archive/directory with Mod Loader on One-Click Mod Installer
 * Copy-past the direct link to the Mod Loader archive (e.g. from GitHub) into the OCMI's url mod field in "Install mod" tab.
 * Click `1-CLICK INSTALL` button on a service that supports 1-Click integration (e.g. GameBanana)
+
 2. Press "Install"
 3. Agree to replace current version with the downloaded one.
 
 ## Useful documentation for modders and contributors
+
 * [Tools](https://github.com/OSA413/Sonic4_Tools)
 * [Mod structure](https://github.com/OSA413/Sonic4_ModLoader/blob/main/docs/Mod%20structure.md)
 * [Description of file extensions](https://github.com/OSA413/Sonic4_Tools/blob/master/docs/File%20description.md)
