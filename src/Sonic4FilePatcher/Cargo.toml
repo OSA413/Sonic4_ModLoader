@@ -13,12 +13,11 @@ license = "MIT"
 [dependencies]
 common = { path = "../common" }
 amb-rs-lib = { path = "../amb-rs-lib" }
-sha1 = "0.10.6"
+sha2 = "0.11.0"
 indicatif = "0.18.2"
 
 [dev-dependencies]
 assert_cmd = "2.2.2"
-sha2 = "0.11.0"
 predicates = "3.1.4"
 
 [build-dependencies]

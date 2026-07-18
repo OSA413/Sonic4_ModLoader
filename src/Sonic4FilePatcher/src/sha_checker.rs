@@ -1,10 +1,10 @@
 use std::{ffi::OsStr, fs, path::{Path, PathBuf}};
-use sha1::{Digest, Sha1};
+use sha2::{Digest, Sha256};
 
 use crate::mod_management::ModFile;
 
 pub fn get(data: impl AsRef<[u8]>) -> String {
-    Sha1::digest(data).iter().map(|x| format!("{x:02x}")).collect()
+    Sha256::digest(data).iter().map(|x| format!("{x:02x}")).collect()
 }
 
 pub fn remove(file_name: &String)
