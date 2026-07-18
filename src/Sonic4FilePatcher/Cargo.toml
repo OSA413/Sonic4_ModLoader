@@ -14,7 +14,7 @@ license = "MIT"
 common = { path = "../common" }
 amb-rs-lib = { path = "../amb-rs-lib" }
 sha2 = "0.11.0"
-indicatif = "0.18.2"
+indicatif = "0.18.6"
 
 [dev-dependencies]
 assert_cmd = "2.2.2"
