@@ -53,17 +53,14 @@ jobs:
         
       - uses: actions/upload-artifact@v7
         with:
-          name: Sonic4ModLoader_linux
+          name: Sonic4ModLoader_linux.zip
           path: dist/Sonic4ModLoader_linux.zip
+          archive: false
 
       - uses: actions/upload-artifact@v7
         with:
           name: SHA256SUMS_linux
           path: dist/SHA256SUMS_linux
-          
-      - uses: actions/upload-artifact@v7
-        with:
-          name: amb-rs-linux
-          path: dist/Sonic4ModLoader/amb-rs
+          archive: false
 
       - run: cargo test --no-fail-fast

@@ -72,24 +72,28 @@ jobs:
       - name: Pack
         run: bash pack_win.sh
 
-      - uses: actions/upload-artifact@v7
+      - uses: thedoctor0/zip-release@0.7.6
         with:
-          name: gtk-src
-          path: C:/gtk-build/src
+          type: 'zip'
+          filename: 'gtk-src-win.zip'
+          directory: C:/gtk-build/src
+          archive: false
 
       - uses: actions/upload-artifact@v7
         with:
-          name: Sonic4ModLoader_win
+          name: gtk-src-win.zip
+          path: C:/gtk-build/src/gtk-src-win.zip
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: Sonic4ModLoader_win.zip
           path: dist/Sonic4ModLoader_win.zip
+          archive: false
 
       - uses: actions/upload-artifact@v7
         with:
           name: SHA256SUMS_win
           path: dist/SHA256SUMS_win
-
-      - uses: actions/upload-artifact@v7
-        with:
-          name: amb-rs-win
-          path: dist/Sonic4ModLoader/amb-rs.exe
+          archive: false
 
       - run: cargo test --no-fail-fast
