@@ -13,7 +13,7 @@ license = "MIT"
 [dependencies]
 adw = { version = "0.9.1", package = "libadwaita", features = ["v1_5"] }
 gtk = { version = "0.11.1", package = "gtk4", features = ["v4_14"] }
-common = { path = "../common" }
+common_modloader = { path = "../common_modloader" }
 common_gtk4 = { path = "../common_gtk4" }
 
 [build-dependencies]

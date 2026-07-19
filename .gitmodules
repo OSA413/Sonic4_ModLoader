@@ -1,0 +1,3 @@
+[submodule "src_tools"]
+	path = src_tools
+	url = https://github.com/OSA413/Sonic4_Tools

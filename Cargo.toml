@@ -1,11 +1,7 @@
 [workspace]
 members = [
-    "src/amb-rs",
-    "src/amb-rs-lib",
-    "src/amb-rs-tests",
-    "src/common",
-    "src/common_binary",
     "src/common_gtk4",
+    "src/common_modloader",
     "src/ManagerLauncher",
     "src/ManagerLauncher_link",
     "src/Sonic4ModManager",

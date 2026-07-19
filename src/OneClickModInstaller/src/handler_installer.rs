@@ -1,6 +1,6 @@
 use std::path::{Path, PathBuf};
 
-use common::{Launcher, Game};
+use common_modloader::{Launcher, Game};
 
 pub enum InstallationInfo {
     Installed(String),

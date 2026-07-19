@@ -1,0 +1,13 @@
+[package]
+name = "common_modloader"
+edition = "2024"
+authors = ["Oleg \"OSA413\" Sokolov"]
+repository = "https://github.com/OSA413/Sonic4_ModLoader"
+homepage = "https://github.com/OSA413/Sonic4_ModLoader"
+license = "MIT"
+
+[dependencies]
+serde = { version = "1.0.104", features = ["derive"] }
+serde_json = "1.0.150"
+rust-ini = "0.21.3"
+serde-xml-rs = "0.8.2"

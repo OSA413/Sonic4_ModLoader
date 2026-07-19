@@ -3,7 +3,7 @@ use adw::{prelude::{AdwDialogExt, AlertDialogExt}};
 
 pub fn set_gsk_renderer_from_config() {
     println!("Trying to load GTK4 config...");
-    let gtk4_config = common::config::GTKConfig::load_config();
+    let gtk4_config = common_modloader::config::GTKConfig::load_config();
     match gtk4_config {
         Ok(config) => {
             println!("GTK4 config loaded");

@@ -1,7 +1,7 @@
 use std::{collections::HashMap, fs, path::{Path, PathBuf}};
 
 use amb_rs_lib::amb::Amb;
-use common::Launcher;
+use common_modloader::Launcher;
 use crate::{help, sha_checker};
 use indicatif::ProgressBar;
 
@@ -44,7 +44,7 @@ fn get_mod_files() -> HashMap<String, Vec<ModFile>> {
         return HashMap::new();
     }
     
-    let mods_ini = common::mod_logic::existing_mod::ExistingMod::load("mods");
+    let mods_ini = common_modloader::mod_logic::existing_mod::ExistingMod::load("mods");
     let mods_ini = mods_ini
         .iter()
         .filter(|m| m.enabled)

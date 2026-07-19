@@ -62,7 +62,7 @@ impl ManagerLauncherWindow {
     fn setup_actions(&self) {
         let action_play = ActionEntry::builder("play")
             .activate(move |_window: &Self, _action, _parameter| {
-                let res = common::Launcher::launch_current_game();
+                let res = common_modloader::Launcher::launch_current_game();
                 match res {
                     Ok(_) => process::exit(0),
                     Err(e) => eprintln!("{e}"),
@@ -72,7 +72,7 @@ impl ManagerLauncherWindow {
 
         let action_launch_config_tool = ActionEntry::builder("launch_config_tool")
             .activate(move |_window: &Self, _action, _parameter| {
-                let res = common::Launcher::launch_config();
+                let res = common_modloader::Launcher::launch_config();
                 match res {
                     Ok(_) => process::exit(0),
                     Err(e) => eprintln!("{e}"),
@@ -82,7 +82,7 @@ impl ManagerLauncherWindow {
 
         let action_launch_mod_manager = ActionEntry::builder("launch_mod_manager")
             .activate(move |_window: &Self, _action, _parameter| {
-                let res = common::Launcher::launch_mod_manager(vec![]);
+                let res = common_modloader::Launcher::launch_mod_manager(vec![]);
                 match res {
                     Ok(_) => process::exit(0),
                     Err(e) => eprintln!("{e}"),
@@ -94,7 +94,7 @@ impl ManagerLauncherWindow {
     }
 
     fn startup(&self) {
-        common::Launcher::where_in_the_world_am_i();
+        common_modloader::Launcher::where_in_the_world_am_i();
         common_gtk4::show_admin_warning(self);
     }
 }

@@ -11,8 +11,9 @@ license = "MIT"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-common = { path = "../common" }
-amb-rs-lib = { path = "../amb-rs-lib" }
+common = { path = "../../src_tools/src/common" }
+common_modloader = { path = "../common_modloader" }
+amb-rs-lib = { path = "../../src_tools/src/amb-rs-lib" }
 sha2 = "0.11.0"
 indicatif = "0.18.6"
 

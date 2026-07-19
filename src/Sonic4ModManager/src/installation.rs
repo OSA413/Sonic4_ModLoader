@@ -1,7 +1,7 @@
 use std::{fs, path::Path, process};
 use std::process::Command;
 
-use common::{settings, Game, Launcher};
+use common_modloader::{settings, Game, Launcher};
 
 pub enum InstallationStatus {
     Installed,

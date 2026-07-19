@@ -1,7 +1,7 @@
 use std::{cmp, path::Path};
 
 use adw::{prelude::{ActionRowExt, AdwDialogExt, AlertDialogExt}, subclass::prelude::*, ActionRow};
-use common::{mod_logic::mod_entry::ModEntry, settings, Launcher};
+use common_modloader::{mod_logic::mod_entry::ModEntry, settings, Launcher};
 use gtk::{Align, CheckButton, gio::{self, prelude::{ApplicationExt, ListModelExt, ListModelExtManual}}, glib::{self, Object, clone, object::Cast}, prelude::{ActionMapExtManual, CheckButtonExt, GtkWindowExt, ListBoxRowExt, TextViewExt, WidgetExt}};
 use crate::{buffer_formatter, installation, models::g_mod_entry::GModEntry, settings_dialog::SettingsWindow};
 use std::cell::RefCell;
@@ -114,7 +114,7 @@ impl Sonic4ModManagerWindow {
 
     fn save_mods_and_play(&self) {
         self.save_mods();
-        let game_lauched = common::Launcher::launch_current_game();
+        let game_lauched = common_modloader::Launcher::launch_current_game();
         match game_lauched {
             Ok(_) => self.application().unwrap().quit(),
             Err(e) => eprintln!("{e}"),
@@ -334,11 +334,11 @@ You can install/uninstall and configure it through the settings menu at any time
     }
 
     fn startup(&self) {
-        let game = common::Launcher::where_in_the_world_am_i();
+        let game = common_modloader::Launcher::where_in_the_world_am_i();
 
         let gamebanana_game_homepage = match game {
-            common::Game::Episode1 => "https://gamebanana.com/games/6595",
-            common::Game::Episode2 => "https://gamebanana.com/games/6597",
+            common_modloader::Game::Episode1 => "https://gamebanana.com/games/6595",
+            common_modloader::Game::Episode2 => "https://gamebanana.com/games/6597",
             _ => "https://gamebanana.com/tools/6546",
         };
 

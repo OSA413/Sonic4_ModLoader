@@ -1,5 +1,5 @@
 use adw::subclass::prelude::*;
-use common::mod_logic::mod_entry::ModEntry;
+use common_modloader::mod_logic::mod_entry::ModEntry;
 use gtk::prelude::ObjectExt;
 use gtk::glib;
 use gtk::glib::Properties;

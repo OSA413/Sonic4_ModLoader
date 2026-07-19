@@ -25,9 +25,9 @@ mod tests {
 
         // Original files
         let files = [
-            ("../amb-rs-tests/tests/reference_files/le/nested/actions.amb", "textures/actions.amb"),
-            ("../amb-rs-tests/tests/reference_files/le/nested/devices.amb", "textures/devices.amb"),
-            ("../amb-rs-tests/tests/reference_files/le/nested/notifications.amb", "textures/notifications.amb"),
+            ("../../src_tools/src/amb-rs-tests/tests/reference_files/le/nested/actions.amb", "textures/actions.amb"),
+            ("../../src_tools/src/amb-rs-tests/tests/reference_files/le/nested/devices.amb", "textures/devices.amb"),
+            ("../../src_tools/src/amb-rs-tests/tests/reference_files/le/nested/notifications.amb", "textures/notifications.amb"),
         ];
 
         for (src, dest) in files {
@@ -57,7 +57,7 @@ mod tests {
 
         for file in files {
             fs::copy(
-                Path::new("../amb-rs-tests/test_files/tango-icon-theme").join(file),
+                Path::new("../../src_tools/src/amb-rs-tests/test_files/tango-icon-theme").join(file),
                 &mods_dir
                     .join("1/textures/actions.amb/edit.amb")
                     .join(file),
@@ -85,7 +85,7 @@ mod tests {
 
         for (dest, src) in files {
             fs::copy(
-                Path::new("../amb-rs-tests/test_files/tango-icon-theme").join(src),
+                Path::new("../../src_tools/src/amb-rs-tests/test_files/tango-icon-theme").join(src),
                 &mods_dir.join(dest),
             )
             .unwrap();
@@ -104,14 +104,14 @@ mod tests {
 
         for (dest, src) in files {
             fs::copy(
-                Path::new("../amb-rs-tests/test_files/tango-icon-theme").join(src),
+                Path::new("../../src_tools/src/amb-rs-tests/test_files/tango-icon-theme").join(src),
                 &mods_dir.join(dest),
             )
             .unwrap();
         }
 
         fs::copy(
-            "../amb-rs-tests/tests/reference_files/le/nested/new_media_for_ml_3.amb",
+            "../../src_tools/src/amb-rs-tests/tests/reference_files/le/nested/new_media_for_ml_3.amb",
             &mods_dir.join("3/textures/actions.amb/media.amb"),
         ).unwrap();
 
@@ -135,14 +135,14 @@ mod tests {
 
         for (dest, src) in files {
             fs::copy(
-                Path::new("../amb-rs-tests/test_files/tango-icon-theme").join(src),
+                Path::new("../../src_tools/src/amb-rs-tests/test_files/tango-icon-theme").join(src),
                 &mods_dir.join(dest),
             )
             .unwrap();
         }
 
         fs::copy(
-            "../amb-rs-tests/tests/reference_files/le/nested/new_weather_for_ml_4.amb",
+            "../../src_tools/src/amb-rs-tests/tests/reference_files/le/nested/new_weather_for_ml_4.amb",
             &mods_dir.join("4/textures/weather.amb"),
         ).unwrap();
     }

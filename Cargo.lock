@@ -6,8 +6,8 @@ version = 4
 name = "ManagerLauncher"
 version = "1.0.0"
 dependencies = [
- "common",
  "common_gtk4",
+ "common_modloader",
  "glib-build-tools",
  "gtk4",
  "libadwaita",
@@ -29,6 +29,7 @@ dependencies = [
  "async-channel",
  "common",
  "common_gtk4",
+ "common_modloader",
  "futures-util",
  "glib-build-tools",
  "gtk4",
@@ -54,6 +55,7 @@ dependencies = [
  "amb-rs-lib",
  "assert_cmd",
  "common",
+ "common_modloader",
  "indicatif",
  "predicates",
  "sha2",
@@ -64,8 +66,8 @@ dependencies = [
 name = "Sonic4ModManager"
 version = "1.0.0"
 dependencies = [
- "common",
  "common_gtk4",
+ "common_modloader",
  "glib-build-tools",
  "gtk4",
  "libadwaita",
@@ -91,34 +93,11 @@ dependencies = [
 ]
 
 [[package]]
-name = "amb-rs"
-version = "1.0.0"
-dependencies = [
- "amb-rs-lib",
- "amb-rs-tests",
- "common",
- "common_binary",
- "serde",
- "serde_json",
-]
-
-[[package]]
 name = "amb-rs-lib"
 version = "1.0.0"
 dependencies = [
  "common",
  "common_binary",
-]
-
-[[package]]
-name = "amb-rs-tests"
-version = "0.0.0"
-dependencies = [
- "amb-rs-lib",
- "common",
- "common_binary",
- "serde",
- "serde_json",
 ]
 
 [[package]]
@@ -349,10 +328,20 @@ version = "0.0.0"
 name = "common_gtk4"
 version = "0.0.0"
 dependencies = [
- "common",
+ "common_modloader",
  "gtk4",
  "is_sudo",
  "libadwaita",
+]
+
+[[package]]
+name = "common_modloader"
+version = "0.0.0"
+dependencies = [
+ "rust-ini",
+ "serde",
+ "serde-xml-rs",
+ "serde_json",
 ]
 
 [[package]]

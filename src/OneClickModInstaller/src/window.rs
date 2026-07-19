@@ -6,7 +6,7 @@ use gtk::{Widget, gio::{self, Cancellable, prelude::{ActionMapExtManual, FileExt
 
 use crate::{arg_handler::{ArgHandler, InitialArgs}, handler_installer, models::my_g_string::MyGString, tokio_runtime};
 
-use common::{Game, Launcher, config::OneClickModInstallerConfig};
+use common_modloader::{Game, Launcher, config::OneClickModInstallerConfig};
 
 #[derive(PartialEq, Eq, Hash, Clone)]
 pub enum ModType {
@@ -709,7 +709,7 @@ impl OneClickModInstallerWindow {
 
     fn startup(&self) {
         self.imp().logo.set_resource(Some("/Sonic4ModLoader/OneClickModInstaller/logo.svg"));
-        common::Launcher::where_in_the_world_am_i();
+        common_modloader::Launcher::where_in_the_world_am_i();
         common_gtk4::show_admin_warning(self);
         self.load_config();
 

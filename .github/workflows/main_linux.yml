@@ -33,7 +33,7 @@ jobs:
         run: bash update_dependencies.sh
 
       - name: Generate version
-        run: bash src/common/src/generate-version.sh
+        run: bash src/common_modloader/src/generate-version.sh
 
       - uses: actions/cache@v6
         with:

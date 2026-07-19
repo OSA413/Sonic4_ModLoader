@@ -17,7 +17,7 @@ After that, run these commands:
 ```bash
 sudo apt install libgtk-4-dev libadwaita-1-dev build-essential
 bash update_dependencies.sh
-bash src/common/src/generate-version.sh
+bash src/common_modloader/src/generate-version.sh
 cargo build --release
 bash pack_linux.sh
 ```

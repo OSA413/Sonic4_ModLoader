@@ -86,7 +86,7 @@ impl Sonic4ModManagerApplication {
             .license_type(License::MitX11)
             .application_icon("icon")
             .developer_name("Oleg \"OSA413\" Sokolov")
-            .version(common::global::VERSION)
+            .version(common_modloader::global::VERSION)
             .developers(vec!["Oleg \"OSA413\" Sokolov"])
             .artists(vec!["Oleg \"OSA413\" Sokolov"])
             .website("https://github.com/OSA413/Sonic4_ModLoader")

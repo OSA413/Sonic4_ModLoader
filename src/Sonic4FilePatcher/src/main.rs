@@ -10,7 +10,7 @@ fn main() {
         Some(arg) => {
             match &arg[ops::RangeFull] {
                 "--help" | "-h" => help::print(),
-                "--version" | "-v" => println!("Sonic4FilePatcher version: {}", common::global::VERSION),
+                "--version" | "-v" => println!("Sonic4FilePatcher version: {}", common_modloader::global::VERSION),
                 "recover" => mod_management::full_recover_of_files(),
                 _ => help::print(),
             }

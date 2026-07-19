@@ -20,7 +20,7 @@ Run the following commands from Git Bash (not WSL Bash):
 ```bash
 # This command may fail, doesn't affect Mod Loader-only compilation
 bash update_dependencies.sh
-bash src/common/src/generate-version.sh
+bash src/common_modloader/src/generate-version.sh
 cargo build --release
 bash pack_win.sh
 ```

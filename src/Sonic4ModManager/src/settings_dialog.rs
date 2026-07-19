@@ -1,7 +1,7 @@
 use std::fs;
 
 use adw::subclass::prelude::*;
-use common::{Launcher, settings::{csb_editor::CSBEditorConfig, file_patcher::FilePatcherConfig}};
+use common_modloader::{Launcher, settings::{csb_editor::CSBEditorConfig, file_patcher::FilePatcherConfig}};
 use gtk::{gio::{self, prelude::ActionMapExtManual}, glib::{self, clone}, prelude::{ButtonExt, CheckButtonExt, EditableExt, GtkWindowExt, WidgetExt}};
 
 use crate::installation::{self, get_installation_status, InstallationStatus, UninstallationOptions};
@@ -194,8 +194,8 @@ impl SettingsWindow {
     }
 
     fn load_settings(&self) {
-        let file_patcher = common::settings::file_patcher::load();
-        let csb_editor_config = common::settings::csb_editor::load();
+        let file_patcher = common_modloader::settings::file_patcher::load();
+        let csb_editor_config = common_modloader::settings::csb_editor::load();
 
         self.imp().checkbutton_progress_bar.set_active(file_patcher.progress_bar);
         self.imp().checkbutton_check_sha_of_files.set_active(file_patcher.sha_check);
@@ -225,7 +225,7 @@ impl SettingsWindow {
     fn save(&self) {
         let patcher_config_progress_bar = self.imp().checkbutton_progress_bar.is_active();
         let patcher_config_sha_check = self.imp().checkbutton_check_sha_of_files.is_active();
-        let result = common::settings::file_patcher::save(&FilePatcherConfig {
+        let result = common_modloader::settings::file_patcher::save(&FilePatcherConfig {
             progress_bar: patcher_config_progress_bar,
             sha_check: patcher_config_sha_check
         });
@@ -241,11 +241,11 @@ impl SettingsWindow {
             }
         }
 
-        let current_or_default_config_csb_editor = common::settings::csb_editor::load();
+        let current_or_default_config_csb_editor = common_modloader::settings::csb_editor::load();
         let csb_editor_config_buffer_size = self.imp().entry_buffer_size.text().parse().unwrap_or(current_or_default_config_csb_editor.buffer_size);
         let csb_editor_config_enable_threading = self.imp().checkbutton_enable_threading.is_active();
         let csb_editor_config_max_threads = self.imp().entry_max_threads.text().parse().unwrap_or(current_or_default_config_csb_editor.max_threads);
-        let result = common::settings::csb_editor::save(&CSBEditorConfig {
+        let result = common_modloader::settings::csb_editor::save(&CSBEditorConfig {
             buffer_size: csb_editor_config_buffer_size,
             enable_threading: csb_editor_config_enable_threading,
             max_threads: csb_editor_config_max_threads
