@@ -24,6 +24,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          submodules: 'recursive'
 
       - run: sudo apt update
       - run: sudo apt install libgtk-4-dev libadwaita-1-dev build-essential mingw-w64

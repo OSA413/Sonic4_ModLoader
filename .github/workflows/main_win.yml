@@ -24,6 +24,8 @@ jobs:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          submodules: 'recursive'
 
       - name: Add msbuild to PATH
         uses: microsoft/setup-msbuild@v3
