@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod tests {
-    use std::{fs, path::Path};
+    use std::{fs, path::Path, time::Duration};
 
     use assert_cmd::Command;
     use common::walk_dir;
@@ -160,6 +160,7 @@ mod tests {
         
         let assert = cmd
             .current_dir(temp_dir)
+            .timeout(Duration::from_millis(1000))
             .assert();
 
         assert
@@ -179,6 +180,7 @@ mod tests {
         let assert = cmd
             .arg("recover")
             .current_dir(temp_dir)
+            .timeout(Duration::from_millis(1000))
             .assert();
 
         assert
@@ -235,6 +237,7 @@ mod tests {
         
         let assert = cmd
             .current_dir(temp_dir)
+            .timeout(Duration::from_millis(1000))
             .assert();
 
         assert
@@ -257,6 +260,7 @@ mod tests {
         
         let assert = cmd
             .current_dir(temp_dir)
+            .timeout(Duration::from_millis(1000))
             .assert();
 
         assert
@@ -283,6 +287,7 @@ mod tests {
         
         let assert = cmd
             .current_dir(temp_dir)
+            .timeout(Duration::from_millis(1000))
             .assert();
 
         assert
