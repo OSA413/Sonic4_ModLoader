@@ -6,6 +6,10 @@ pub fn get_text() -> &'static str {
     `Sonic4FilePatcher recover`
         Recover original files that were changed by enabled mods.
 
+    `Sonic4FilePatcher -v` and
+    `Sonic4FilePatcher --version`
+        Show versions of used tools.
+
     `Sonic4FilePatcher -h` and
     `Sonic4FilePatcher --help`
         Show this help message."
