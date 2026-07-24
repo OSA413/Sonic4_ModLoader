@@ -242,7 +242,7 @@ mod tests {
 
         assert
             .success()
-            .stdout(predicate::function(|x: &[u8]| x.starts_with(b"Usage:\n")));
+            .stdout(predicate::function(|x: &[u8]| x.starts_with(b"        Sonic4FilePatcher")));
     }
 
     #[test]
