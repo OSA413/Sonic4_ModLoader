@@ -1,4 +1,4 @@
-# Sonic 4 Mod Loader
+# <img src="./icon.svg" height="24"> Sonic 4 Mod Loader
 
 Looking for midday builds? Get it from [GitHub Actions](https://github.com/OSA413/Sonic4_ModLoader/actions)!
 
