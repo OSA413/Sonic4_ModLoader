@@ -88,6 +88,9 @@ jobs:
           path: C:/gtk-build/src/gtk-src-win.zip
           archive: false
 
+      - name: Remove the cached artifact or else it gets packed into itself
+        run: rm C:/gtk-build/src/gtk-src-win.zip
+
       - uses: actions/upload-artifact@v7
         with:
           name: Sonic4ModLoader_win.zip
