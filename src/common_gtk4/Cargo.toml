@@ -11,3 +11,6 @@ adw = { version = "0.9.1", package = "libadwaita", features = ["v1_5"] }
 gtk = { version = "0.11.1", package = "gtk4", features = ["v4_14"] }
 common_modloader = { path = "../common_modloader" }
 is_sudo = "0.0.2"
+
+[lints]
+workspace = true

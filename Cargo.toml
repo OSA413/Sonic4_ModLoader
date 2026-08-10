@@ -11,3 +11,6 @@ members = [
     "src/OneClickModInstaller_link",
 ]
 resolver = "3"
+
+[workspace.lints.clippy]
+unwrap_used = "deny"
