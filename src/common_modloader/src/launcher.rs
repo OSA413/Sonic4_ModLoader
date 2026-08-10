@@ -117,6 +117,7 @@ The Mod Loader must be placed in the game's root directory.
         }
     }
 
+    // TODO make detachable
     pub fn launch_mod_manager(args: Vec<String>) -> Result<Child, io::Error> {
         Command::new("Sonic4ModManager.exe").args(args).spawn()
     }
@@ -138,19 +139,12 @@ The Mod Loader must be placed in the game's root directory.
             Command::new("7z").args(args).spawn()
         }
     }
-
-    pub fn launch_amb_rs(args: Vec<String>) -> Result<Child, io::Error> {
-        Command::new("amb-rs").args(args).spawn()
-    }
     
     pub fn launch_file_patcher(args: Vec<String>) -> Result<Child, io::Error> {
         Command::new("Sonic4FilePatcher").args(args).spawn()
     }
 
-    pub fn launch_ocmi(args: Vec<String>) -> Result<Child, io::Error> {
-        Command::new("OneClickModInstaller.exe").args(args).spawn()
-    }
-
+    /** It is usually OK to wait for explorer to release its child process, it spawns a new window and exits. */
     #[cfg(target_os = "windows")]
     pub fn open_mods_folder() -> Result<Child, io::Error> {
         Command::new("explorer.exe").arg("mods").spawn()
@@ -161,6 +155,7 @@ The Mod Loader must be placed in the game's root directory.
         Command::new("xdg-open").arg("mods").spawn()
     }
     
+    /** It is usually OK to wait for explorer to release its child process, it spawns a new window and exits. */
     #[cfg(target_os = "windows")]
     pub fn open_folder(folder: &String) -> Result<Child, io::Error> {
         Command::new("explorer.exe").arg(folder).spawn()

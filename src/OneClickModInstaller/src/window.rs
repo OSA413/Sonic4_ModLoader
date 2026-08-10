@@ -15,9 +15,9 @@ pub enum ModType {
 }
 
 pub enum SuspiciousResolution {
-    CancelInstallation,
-    ContinueInstallation,
-    RemoveSuspiciousFilesAndContinueInstallation,
+    Cancel,
+    Continue,
+    RemoveSuspiciousFilesAndContinue,
 }
 
 async fn download_mod(url: String, progress_bar: Sender<f64>, progress_bar_text: Sender<String>, file_path: Sender<String>) {
@@ -247,7 +247,7 @@ impl OneClickModInstallerWindow {
         ));
     }
 
-    fn show_suspicious_dialog(&self, suspicios_files: &Vec<String>) -> adw::AlertDialog {
+    fn show_suspicious_dialog(&self, suspicios_files: &[String]) -> adw::AlertDialog {
         // Maybe redo that as a .ui file and class?
         let dialog = adw::AlertDialog::new(Some("Suspicious files found"), None);
         // dialog.set_title(Some("Suspicious files found"));
@@ -304,7 +304,7 @@ impl OneClickModInstallerWindow {
 
         let list = gtk::ListBox::new();
         let list_store = gio::ListStore::new::<MyGString>();
-        let list_entries = suspicios_files.iter().map(MyGString::from_string).collect::<Vec<_>>();
+        let list_entries = suspicios_files.iter().map(|x| MyGString::from_string(x)).collect::<Vec<_>>();
         list_store.extend_from_slice(&list_entries);
         list.bind_model(Some(&list_store), |obj | {
             let g_mod_entry = obj
@@ -382,20 +382,20 @@ impl OneClickModInstallerWindow {
             self,
             move |response: &str| {
                 let resolution = match response {
-                    "cancel" => SuspiciousResolution::CancelInstallation,
-                    "continue" => SuspiciousResolution::ContinueInstallation,
-                    "remove" => SuspiciousResolution::RemoveSuspiciousFilesAndContinueInstallation,
-                    _ => SuspiciousResolution::CancelInstallation,
+                    "cancel" => SuspiciousResolution::Cancel,
+                    "continue" => SuspiciousResolution::Continue,
+                    "remove" => SuspiciousResolution::RemoveSuspiciousFilesAndContinue,
+                    _ => SuspiciousResolution::Cancel,
                 };
 
                 match resolution {
-                    SuspiciousResolution::CancelInstallation => {},
-                    SuspiciousResolution::ContinueInstallation => {
+                    SuspiciousResolution::Cancel => {},
+                    SuspiciousResolution::Continue => {
                         let root = &this.find_mod_roots(&global_dir)[0];
                         let mod_path = this.place_mod_in_mods_folder(&root.1);
                         this.launch_mod_manager_if_needed(mod_path);
                     },
-                    SuspiciousResolution::RemoveSuspiciousFilesAndContinueInstallation => {
+                    SuspiciousResolution::RemoveSuspiciousFilesAndContinue => {
                         for file in &global_files {
                             fs::remove_file(Path::new(&global_dir).join(file)).unwrap();
                         }
@@ -665,10 +665,10 @@ impl OneClickModInstallerWindow {
             .activate(move |_, _, _| {
                 match handler_installer::get_info(Some(Game::Episode1)) {
                     (_, handler_installer::InstallationInfo::Installed(path)) => {
-                        Launcher::open_folder(&Path::new(&path).parent().unwrap().display().to_string()).unwrap();
+                        Launcher::open_folder(&Path::new(&path).parent().unwrap().display().to_string()).unwrap().wait().unwrap();
                     },
                     (_, handler_installer::InstallationInfo::AnotherInstallationPresent(path)) => {
-                        Launcher::open_folder(&Path::new(&path).parent().unwrap().display().to_string()).unwrap();
+                        Launcher::open_folder(&Path::new(&path).parent().unwrap().display().to_string()).unwrap().wait().unwrap();
                     },
                     (_, handler_installer::InstallationInfo::NotInstalled) => {},
                 };
@@ -679,10 +679,10 @@ impl OneClickModInstallerWindow {
             .activate(move |_, _, _| {
                 match handler_installer::get_info(Some(Game::Episode2)) {
                     (_, handler_installer::InstallationInfo::Installed(path)) => {
-                        Launcher::open_folder(&Path::new(&path).parent().unwrap().display().to_string()).unwrap();
+                        Launcher::open_folder(&Path::new(&path).parent().unwrap().display().to_string()).unwrap().wait().unwrap();
                     },
                     (_, handler_installer::InstallationInfo::AnotherInstallationPresent(path)) => {
-                        Launcher::open_folder(&Path::new(&path).parent().unwrap().display().to_string()).unwrap();
+                        Launcher::open_folder(&Path::new(&path).parent().unwrap().display().to_string()).unwrap().wait().unwrap();
                     },
                     (_, handler_installer::InstallationInfo::NotInstalled) => {},
                 };

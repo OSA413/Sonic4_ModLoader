@@ -39,7 +39,7 @@ impl MyGString {
             .build()
     }
 
-    pub fn from_string(value: &String) -> Self {
+    pub fn from_string(value: &str) -> Self {
         Self::new(value)
     }
 }

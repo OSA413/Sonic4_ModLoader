@@ -261,7 +261,10 @@ impl Sonic4ModManagerWindow {
             Err(e) => eprintln!("Coudn't create directories, they probably already exist {e}"),
         };
         match Launcher::open_mods_folder() {
-            Ok(_) => println!("Opening mods directory..."),
+            Ok(mut child) => {
+                println!("Opening mods directory...");
+                child.wait().unwrap();
+            }
             Err(e) => eprintln!("Coudn't open [mods] directory {e}"),
         };
     }
@@ -352,7 +355,8 @@ You can install/uninstall and configure it through the settings menu at any time
             "Click \"Open in Explorer\" to reveal the mods folder.
 Here are some resources to start modding:
 <a href=\"https://github.com/OSA413/Sonic4_Tools\">🧮 Sonic 4 Tools Repository 🛠️</a>
-<a href=\"https://gamebanana.com/tuts/14585\">📖 \"Modding as for its current state\" guide 🤝</a>"
+<a href=\"https://gamebanana.com/tuts/14585\">📖 \"Modding as for its current state\" guide 🤝</a>
+Happy modding!"
         );
 
         let closure = {

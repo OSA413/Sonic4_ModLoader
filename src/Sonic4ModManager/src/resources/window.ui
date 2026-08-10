@@ -88,8 +88,7 @@
                             <attributes>
                               <attribute name="size" value="25600" />
                             </attributes>
-                            <property name="label">
-No mods found!</property>
+                            <property name="label">No mods found!</property>
                           </object>
                         </child>
                         <child>
