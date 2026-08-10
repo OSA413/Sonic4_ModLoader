@@ -59,7 +59,7 @@ fn get_mod_files() -> HashMap<String, Vec<ModFile>> {
         }
 
         let paths = {
-            let mut paths = common::walk_dir::walk_dir(&Path::new("mods").join(mmod.path.clone()), None);
+            let mut paths = common_utils::walk_dir::walk_dir(&Path::new("mods").join(mmod.path.clone()), None);
             paths.sort_by_key(|a| a.display().to_string());
             // Needs confirmation
             // // We have to replicate .Net default sort to not break some mods that rely on file addition order

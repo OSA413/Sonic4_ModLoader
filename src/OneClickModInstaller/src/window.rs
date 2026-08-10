@@ -178,7 +178,7 @@ impl OneClickModInstallerWindow {
     fn place_mod_in_mods_folder(&self, root: &String) -> String {
         let root = Path::new(&root);
         let root_file_name = root.file_name().unwrap();
-        common::copy_dir::copy_dir(&root.to_path_buf(), &Path::new("mods").join(root_file_name));
+        common_utils::copy_dir::copy_dir(&root.to_path_buf(), &Path::new("mods").join(root_file_name)).unwrap();
         return root_file_name.to_str().unwrap().to_owned();
     }
 
@@ -344,7 +344,7 @@ impl OneClickModInstallerWindow {
 
         let dir_path_path = Path::new(&dir_path);
 
-        let all_files = common::walk_dir::walk_dir(dir_path_path, None);
+        let all_files = common_utils::walk_dir::walk_dir(dir_path_path, None);
         let mut suspicious_files = Vec::<String>::new();
 
         for file in all_files {
@@ -449,7 +449,7 @@ impl OneClickModInstallerWindow {
             (ModType::ModLoader, game_folders_array[1].split(',').map(|x| x.to_owned()).collect::<Vec<String>>()),
         ];
 
-        let downloaded_mod_folders = common::walk_dir::walk_dir_for_dirs(Path::new(&dir_path));
+        let downloaded_mod_folders = common_utils::walk_dir::walk_dir_for_dirs(Path::new(&dir_path));
 
         for downloaded_mod_folder in downloaded_mod_folders {
             for game_folders in &game_folders_array {

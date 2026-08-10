@@ -23,7 +23,7 @@ pub fn is_changed(do_sha_check: bool, file_name: &String, mod_files: &Vec<ModFil
 
     let mut files_changed = false;
     let orig_file_sha_root = Path::new("mods_sha").join(file_name);
-    let mut sha_list = common::walk_dir::walk_dir(&orig_file_sha_root, Some(OsStr::new("txt")));
+    let mut sha_list = common_utils::walk_dir::walk_dir(&orig_file_sha_root, Some(OsStr::new("txt")));
 
     for mod_file in mod_files {
         if files_changed { 

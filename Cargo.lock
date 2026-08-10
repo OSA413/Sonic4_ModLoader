@@ -27,9 +27,9 @@ name = "OneClickModInstaller"
 version = "1.0.0"
 dependencies = [
  "async-channel",
- "common",
  "common_gtk4",
  "common_modloader",
+ "common_utils",
  "futures-util",
  "glib-build-tools",
  "gtk4",
@@ -54,8 +54,8 @@ version = "1.0.0"
 dependencies = [
  "amb-rs-lib",
  "assert_cmd",
- "common",
  "common_modloader",
+ "common_utils",
  "indicatif",
  "predicates",
  "sha2",
@@ -94,10 +94,10 @@ dependencies = [
 
 [[package]]
 name = "amb-rs-lib"
-version = "1.0.0"
+version = "1.1.0"
 dependencies = [
- "common",
  "common_binary",
+ "common_utils",
 ]
 
 [[package]]
@@ -311,18 +311,12 @@ dependencies = [
 ]
 
 [[package]]
-name = "common"
-version = "0.0.0"
-dependencies = [
- "rust-ini",
- "serde",
- "serde-xml-rs",
- "serde_json",
-]
-
-[[package]]
 name = "common_binary"
 version = "0.0.0"
+dependencies = [
+ "serde",
+ "serde_json",
+]
 
 [[package]]
 name = "common_gtk4"
@@ -341,6 +335,16 @@ dependencies = [
  "rust-ini",
  "serde",
  "serde-xml-rs",
+ "serde_json",
+]
+
+[[package]]
+name = "common_utils"
+version = "0.0.0"
+dependencies = [
+ "common_binary",
+ "rust-ini",
+ "serde",
  "serde_json",
 ]
 
