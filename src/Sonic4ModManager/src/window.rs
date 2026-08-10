@@ -29,6 +29,8 @@ mod imp {
         #[template_child]
         pub gamebanana_game_homepage: TemplateChild<gtk::Label>,
         #[template_child]
+        pub no_mods_description: TemplateChild<gtk::Label>,
+        #[template_child]
         pub description: TemplateChild<gtk::TextView>,
         #[template_child]
         pub refresh_button: TemplateChild<gtk::Button>,
@@ -344,6 +346,13 @@ You can install/uninstall and configure it through the settings menu at any time
 
         self.imp().gamebanana_game_homepage.set_markup(
             format!("<a href=\"{}\">Visit GameBanana to download mods</a>", gamebanana_game_homepage).as_str()
+        );
+
+        self.imp().no_mods_description.set_markup(
+            "Click \"Open in Explorer\" to reveal the mods folder.
+Here are some resources to start modding:
+<a href=\"https://github.com/OSA413/Sonic4_Tools\">🧮 Sonic 4 Tools Repository 🛠️</a>
+<a href=\"https://gamebanana.com/tuts/14585\">📖 \"Modding as for its current state\" guide 🤝</a>"
         );
 
         let closure = {

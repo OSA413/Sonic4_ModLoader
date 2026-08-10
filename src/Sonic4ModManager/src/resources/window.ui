@@ -86,7 +86,7 @@
                         <child>
                           <object class="GtkLabel">
                             <attributes>
-                              <attribute name="size" value="25600"/>
+                              <attribute name="size" value="25600" />
                             </attributes>
                             <property name="label">
 No mods found!</property>
@@ -95,9 +95,17 @@ No mods found!</property>
                         <child>
                           <object class="GtkLabel" id="gamebanana_game_homepage">
                             <attributes>
-                              <attribute name="size" value="12800"/>
+                              <attribute name="size" value="12800" />
                             </attributes>
                             <property name="label">gamebanana_game_homepage</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="no_mods_description">
+                            <attributes>
+                              <attribute name="size" value="10000" />
+                            </attributes>
+                            <property name="label">no_mods_description</property>
                           </object>
                         </child>
                       </object>
