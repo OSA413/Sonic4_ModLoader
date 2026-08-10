@@ -39,34 +39,31 @@ impl ArgHandler {
             return InitialArgs::FromArchive(path.display().to_string());
         }
 
-        return InitialArgs::None;
+        InitialArgs::None
     }
 
     pub fn init(args: Args) {
         let skip_shift = handler_installer::get_path_to_exe().0;
         let mut args = args.skip(1 + skip_shift);
 
-        match args.next() {
-            Some(arg) => {
-                match &arg[ops::RangeFull] {
-                    "--install" => {
-                        handler_installer::install(None);
-                        std::process::exit(0);
-                    }
-                    "--uninstall" => {
-                        handler_installer::uninstall(None);
-                        std::process::exit(0);
-                    }
-                    "--fix" => {
-                        handler_installer::fix(None);
-                        std::process::exit(0);
-                    }
-                    _ => ()
+        if let Some(arg) = args.next() {
+            match &arg[ops::RangeFull] {
+                "--install" => {
+                    handler_installer::install(None);
+                    std::process::exit(0);
                 }
-
-                *MOD_ARG.lock().unwrap() = ArgHandler::convert_url_to_args(arg);
+                "--uninstall" => {
+                    handler_installer::uninstall(None);
+                    std::process::exit(0);
+                }
+                "--fix" => {
+                    handler_installer::fix(None);
+                    std::process::exit(0);
+                }
+                _ => ()
             }
-            None => {}
+
+            *MOD_ARG.lock().unwrap() = ArgHandler::convert_url_to_args(arg);
         }
     }
 

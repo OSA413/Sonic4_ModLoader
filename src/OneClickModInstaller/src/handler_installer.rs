@@ -9,7 +9,7 @@ pub enum InstallationInfo {
 }
 
 pub fn get_path_to_exe() -> (usize, Result<PathBuf, std::io::Error>) {
-    match std::env::args().skip(1).next() {
+    match std::env::args().nth(1) {
         Some(arg) => {
             if arg.ends_with("_link.exe") {
                 return (1, Ok(Path::new(&arg).to_path_buf()));
@@ -67,7 +67,7 @@ pub fn get_info(game: Option<Game>) -> (Game, InstallationInfo) {
                             if installed_path == current_path || !check_another_installation {
                                 return (game_to_check, InstallationInfo::Installed(installed_path))
                             }
-                            return (game_to_check, InstallationInfo::AnotherInstallationPresent(installed_path))
+                            (game_to_check, InstallationInfo::AnotherInstallationPresent(installed_path))
                         }
                         Err(_) => (game_to_check, InstallationInfo::NotInstalled)
                     }

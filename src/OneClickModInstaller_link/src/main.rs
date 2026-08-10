@@ -6,13 +6,12 @@ fn main() {
     println!("With the following arguments: {:?}", args);
 
     // This thing is needed when launching from URI handler on Windows
-    if let Ok(current_directory) = std::env::current_dir() {
-        if current_directory.to_str().unwrap() == "C:\\WINDOWS\\system32" {
+    if let Ok(current_directory) = std::env::current_dir()
+        && current_directory.to_str().unwrap() == "C:\\WINDOWS\\system32" {
             let current_exe = std::env::current_exe().unwrap();
             let actual_directory = current_exe.parent().unwrap();
             std::env::set_current_dir(actual_directory).unwrap();
         }
-    }
 
     let process = std::process::Command::new(PROGRAM).args(args).spawn();
     match process {

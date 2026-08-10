@@ -29,7 +29,7 @@ async fn download_mod(url: String, progress_bar: Sender<f64>, progress_bar_text:
         .await
         .unwrap();
     let total_size = response.content_length().unwrap();
-    let file_name = response.url().path_segments().unwrap().last().unwrap().to_owned();
+    let file_name = response.url().path_segments().unwrap().next_back().unwrap().to_owned();
 
     progress_bar_text.send_blocking(format!("Downloading {file_name}...")).unwrap();
     progress_bar.send_blocking(0.0).unwrap();
@@ -179,7 +179,7 @@ impl OneClickModInstallerWindow {
         let root = Path::new(&root);
         let root_file_name = root.file_name().unwrap();
         common_utils::copy_dir::copy_dir(&root.to_path_buf(), &Path::new("mods").join(root_file_name)).unwrap();
-        return root_file_name.to_str().unwrap().to_owned();
+        root_file_name.to_str().unwrap().to_owned()
     }
 
     fn launch_mod_manager_if_needed(&self, mod_path: String) {
@@ -397,7 +397,7 @@ impl OneClickModInstallerWindow {
                     },
                     SuspiciousResolution::RemoveSuspiciousFilesAndContinueInstallation => {
                         for file in &global_files {
-                            fs::remove_file(Path::new(&global_dir).join(&file)).unwrap();
+                            fs::remove_file(Path::new(&global_dir).join(file)).unwrap();
                         }
                         let root = &this.find_mod_roots(&global_dir)[0];
                         let mod_path = this.place_mod_in_mods_folder(&root.1);
@@ -407,7 +407,7 @@ impl OneClickModInstallerWindow {
             }
         );
 
-        dialog.connect_response(None, move |_, response| closure(&response));
+        dialog.connect_response(None, move |_, response| closure(response));
     }
 
     fn unpack_archive(&self, url: String) -> String {
@@ -430,9 +430,9 @@ impl OneClickModInstallerWindow {
         ]).unwrap().wait().unwrap();
 
         self.imp().progress_bar.set_fraction(1.0);
-        self.imp().progress_bar.set_text(Some(&format!("Archive extraction complete!")));
+        self.imp().progress_bar.set_text(Some("Archive extraction complete!"));
 
-        return dir_path;
+        dir_path
     }
 
     fn find_mod_roots(&self, dir_path: &String) -> Vec<(ModType, String)> {
@@ -454,7 +454,7 @@ impl OneClickModInstallerWindow {
         for downloaded_mod_folder in downloaded_mod_folders {
             for game_folders in &game_folders_array {
                 for game_folder in &game_folders.1 {
-                    if downloaded_mod_folder.ends_with(&game_folder) {
+                    if downloaded_mod_folder.ends_with(game_folder) {
                         result.insert((game_folders.0.clone(), downloaded_mod_folder.parent().unwrap().display().to_string()));
                         break;
                     }
@@ -462,7 +462,7 @@ impl OneClickModInstallerWindow {
             }
         }
         
-        return Vec::from_iter(result);
+        Vec::from_iter(result)
     }
     
 
@@ -627,20 +627,14 @@ impl OneClickModInstallerWindow {
                     #[weak (rename_to = this)]
                     app,
                     move |result| {
-                        match result {
-                            Ok(file) => {
-                                // This will crash if you choose a file without extension
-                                let file = match &file.basename().unwrap().extension().unwrap().display().to_string().to_owned()[ops::RangeFull] {
-                                    "7z" | "zip" | "rar" => file,
-                                    _ => file.parent().unwrap().parent().unwrap(),
-                                };
+                        if let Ok(file) = result {
+                            // This will crash if you choose a file without extension
+                            let file = match &file.basename().unwrap().extension().unwrap().display().to_string().to_owned()[ops::RangeFull] {
+                                "7z" | "zip" | "rar" => file,
+                                _ => file.parent().unwrap().parent().unwrap(),
+                            };
 
-                                match file.path() {
-                                    Some(path) => this.imp().mod_path_entry.set_text(path.display().to_string().as_str()),
-                                    None => {},
-                                };
-                            },
-                            Err(_) => {},
+                            if let Some(path) = file.path() { this.imp().mod_path_entry.set_text(path.display().to_string().as_str()) };
                         }
                     }
                 ));

@@ -120,11 +120,10 @@ fn get_mod_files() -> HashMap<String, Vec<ModFile>> {
 
     for (original_file, mod_file) in result {
         let list = grouped.entry(original_file).or_default();
-        if let Some(last) = list.last() {
-            if mod_file.file_path.contains(&last.file_path) {
+        if let Some(last) = list.last()
+            && mod_file.file_path.contains(&last.file_path) {
                 continue;
             }
-        }
         list.push(mod_file);
     }
     
