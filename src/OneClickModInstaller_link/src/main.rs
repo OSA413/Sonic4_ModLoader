@@ -1,3 +1,5 @@
+use std::path::Path;
+
 static PROGRAM: &str = "bin/OneClickModInstaller";
 
 fn main() {
@@ -7,10 +9,13 @@ fn main() {
 
     // This thing is needed when launching from URI handler on Windows
     if let Ok(current_directory) = std::env::current_dir()
-        && current_directory.to_str().unwrap() == "C:\\WINDOWS\\system32" {
-            let current_exe = std::env::current_exe().unwrap();
-            let actual_directory = current_exe.parent().unwrap();
-            std::env::set_current_dir(actual_directory).unwrap();
+        && current_directory == Path::new("C:\\WINDOWS\\system32") {
+            let current_exe = std::env::current_exe()
+                .expect("Couldn't get current exe path to change current path from system's one, exiting...");
+            let actual_directory = current_exe.parent()
+                .expect("Couldn't get directory of current exe to change current path from system's one, exiting...");
+            std::env::set_current_dir(actual_directory)
+                .expect("Couldn't change current working directory from the system's one, exiting...");
         }
 
     let process = std::process::Command::new(PROGRAM).args(args).spawn();

@@ -1,4 +1,5 @@
 use std::path::{Path, PathBuf};
+use std::fmt::Debug;
 
 use common_modloader::{Launcher, Game};
 
@@ -6,6 +7,26 @@ pub enum InstallationInfo {
     Installed(String),
     AnotherInstallationPresent(String),
     NotInstalled,
+}
+
+pub enum HadnlerInstallationError {
+    Io(std::io::Error),
+    UnknownGame,
+}
+
+impl From<std::io::Error> for HadnlerInstallationError {
+    fn from(e: std::io::Error) -> Self {
+        HadnlerInstallationError::Io(e)
+    }
+}
+
+impl Debug for HadnlerInstallationError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            HadnlerInstallationError::Io(e) => write!(f, "I/O error: {e}"),
+            HadnlerInstallationError::UnknownGame => write!(f, "You can not install One-Click Mod Installer into an unknown game!"),
+        }
+    }
 }
 
 pub fn get_path_to_exe() -> (usize, Result<PathBuf, std::io::Error>) {
@@ -26,16 +47,16 @@ pub fn get_info(game: Option<Game>) -> (Game, InstallationInfo) {
 }
 
 #[cfg(not(target_os = "windows"))]
-pub fn install(game: Option<Game>) {
+pub fn install(game: Option<Game>) -> Result<(), HadnlerInstallationError> {
     todo!()
 }
 #[cfg(not(target_os = "windows"))]
-pub fn uninstall(game: Option<Game>) {
+pub fn uninstall(game: Option<Game>) -> Result<(), HadnlerInstallationError> {
     todo!()
 }
 
 #[cfg(not(target_os = "windows"))]
-pub fn fix(game: Option<Game>) {
+pub fn fix(game: Option<Game>) -> Result<(), HadnlerInstallationError> {
     todo!()
 }
 
@@ -60,7 +81,9 @@ pub fn get_info(game: Option<Game>) -> (Game, InstallationInfo) {
             let shell_path = Path::new(&root_path).join("Shell").join("Open").join("Command");
             match HKCU.open_subkey(&shell_path) {
                 Ok(shell_key) => {
-                    let current_path = get_path_to_exe().1.unwrap().display().to_string();
+                    let current_path = get_path_to_exe().1
+                        .expect("Couldn't get path to current exe to check installation of One-Click Mod Installer handler")
+                        .display().to_string();
                     match shell_key.get_value::<String, _>("") {
                         Ok(value) => {
                             let installed_path = value.chars().skip(1).take(value.len() - "\" \"%1\"".len() - 1).collect::<String>();
@@ -80,7 +103,7 @@ pub fn get_info(game: Option<Game>) -> (Game, InstallationInfo) {
 }
 
 #[cfg(target_os = "windows")]
-pub fn install(game: Option<Game>) {
+pub fn install(game: Option<Game>) -> Result<(), HadnlerInstallationError> {
     use std::path::Path;
     use winreg::HKCU;
 
@@ -89,30 +112,31 @@ pub fn install(game: Option<Game>) {
         Game::Episode2 => "ep2",
         Game::Unknown => {
             eprintln!("You can not install One-Click Mod Installer into an unknown game!");
-            return;
+            return Err(HadnlerInstallationError::UnknownGame);
         }
     };
     let formatted_game = format!("sonic4mm{game}");
 
     let root_path = Path::new("Software").join("Classes").join(&formatted_game);
     
-    let (root_key, _) = HKCU.create_subkey(&root_path).unwrap();
-    root_key.set_value("", &format!("URL:Sonic 4 {game}'s One-Click Mod Installer protocol")).unwrap();
-    root_key.set_value("URL Protocol", &"").unwrap();
+    let (root_key, _) = HKCU.create_subkey(&root_path)?;
+    root_key.set_value("", &format!("URL:Sonic 4 {game}'s One-Click Mod Installer protocol"))?;
+    root_key.set_value("URL Protocol", &"")?;
 
     let icon_path = Path::new(&root_path).join("DefaultIcon");
-    let (icon_key, _) = HKCU.create_subkey(&icon_path).unwrap();
-    icon_key.set_value("", &"OneClickModInstaller.exe").unwrap();
+    let (icon_key, _) = HKCU.create_subkey(&icon_path)?;
+    icon_key.set_value("", &"OneClickModInstaller.exe")?;
     
     let shell_path = Path::new(&root_path).join("Shell").join("Open").join("Command");
-    let (shell_key, _) = HKCU.create_subkey(&shell_path).unwrap();
-    let current_path = get_path_to_exe().1.unwrap();
+    let (shell_key, _) = HKCU.create_subkey(&shell_path)?;
+    let current_path = get_path_to_exe().1?;
     let current_path = current_path.display();
-    shell_key.set_value("", &format!("\"{current_path}\" \"%1\"")).unwrap();
+    shell_key.set_value("", &format!("\"{current_path}\" \"%1\""))?;
+    Ok(())
 }
 
 #[cfg(target_os = "windows")]
-pub fn uninstall(game: Option<Game>) {
+pub fn uninstall(game: Option<Game>) -> Result<(), HadnlerInstallationError> {
     use std::path::Path;
     use winreg::HKCU;
 
@@ -121,18 +145,19 @@ pub fn uninstall(game: Option<Game>) {
         Game::Episode2 => "ep2",
         Game::Unknown => {
             eprintln!("You can not install One-Click Mod Installer into an unknown game!");
-            return;
+            return Err(HadnlerInstallationError::UnknownGame);
         }
     };
     let formatted_game = format!("sonic4mm{game}");
 
     let root_path = Path::new("Software").join("Classes").join(&formatted_game);
 
-    HKCU.delete_subkey_all(&root_path).unwrap();
+    HKCU.delete_subkey_all(&root_path)?;
+    Ok(())
 }
 
 #[cfg(target_os = "windows")]
-pub fn fix(game: Option<Game>) {
+pub fn fix(game: Option<Game>) -> Result<(), HadnlerInstallationError> {
     use std::path::Path;
     use winreg::HKCU;
 
@@ -141,7 +166,7 @@ pub fn fix(game: Option<Game>) {
         Game::Episode2 => "ep2",
         Game::Unknown => {
             eprintln!("You can not install One-Click Mod Installer into an unknown game!");
-            return;
+            return Err(HadnlerInstallationError::UnknownGame);
         }
     };
     let formatted_game = format!("sonic4mm{game}");
@@ -149,8 +174,9 @@ pub fn fix(game: Option<Game>) {
     let root_path = Path::new("Software").join("Classes").join(&formatted_game);
 
     let shell_path = Path::new(&root_path).join("Shell").join("Open").join("Command");
-    let (shell_key, _) = HKCU.create_subkey(&shell_path).unwrap();
-    let current_path = get_path_to_exe().1.unwrap();
+    let (shell_key, _) = HKCU.create_subkey(&shell_path)?;
+    let current_path = get_path_to_exe().1?;
     let current_path = current_path.display();
-    shell_key.set_value("", &format!("\"{current_path}\" \"%1\"")).unwrap();
+    shell_key.set_value("", &format!("\"{current_path}\" \"%1\""))?;
+    Ok(())
 }

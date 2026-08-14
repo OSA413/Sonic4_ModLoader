@@ -34,10 +34,8 @@ async fn download_mod(url: String, progress_bar: Sender<f64>, progress_bar_text:
     progress_bar_text.send_blocking(format!("Downloading {file_name}...")).unwrap();
     progress_bar.send_blocking(0.0).unwrap();
 
-    match fs::create_dir_all("downloaded_mods") {
-        Ok(()) => println!("Alan please write description"),
-        Err(e) => println!("Alan please write error: {e}"),
-    };
+    fs::create_dir_all("downloaded_mods")
+        .expect("Couldn't create a directory for downloaded mods, can't continue.");
     let to = Path::new("downloaded_mods").join(&file_name);
     let mut file = File::create(&to).unwrap();
     let mut downloaded = 0;
@@ -338,9 +336,8 @@ impl OneClickModInstallerWindow {
     }
 
     fn check_suspicious_files(&self, dir_path: &String) {
-        let good_formats = "TXT,INI,DDS,TXB,AMA,AME,ZNO,ZNM,ZNV,DC,EV,RG,MD,MP,AT,DF,DI,PSH,VSH,LTS,XNM,MFS,SSS,GPB,MSG,AYK,ADX,AMB,CPK,CSB,PNG,CT,TGA";
-
-        let good_formats = good_formats.split(',').collect::<Vec<_>>();
+        // TODO: move to a separate file
+        let good_formats = ["TXT","INI","DDS","TXB","AMA","AME","ZNO","ZNM","ZNV","DC","EV","RG","MD","MP","AT","DF","DI","PSH","VSH","LTS","XNM","MFS","SSS","GPB","MSG","AYK","ADX","AMB","CPK","CSB","PNG","CT","TGA"];
 
         let dir_path_path = Path::new(&dir_path);
 
@@ -645,8 +642,8 @@ impl OneClickModInstallerWindow {
             .activate(move |app: &Self, _, _| {
                 match handler_installer::get_info(None) {
                     (_, handler_installer::InstallationInfo::Installed(_)) => {},
-                    (_, handler_installer::InstallationInfo::AnotherInstallationPresent(_)) => handler_installer::fix(None),
-                    (_, handler_installer::InstallationInfo::NotInstalled) => handler_installer::install(None),
+                    (_, handler_installer::InstallationInfo::AnotherInstallationPresent(_)) => handler_installer::fix(None).unwrap(),
+                    (_, handler_installer::InstallationInfo::NotInstalled) => handler_installer::install(None).unwrap(),
                 };
                 app.load_current_installation();
                 app.load_other_installations();
@@ -655,7 +652,7 @@ impl OneClickModInstallerWindow {
 
         let uninstall_current_game_action = gio::ActionEntry::builder("uninstall_current_game")
             .activate(move |app: &Self, _, _| {
-                handler_installer::uninstall(None);
+                handler_installer::uninstall(None).unwrap();
                 app.load_current_installation();
                 app.load_other_installations();
             })
@@ -665,10 +662,10 @@ impl OneClickModInstallerWindow {
             .activate(move |_, _, _| {
                 match handler_installer::get_info(Some(Game::Episode1)) {
                     (_, handler_installer::InstallationInfo::Installed(path)) => {
-                        Launcher::open_folder(&Path::new(&path).parent().unwrap().display().to_string()).unwrap().wait().unwrap();
+                        Launcher::open_folder(&Path::new(&path).parent().unwrap()).unwrap().wait().unwrap();
                     },
                     (_, handler_installer::InstallationInfo::AnotherInstallationPresent(path)) => {
-                        Launcher::open_folder(&Path::new(&path).parent().unwrap().display().to_string()).unwrap().wait().unwrap();
+                        Launcher::open_folder(&Path::new(&path).parent().unwrap()).unwrap().wait().unwrap();
                     },
                     (_, handler_installer::InstallationInfo::NotInstalled) => {},
                 };
@@ -679,10 +676,10 @@ impl OneClickModInstallerWindow {
             .activate(move |_, _, _| {
                 match handler_installer::get_info(Some(Game::Episode2)) {
                     (_, handler_installer::InstallationInfo::Installed(path)) => {
-                        Launcher::open_folder(&Path::new(&path).parent().unwrap().display().to_string()).unwrap().wait().unwrap();
+                        Launcher::open_folder(&Path::new(&path).parent().unwrap()).unwrap().wait().unwrap();
                     },
                     (_, handler_installer::InstallationInfo::AnotherInstallationPresent(path)) => {
-                        Launcher::open_folder(&Path::new(&path).parent().unwrap().display().to_string()).unwrap().wait().unwrap();
+                        Launcher::open_folder(&Path::new(&path).parent().unwrap()).unwrap().wait().unwrap();
                     },
                     (_, handler_installer::InstallationInfo::NotInstalled) => {},
                 };

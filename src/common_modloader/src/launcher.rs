@@ -74,7 +74,7 @@ The Mod Loader must be placed in the game's root directory.
 
     #[cfg(target_os = "windows")]
     fn launch_ep1() -> Result<Child, io::Error> {
-        let current_dir = env::current_dir().unwrap();
+        let current_dir = env::current_dir()?;
         if Path::new("main.conf").exists() {
             Command::new(current_dir.join("Sonic_vis.exe")).spawn()
         } else {
@@ -89,7 +89,7 @@ The Mod Loader must be placed in the game's root directory.
 
     #[cfg(target_os = "windows")]
     fn launch_ep2() -> Result<Child, io::Error> {
-        let current_dir = env::current_dir().unwrap();
+        let current_dir = env::current_dir()?;
         Command::new(current_dir.join("Sonic.exe")).spawn()
     }
 
@@ -109,7 +109,7 @@ The Mod Loader must be placed in the game's root directory.
 
     pub fn launch_config() -> Result<Child, io::Error> {
         let game = Launcher::get_current_game();
-        let current_dir = env::current_dir().unwrap();
+        let current_dir = env::current_dir()?;
         match game {
             Game::Unknown => Err(io::Error::other("Game not found")),
             Game::Episode1 => Command::new(current_dir.join("SonicLauncher.orig.exe")).spawn(),
@@ -123,12 +123,12 @@ The Mod Loader must be placed in the game's root directory.
     }
     
     pub fn launch_csb_editor(args: Vec<String>) -> Result<Child, io::Error> {
-        let current_dir = env::current_dir().unwrap();
+        let current_dir = env::current_dir()?;
         Command::new(current_dir.join("CsbEditor.exe")).args(args).spawn()
     }
 
     pub fn launch_7zip(args: Vec<String>) -> Result<Child, io::Error> {
-        let current_dir = env::current_dir().unwrap();
+        let current_dir = env::current_dir()?;
         let local_7z = current_dir.join("7z.exe");
         let global_7z = Path::new("C:\\").join("Program Files").join("7-Zip").join("7z.exe");
         if local_7z.is_file() {
@@ -157,12 +157,12 @@ The Mod Loader must be placed in the game's root directory.
     
     /** It is usually OK to wait for explorer to release its child process, it spawns a new window and exits. */
     #[cfg(target_os = "windows")]
-    pub fn open_folder(folder: &String) -> Result<Child, io::Error> {
+    pub fn open_folder(folder: &Path) -> Result<Child, io::Error> {
         Command::new("explorer.exe").arg(folder).spawn()
     }
 
     #[cfg(not(target_os = "windows"))]
-    pub fn open_folder(folder: &String) -> Result<Child, io::Error> {
+    pub fn open_folder(folder: &Path) -> Result<Child, io::Error> {
         Command::new("xdg-open").arg(folder).spawn()
     }
 }

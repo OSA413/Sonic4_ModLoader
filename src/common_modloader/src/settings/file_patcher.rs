@@ -20,7 +20,13 @@ pub fn load() -> FilePatcherConfig {
         sha_check: true
     };
 
-    let json_config = std::fs::read_to_string("Sonic4FilePatcher.json").unwrap();
+    let json_config = match std::fs::read_to_string("Sonic4FilePatcher.json") {
+        Ok(string) => string,
+        Err(e) => {
+            eprintln!("Error loading Sonic4FilePatcher.json: {e}");
+            return default_settings;
+        }
+    };
     let json_config = serde_json::from_str::<FilePatcherConfigPartial>(&json_config);
     
     match json_config {
@@ -31,7 +37,7 @@ pub fn load() -> FilePatcherConfig {
             }
         },
         Err(e) => {
-            println!("Error loading Sonic4FilePatcher.ini: {e}");
+            eprintln!("Error loading Sonic4FilePatcher.json: {e}");
             default_settings
         }
     }
