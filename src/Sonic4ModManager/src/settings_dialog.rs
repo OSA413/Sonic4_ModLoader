@@ -51,7 +51,7 @@ mod imp {
     impl ObjectSubclass for SettingsWindow {
         const NAME: &'static str = "Settings";
         type Type = super::SettingsWindow;
-        type ParentType = adw::ApplicationWindow;
+        type ParentType = gtk::ApplicationWindow;
 
         fn class_init(klass: &mut Self::Class) {
             klass.bind_template();

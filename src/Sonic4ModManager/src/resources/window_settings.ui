@@ -1,219 +1,163 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
-  <template class="Settings" parent="AdwApplicationWindow">
+  <template class="Settings" parent="GtkApplicationWindow">
     <property name="title">Settings</property>
     <property name="width-request">360</property>
     <property name="height-request">200</property>
     <property name="default-width">600</property>
     <property name="default-height">400</property>
-    <child>
-      <object class="AdwBreakpoint">
-        <condition>max-width: 300sp</condition>
+    <!-- Linux Mint 22.3 provides libadwaita 1.5 -->
+    <!-- but AdwMultiLayoutView was introduced only in 1.6 -->
+    <!-- Return this block back as it was in 2026 (v0.5.0) in 2030, idk -->
+    <child type="titlebar">
+      <object class="GtkHeaderBar">
+        <property name="show-title-buttons">false</property>
+        <property name="title-widget">
+          <object class="GtkBox">
+            <child>
+              <object class="GtkLabel">
+                <property name="label" translatable="yes">Settings</property>
+                <property name="single-line-mode">True</property>
+                <property name="ellipsize">end</property>
+                <property name="width-chars">5</property>
+                <style>
+                  <class name="title"/>
+                </style>
+              </object>
+            </child>
+          </object>
+        </property>
+        <child type="end">
+          <object class="GtkButton">
+            <property name="label" translatable="yes">Save</property>
+            <property name="action-name">win.save</property>
+            <style>
+              <class name="suggested-action"/>
+            </style>
+          </object>
+        </child>
+        <child type="end">
+          <object class="GtkButton">
+            <property name="label" translatable="yes">Discard</property>
+            <property name="action-name">win.close</property>
+          </object>
+        </child>
       </object>
     </child>
-    <property name="content">
-      <object class="AdwMultiLayoutView" id="view">
+
+    <child>
+      <object class="GtkBox">
+        <property name="orientation">vertical</property>
+        <property name="spacing">8</property>
         <child>
-          <object class="AdwLayout">
-            <property name="content">
-              <object class="AdwOverlaySplitView">
-                <property name="sidebar">
-                  <object class="AdwToolbarView">
-                    <property name="content">
-                      <object class="AdwLayoutSlot">
-                        <property name="id">sidebar</property>
-                      </object>
-                    </property>
-                  </object>
-                </property>
-                <property name="content">
-                  <object class="AdwToolbarView">
-                    <child type="top">
-                      <object class="AdwHeaderBar">
-                        <property name="show-end-title-buttons">false</property>
-                        <child type="end">
-                          <object class="GtkButton">
-                            <property name="label" translatable="yes">Save</property>
-                            <property name="action-name">win.save</property>
-                            <style>
-                              <class name="suggested-action"/>
-                            </style>
-                          </object>
-                        </child>
-                        <child type="end">
-                          <object class="GtkButton">
-                            <property name="label" translatable="yes">Discard</property>
-                            <property name="action-name">win.close</property>
-                          </object>
-                        </child>
-                      </object>
-                    </child>
-                    <property name="content">
-                      <object class="AdwLayoutSlot">
-                        <property name="id">content</property>
-                      </object>
-                    </property>
-                  </object>
-                </property>
-              </object>
-            </property>
+          <object class="GtkLabel">
+            <property name="label">Installation</property>
           </object>
         </child>
-        <child type="sidebar">
-          <object class="AdwNavigationPage">
-            <property name="title" translatable="yes">Sidebar</property>
-            <property name="child">
-              <object class="AdwToolbarView">
-                <property name="content">
-                  <object class="GtkStackSidebar">
-                    <property name="stack">stack</property>
-                  </object>
-                </property>
-              </object>
-            </property>
+        <child>
+          <object class="GtkLabel">
+            <property name="label">Installation Status:</property>
           </object>
         </child>
-        <child type="content">
-          <object class="AdwNavigationPage" id="content_page">
-            <property name="title" translatable="yes">Content</property>
-            <property name="child">
-              <object class="GtkStack" id="stack">
-                <child>
-                  <object class="GtkStackPage">
-                    <property name="title" translatable="yes">Installation</property>
-                    <property name="child">
-                      <object class="GtkBox">
-                        <property name="orientation">vertical</property>
-                        <child>
-                          <object class="GtkLabel">
-                            <property name="label">Installation Status:</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="label_installation_status">
-                            <property name="label">//Installation status goes here</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkButton" id="button_un_install">
-                            <property name="label">(Un)install</property>
-                            <property name="action-name">win.un_install</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkCheckButton" id="checkbutton_force_uninstall">
-                            <property name="label">Force uninstall</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkLabel" id="label_uninstallation_options">
-                            <property name="label">Uninstallation options:</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkCheckButton" id="checkbutton_rename_files_back">
-                            <property name="label">Rename files back</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkCheckButton"
-                            id="checkbutton_delete_all_mod_loader_files">
-                            <property name="label">Delete all Mod Loader files</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkCheckButton" id="checkbutton_keep_configs">
-                            <property name="label">Keep configs</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkCheckButton" id="checkbutton_uninstall_and_delete_ocmi">
-                            <property name="label">Uninstall and delete One-Click Mod Installer</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkCheckButton" id="checkbutton_recover_original_files">
-                            <property name="label">Recover original game files (AMBs, CSBs, ...)</property>
-                          </object>
-                        </child>
-                      </object>
-                    </property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkStackPage">
-                    <property name="title" translatable="yes">Sonic4FilePatcher</property>
-                    <property name="child">
-                      <object class="GtkBox">
-                        <property name="orientation">vertical</property>
-                        <child>
-                          <object class="GtkCheckButton" id="checkbutton_progress_bar">
-                            <property name="label">Progress Bar</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkCheckButton" id="checkbutton_check_sha_of_files">
-                            <property name="label">Check SHA of files (recommended)</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkButton">
-                            <property name="label">Recover original files</property>
-                            <property name="action-name">win.recover_files</property>
-                          </object>
-                        </child>
-                      </object>
-                    </property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkStackPage">
-                    <property name="title" translatable="yes">CSBEditor</property>
-                    <property name="child">
-                      <object class="GtkBox">
-                        <property name="orientation">vertical</property>
-                        <child>
-                          <object class="GtkBox">
-                            <child>
-                              <object class="GtkLabel">
-                                <property name="label">Buffer size</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkEntry" id="entry_buffer_size">
-                                <property name="input-hints">GTK_INPUT_HINT_NO_EMOJI</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkCheckButton" id="checkbutton_enable_threading">
-                            <property name="label">Enable threading</property>
-                          </object>
-                        </child>
-                        <child>
-                          <object class="GtkBox">
-                            <child>
-                              <object class="GtkLabel">
-                                <property name="label">Max threads</property>
-                              </object>
-                            </child>
-                            <child>
-                              <object class="GtkEntry" id="entry_max_threads">
-                                <property name="input-hints">GTK_INPUT_HINT_NO_EMOJI</property>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                      </object>
-                    </property>
-                  </object>
-                </child>
-              </object>
-            </property>
+        <child>
+          <object class="GtkLabel" id="label_installation_status">
+            <property name="label">//Installation status goes here</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="button_un_install">
+            <property name="label">(Un)install</property>
+            <property name="action-name">win.un_install</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="checkbutton_force_uninstall">
+            <property name="label">Force uninstall</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label_uninstallation_options">
+            <property name="label">Uninstallation options:</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="checkbutton_rename_files_back">
+            <property name="label">Rename files back</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkCheckButton"
+            id="checkbutton_delete_all_mod_loader_files">
+            <property name="label">Delete all Mod Loader files</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="checkbutton_keep_configs">
+            <property name="label">Keep configs</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="checkbutton_uninstall_and_delete_ocmi">
+            <property name="label">Uninstall and delete One-Click Mod Installer</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="checkbutton_recover_original_files">
+            <property name="label">Recover original game files (AMBs, CSBs, ...)</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="label">Sonic4FilePatcher</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="checkbutton_progress_bar">
+            <property name="label">Progress Bar</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="checkbutton_check_sha_of_files">
+            <property name="label">Check SHA of files (recommended)</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton">
+            <property name="label">Recover original files</property>
+            <property name="action-name">win.recover_files</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="label">CSBEditor</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="label">Buffer size</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkEntry" id="entry_buffer_size">
+            <property name="input-hints">GTK_INPUT_HINT_NO_EMOJI</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkCheckButton" id="checkbutton_enable_threading">
+            <property name="label">Enable threading</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel">
+            <property name="label">Max threads</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkEntry" id="entry_max_threads">
+            <property name="input-hints">GTK_INPUT_HINT_NO_EMOJI</property>
           </object>
         </child>
       </object>
-    </property>
+    </child>
   </template>
 </interface>
