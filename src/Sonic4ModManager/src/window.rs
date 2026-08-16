@@ -94,7 +94,9 @@ impl Sonic4ModManagerWindow {
         let mut result = Vec::<String>::new();
         let mod_entries = self.imp().mod_store.iter::<Object>();
         for mod_entry in mod_entries {
-            let g_mod_entry = mod_entry.unwrap().downcast::<GModEntry>().unwrap();
+            let g_mod_entry = mod_entry.expect("ListModelMutatedDuringIter error in save mods")
+                .downcast::<GModEntry>()
+                .expect("The object should be of type `GModEntry`.");
             if g_mod_entry.enabled() {
                 result.push(g_mod_entry.path());
             }
@@ -118,7 +120,9 @@ impl Sonic4ModManagerWindow {
         self.save_mods();
         let game_lauched = common_modloader::Launcher::launch_current_game();
         match game_lauched {
-            Ok(_) => self.application().unwrap().quit(),
+            Ok(_) => if let Some(application) = self.application() {
+                application.quit();
+            },
             Err(e) => eprintln!("{e}"),
         }
     }
@@ -139,7 +143,7 @@ impl Sonic4ModManagerWindow {
                     Offset::Bottom => self.imp().mod_store.n_items(),
                 };
 
-                let mod_folder = mod_to_move.downcast_ref::<GModEntry>().unwrap().path();
+                let mod_folder = mod_to_move.downcast_ref::<GModEntry>().expect("The object should be of type `GModEntry`.").path();
                 self.imp().mod_store.insert(final_index , &mod_to_move);
                 self.imp().selected_mod_index.replace(Some(mod_folder));
             }
@@ -263,7 +267,7 @@ impl Sonic4ModManagerWindow {
         match Launcher::open_mods_folder() {
             Ok(mut child) => {
                 println!("Opening mods directory...");
-                child.wait().unwrap();
+                child.wait().expect("Explorer should have been closed successfully");
             }
             Err(e) => eprintln!("Coudn't open [mods] directory {e}"),
         };
@@ -271,7 +275,9 @@ impl Sonic4ModManagerWindow {
 
     fn randomize_mod_list(&self) {
         let range = 0..self.imp().mod_store.n_items();
-        let mut result: Vec<glib::Object> = range.map(|position| self.imp().mod_store.item(position).unwrap()).collect();
+        let mut result: Vec<glib::Object> = range.map(|position| self.imp().mod_store.item(position)
+            .expect("I'm a teapot, the tea didn't brew that well..."))
+            .collect();
         result.shuffle(&mut rng());
         result.iter().for_each(|obj| {
             let new_mod = obj
@@ -316,8 +322,10 @@ You can install/uninstall and configure it through the settings menu at any time
             None => (),
             Some(listbox_row) => {
                 let index = listbox_row.index();
-                let g_mod_entry = self.imp().mod_store.item(index as u32).unwrap();
-                let g_mod_entry = g_mod_entry.downcast_ref::<GModEntry>().unwrap();
+                let g_mod_entry = self.imp().mod_store.item(index as u32)
+                    .unwrap_or_else(|| panic!("{}", format!("Object was expected at index {index}").into_boxed_str()));
+                let g_mod_entry = g_mod_entry.downcast_ref::<GModEntry>()
+                    .expect("The object should be of type `GModEntry`.");
                 let description = match g_mod_entry.description() {
                     None => "No description.".to_string(),
                     Some(description) => {

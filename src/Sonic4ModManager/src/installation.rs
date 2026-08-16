@@ -1,5 +1,4 @@
 use std::{fs, path::Path, process};
-use std::process::Command;
 
 use common_modloader::{settings, Game, Launcher};
 
@@ -120,10 +119,10 @@ pub fn install() {
     let installation_order = get_installation_order();
     for i in installation_order {
         if Path::new(&i.orig_name).exists()
-            && i.new_name.is_some()
-            && !Path::new(&i.new_name.clone().unwrap()).exists()
+            && let Some(new_name) = &i.new_name
+            && !Path::new(new_name).exists()
             && match i.only_if_this_file_exists { Some(path) => Path::new(&path).exists(), None => true, } {
-            match fs::rename(&i.orig_name, i.new_name.unwrap()) {
+            match fs::rename(&i.orig_name, new_name) {
                 Ok(_) => (),
                 Err(e) => eprintln!("Failed to move some files: {e}")
             }
@@ -141,6 +140,8 @@ pub fn install() {
 
 #[cfg(target_os = "linux")]
 fn install_to_local_user() {
+    use std::process::Command;
+    
     let game = Launcher::get_current_game();
     let game_readable_prefix = match game {
         Game::Episode1 => ": 1",
@@ -187,11 +188,11 @@ pub fn uninstall(options: UninstallationOptions) {
     };
 
     for i in &installation_order {
-        if i.new_name.is_some()
-            && Path::new(&i.new_name.clone().unwrap()).exists()
+        if let Some(new_name) = &i.new_name
+            && Path::new(new_name).exists()
             && !Path::new(&i.orig_name).exists()
             && match &i.only_if_this_file_exists { Some(path) => Path::new(&path).exists(), None => true } {
-            match fs::rename(i.new_name.clone().unwrap(), &i.orig_name) {
+            match fs::rename(new_name, &i.orig_name) {
                 Ok(_) => (),
                 Err(e) => eprintln!("Error: {e}"),
             }
@@ -257,19 +258,6 @@ pub fn uninstall(options: UninstallationOptions) {
                 }
         }
 
-        let bat = format!("{}\n{}\n{}",
-            "taskkill /IM Sonic4ModManager.exe /F",
-            "DEL Sonic4ModManager.exe",
-            "DEL FinishInstallation.bat");
-        
-        match fs::write("FinishInstallation.bat", bat) {
-            Ok(_) => {
-                match process::Command::new("FinishInstallation.bat").spawn() {
-                    Ok(_) => process::exit(0),
-                    Err(e) => eprintln!("Error launching FinishInstallation.bat: {e}"),
-                }
-            },
-            Err(e) => eprintln!("Error writing FinishInstallation.bat: {e}"),
-        }
+        // TODO
     }
 }

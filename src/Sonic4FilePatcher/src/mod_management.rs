@@ -265,6 +265,9 @@ pub fn load_file_mods() {
         }
     }
     
-    fs::write("mods/mods_prev", modified_files.join("\n")).unwrap();
+    match fs::write("mods/mods_prev", modified_files.join("\n")) {
+        Ok(_) => (),
+        Err(e) => eprintln!("Couldn't write contents to mods/mods_prev, this means that the next launch will re-patch files again: {e}")
+    }
     println!("\nPatching complete!");
 }

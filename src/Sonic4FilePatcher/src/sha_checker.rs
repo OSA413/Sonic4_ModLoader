@@ -3,7 +3,7 @@ use sha2::{Digest, Sha256};
 
 use crate::mod_management::ModFile;
 
-pub fn get(data: impl AsRef<[u8]>) -> String {
+pub fn get_hash(data: impl AsRef<[u8]>) -> String {
     Sha256::digest(data).iter().map(|x| format!("{x:02x}")).collect()
 }
 
@@ -42,7 +42,7 @@ pub fn is_changed(do_sha_check: bool, file_name: &String, mod_files: &Vec<ModFil
         };
 
         if mod_file_sha.is_file() {
-            let sha_tmp = get(fs::read(mod_file_full).expect("Bad, bad thing happened"));
+            let sha_tmp = get_hash(fs::read(mod_file_full).expect("Bad, bad thing happened"));
             if sha_tmp != fs::read_to_string(mod_file_sha).expect("Badder thing happened") {
                 files_changed = true;
             }
@@ -67,8 +67,10 @@ pub fn is_changed(do_sha_check: bool, file_name: &String, mod_files: &Vec<ModFil
 
 pub fn write(relative_mod_file_path: String, full_mod_file_path: PathBuf) {
     let sha_file = Path::new("mods_sha").join(relative_mod_file_path + ".txt");
-    let sha_dir = sha_file.parent().unwrap();
-
-    fs::create_dir_all(sha_dir).expect("Failed to create directory for SHA-1 file");
-    fs::write(sha_file, get(fs::read(full_mod_file_path).expect("Failed to read file for SHA-1 file "))).expect("Couldn't write SHA-1 of file");
+    let sha_dir = sha_file.parent().expect("Failed to get directory for hash file");
+    fs::create_dir_all(sha_dir).expect("Failed to create directory for hash file");
+    fs::write(
+        sha_file,
+        get_hash(fs::read(full_mod_file_path).expect("Failed to read file for hash of modded file"))
+    ).expect("Couldn't write hash of file");
 }

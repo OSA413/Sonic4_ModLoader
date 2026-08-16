@@ -1,5 +1,13 @@
-use gtk::glib;
+use gtk::{Widget, glib};
 use adw::{prelude::{AdwDialogExt, AlertDialogExt}};
+
+pub fn show_error_dialog(title: &str, message: &str) {
+    let alert = adw::AlertDialog::new(Some(title), Some(message));
+    alert.add_response("ok", "OK");
+    alert.set_response_appearance("ok", adw::ResponseAppearance::Suggested);
+    alert.set_close_response("ok");
+    alert.present(None::<&Widget>);
+}
 
 pub fn set_gsk_renderer_from_config() {
     println!("Trying to load GTK4 config...");

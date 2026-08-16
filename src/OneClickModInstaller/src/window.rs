@@ -351,7 +351,7 @@ impl OneClickModInstallerWindow {
             let file_short_extension = Path::new(&file_short).extension().unwrap_or(OsStr::new(""));
 
             if file_short_name.to_str().unwrap().parse::<u32>().is_ok()
-                && file_short.contains(Path::new("DEMO").join("WORLDMAP").join("WORLDMAP.AMB").to_str().unwrap()) {
+                && file_short.contains(Path::new("DEMO").join("WORLDMAP").join("WORLDMAP.AMB").to_str().expect("Bad thing happened #321")) {
                 continue;
             }
 
@@ -640,6 +640,7 @@ impl OneClickModInstallerWindow {
 
         let install_or_fix_path_to_current_game_action = gio::ActionEntry::builder("install_or_fix_path_to_current_game")
             .activate(move |app: &Self, _, _| {
+                // TODO: move to a function that returns Result and display error to the user with GTK's popup or something idk
                 match handler_installer::get_info(None) {
                     (_, handler_installer::InstallationInfo::Installed(_)) => {},
                     (_, handler_installer::InstallationInfo::AnotherInstallationPresent(_)) => handler_installer::fix(None).unwrap(),
@@ -652,6 +653,7 @@ impl OneClickModInstallerWindow {
 
         let uninstall_current_game_action = gio::ActionEntry::builder("uninstall_current_game")
             .activate(move |app: &Self, _, _| {
+                // TODO: move to a function that returns Result and display error to the user with GTK's popup or something idk
                 handler_installer::uninstall(None).unwrap();
                 app.load_current_installation();
                 app.load_other_installations();
@@ -660,12 +662,13 @@ impl OneClickModInstallerWindow {
 
         let open_episode1_action = gio::ActionEntry::builder("open_episode1")
             .activate(move |_, _, _| {
+                // TODO: move to a function that returns Result and display error to the user with GTK's popup or something idk
                 match handler_installer::get_info(Some(Game::Episode1)) {
                     (_, handler_installer::InstallationInfo::Installed(path)) => {
-                        Launcher::open_folder(&Path::new(&path).parent().unwrap()).unwrap().wait().unwrap();
+                        Launcher::open_folder(Path::new(&path).parent().unwrap()).unwrap().wait().unwrap();
                     },
                     (_, handler_installer::InstallationInfo::AnotherInstallationPresent(path)) => {
-                        Launcher::open_folder(&Path::new(&path).parent().unwrap()).unwrap().wait().unwrap();
+                        Launcher::open_folder(Path::new(&path).parent().unwrap()).unwrap().wait().unwrap();
                     },
                     (_, handler_installer::InstallationInfo::NotInstalled) => {},
                 };
@@ -674,12 +677,13 @@ impl OneClickModInstallerWindow {
 
         let open_episode2_action = gio::ActionEntry::builder("open_episode2")
             .activate(move |_, _, _| {
+                // TODO: move to a function that returns Result and display error to the user with GTK's popup or something idk
                 match handler_installer::get_info(Some(Game::Episode2)) {
                     (_, handler_installer::InstallationInfo::Installed(path)) => {
-                        Launcher::open_folder(&Path::new(&path).parent().unwrap()).unwrap().wait().unwrap();
+                        Launcher::open_folder(Path::new(&path).parent().unwrap()).unwrap().wait().unwrap();
                     },
                     (_, handler_installer::InstallationInfo::AnotherInstallationPresent(path)) => {
-                        Launcher::open_folder(&Path::new(&path).parent().unwrap()).unwrap().wait().unwrap();
+                        Launcher::open_folder(Path::new(&path).parent().unwrap()).unwrap().wait().unwrap();
                     },
                     (_, handler_installer::InstallationInfo::NotInstalled) => {},
                 };
