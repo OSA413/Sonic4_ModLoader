@@ -10,6 +10,7 @@ echo "Copying new distribution files..."
 #Sonic4ModLoader
 #License
 cp "LICENSE" "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-Sonic4_ModLoader"
+cp "./src_tools/LICENSE" "./dist/Sonic4ModLoader/Mod Loader - licenses/LICENSE-Sonic4_Tools"
 #README
 cp "./README.md" "./dist/Sonic4ModLoader/README.md"
 #Change log
