@@ -1,5 +1,6 @@
-use std::{collections::HashSet, ffi::OsStr, fs::{self, File}, io::Write, ops::{self, Deref}, path::{self, Path}};
+use std::{cmp, collections::HashSet, ffi::OsStr, fs::{self, File}, io::Write, ops::Deref, path::{self, Path}, time::Duration};
 use async_channel::Sender;
+use common_gtk4::show_error_dialog;
 use futures_util::StreamExt;
 use adw::{ActionRow, prelude::{AdwDialogExt, AlertDialogExt}, subclass::prelude::*};
 use gtk::{Widget, gio::{self, Cancellable, prelude::{ActionMapExtManual, FileExt}}, glib::{self, clone, object::{Cast, ObjectExt}}, prelude::{BoxExt, ButtonExt, CheckButtonExt, EditableExt, WidgetExt}};
@@ -20,20 +21,41 @@ pub enum SuspiciousResolution {
     RemoveSuspiciousFilesAndContinue,
 }
 
-async fn download_mod(url: String, progress_bar: Sender<f64>, progress_bar_text: Sender<String>, file_path: Sender<String>) {
-    progress_bar_text.send_blocking("Connecting to the server...".to_string()).unwrap();
+async fn download_mod(
+    url: String,
+    progress_bar: Sender<f64>,
+    progress_bar_text: Sender<String>,
+    file_path: Sender<String>,
+    critical_error_sender: Sender<String>,
+) {
+    if let Err(e) = progress_bar_text.send_blocking("Connecting to the server...".to_string()) {
+        eprintln!("Error sending progress bar text: {e}");
+    }
 
-    let response = reqwest::Client::new()
+    let response = match reqwest::Client::new()
         .get(url)
+        .timeout(Duration::from_mins(15))
         .send()
-        .await
-        .unwrap();
-    let total_size = response.content_length().unwrap();
+        .await {
+        Ok(response) => response,
+        Err(e) => {
+            if let Err(e) = critical_error_sender.send_blocking(format!("{e}")) {
+                eprintln!("Critical error downloading the mod: {e}");
+            }
+            return;
+        }
+    };
+    let total_size = response.content_length();
     let file_name = response.url().path_segments().unwrap().next_back().unwrap().to_owned();
 
-    progress_bar_text.send_blocking(format!("Downloading {file_name}...")).unwrap();
-    progress_bar.send_blocking(0.0).unwrap();
+    if let Err(e) = progress_bar_text.send_blocking(format!("Downloading {file_name}...")) {
+        eprintln!("Error sending progress bar text: {e}");
+    }
+    if let Err(e) = progress_bar.send_blocking(0.0) {
+        eprintln!("Error sending progress bar: {e}");
+    }
 
+    // TODO: Redo to non-expect
     fs::create_dir_all("downloaded_mods")
         .expect("Couldn't create a directory for downloaded mods, can't continue.");
     let to = Path::new("downloaded_mods").join(&file_name);
@@ -42,14 +64,43 @@ async fn download_mod(url: String, progress_bar: Sender<f64>, progress_bar_text:
     let mut stream = response.bytes_stream();
 
     while let Some(item) = stream.next().await {
-        let chunk = item.unwrap();
-        file.write_all(&chunk).unwrap();
-        downloaded += chunk.len();
-        progress_bar.send_blocking(downloaded as f64 / total_size as f64).unwrap();
+        let chunk = match item {
+            Ok(chunk) => chunk,
+            Err(e) => {
+                if let Err(e) = critical_error_sender.send_blocking(format!("{e}")) {
+                    eprintln!("Critical error downloading the mod: {e}");
+                }
+                return;
+            }
+        };
+        if let Err(e) = file.write_all(&chunk) {
+            if let Err(e) = critical_error_sender.send_blocking(format!("{e}")) {
+                eprintln!("Critical error downloading the mod: {e}");
+            }
+            return;
+        };
+        let send_signal = match total_size {
+            Some(total_size) => {
+                downloaded += chunk.len();
+                progress_bar.send_blocking(downloaded as f64 / total_size as f64)
+            },
+            // If we don't have the total size, then we turn the progress into a speedometer
+            None => {
+                downloaded = cmp::max(downloaded, chunk.len());
+                progress_bar.send_blocking(chunk.len() as f64 / downloaded as f64)
+            },
+        };
+        if let Err(e) = send_signal {
+            eprintln!("Error sending progress bar progress: {e}");
+        };
     }
 
-    progress_bar_text.send_blocking(format!("Finished downloading {file_name}!")).unwrap();
-    progress_bar.send_blocking(1.0).unwrap();
+    if let Err(e) = progress_bar_text.send_blocking(format!("Finished downloading {file_name}!")) {
+        eprintln!("Error sending progress bar progress text: {e}");
+    }
+    if let Err(e) = progress_bar.send_blocking(1.0) {
+        eprintln!("Error sending progress bar progress: {e}");
+    }
     file_path.send_blocking(path::absolute(to).unwrap().display().to_string()).unwrap();
 }
 
@@ -193,6 +244,7 @@ impl OneClickModInstallerWindow {
         let (progress_bar_sender, progress_bar_receiver) = async_channel::bounded(1);
         let (progress_bar_text_sender, progress_bar_text_receiver) = async_channel::bounded(1);
         let (archive_path_sender, archive_path_receiver) = async_channel::bounded(1);
+        let (critical_error_sender, critical_error_receiver) = async_channel::bounded(1);
 
         glib::spawn_future_local(clone!(
             #[weak (rename_to = this)]
@@ -205,11 +257,11 @@ impl OneClickModInstallerWindow {
                         progress_bar_sender,
                         progress_bar_text_sender,
                         archive_path_sender,
+                        critical_error_sender,
                     )
                 )
                 .await
                 .unwrap();
-                // this.imp().install_button.set_sensitive(true);
             }
         ));
 
@@ -240,6 +292,18 @@ impl OneClickModInstallerWindow {
                 while let Ok(text) = archive_path_receiver.recv().await {
                     let dir = this.unpack_archive(text);
                     this.check_suspicious_files(&dir);
+                }
+            }
+        ));
+
+        glib::spawn_future_local(clone!(
+            #[weak (rename_to = this)]
+            self,
+            async move {
+                while let Ok(text) = critical_error_receiver.recv().await {
+                    show_error_dialog(&this, "Critical error downloading the mod.
+Please try again later.", text.as_str());
+                    this.imp().install_button.set_sensitive(true);
                 }
             }
         ));
@@ -407,6 +471,7 @@ impl OneClickModInstallerWindow {
         dialog.connect_response(None, move |_, response| closure(response));
     }
 
+    // It probably should be async
     fn unpack_archive(&self, url: String) -> String {
         self.imp().progress_bar.set_text(Some(&format!("Extracting {url}...")));
         self.imp().progress_bar.set_fraction(0.0);
@@ -589,7 +654,9 @@ impl OneClickModInstallerWindow {
             launch_mod_manager_on_exit_on_install: self.imp().launch_mod_manager_on_exit_checkbutton.is_active(),
         };
 
-        config.save_config().unwrap();
+        if let Err(e) = config.save_config() {
+            show_error_dialog(self, "Error saving config", &format!("{e}").into_boxed_str());
+        }
     }
 
     fn setup_actions(&self) {
@@ -609,7 +676,9 @@ impl OneClickModInstallerWindow {
 
         let launch_mod_manager_on_exit_action = gio::ActionEntry::builder("launch_mod_manager_on_exit_toggle")
             .activate(move |app: &Self, _, _| {
-                app.imp().launch_mod_manager_on_exit_checkbutton.set_active(!app.imp().launch_mod_manager_on_exit_checkbutton.is_active());
+                app.imp().launch_mod_manager_on_exit_checkbutton.set_active(
+                    app.imp().launch_mod_manager_on_exit_checkbutton.is_active()
+                );
                 app.save_config();
             })
             .build();
@@ -624,14 +693,9 @@ impl OneClickModInstallerWindow {
                     #[weak (rename_to = this)]
                     app,
                     move |result| {
-                        if let Ok(file) = result {
-                            // This will crash if you choose a file without extension
-                            let file = match &file.basename().unwrap().extension().unwrap().display().to_string().to_owned()[ops::RangeFull] {
-                                "7z" | "zip" | "rar" => file,
-                                _ => file.parent().unwrap().parent().unwrap(),
-                            };
-
-                            if let Some(path) = file.path() { this.imp().mod_path_entry.set_text(path.display().to_string().as_str()) };
+                        if let Ok(file) = result 
+                        && let Some(path) = extract_preferred_path_from_selected_file(file).path() {
+                            this.imp().mod_path_entry.set_text(path.display().to_string().as_str())
                         }
                     }
                 ));
@@ -639,55 +703,53 @@ impl OneClickModInstallerWindow {
             .build();
 
         let install_or_fix_path_to_current_game_action = gio::ActionEntry::builder("install_or_fix_path_to_current_game")
-            .activate(move |app: &Self, _, _| {
-                // TODO: move to a function that returns Result and display error to the user with GTK's popup or something idk
+            .activate(move |window: &Self, _, _| {
                 match handler_installer::get_info(None) {
                     (_, handler_installer::InstallationInfo::Installed(_)) => {},
-                    (_, handler_installer::InstallationInfo::AnotherInstallationPresent(_)) => handler_installer::fix(None).unwrap(),
-                    (_, handler_installer::InstallationInfo::NotInstalled) => handler_installer::install(None).unwrap(),
+                    (_, handler_installer::InstallationInfo::AnotherInstallationPresent(_)) => {
+                        if let Err(e) = handler_installer::fix(None) {
+                            let error_message = match e {
+                                handler_installer::HadnlerInstallationError::Io(io_error) => &format!("IO Error: {io_error}").into_boxed_str(),
+                                handler_installer::HadnlerInstallationError::UnknownGame => "You can't install OCMI to the unknown game!",
+                            };
+                            show_error_dialog(window, "Error fixing current installation", error_message);
+                        }
+                    }
+                    (_, handler_installer::InstallationInfo::NotInstalled) => {
+                        if let Err(e) = handler_installer::install(None) {
+                            let error_message = match e {
+                                handler_installer::HadnlerInstallationError::Io(io_error) => &format!("IO Error: {io_error}").into_boxed_str(),
+                                handler_installer::HadnlerInstallationError::UnknownGame => "You can't install OCMI to the unknown game!",
+                            };
+                            show_error_dialog(window, "Error installaing for current game", error_message);
+                        }
+                    }
                 };
-                app.load_current_installation();
-                app.load_other_installations();
+                window.load_current_installation();
+                window.load_other_installations();
             })
             .build();
 
         let uninstall_current_game_action = gio::ActionEntry::builder("uninstall_current_game")
-            .activate(move |app: &Self, _, _| {
-                // TODO: move to a function that returns Result and display error to the user with GTK's popup or something idk
-                handler_installer::uninstall(None).unwrap();
-                app.load_current_installation();
-                app.load_other_installations();
+            .activate(move |window: &Self, _, _| {
+                if let Err(e) = handler_installer::uninstall(None) {
+                    let error_message = match e {
+                        handler_installer::HadnlerInstallationError::Io(io_error) => &format!("IO Error: {io_error}").into_boxed_str(),
+                        handler_installer::HadnlerInstallationError::UnknownGame => "You can't install OCMI to the unknown game!",
+                    };
+                    show_error_dialog(window, "Error uninstalling current installation", error_message);
+                }
+                window.load_current_installation();
+                window.load_other_installations();
             })
             .build();
 
         let open_episode1_action = gio::ActionEntry::builder("open_episode1")
-            .activate(move |_, _, _| {
-                // TODO: move to a function that returns Result and display error to the user with GTK's popup or something idk
-                match handler_installer::get_info(Some(Game::Episode1)) {
-                    (_, handler_installer::InstallationInfo::Installed(path)) => {
-                        Launcher::open_folder(Path::new(&path).parent().unwrap()).unwrap().wait().unwrap();
-                    },
-                    (_, handler_installer::InstallationInfo::AnotherInstallationPresent(path)) => {
-                        Launcher::open_folder(Path::new(&path).parent().unwrap()).unwrap().wait().unwrap();
-                    },
-                    (_, handler_installer::InstallationInfo::NotInstalled) => {},
-                };
-            })
+            .activate(move |window, _, _| open_ocmi_for_game(window, Game::Episode1))
             .build();
 
         let open_episode2_action = gio::ActionEntry::builder("open_episode2")
-            .activate(move |_, _, _| {
-                // TODO: move to a function that returns Result and display error to the user with GTK's popup or something idk
-                match handler_installer::get_info(Some(Game::Episode2)) {
-                    (_, handler_installer::InstallationInfo::Installed(path)) => {
-                        Launcher::open_folder(Path::new(&path).parent().unwrap()).unwrap().wait().unwrap();
-                    },
-                    (_, handler_installer::InstallationInfo::AnotherInstallationPresent(path)) => {
-                        Launcher::open_folder(Path::new(&path).parent().unwrap()).unwrap().wait().unwrap();
-                    },
-                    (_, handler_installer::InstallationInfo::NotInstalled) => {},
-                };
-            })
+            .activate(move |window, _, _| open_ocmi_for_game(window, Game::Episode2))
             .build();
 
         self.add_action_entries([
@@ -719,4 +781,57 @@ impl OneClickModInstallerWindow {
             }
         ));
     }
+}
+
+fn open_ocmi_for_game<W: glib::prelude::IsA<gtk::Widget>>(window: &W, game: Game) {
+    match handler_installer::get_info(Some(game)) {
+        (_, handler_installer::InstallationInfo::Installed(path)) => open_directory(window, &path),
+        (_, handler_installer::InstallationInfo::AnotherInstallationPresent(path)) => open_directory(window, &path),
+        (_, handler_installer::InstallationInfo::NotInstalled) => {},
+    };
+}
+
+fn open_directory<W: glib::prelude::IsA<gtk::Widget>>(window: &W, path: &String) {
+    match Path::new(&path).parent() {
+        Some(parent) => {
+            match Launcher::open_folder(parent) {
+                Ok(mut process) => {
+                    if let Ok(e) = process.wait() {
+                        show_error_dialog(
+                            window,
+                            "Error opening OCMI folder",
+                            e.to_string().as_str()
+                        );
+                    }
+                }
+                Err(e) => show_error_dialog(
+                    window,
+                    "Error opening OCMI folder",
+                    e.to_string().as_str()
+                ),
+            };
+        }
+        None => show_error_dialog(
+            window,
+            "Error opening OCMI folder",
+            "It looks like you installed OCMI in the root of your file system or drive. I refuse to open it."
+        ),
+    };
+}
+
+fn extract_preferred_path_from_selected_file(file: gio::File) -> gio::File {
+    if let Some(basename) = file.basename() 
+        && let Some(extension) = basename.extension()
+        && (extension == "7z"
+        || extension == "zip"
+        || extension == "rar") {
+        return file;
+    };
+    if let Some(parent) = file.parent() {
+        if let Some(granddad) = parent.parent() {
+            return granddad;
+        }
+        return parent;
+    }
+    file
 }

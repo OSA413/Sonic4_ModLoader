@@ -41,9 +41,11 @@ mod imp {
                 window.upcast()
             };
 
-            let icon_theme = gtk::IconTheme::for_display(&gtk::gdk::Display::default().unwrap());
-            gtk::IconTheme::add_resource_path(&icon_theme, "/Sonic4ModLoader/OneClickModInstaller/");
-            window.set_icon_name(Some("icon"));
+            if let Some(display) = gtk::gdk::Display::default() {
+                let icon_theme = gtk::IconTheme::for_display(&display);
+                gtk::IconTheme::add_resource_path(&icon_theme, "/Sonic4ModLoader/OneClickModInstaller/");
+                window.set_icon_name(Some("icon"));
+            }
             
             // Ask the window manager/compositor to present the window
             window.present();

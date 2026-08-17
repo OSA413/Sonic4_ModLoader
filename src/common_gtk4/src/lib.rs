@@ -1,12 +1,12 @@
-use gtk::{Widget, glib};
+use gtk::glib;
 use adw::{prelude::{AdwDialogExt, AlertDialogExt}};
 
-pub fn show_error_dialog(title: &str, message: &str) {
+pub fn show_error_dialog<W: glib::prelude::IsA<gtk::Widget>>(window: &W, title: &str, message: &str) {
     let alert = adw::AlertDialog::new(Some(title), Some(message));
     alert.add_response("ok", "OK");
     alert.set_response_appearance("ok", adw::ResponseAppearance::Suggested);
     alert.set_close_response("ok");
-    alert.present(None::<&Widget>);
+    alert.present(Some(window));
 }
 
 pub fn set_gsk_renderer_from_config() {
