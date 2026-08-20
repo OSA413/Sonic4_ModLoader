@@ -1,4 +1,4 @@
-use std::{cmp, collections::HashSet, ffi::OsStr, fs::{self, File}, io::Write, ops::Deref, path::{self, Path}, time::Duration};
+use std::{cmp, collections::HashSet, ffi::{OsStr, OsString}, fs::{self, File}, io::Write, ops::Deref, path::{self, Path}, time::Duration};
 use async_channel::Sender;
 use common_gtk4::show_error_dialog;
 use futures_util::StreamExt;
@@ -214,8 +214,9 @@ impl OneClickModInstallerWindow {
                 self.download_mod(url);
             },
             InitialArgs::FromArchive(path) => {
-                let dir = self.unpack_archive(path);
-                self.check_suspicious_files(&dir);
+                if let Ok(dir) = self.unpack_archive(path) {
+                    self.check_suspicious_files(&dir);
+                }
             },
             InitialArgs::FromDir(dir) => {
                 self.check_suspicious_files(&dir)
@@ -290,8 +291,9 @@ impl OneClickModInstallerWindow {
             self,
             async move {
                 while let Ok(text) = archive_path_receiver.recv().await {
-                    let dir = this.unpack_archive(text);
-                    this.check_suspicious_files(&dir);
+                    if let Ok(dir) = this.unpack_archive(text) {
+                        this.check_suspicious_files(&dir);
+                    }
                 }
             }
         ));
@@ -401,7 +403,8 @@ Please try again later.", text.as_str());
 
     fn check_suspicious_files(&self, dir_path: &String) {
         // TODO: move to a separate file
-        let good_formats = ["TXT","INI","DDS","TXB","AMA","AME","ZNO","ZNM","ZNV","DC","EV","RG","MD","MP","AT","DF","DI","PSH","VSH","LTS","XNM","MFS","SSS","GPB","MSG","AYK","ADX","AMB","CPK","CSB","PNG","CT","TGA"];
+        let good_formats: [OsString; 33] = ["TXT","INI","DDS","TXB","AMA","AME","ZNO","ZNM","ZNV","DC","EV","RG","MD","MP","AT","DF","DI","PSH","VSH","LTS","XNM","MFS","SSS","GPB","MSG","AYK","ADX","AMB","CPK","CSB","PNG","CT","TGA"]
+        .map(|x| x.into());
 
         let dir_path_path = Path::new(&dir_path);
 
@@ -409,17 +412,19 @@ Please try again later.", text.as_str());
         let mut suspicious_files = Vec::<String>::new();
 
         for file in all_files {
-            let file_short = file.to_str().unwrap().chars().skip(dir_path.len() + 1).collect::<String>();
+            let file_short = file.to_string_lossy().chars().skip(dir_path.len() + 1).collect::<String>();
 
+            // This needs thinking to properly unwrap
             let file_short_name = Path::new(&file_short).file_name().unwrap();
             let file_short_extension = Path::new(&file_short).extension().unwrap_or(OsStr::new(""));
 
-            if file_short_name.to_str().unwrap().parse::<u32>().is_ok()
+            if let Some(file_short_name_str) = file_short_name.to_str()
+            && file_short_name_str.parse::<u32>().is_ok()
                 && file_short.contains(Path::new("DEMO").join("WORLDMAP").join("WORLDMAP.AMB").to_str().expect("Bad thing happened #321")) {
                 continue;
             }
 
-            if good_formats.contains(&file_short_extension.to_ascii_uppercase().to_str().unwrap()) {
+            if good_formats.contains(&file_short_extension.to_ascii_uppercase()) {
                 continue;
             }
 
@@ -457,6 +462,7 @@ Please try again later.", text.as_str());
                         this.launch_mod_manager_if_needed(mod_path);
                     },
                     SuspiciousResolution::RemoveSuspiciousFilesAndContinue => {
+                        // TODO: move to a function with Result
                         for file in &global_files {
                             fs::remove_file(Path::new(&global_dir).join(file)).unwrap();
                         }
@@ -472,29 +478,43 @@ Please try again later.", text.as_str());
     }
 
     // It probably should be async
-    fn unpack_archive(&self, url: String) -> String {
+    // TODO: redo for more smooth error handling
+    fn unpack_archive(&self, url: String) -> Result<String, ()> {
         self.imp().progress_bar.set_text(Some(&format!("Extracting {url}...")));
         self.imp().progress_bar.set_fraction(0.0);
 
         let dir_path = format!("{url}_extracted");
 
-        match fs::remove_dir_all(&dir_path) {
-            Ok(()) => (),
-            Err(e) => eprintln!("Error removing directory: {e}"),
+        if let Err(e) = fs::remove_dir_all(&dir_path) {
+            show_error_dialog(self, &format!("Error removing directory [{dir_path}]").into_boxed_str(), &format!("{e}").into_boxed_str());
+            return Err(());
         };
 
         self.imp().progress_bar.set_fraction(0.5);
 
-        Launcher::launch_7zip(vec![
+        let process = Launcher::launch_7zip(vec![
             "x".to_string(),
             url.clone(),
             format!("-o{dir_path}"),
-        ]).unwrap().wait().unwrap();
+        ]);
+
+        match process {
+            Ok(mut process) => {
+                if let Err(e) = process.wait() {
+                    show_error_dialog(self, "Error extracting archive", &format!("{e}").into_boxed_str());
+                    return Err(());
+                }
+            }
+            Err(e) => {
+                show_error_dialog(self, "Error launching 7-Zip", &format!("{e}").into_boxed_str());
+                return Err(());
+            }
+        }
 
         self.imp().progress_bar.set_fraction(1.0);
         self.imp().progress_bar.set_text(Some("Archive extraction complete!"));
 
-        dir_path
+        Ok(dir_path)
     }
 
     fn find_mod_roots(&self, dir_path: &String) -> Vec<(ModType, String)> {
@@ -516,8 +536,9 @@ Please try again later.", text.as_str());
         for downloaded_mod_folder in downloaded_mod_folders {
             for game_folders in &game_folders_array {
                 for game_folder in &game_folders.1 {
-                    if downloaded_mod_folder.ends_with(game_folder) {
-                        result.insert((game_folders.0.clone(), downloaded_mod_folder.parent().unwrap().display().to_string()));
+                    if downloaded_mod_folder.ends_with(game_folder)
+                    && let Some(parent) = downloaded_mod_folder.parent() {
+                        result.insert((game_folders.0.clone(), parent.display().to_string()));
                         break;
                     }
                 }
