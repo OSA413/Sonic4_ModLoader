@@ -1,5 +1,6 @@
-use std::{cmp, collections::HashSet, ffi::{OsStr, OsString}, fs::{self, File}, io::Write, ops::Deref, path::{self, Path}, time::Duration};
+use std::{cmp, collections::HashSet, ffi::OsString, fs::{self, File}, io::Write, ops::Deref, path::{self, Path, PathBuf}, time::Duration};
 use async_channel::Sender;
+use common_binary::error::CommonBinaryError;
 use common_gtk4::show_error_dialog;
 use futures_util::StreamExt;
 use adw::{ActionRow, prelude::{AdwDialogExt, AlertDialogExt}, subclass::prelude::*};
@@ -39,14 +40,31 @@ async fn download_mod(
         .await {
         Ok(response) => response,
         Err(e) => {
-            if let Err(e) = critical_error_sender.send_blocking(format!("{e}")) {
+            if let Err(e) = critical_error_sender.send_blocking(e.to_string()) {
                 eprintln!("Critical error downloading the mod: {e}");
             }
             return;
         }
     };
     let total_size = response.content_length();
-    let file_name = response.url().path_segments().unwrap().next_back().unwrap().to_owned();
+    let final_url = response.url().clone();
+    let file_name = match final_url.path_segments().ok_or("Couldn't determine name of the file from the url") {
+        Ok(mut segments) => match segments.next_back().ok_or("Couldn't determine name of the file from the url") {
+            Ok(filename) => filename,
+            Err(e) => {
+                if let Err(e) = critical_error_sender.send_blocking(e.to_string()) {
+                    eprintln!("Critical error downloading the mod: {e}");
+                }
+                return;
+            }
+        }
+        Err(e) => {
+            if let Err(e) = critical_error_sender.send_blocking(e.to_string()) {
+                eprintln!("Critical error downloading the mod: {e}");
+            }
+            return;
+        }
+    };
 
     if let Err(e) = progress_bar_text.send_blocking(format!("Downloading {file_name}...")) {
         eprintln!("Error sending progress bar text: {e}");
@@ -58,8 +76,16 @@ async fn download_mod(
     // TODO: Redo to non-expect
     fs::create_dir_all("downloaded_mods")
         .expect("Couldn't create a directory for downloaded mods, can't continue.");
-    let to = Path::new("downloaded_mods").join(&file_name);
-    let mut file = File::create(&to).unwrap();
+    let to = Path::new("downloaded_mods").join(file_name);
+    let mut file = match File::create(&to) {
+        Ok(file) => file,
+        Err(e) => {
+            if let Err(e) = critical_error_sender.send_blocking(e.to_string()) {
+                eprintln!("Critical error downloading the mod: {e}");
+            }
+            return;
+        }
+    };
     let mut downloaded = 0;
     let mut stream = response.bytes_stream();
 
@@ -67,14 +93,14 @@ async fn download_mod(
         let chunk = match item {
             Ok(chunk) => chunk,
             Err(e) => {
-                if let Err(e) = critical_error_sender.send_blocking(format!("{e}")) {
+                if let Err(e) = critical_error_sender.send_blocking(e.to_string()) {
                     eprintln!("Critical error downloading the mod: {e}");
                 }
                 return;
             }
         };
         if let Err(e) = file.write_all(&chunk) {
-            if let Err(e) = critical_error_sender.send_blocking(format!("{e}")) {
+            if let Err(e) = critical_error_sender.send_blocking(e.to_string()) {
                 eprintln!("Critical error downloading the mod: {e}");
             }
             return;
@@ -101,7 +127,16 @@ async fn download_mod(
     if let Err(e) = progress_bar.send_blocking(1.0) {
         eprintln!("Error sending progress bar progress: {e}");
     }
-    file_path.send_blocking(path::absolute(to).unwrap().display().to_string()).unwrap();
+    
+    match path::absolute(to) {
+        Ok(absolute_path) => if let Err(e) = file_path.send_blocking(absolute_path.display().to_string())
+        && let Err(e) = critical_error_sender.send_blocking(e.to_string()) {
+            eprintln!("Critical error downloading the mod: {e}");
+        }
+        Err(e) => if let Err(e) = critical_error_sender.send_blocking(e.to_string()) {
+            eprintln!("Critical error downloading the mod: {e}");
+        }
+    }
 }
 
 mod imp {
@@ -225,17 +260,19 @@ impl OneClickModInstallerWindow {
         }
     }
 
-    fn place_mod_in_mods_folder(&self, root: &String) -> String {
-        let root = Path::new(&root);
-        let root_file_name = root.file_name().unwrap();
-        common_utils::copy_dir::copy_dir(&root.to_path_buf(), &Path::new("mods").join(root_file_name)).unwrap();
-        root_file_name.to_str().unwrap().to_owned()
+    fn place_mod_in_mods_folder(&self, root: &String) -> Result<String, Vec<CommonBinaryError>> {
+        let root_path = Path::new(&root);
+        let root_file_name = root_path.file_name().ok_or_else(|| [CommonBinaryError::Description(format!("Can not get filename from [{root}]"))])?;
+        common_utils::copy_dir::copy_dir(&root_path.to_path_buf(), &Path::new("mods").join(root_file_name))?;
+        Ok(root_file_name.to_string_lossy().to_string())
     }
 
     fn launch_mod_manager_if_needed(&self, mod_path: String) {
         if self.imp().exit_on_install_checkbutton.is_active() {
-            if self.imp().launch_mod_manager_on_exit_checkbutton.is_active() {
-                Launcher::launch_mod_manager(vec![mod_path]).unwrap();
+            if self.imp().launch_mod_manager_on_exit_checkbutton.is_active()
+            && let Err(e) = Launcher::launch_mod_manager(vec![mod_path]) {
+                show_error_dialog(self, "Error launching Mod Manager", &e.to_string().into_boxed_str());
+                return;
             }
             std::process::exit(0);
         }
@@ -252,7 +289,7 @@ impl OneClickModInstallerWindow {
             self,
             async move {
                 this.imp().install_button.set_sensitive(false);
-                tokio_runtime::get().spawn(
+                if let Err(e) = tokio_runtime::get().spawn(
                     download_mod(
                         url,
                         progress_bar_sender,
@@ -261,8 +298,10 @@ impl OneClickModInstallerWindow {
                         critical_error_sender,
                     )
                 )
-                .await
-                .unwrap();
+                .await {
+                    show_error_dialog(&this, "Error downloading the mod", &e.to_string().into_boxed_str());
+                    this.imp().install_button.set_sensitive(true);
+                }
             }
         ));
 
@@ -311,7 +350,7 @@ Please try again later.", text.as_str());
         ));
     }
 
-    fn show_suspicious_dialog(&self, suspicios_files: &[String]) -> adw::AlertDialog {
+    fn show_suspicious_dialog(&self, suspicios_files: &[PathBuf]) -> adw::AlertDialog {
         // Maybe redo that as a .ui file and class?
         let dialog = adw::AlertDialog::new(Some("Suspicious files found"), None);
         // dialog.set_title(Some("Suspicious files found"));
@@ -368,7 +407,7 @@ Please try again later.", text.as_str());
 
         let list = gtk::ListBox::new();
         let list_store = gio::ListStore::new::<MyGString>();
-        let list_entries = suspicios_files.iter().map(|x| MyGString::from_string(x)).collect::<Vec<_>>();
+        let list_entries = suspicios_files.iter().map(|x| MyGString::from_string(&x.to_string_lossy())).collect::<Vec<_>>();
         list_store.extend_from_slice(&list_entries);
         list.bind_model(Some(&list_store), |obj | {
             let g_mod_entry = obj
@@ -409,26 +448,29 @@ Please try again later.", text.as_str());
         let dir_path_path = Path::new(&dir_path);
 
         let all_files = common_utils::walk_dir::walk_dir(dir_path_path, None);
-        let mut suspicious_files = Vec::<String>::new();
+        let mut suspicious_files = Vec::<PathBuf>::new();
 
         for file in all_files {
-            let file_short = file.to_string_lossy().chars().skip(dir_path.len() + 1).collect::<String>();
+            let short_file = file.to_string_lossy().chars().skip(dir_path.len() + 1).collect::<String>();
+            let short_file = Path::new(&short_file);
 
-            // This needs thinking to properly unwrap
-            let file_short_name = Path::new(&file_short).file_name().unwrap();
-            let file_short_extension = Path::new(&file_short).extension().unwrap_or(OsStr::new(""));
+            let short_file_path =  Path::new(&short_file);
 
-            if let Some(file_short_name_str) = file_short_name.to_str()
-            && file_short_name_str.parse::<u32>().is_ok()
-                && file_short.contains(Path::new("DEMO").join("WORLDMAP").join("WORLDMAP.AMB").to_str().expect("Bad thing happened #321")) {
+            if let Some(short_file_name) = short_file_path.file_name()
+            && let Some(short_file_name_str) = short_file_name.to_str()
+            && short_file_name_str.parse::<u32>().is_ok()
+                && short_file.to_string_lossy().contains(
+                    &Path::new("DEMO").join("WORLDMAP").join("WORLDMAP.AMB").to_string_lossy().to_string()
+                ) {
                 continue;
             }
 
-            if good_formats.contains(&file_short_extension.to_ascii_uppercase()) {
+            if let Some(file_short_extension) = Path::new(&short_file).extension()
+            && good_formats.contains(&file_short_extension.to_ascii_uppercase()) {
                 continue;
             }
 
-            suspicious_files.push(file_short);
+            suspicious_files.push(short_file.to_path_buf());
         }
 
         let global_dir = dir_path.clone();
@@ -436,8 +478,10 @@ Please try again later.", text.as_str());
 
         if suspicious_files.is_empty() {
             let root = &self.find_mod_roots(&global_dir)[0];
-            let mod_path = self.place_mod_in_mods_folder(&root.1);
-            self.launch_mod_manager_if_needed(mod_path);
+            match self.place_mod_in_mods_folder(&root.1) {
+                Ok(mod_path) => self.launch_mod_manager_if_needed(mod_path),
+                Err(e) => show_error_dialog(self, "Error placing mod files in the mods folder", &format!("{e:?}").into_boxed_str()),
+            }
             return;
         }
 
@@ -458,17 +502,22 @@ Please try again later.", text.as_str());
                     SuspiciousResolution::Cancel => {},
                     SuspiciousResolution::Continue => {
                         let root = &this.find_mod_roots(&global_dir)[0];
-                        let mod_path = this.place_mod_in_mods_folder(&root.1);
-                        this.launch_mod_manager_if_needed(mod_path);
+                        match this.place_mod_in_mods_folder(&root.1) {
+                            Ok(mod_path) => this.launch_mod_manager_if_needed(mod_path),
+                            Err(e) => show_error_dialog(&this, "Error placing mod files in the mods folder", &format!("{e:?}").into_boxed_str()),
+                        }
+
                     },
                     SuspiciousResolution::RemoveSuspiciousFilesAndContinue => {
-                        // TODO: move to a function with Result
-                        for file in &global_files {
-                            fs::remove_file(Path::new(&global_dir).join(file)).unwrap();
+                        if let Err(e) = try_delete_files_or_fail(&global_dir, &global_files) {
+                            show_error_dialog(&this, "Error deleting suspicious files", &e.to_string().into_boxed_str());
+                            return;
                         }
                         let root = &this.find_mod_roots(&global_dir)[0];
-                        let mod_path = this.place_mod_in_mods_folder(&root.1);
-                        this.launch_mod_manager_if_needed(mod_path);
+                        match this.place_mod_in_mods_folder(&root.1) {
+                            Ok(mod_path) => this.launch_mod_manager_if_needed(mod_path),
+                            Err(e) => show_error_dialog(&this, "Error placing mod files in the mods folder", &format!("{e:?}").into_boxed_str()),
+                        }
                     },
                 };
             }
@@ -486,7 +535,7 @@ Please try again later.", text.as_str());
         let dir_path = format!("{url}_extracted");
 
         if let Err(e) = fs::remove_dir_all(&dir_path) {
-            show_error_dialog(self, &format!("Error removing directory [{dir_path}]").into_boxed_str(), &format!("{e}").into_boxed_str());
+            show_error_dialog(self, &format!("Error removing directory [{dir_path}]").into_boxed_str(), &e.to_string().into_boxed_str());
             return Err(());
         };
 
@@ -501,12 +550,12 @@ Please try again later.", text.as_str());
         match process {
             Ok(mut process) => {
                 if let Err(e) = process.wait() {
-                    show_error_dialog(self, "Error extracting archive", &format!("{e}").into_boxed_str());
+                    show_error_dialog(self, "Error extracting archive", &e.to_string().into_boxed_str());
                     return Err(());
                 }
             }
             Err(e) => {
-                show_error_dialog(self, "Error launching 7-Zip", &format!("{e}").into_boxed_str());
+                show_error_dialog(self, "Error launching 7-Zip", &e.to_string().into_boxed_str());
                 return Err(());
             }
         }
@@ -676,7 +725,7 @@ Please try again later.", text.as_str());
         };
 
         if let Err(e) = config.save_config() {
-            show_error_dialog(self, "Error saving config", &format!("{e}").into_boxed_str());
+            show_error_dialog(self, "Error saving config", &e.to_string().into_boxed_str());
         }
     }
 
@@ -855,4 +904,11 @@ fn extract_preferred_path_from_selected_file(file: gio::File) -> gio::File {
         return parent;
     }
     file
+}
+
+fn try_delete_files_or_fail(global_dir: &str, global_files: &Vec<PathBuf>) -> Result<(), std::io::Error> {
+    for file in global_files {
+        fs::remove_file(Path::new(&global_dir).join(file))?;
+    }
+    Ok(())
 }

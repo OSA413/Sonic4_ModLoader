@@ -1,37 +1,35 @@
-use std::{collections::HashMap, fs, path::{Path, PathBuf}};
+use std::{collections::HashMap, ffi::OsStr, fs, path::{Path, PathBuf}};
 
 use amb_rs_lib::amb::Amb;
+use common_binary::error::CommonBinaryError::{self, Description};
 use common_modloader::Launcher;
 use crate::{help, sha_checker};
 use indicatif::ProgressBar;
 
-pub fn full_recover_of_files() {
-    if Path::new("mods/mods_prev").is_file() {
-        let mods_prev = fs::read_to_string("mods/mods_prev").expect("Rolling around at error messages");
-        let mods_prev = mods_prev.lines();
+pub fn full_recover_of_files() -> Result<(), CommonBinaryError> {
+    let files_to_recover = common_utils::walk_dir::walk_dir(Path::new("."), Some(OsStr::new("bkp")));
 
-        for file in mods_prev {
-            recover(&file.to_string());
-            if file.ends_with(".CSB") || file.ends_with(".csb") {
-                let path_without_extension = file.chars().take(file.chars().count() - 4).collect::<String>();
-                recover( &format!("{path_without_extension}.CPK"));
-                sha_checker::remove(&path_without_extension);
-            }
-            else
-            {
-                sha_checker::remove(&file.to_string());
-            }
+    for file in files_to_recover {
+        let file_string_path = &file.to_string_lossy().to_string();
+        recover_from_bkp(&file.to_string_lossy().to_string())?;
+        if file.ends_with(".CSB.bkp") || file.ends_with(".csb.bkp") {
+            let path_without_extension = file_string_path.chars().take(file_string_path.chars().count() - 4 - 4).collect::<String>();
+            recover_from_bkp( &format!("{path_without_extension}.CPK.bkp"))?;
+            sha_checker::remove(&path_without_extension);
         }
-        fs::remove_file("mods/mods_prev").unwrap();
+        sha_checker::remove(file_string_path);
     }
-
+    Ok(())
 }
 
-pub fn recover(file_name: &String) {
+pub fn recover(file_name: &String) -> Result<u64, std::io::Error>{
     let backup_path = format!("{file_name}.bkp");
-    if Path::new(&backup_path).is_file() {
-        fs::copy(backup_path, file_name).unwrap();
-    }
+    fs::copy(backup_path, file_name)
+}
+
+pub fn recover_from_bkp(backup_file_name: &String) -> Result<u64, std::io::Error> {
+    let original_path = backup_file_name.chars().take(backup_file_name.chars().count() - 4).collect::<String>();
+    fs::copy(backup_file_name, original_path)
 }
 
 pub struct ModFile {
@@ -130,16 +128,17 @@ fn get_mod_files() -> HashMap<String, Vec<ModFile>> {
     grouped
 }
 
-pub fn backup(file_name: &String) {
+pub fn backup(file_name: &String) -> Result<(), CommonBinaryError> {
     let backup_path = format!("{}.bkp", &file_name);
     if !Path::new(&backup_path).exists() && Path::new(&file_name).is_file() { 
-        fs::copy(file_name, backup_path).unwrap();
+        fs::copy(file_name, backup_path)?;
     }
+    Ok(())
 }
 
-pub fn patch_all(file_name: &String, mod_files: Vec<ModFile>, bar: Option<&ProgressBar>) {
+pub fn patch_all(file_name: &String, mod_files: Vec<ModFile>, bar: Option<&ProgressBar>) -> Result<(), CommonBinaryError> {
     if mod_files.is_empty() {
-        return;
+        return Ok(());
     }
 
     if Path::new(&file_name).is_file() {
@@ -147,12 +146,12 @@ pub fn patch_all(file_name: &String, mod_files: Vec<ModFile>, bar: Option<&Progr
         {
             if sha_checker::is_changed(true , file_name, &mod_files)
             {
-                if file_name == &mod_files.first().unwrap().file_path {
+                if file_name == &mod_files.first().ok_or_else(|| Description("A error at `&mod_files.first()`".to_string()))?.file_path {
                     let mod_full = Path::new("mods").join(mod_files[0].mod_folder.clone()).join(mod_files[0].file_path.clone());
-                    fs::copy(&mod_full, file_name).unwrap();
+                    fs::copy(&mod_full, file_name)?;
                     sha_checker::write(mod_files[0].file_path.clone(), mod_full);
                     if let Some(bar) = bar { bar.inc(1) }
-                    return;
+                    return Ok(());
                 }
 
                 let mut amb = Amb::new_from_file_name(&match Path::new(&format!("{file_name}.bkp")).is_file() {
@@ -164,7 +163,7 @@ pub fn patch_all(file_name: &String, mod_files: Vec<ModFile>, bar: Option<&Progr
                 for mod_file in mod_files {
                     let mod_file_full = Path::new("mods").join(mod_file.mod_folder.clone()).join(mod_file.file_path.clone());
                     if let Some(bar) = bar { bar.inc(1) }
-                    amb.add_file(&mod_file_full, None).unwrap();
+                    amb.add_file(&mod_file_full, None)?;
                     sha_checker::write(mod_file.file_path.clone(), mod_file_full);
                 }
 
@@ -182,8 +181,8 @@ pub fn patch_all(file_name: &String, mod_files: Vec<ModFile>, bar: Option<&Progr
         else if (file_name.ends_with(".csb") || file_name.ends_with(".CSB"))
             && sha_checker::is_changed(true, &file_name.chars().take(file_name.chars().count() - 4).collect::<String>(), &mod_files)
             {
-                recover(file_name);
-                recover(&format!("{}.CPK", &file_name.chars().take(file_name.chars().count() - 4).collect::<String>()));
+                recover(file_name)?;
+                recover(&format!("{}.CPK", &file_name.chars().take(file_name.chars().count() - 4).collect::<String>()))?;
 
                 match Launcher::launch_csb_editor(vec![file_name.to_string()]) {
                     Ok(mut child) => {
@@ -192,7 +191,7 @@ pub fn patch_all(file_name: &String, mod_files: Vec<ModFile>, bar: Option<&Progr
                                 for mod_file in mod_files {
                                     let mod_file_path = Path::new("mods").join(mod_file.mod_folder.clone()).join( mod_file.file_path.clone());
 
-                                    fs::copy(mod_file_path.clone(), mod_file.file_path.clone()).unwrap();
+                                    fs::copy(mod_file_path.clone(), mod_file.file_path.clone())?;
 
                                     if let Some(bar) = bar { bar.inc(1) }
 
@@ -216,12 +215,14 @@ pub fn patch_all(file_name: &String, mod_files: Vec<ModFile>, bar: Option<&Progr
                 }
             }
     }
+
+    Ok(())
 }
 
-pub fn load_file_mods() {
+pub fn load_file_mods() -> Result<(), CommonBinaryError> {
     if !Path::new("mods/mods.ini").is_file() {
         help::print();
-        return;
+        return Ok(());
     }
 
     println!("Preparing list of files to patch...");
@@ -230,39 +231,41 @@ pub fn load_file_mods() {
     let total_files_to_read: usize = files_that_i_have_to_patch.iter().map(|x| x.1.len()).sum();
     println!("And approximately {total_files_to_read} files to read...");
     println!("Starting patching files of the game");
-    let mut mods_prev = Vec::<String>::new();
     let mut modified_files = Vec::<String>::new();
 
     let bar = ProgressBar::new(total_files_to_read as u64);
 
-    if Path::new("mods/mods_prev").is_file() {
-        mods_prev = fs::read_to_string("mods/mods_prev").unwrap().lines().map(|x| x.to_string()).collect::<Vec<String>>();
-    }
+    let mut mods_prev = match fs::read_to_string("mods/mods_prev") {
+        Ok(data) => data.lines().map(|x| x.to_string()).collect::<Vec<String>>(),
+        Err(_) => {
+            full_recover_of_files()?;
+            Vec::new()
+        },
+    };
 
     for (key, value) in files_that_i_have_to_patch {
         modified_files.push(key.clone());
 
-        backup(&key);
+        backup(&key)?;
         //Some CSB files may have CPK archive
         if Path::new(&format!("{}.CPK", key.chars().take(key.len() - 4).collect::<String>())).is_file() {
-            backup(&(key.chars().take(key.len() - 4).collect::<String>() + ".CPK"));
+            backup(&(key.chars().take(key.len() - 4).collect::<String>() + ".CPK"))?;
         }
 
-        patch_all(&key, value, Some(&bar));
+        patch_all(&key, value, Some(&bar))?;
         mods_prev.retain(|x| x != &key);
     }
 
     for mod_file in mods_prev {
         println!("Recovering {mod_file}...");
-        recover(&mod_file);
+        recover(&mod_file)?;
         //Some CSB files may have CPK archive
         if mod_file.ends_with(".csb") || mod_file.ends_with(".CSB") {
             let mods_prev_path = mod_file.chars().take(mod_file.chars().count() - 4).collect::<String>();
-            recover(&format!("{mods_prev_path}.CPK"));
+            recover(&format!("{mods_prev_path}.CPK"))?;
             sha_checker::remove(&mods_prev_path);
-        } else {
-            sha_checker::remove(&mod_file);
         }
+        sha_checker::remove(&mod_file);
     }
     
     match fs::write("mods/mods_prev", modified_files.join("\n")) {
@@ -270,4 +273,5 @@ pub fn load_file_mods() {
         Err(e) => eprintln!("Couldn't write contents to mods/mods_prev, this means that the next launch will re-patch files again: {e}")
     }
     println!("\nPatching complete!");
+    Ok(())
 }

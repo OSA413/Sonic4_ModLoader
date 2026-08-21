@@ -15,6 +15,7 @@ adw = { version = "0.9.1", package = "libadwaita", features = ["v1_5"] }
 gtk = { version = "0.11.1", package = "gtk4", features = ["v4_14"] }
 common_modloader = { path = "../common_modloader" }
 common_utils = { path = "../../src_tools/src/common/utils" }
+common_binary = { path = "../../src_tools/src/common/binary" }
 common_gtk4 = { path = "../common_gtk4" }
 reqwest = { version = "0.13.4", features = ["stream"] }
 futures-util = "0.3.33"
