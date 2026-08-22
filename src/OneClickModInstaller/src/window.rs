@@ -534,10 +534,7 @@ Please try again later.", text.as_str());
 
         let dir_path = format!("{url}_extracted");
 
-        if let Err(e) = fs::remove_dir_all(&dir_path) {
-            show_error_dialog(self, &format!("Error removing directory [{dir_path}]").into_boxed_str(), &e.to_string().into_boxed_str());
-            return Err(());
-        };
+        let _ = fs::remove_dir_all(&dir_path);
 
         self.imp().progress_bar.set_fraction(0.5);
 

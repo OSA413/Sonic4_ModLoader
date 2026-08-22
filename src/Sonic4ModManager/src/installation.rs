@@ -194,7 +194,7 @@ pub fn uninstall(options: UninstallationOptions) {
             && match &i.only_if_this_file_exists { Some(path) => Path::new(&path).exists(), None => true } {
             match fs::rename(new_name, &i.orig_name) {
                 Ok(_) => (),
-                Err(e) => eprintln!("Error: {e}"),
+                Err(e) => eprintln!("Error #41301: {e}"),
             }
         }
     }
@@ -206,7 +206,7 @@ pub fn uninstall(options: UninstallationOptions) {
             .arg("recover")
             .output() {
             Ok(_) => println!("Original files should be recovered"),
-            Err(e) => eprintln!("Error: {e}"),
+            Err(e) => eprintln!("Error #41302: {e}"),
         }
 
         if options.delete_all_mod_loader_files {
@@ -223,7 +223,7 @@ pub fn uninstall(options: UninstallationOptions) {
                 .arg("--uninstall")
                 .output() {
                 Ok(_) => println!("OneClickModInstaller should be uninstalled"),
-                Err(e) => eprintln!("Error: {e}"),
+                Err(e) => eprintln!("Error #41303: {e}"),
             }
 
             match fs::remove_file("OneClickModInstaller.exe") {

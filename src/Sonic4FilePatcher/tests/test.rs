@@ -159,7 +159,7 @@ mod tests {
         let mut cmd = Command::cargo_bin("Sonic4FilePatcher").unwrap();
         
         let assert = cmd
-            .current_dir(temp_dir)
+            .current_dir(&temp_dir)
             .timeout(Duration::from_millis(1000))
             .assert();
 
@@ -259,7 +259,7 @@ mod tests {
         let mut cmd = Command::cargo_bin("Sonic4FilePatcher").unwrap();
         
         let assert = cmd
-            .current_dir(temp_dir)
+            .current_dir(&temp_dir)
             .timeout(Duration::from_millis(1000))
             .assert();
 
@@ -286,7 +286,7 @@ mod tests {
         let mut cmd = Command::cargo_bin("Sonic4FilePatcher").unwrap();
         
         let assert = cmd
-            .current_dir(temp_dir)
+            .current_dir(&temp_dir)
             .timeout(Duration::from_millis(1000))
             .assert();
 

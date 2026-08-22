@@ -118,11 +118,11 @@ fn get_mod_files() -> HashMap<String, Vec<ModFile>> {
 
     for (original_file, mod_file) in result {
         let list = grouped.entry(original_file).or_default();
-        if let Some(last) = list.last()
-            && mod_file.file_path.contains(&last.file_path) {
-                continue;
-            }
-        list.push(mod_file);
+        if let Some(index) = list.iter().position(|existing_file| mod_file.file_path.contains(&existing_file.file_path)) {
+            list[index] = mod_file;
+        } else {
+            list.push(mod_file);
+        }
     }
     
     grouped
@@ -257,7 +257,6 @@ pub fn load_file_mods() -> Result<(), CommonBinaryError> {
     }
 
     for mod_file in mods_prev {
-        println!("Recovering {mod_file}...");
         recover(&mod_file)?;
         //Some CSB files may have CPK archive
         if mod_file.ends_with(".csb") || mod_file.ends_with(".CSB") {

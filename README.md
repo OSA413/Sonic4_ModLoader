@@ -149,6 +149,7 @@ https://gtk.org/
 * [Description of file extensions](https://github.com/OSA413/Sonic4_Tools/blob/master/docs/File%20description.md)
 * [Modding as for its current state](https://gamebanana.com/tuts/14585)
 * [How to compile Mod Loader](https://github.com/OSA413/Sonic4_ModLoader/blob/main/docs/build-on-windows.md)
+* [How to test Mod Loader before release](./docs/FULL_MANUAL_TESTING_PIPELINE.md)
 
 ## See also
 

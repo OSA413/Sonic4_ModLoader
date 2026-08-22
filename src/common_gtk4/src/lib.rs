@@ -2,7 +2,7 @@ use gtk::glib;
 use adw::{prelude::{AdwDialogExt, AlertDialogExt}};
 
 pub fn show_error_dialog<W: glib::prelude::IsA<gtk::Widget>>(window: &W, title: &str, message: &str) {
-    eprintln!("{title}: ${message}");
+    eprintln!("{title}: {message}");
     let alert = adw::AlertDialog::new(Some(title), Some(message));
     alert.add_response("ok", "OK");
     alert.set_response_appearance("ok", adw::ResponseAppearance::Suggested);
