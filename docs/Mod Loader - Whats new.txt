@@ -1,3 +1,12 @@
+[c]Version: v0.5.3
+* AMBPatcher is now replaced with the Sonic4FilePatcher (amb-rs is now moved to the tools repository).
+* Fix mod installation order in Sonic4FilePatcher for correct hash check to not re-run patching.
+* Simplify settings menu for libadwaita 1.5 (this is needed to fully run Mod Manager on latest Linux Mint, thanks to icup321 for reporting).
+* Sonic4FilePatcher uses amb-rs internally, and, thanks to RadiantDerg, it uses a more correct specification of AMB (v1) files.
+* Add some introduction text to Mod Manager when you launch it with no mods.
+* SHA256 is now used instead of SHA1 for file check before re-patching the files with mods.
+* Improve stability of the applications by rewriting unwraps with more suitable alternatives.
+
 [c]Version: v0.4.3
 * amb-rs and Sonic4FilePathcer are now stable, this is the last version that will offer AMBPatcher
 * Add link to GameBanana when no mods found in Mod Manager
