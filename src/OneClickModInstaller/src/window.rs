@@ -863,7 +863,7 @@ fn open_directory<W: glib::prelude::IsA<gtk::Widget>>(window: &W, path: &String)
         Some(parent) => {
             match Launcher::open_folder(parent) {
                 Ok(mut process) => {
-                    if let Ok(e) = process.wait() {
+                    if let Err(e) = process.wait() {
                         show_error_dialog(
                             window,
                             "Error opening OCMI folder",
