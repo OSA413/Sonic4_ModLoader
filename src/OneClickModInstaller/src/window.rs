@@ -744,7 +744,7 @@ Please try again later.", text.as_str());
         let launch_mod_manager_on_exit_action = gio::ActionEntry::builder("launch_mod_manager_on_exit_toggle")
             .activate(move |app: &Self, _, _| {
                 app.imp().launch_mod_manager_on_exit_checkbutton.set_active(
-                    app.imp().launch_mod_manager_on_exit_checkbutton.is_active()
+                    !app.imp().launch_mod_manager_on_exit_checkbutton.is_active()
                 );
                 app.save_config();
             })
