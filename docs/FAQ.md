@@ -6,7 +6,7 @@ Can't find your question? Try to contact me somewhere on the Internet.
 
 ## How do I install Mod Loader?
 
-TL;DR - a quick installation video guide is here: https://www.youtube.com/watch?v=CbeBXJief7w
+Installation video guide is here: https://www.youtube.com/watch?v=56ljLRdFxM8
 
 0. Download Mod Loader. [Latest stable release](https://github.com/OSA413/Sonic4_ModLoader/releases/latest) is recommended, but you also can try the latest alpha version (if any available).
 

@@ -75,7 +75,7 @@ The Mod Loader includes:
 
 ## How to install the Mod Loader
 
-TL;DR - a quick installation video guide is here: https://www.youtube.com/watch?v=CbeBXJief7w
+Installation video guide is here: https://www.youtube.com/watch?v=56ljLRdFxM8
 
 Note: you need to install the Mod Loader separately for each Episode.
 
