@@ -151,6 +151,16 @@ https://gtk.org/
 * [How to compile Mod Loader](https://github.com/OSA413/Sonic4_ModLoader/blob/main/docs/build-on-windows.md)
 * [How to test Mod Loader before release](./docs/FULL_MANUAL_TESTING_PIPELINE.md)
 
+## AI disclosure and usage policy and contribution guide
+
+The word "slop" is not what I want to achieve with this project, so I prepared an [AI usage policy and contribution guide](./AI_USAGE_POLICY_AND_CONTRIBUTION_GUIDE.md).
+
+Currently, AI assistance from (insert models or services here) helped in a few ways:
+
+* Point 1 (insert real thing after usage)
+* Point 2 (insert real thing after usage)
+* Point 3 (insert real thing after usage)
+
 ## See also
 
 * [darealshinji's rewritten launcher for Episode 1](https://github.com/darealshinji/sonic-4-launcher) so you don't have to install Java to run it.
