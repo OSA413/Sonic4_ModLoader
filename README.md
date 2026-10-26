@@ -42,7 +42,7 @@ You'll probably like that it's possible to install application shortcut to the M
 
 ----------------
 
-Join our [Sonic 4 Modding Discord server](https://discord.gg/WCp8BFyFxN)
+Join our [Sonic 4 Modding Discord server](https://discord.gg/mgPADPT6ys)
 
 FAQ: https://github.com/OSA413/Sonic4_ModLoader/blob/main/docs/FAQ.md
 

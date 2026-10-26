@@ -93,7 +93,7 @@ impl OneClickModInstallerApplication {
             .artists(vec!["Oleg \"OSA413\" Sokolov"])
             .website("https://github.com/OSA413/Sonic4_ModLoader")
             .issue_url("https://github.com/OSA413/Sonic4_ModLoader/issues")
-            .support_url("https://discord.gg/WCp8BFyFxN")
+            .support_url("https://discord.gg/mgPADPT6ys")
             .copyright("© 2018-2026 Oleg \"OSA413\" Sokolov")
             .build();
 
