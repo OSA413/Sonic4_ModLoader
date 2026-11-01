@@ -337,6 +337,7 @@ dependencies = [
  "rust-ini",
  "serde",
  "serde_json",
+ "sha2",
 ]
 
 [[package]]
