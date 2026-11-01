@@ -17,7 +17,7 @@ common_modloader = { path = "../common_modloader" }
 common_utils = { path = "../../src_tools/src/common/utils" }
 common_binary = { path = "../../src_tools/src/common/binary" }
 common_gtk4 = { path = "../common_gtk4" }
-reqwest = { version = "0.13.4", features = ["stream"] }
+reqwest = { version = "0.13.5", features = ["stream"] }
 futures-util = "0.3.33"
 async-channel = "2.5.0"
 tokio = { version = "1.53.0", features = ["rt-multi-thread"] }
